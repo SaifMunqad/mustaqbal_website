@@ -1,5 +1,7 @@
 import '../css/app.css';
 
+import '@/i18n';
+import { ToastProvider } from '@/components/toast';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { StrictMode } from 'react';
@@ -20,7 +22,9 @@ createInertiaApp({
 
         root.render(
             <StrictMode>
-                <App {...props} />
+                <ToastProvider>
+                    <App {...props} />
+                </ToastProvider>
             </StrictMode>,
         );
     },

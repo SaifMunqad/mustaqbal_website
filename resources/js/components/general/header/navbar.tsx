@@ -1,130 +1,104 @@
-import {
-    AcademicCapIcon,
-    ChartBarIcon,
-    DocumentTextIcon,
-    UserIcon,
-} from '@heroicons/react/24/outline';
-import { Link } from '@inertiajs/react';
-import { ComponentType, useEffect, useState } from 'react';
+import { Bars3Icon } from '@heroicons/react/24/outline';
+import { Link, usePage } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
+import LanguageSwitcher from '@/components/general/header/language-switcher';
+import NavbarBrand from '@/components/general/header/navbar-brand';
+import NavbarDesktop from '@/components/general/header/navbar-desktop';
+import NavbarMobile from '@/components/general/header/navbar-mobile';
+import { navigationItems } from '@/lib/navigation';
 
-function NavDesktopElement({
-    link,
-    icon: Icon,
-    name,
-}: {
-    link: string;
-    icon: ComponentType<{ className?: string }>;
-    name: string;
-}) {
-    return (
-        <li className="flex items-center gap-x-2 p-1 text-sm text-slate-600">
-            <Icon className="h-6 w-6 text-slate-500" />
-            <a href={link} className="flex items-center">
-                {name}
-            </a>
-        </li>
-    );
-}
 export default function Navbar() {
+    const page = usePage<{ auth?: { user?: unknown } }>();
+    const { url, props } = page;
+    const { auth } = props;
+    const isGuest = !auth?.user;
     const [isSticky, setIsSticky] = useState(false);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(
+        null,
+    );
 
     useEffect(() => {
         const handleScroll = () => {
-            // Check if user has scrolled more than 10px
-            if (window.scrollY > 20) {
-                setIsSticky(true);
-            } else {
-                setIsSticky(false);
-            }
+            setIsSticky(window.scrollY > 20);
         };
 
         window.addEventListener('scroll', handleScroll);
-
-        // Cleanup
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const navItems = [
-        {
-            link: '#',
-            icon: DocumentTextIcon,
-            name: 'Pages',
-        },
+    useEffect(() => {
+        const timeoutId = window.setTimeout(() => {
+            setMobileMenuOpen(false);
+            setOpenMobileDropdown(null);
+        }, 0);
 
-        {
-            link: '#',
-            icon: ChartBarIcon,
-            name: 'Blocks',
-        },
-        {
-            link: '#',
-            icon: AcademicCapIcon,
-            name: 'Docs',
-        },
-        {
-            link: '#',
-            icon: UserIcon,
-            name: 'Account',
-        },
-    ];
+        return () => window.clearTimeout(timeoutId);
+    }, [url]);
 
     return (
         <nav
-            className={`sticky top-0 z-50 mx-auto block w-full rounded-2xl border border-gray-800 px-4 py-2 shadow-md transition-all duration-300 lg:px-8 lg:py-3 ${
+            className={`sticky top-0 z-50 mx-auto block w-full rounded-2xl px-4 py-2 shadow-lg transition-all duration-500 lg:px-8 lg:py-3 ${
                 isSticky
-                    ? 'top-3 border-white/20 bg-white/10 backdrop-blur-lg backdrop-saturate-150 dark:bg-gray-900/30'
-                    : 'bg-opacity-90 bg-white backdrop-blur-lg backdrop-saturate-150 dark:bg-[#181818]'
+                    ? 'top-3 border border-white/30 bg-white/20 shadow-xl backdrop-blur-xl backdrop-saturate-200 dark:border-gray-800/50 dark:bg-gray-900/30'
+                    : 'border border-gray-200/30 bg-white/15 backdrop-blur-lg backdrop-saturate-150 dark:border-gray-800/30 dark:bg-[#181818]/90'
             }`}
         >
-            <div className="container mx-auto flex flex-wrap items-center justify-between text-slate-800">
-                <Link
-                    href="/"
-                    className={`mr-4 block cursor-pointer py-1.5 text-base font-semibold transition-colors duration-300 ${
-                        isSticky
-                            ? 'text-white'
-                            : 'text-slate-800 dark:text-white'
-                    }`}
-                >
-                    Mustaqbal
-                </Link>
+            <div className="container mx-auto flex flex-wrap items-center justify-between">
+                <NavbarBrand isSticky={isSticky} />
 
-                <div className="hidden lg:block">
-                    <ul className="mt-2 mb-4 flex flex-col gap-2 lg:mt-0 lg:mb-0 lg:flex-row lg:items-center lg:gap-6">
-                        {navItems.map((item, index) => (
-                            <NavDesktopElement
-                                key={index}
-                                link={item.link}
-                                icon={item.icon}
-                                name={item.name}
-                            />
-                        ))}
-                    </ul>
+                <NavbarDesktop
+                    items={navigationItems}
+                    currentUrl={url}
+                    isSticky={isSticky}
+                />
+
+                <div className="ml-auto hidden lg:block">
+                    <div className="flex items-center gap-2">
+                        {isGuest ? (
+                            <Link
+                                href="/login"
+                                className={`rounded-xl border px-3 py-2 text-sm font-medium transition-all duration-300 ${
+                                    isSticky
+                                        ? 'border-white/30 bg-white/20 text-white hover:bg-white/30'
+                                        : 'border-gray-200/40 bg-white/20 text-slate-700 hover:bg-white/30 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-200 dark:hover:bg-gray-800/30'
+                                }`}
+                            >
+                                Login
+                            </Link>
+                        ) : null}
+                        <LanguageSwitcher isSticky={isSticky} />
+                    </div>
                 </div>
 
                 <button
-                    className={`relative ml-auto h-6 max-h-[40px] w-6 max-w-[40px] rounded-lg text-center align-middle text-xs font-medium uppercase transition-all select-none hover:bg-transparent focus:bg-transparent active:bg-transparent disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:hidden ${
-                        isSticky ? 'text-white' : 'text-inherit'
+                    onClick={() => setMobileMenuOpen((value) => !value)}
+                    className={`relative ml-2 h-8 w-8 rounded-xl text-center align-middle transition-all duration-300 lg:hidden ${
+                        isSticky
+                            ? 'bg-white/20 text-white hover:bg-white/30'
+                            : 'bg-white/20 text-slate-700 hover:bg-white/30 dark:bg-gray-800/20 dark:text-slate-300 dark:hover:bg-gray-800/30'
                     }`}
                     type="button"
                 >
                     <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M4 6h16M4 12h16M4 18h16"
-                            ></path>
-                        </svg>
+                        <Bars3Icon className="h-5 w-5" />
                     </span>
                 </button>
+
+                <div className="mt-4 w-full lg:hidden">
+                    <LanguageSwitcher isSticky={isSticky} className="w-fit" />
+                </div>
+
+                <NavbarMobile
+                    items={navigationItems}
+                    currentUrl={url}
+                    isSticky={isSticky}
+                    menuOpen={mobileMenuOpen}
+                    setMenuOpen={setMobileMenuOpen}
+                    openDropdown={openMobileDropdown}
+                    setOpenDropdown={setOpenMobileDropdown}
+                    showLoginButton={isGuest}
+                />
             </div>
         </nav>
     );

@@ -1,4 +1,3 @@
-import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import {
@@ -10,41 +9,68 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import {
+    BookOpen,
+    FileText,
+    LayoutGrid,
+    Mail,
+    MessageSquare,
+    Newspaper,
+    School,
+} from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
-
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
-
 export function AppSidebar() {
+    const { t } = useTranslation();
+
+    const mainNavItems: NavItem[] = [
+        {
+            title: t('dashboard.tabs.overview'),
+            href: '/dashboard',
+            icon: LayoutGrid,
+        },
+        {
+            title: t('dashboard.tabs.articles'),
+            href: '/dashboard/articles',
+            icon: Newspaper,
+        },
+        {
+            title: t('dashboard.tabs.posts'),
+            href: '/dashboard/posts',
+            icon: FileText,
+        },
+        {
+            title: t('dashboard.tabs.contacts'),
+            href: '/dashboard/contacts',
+            icon: Mail,
+        },
+        {
+            title: t('dashboard.tabs.messages'),
+            href: '/dashboard/messages',
+            icon: MessageSquare,
+        },
+        {
+            title: t('dashboard.tabs.programs'),
+            href: '/dashboard/programs',
+            icon: School,
+        },
+        {
+            title: t('dashboard.tabs.pages'),
+            href: '/dashboard/site-pages',
+            icon: BookOpen,
+        },
+    ];
+
     return (
-        <Sidebar collapsible="icon" variant="inset">
+        <Sidebar collapsible="icon" variant="inset" side={document.dir == 'ltr' ? 'left' : 'right'}>
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link href="/dashboard" prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
@@ -57,7 +83,6 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

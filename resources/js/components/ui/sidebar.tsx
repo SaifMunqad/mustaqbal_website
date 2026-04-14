@@ -150,7 +150,7 @@ function SidebarProvider({
 }
 
 function Sidebar({
-  side = "left",
+  side = "right",
   variant = "sidebar",
   collapsible = "offcanvas",
   className,
@@ -162,6 +162,9 @@ function Sidebar({
   collapsible?: "offcanvas" | "icon" | "none"
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+/*
+    side = document.dir == 'ltr' ? 'left' : 'right'
+*/
 
   if (collapsible === "none") {
     return (

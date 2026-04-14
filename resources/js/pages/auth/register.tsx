@@ -2,15 +2,16 @@ import { login } from '@/routes';
 import { store } from '@/routes/register';
 import { Form, Head } from '@inertiajs/react';
 
-import InputError from '@/components/input-error';
+import { SelectField, TextField } from '@/components/form-fields';
+import { useFormToast } from '@/components/use-form-toast';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 
 export default function Register() {
+    const { onError } = useFormToast('Account created successfully.');
+
     return (
         <AuthLayout
             title="Create an account"
@@ -19,6 +20,7 @@ export default function Register() {
             <Head title="Register" />
             <Form
                 {...store.form()}
+                onError={onError}
                 resetOnSuccess={['password', 'password_confirmation']}
                 disableWhileProcessing
                 className="flex flex-col gap-6"
@@ -26,74 +28,20 @@ export default function Register() {
                 {({ processing, errors }) => (
                     <>
                         <div className="grid gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="name">Name</Label>
-                                <Input
-                                    id="name"
-                                    type="text"
-                                    required
-                                    autoFocus
-                                    tabIndex={1}
-                                    autoComplete="name"
-                                    name="name"
-                                    placeholder="Full name"
-                                />
-                                <InputError
-                                    message={errors.name}
-                                    className="mt-2"
-                                />
-                            </div>
-
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    required
-                                    tabIndex={2}
-                                    autoComplete="email"
-                                    name="email"
-                                    placeholder="email@example.com"
-                                />
-                                <InputError message={errors.email} />
-                            </div>
-
-                            <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    required
-                                    tabIndex={3}
-                                    autoComplete="new-password"
-                                    name="password"
-                                    placeholder="Password"
-                                />
-                                <InputError message={errors.password} />
-                            </div>
-
-                            <div className="grid gap-2">
-                                <Label htmlFor="password_confirmation">
-                                    Confirm password
-                                </Label>
-                                <Input
-                                    id="password_confirmation"
-                                    type="password"
-                                    required
-                                    tabIndex={4}
-                                    autoComplete="new-password"
-                                    name="password_confirmation"
-                                    placeholder="Confirm password"
-                                />
-                                <InputError
-                                    message={errors.password_confirmation}
-                                />
-                            </div>
+                            <TextField label="Name" id="name" type="text" required autoFocus tabIndex={1} autoComplete="name" name="name" placeholder="Full name" error={errors.name} />
+                            <TextField label="Email address" id="email" type="email" required tabIndex={2} autoComplete="email" name="email" placeholder="email@example.com" error={errors.email} />
+                            <SelectField label="Account type" id="role" name="role" required tabIndex={3} defaultValue="family" error={errors.role}>
+                                <option value="family">Student / Family</option>
+                                <option value="teacher">Teacher</option>
+                                <option value="management">School Management</option>
+                            </SelectField>
+                            <TextField label="Password" id="password" type="password" required tabIndex={4} autoComplete="new-password" name="password" placeholder="Password" error={errors.password} />
+                            <TextField label="Confirm password" id="password_confirmation" type="password" required tabIndex={5} autoComplete="new-password" name="password_confirmation" placeholder="Confirm password" error={errors.password_confirmation} />
 
                             <Button
                                 type="submit"
                                 className="mt-2 w-full"
-                                tabIndex={5}
+                                tabIndex={6}
                                 data-test="register-user-button"
                             >
                                 {processing && <Spinner />}
@@ -103,7 +51,7 @@ export default function Register() {
 
                         <div className="text-center text-sm text-muted-foreground">
                             Already have an account?{' '}
-                            <TextLink href={login()} tabIndex={6}>
+                            <TextLink href={login()} tabIndex={7}>
                                 Log in
                             </TextLink>
                         </div>
