@@ -1,6 +1,6 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import RichTextEditor from '@/components/editor/rich-text-editor';
-import { CheckboxField, TextField } from '@/components/form-fields';
+import { CheckboxField, SelectField, TextField } from '@/components/form-fields';
 import FormSection from '@/components/form/form-section';
 import {
     GalleryUploadField,
@@ -8,20 +8,37 @@ import {
 } from '@/components/form/image-upload-field';
 import StickyFormFooter from '@/components/form/sticky-form-footer';
 import { useFormToast } from '@/components/use-form-toast';
+import { useTranslation } from 'react-i18next';
 import articles from '@/routes/dashboard/articles';
+import type { SharedData } from '@/types';
 import {
     DocumentTextIcon,
     PhotoIcon,
     RocketLaunchIcon,
 } from '@heroicons/react/24/outline';
-import { Form } from '@inertiajs/react';
-import { useState } from 'react';
+import { Form, usePage } from '@inertiajs/react';
+import { useMemo, useState } from 'react';
 
 export default function DashboardArticlesCreate() {
     const [body, setBody] = useState('');
     const [coverImage, setCoverImage] = useState('');
     const [images, setImages] = useState<string[]>([]);
     const { onError } = useFormToast('Article created successfully.');
+    const { i18n } = useTranslation();
+    const { languages } = usePage<SharedData>().props;
+
+    const available = languages?.available ?? [];
+    const languageOptions = useMemo(
+        () => available.map((language) => ({ value: language.code, label: language.name })),
+        [available],
+    );
+
+    const [language, setLanguage] = useState(
+        languages?.current ?? i18n.language ?? 'en',
+    );
+    const contentDir =
+        (available.find((entry) => entry.code === language)?.dir) ??
+        (i18n.dir() === 'rtl' ? 'rtl' : 'ltr');
 
     return (
         <DashboardPage titleKey="dashboard.articles.createTitle">
@@ -63,12 +80,23 @@ export default function DashboardArticlesCreate() {
                                         hint="Shown as the byline. The signed-in account is recorded as the uploader."
                                         error={errors.writer_name}
                                     />
+                                    <SelectField
+                                        label="Language"
+                                        name="language"
+                                        options={languageOptions}
+                                        defaultValue={language}
+                                        className="md:col-span-2"
+                                        hint="Sets the article's text direction (RTL/LTR), independent of the site language."
+                                        onChange={setLanguage}
+                                        error={errors.language}
+                                    />
                                 </FormSection>
 
                                 <RichTextEditor
                                     name="body"
                                     value={body}
                                     onChange={setBody}
+                                    dir={contentDir}
                                 />
 
                                 <FormSection
