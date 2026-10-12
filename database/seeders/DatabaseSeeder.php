@@ -224,6 +224,10 @@ class DatabaseSeeder extends Seeder
             }
         }
 
+        // Curated catalog of programs across the three categories (idempotent).
+        // Run after the anchor programs + type translations above so labels exist.
+        $this->call(ProgramSeeder::class);
+
         Article::updateOrCreate(
             ['slug' => 'welcome-to-mustaqbal'],
             [
@@ -237,5 +241,13 @@ class DatabaseSeeder extends Seeder
                 'is_published' => true,
             ],
         );
+
+        // Free book library: genre categories and downloadable books (each with
+        // a generated PDF and first-page cover thumbnail).
+        $this->call(BookLibrarySeeder::class);
+
+        // Events calendar: current-month events plus backfill around it,
+        // giving the multi-calendar view upcoming/ongoing/past data.
+        $this->call(EventSeeder::class);
     }
 }
