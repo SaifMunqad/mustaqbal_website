@@ -9,6 +9,9 @@ interface Message {
     read_at?: string | null;
     author?: { name: string } | null;
     conversation?: { topic?: string | null } | null;
+    sender_name?: string | null;
+    sender_email?: string | null;
+    subject?: string | null;
 }
 
 export default function DashboardMessagesIndex() {
@@ -25,14 +28,14 @@ export default function DashboardMessagesIndex() {
         {
             key: 'conversation',
             header: 'Conversation',
-            cell: (message) => message.conversation?.topic ?? '-',
-            sortValue: (message) => message.conversation?.topic ?? '',
+            cell: (message) => message.conversation?.topic ?? message.subject ?? '-',
+            sortValue: (message) => message.conversation?.topic ?? message.subject ?? '',
         },
         {
             key: 'author',
             header: 'Author',
-            cell: (message) => message.author?.name ?? '-',
-            sortValue: (message) => message.author?.name ?? '',
+            cell: (message) => message.author?.name ?? message.sender_name ?? '-',
+            sortValue: (message) => message.author?.name ?? message.sender_name ?? '',
         },
         {
             key: 'body',

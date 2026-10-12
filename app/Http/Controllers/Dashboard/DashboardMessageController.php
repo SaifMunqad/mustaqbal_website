@@ -24,7 +24,11 @@ class DashboardMessageController extends Controller
             ->when(
                 $box === 'sent',
                 fn ($query) => $query->where('user_id', $request->user()->id),
-                fn ($query) => $query->where('user_id', '!=', $request->user()->id),
+                // Incoming = everything the current user did not author,
+                // including anonymous contact-form messages (null user_id).
+                fn ($query) => $query->where(
+                    fn ($q) => $q->whereNull('user_id')->orWhere('user_id', '!=', $request->user()->id),
+                ),
             )
             ->latest()
             ->paginate(20)
