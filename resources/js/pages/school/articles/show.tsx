@@ -15,6 +15,8 @@ interface Article {
     published_at?: string | null;
     author?: { name: string } | null;
     writer_name?: string | null;
+    language?: string | null;
+    language_dir?: 'rtl' | 'ltr';
 }
 
 function ArticleShowPage() {
@@ -23,6 +25,9 @@ function ArticleShowPage() {
         (image): image is string => Boolean(image),
     );
     const byline = article.writer_name ?? article.author?.name ?? 'Mustaqbal Team';
+    // The article renders in its own language direction, independent of the
+    // surrounding UI (which follows the reader's selected language).
+    const contentDir = article.language_dir ?? 'ltr';
 
     return (
         <>
@@ -48,43 +53,45 @@ function ArticleShowPage() {
                     </div>
                 </div>
 
-                <div className="mb-6 flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
-                    <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-800">
-                        By {byline}
-                    </span>
-                    <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-800">
-                        {article.published_at ? 'Published' : 'Draft'}
-                    </span>
-                </div>
-
-                {article.cover_image ? (
-                    <img
-                        src={article.cover_image}
-                        alt={article.title}
-                        className="mb-6 max-h-80 w-full rounded-2xl object-cover"
-                    />
-                ) : null}
-
-                {article.excerpt ? (
-                    <p className="mb-6 text-lg leading-relaxed text-slate-600 dark:text-slate-300">
-                        {article.excerpt}
-                    </p>
-                ) : null}
-
-                <ArticleBody body={article.body} />
-
-                {gallery.length ? (
-                    <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                        {gallery.map((image, index) => (
-                            <img
-                                key={`${index}-${image}`}
-                                src={image}
-                                alt={`${article.title} image ${index + 1}`}
-                                className="h-44 w-full rounded-2xl object-cover"
-                            />
-                        ))}
+                <div dir={contentDir} className="space-y-6">
+                    <div className="flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
+                        <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-800">
+                            By {byline}
+                        </span>
+                        <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-800">
+                            {article.published_at ? 'Published' : 'Draft'}
+                        </span>
                     </div>
-                ) : null}
+
+                    {article.cover_image ? (
+                        <img
+                            src={article.cover_image}
+                            alt={article.title}
+                            className="max-h-80 w-full rounded-2xl object-cover"
+                        />
+                    ) : null}
+
+                    {article.excerpt ? (
+                        <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-300">
+                            {article.excerpt}
+                        </p>
+                    ) : null}
+
+                    <ArticleBody body={article.body} dir={contentDir} />
+
+                    {gallery.length ? (
+                        <div className="grid gap-3 sm:grid-cols-2">
+                            {gallery.map((image, index) => (
+                                <img
+                                    key={`${index}-${image}`}
+                                    src={image}
+                                    alt={`${article.title} image ${index + 1}`}
+                                    className="h-44 w-full rounded-2xl object-cover"
+                                />
+                            ))}
+                        </div>
+                    ) : null}
+                </div>
             </section>
         </>
     );

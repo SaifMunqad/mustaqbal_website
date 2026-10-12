@@ -36,6 +36,8 @@ interface RichTextEditorProps {
     value: string;
     onChange: (html: string) => void;
     placeholder?: string;
+    /** Writing direction for the editable area, from the article's language. */
+    dir?: 'rtl' | 'ltr';
     className?: string;
 }
 
@@ -71,6 +73,7 @@ export default function RichTextEditor({
     value,
     onChange,
     placeholder = 'Write your article here, or import a Word document / paste from Word...',
+    dir = 'ltr',
     className,
 }: RichTextEditorProps) {
     const [mounted, setMounted] = useState(false);
@@ -319,7 +322,7 @@ export default function RichTextEditor({
                 </div>
             ) : null}
 
-            <EditorContent editor={editor} className="article-editor-content" />
+            <EditorContent editor={editor} dir={dir} className="article-editor-content" />
 
             {/* Submitted values (the editor itself is not a native field). */}
             <input type="hidden" name={name} value={value} />

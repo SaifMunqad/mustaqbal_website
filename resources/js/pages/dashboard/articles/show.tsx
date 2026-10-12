@@ -20,10 +20,13 @@ interface Article {
     published_at?: string | null;
     author?: { name: string } | null;
     writer_name?: string | null;
+    language?: string | null;
+    language_dir?: 'rtl' | 'ltr';
 }
 
 export default function DashboardArticlesShow() {
     const { article } = usePage<{ article: Article }>().props;
+    const contentDir = article.language_dir ?? 'ltr';
 
     return (
         <DashboardPage titleKey="dashboard.articles.title">
@@ -72,13 +75,15 @@ export default function DashboardArticlesShow() {
             </div>
 
             <section className="rounded-3xl border border-border bg-card p-6 shadow-sm md:p-10">
-                <h1 className="mb-2 text-2xl font-bold text-foreground md:text-3xl">
-                    {article.title}
-                </h1>
-                {article.excerpt ? (
-                    <p className="mb-6 text-muted-foreground">{article.excerpt}</p>
-                ) : null}
-                <ArticleBody body={article.body} />
+                <div dir={contentDir}>
+                    <h1 className="mb-2 text-2xl font-bold text-foreground md:text-3xl">
+                        {article.title}
+                    </h1>
+                    {article.excerpt ? (
+                        <p className="mb-6 text-muted-foreground">{article.excerpt}</p>
+                    ) : null}
+                    <ArticleBody body={article.body} dir={contentDir} />
+                </div>
             </section>
         </DashboardPage>
     );
