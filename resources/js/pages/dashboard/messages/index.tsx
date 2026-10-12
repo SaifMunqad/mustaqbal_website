@@ -3,6 +3,13 @@ import { DataTable, DataTableColumn } from '@/components/table';
 import { Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
+interface MessageAnswer {
+    id: number;
+    body: string;
+    answered_at?: string | null;
+    author?: { name: string } | null;
+}
+
 interface Message {
     id: number;
     body: string;
@@ -12,7 +19,13 @@ interface Message {
     sender_name?: string | null;
     sender_email?: string | null;
     subject?: string | null;
+    answers?: MessageAnswer[];
 }
+
+const formatDate = (value?: string | null): string => {
+    if (!value) return '';
+    return new Date(value).toLocaleDateString();
+};
 
 export default function DashboardMessagesIndex() {
     const { messages, box } = usePage<{ messages: { data: Message[] }; box: 'incoming' | 'sent' }>().props;
@@ -50,11 +63,34 @@ export default function DashboardMessagesIndex() {
             sortValue: (message) => Boolean(message.read_at),
         },
         {
+            key: 'answer',
+            header: 'Answer',
+            cell: (message) => {
+                const answer = message.answers?.[0];
+                if (!answer) return <span className="text-slate-400">—</span>;
+                return (
+                    <div className="space-y-0.5">
+                        <p className="line-clamp-2">{answer.body.slice(0, 80)}</p>
+                        <p className="text-xs text-slate-500">{formatDate(answer.answered_at)}</p>
+                    </div>
+                );
+            },
+            sortValue: (message) => message.answers?.[0]?.answered_at ?? '',
+        },
+        {
             key: 'actions',
             header: 'Actions',
-            cell: (message) => (
-                <Link href={`/dashboard/messages/${message.id}/edit`} className="text-blue-600 underline">Edit</Link>
-            ),
+            cell: (message) => {
+                const answered = (message.answers?.length ?? 0) > 0;
+                return (
+                    <Link
+                        href={`/dashboard/messages/${message.id}`}
+                        className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm text-white hover:bg-emerald-700"
+                    >
+                        {answered ? 'View answers' : 'Answer'}
+                    </Link>
+                );
+            },
         },
     ];
 

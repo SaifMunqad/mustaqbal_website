@@ -7,7 +7,6 @@ use App\Http\Controllers\Dashboard\DashboardContactController;
 use App\Http\Controllers\Dashboard\DashboardEventController;
 use App\Http\Controllers\Dashboard\DashboardLanguageController;
 use App\Http\Controllers\Dashboard\DashboardMessageController;
-use App\Http\Controllers\Dashboard\DashboardOrderController;
 use App\Http\Controllers\Dashboard\DashboardPostController;
 use App\Http\Controllers\Dashboard\DashboardProgramController;
 use App\Http\Controllers\Dashboard\DashboardSitePageController;
@@ -22,6 +21,7 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::post('/upload', [UploadController::class, 'store'])->name('dashboard.upload');
+    Route::post('/upload-pdf', [UploadController::class, 'pdf'])->name('dashboard.upload-pdf');
 
     Route::prefix('users')->name('dashboard.users.')->group(function () {
         Route::get('/', [DashboardUserController::class, 'index'])->name('index');
@@ -77,12 +77,6 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
             Route::put('/{category}', [DashboardBookCategoryController::class, 'update'])->name('update');
             Route::delete('/{category}', [DashboardBookCategoryController::class, 'destroy'])->name('destroy');
         });
-
-        Route::prefix('orders')->name('dashboard.orders.')->group(function () {
-            Route::get('/', [DashboardOrderController::class, 'index'])->name('index');
-            Route::get('/{order}', [DashboardOrderController::class, 'show'])->name('show');
-            Route::put('/{order}', [DashboardOrderController::class, 'update'])->name('update');
-        });
     });
 
     Route::prefix('contacts')->name('dashboard.contacts.')->group(function () {
@@ -101,12 +95,16 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
         Route::get('/', [DashboardMessageController::class, 'index'])->name('index');
         Route::get('/create', [DashboardMessageController::class, 'create'])->name('create');
         Route::get('/{message}/edit', [DashboardMessageController::class, 'edit'])->name('edit');
+        Route::get('/{message}', [DashboardMessageController::class, 'show'])->name('show');
         Route::post('/', [DashboardMessageController::class, 'store'])
             ->middleware('role:management')
             ->name('store');
         Route::put('/{message}', [DashboardMessageController::class, 'update'])
             ->middleware('role:management')
             ->name('update');
+        Route::post('/{message}/answers', [DashboardMessageController::class, 'storeAnswer'])
+            ->middleware('role:management')
+            ->name('answers.store');
     });
 
     Route::prefix('email-campaigns')->name('dashboard.email-campaigns.')->middleware('role:admin')->group(function () {
