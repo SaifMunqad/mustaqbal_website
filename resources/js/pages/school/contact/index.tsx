@@ -1,6 +1,6 @@
 import { Form, Head, usePage } from '@inertiajs/react';
 import MainLayout from '@/layouts/app/main-layout';
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import type { SiteSettings } from '@/types';
 
 interface ContactContent {
@@ -16,6 +16,7 @@ interface ContactPageData {
 
 function Contact() {
     const { page, site } = usePage<{ page: ContactPageData | null; site: SiteSettings }>().props;
+    const [received, setReceived] = useState(false);
 
     const title = page?.title ?? site?.brand_name ?? '';
 
@@ -47,9 +48,20 @@ function Contact() {
                         action="/community/contact"
                         method="post"
                         className="space-y-3"
+                        onSuccess={(response) => {
+                            setReceived(true);
+                            // Keep the confirmation visible but let the visitor
+                            // start a new message right away.
+                            response.reset?.();
+                        }}
                     >
                         {({ processing, errors }) => (
                             <>
+                                {received ? (
+                                    <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-50">
+                                        Message received. Thank you! We will get back to you as soon as possible.
+                                    </div>
+                                ) : null}
                                 <input
                                     name="name"
                                     required
