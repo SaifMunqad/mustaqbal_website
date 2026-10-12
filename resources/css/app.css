@@ -157,3 +157,183 @@
         --font-sans: var(--app-font-rubik);
     }
 }
+
+/* ------------------------------------------------------------------ */
+/* Tiptap rich-text editor + rendered article body                    */
+/* ------------------------------------------------------------------ */
+.article-editor-content .tiptap {
+    min-height: 24rem;
+    padding: 1rem;
+    outline: none;
+    line-height: 1.7;
+    color: var(--foreground);
+}
+
+.article-editor-content .tiptap p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+    color: var(--muted-foreground);
+}
+
+.article-editor-content .tiptap :where(h1, h2, h3) {
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 1rem 0 0.5rem;
+}
+
+.article-editor-content .tiptap h1 {
+    font-size: 1.6rem;
+}
+.article-editor-content .tiptap h2 {
+    font-size: 1.35rem;
+}
+.article-editor-content .tiptap h3 {
+    font-size: 1.15rem;
+}
+
+.article-editor-content .tiptap :where(p, ul, ol, blockquote, pre, table) {
+    margin: 0.5rem 0;
+}
+
+.article-editor-content .tiptap ul {
+    list-style: disc;
+    padding-inline-start: 1.5rem;
+}
+.article-editor-content .tiptap ol {
+    list-style: decimal;
+    padding-inline-start: 1.5rem;
+}
+
+.article-editor-content .tiptap u {
+    text-decoration: underline;
+}
+.article-editor-content .tiptap s {
+    text-decoration: line-through;
+}
+.article-editor-content .tiptap a {
+    color: #2563eb;
+    text-decoration: underline;
+}
+.article-editor-content .tiptap blockquote {
+    border-inline-start: 3px solid var(--border);
+    padding-inline-start: 1rem;
+    color: var(--muted-foreground);
+}
+.article-editor-content .tiptap pre {
+    background: var(--muted);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    overflow-x: auto;
+    font-family: ui-monospace, monospace;
+}
+.article-editor-content .tiptap img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+    margin: 0.75rem 0;
+}
+.article-editor-content .tiptap .ProseMirror-selectednode {
+    outline: 2px solid #2563eb;
+    border-radius: 0.5rem;
+}
+
+/* Chart block wrapper (shared by editor node view and read-only body). */
+.article-chart {
+    margin: 1rem 0;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    background: var(--card);
+}
+
+.article-chart .article-chart-canvas {
+    display: block;
+    width: 100%;
+    height: 18rem;
+}
+
+/* Read-only article body typography. */
+.article-body {
+    line-height: 1.75;
+    color: var(--foreground);
+}
+
+.article-body :where(h1, h2, h3, h4) {
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 1.25rem 0 0.6rem;
+}
+
+.article-body h1 {
+    font-size: 1.8rem;
+}
+.article-body h2 {
+    font-size: 1.5rem;
+}
+.article-body h3 {
+    font-size: 1.25rem;
+}
+
+.article-body p {
+    margin: 0.75rem 0;
+}
+
+.article-body ul {
+    list-style: disc;
+    padding-inline-start: 1.5rem;
+    margin: 0.75rem 0;
+}
+.article-body ol {
+    list-style: decimal;
+    padding-inline-start: 1.5rem;
+    margin: 0.75rem 0;
+}
+
+.article-body a {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.article-body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+    margin: 1rem auto;
+}
+
+.article-body blockquote {
+    border-inline-start: 3px solid var(--border);
+    padding-inline-start: 1rem;
+    margin: 1rem 0;
+    color: var(--muted-foreground);
+    font-style: italic;
+}
+
+.article-body pre {
+    background: var(--muted);
+    border-radius: 0.5rem;
+    padding: 0.9rem;
+    overflow-x: auto;
+    font-family: ui-monospace, monospace;
+    margin: 1rem 0;
+}
+
+.article-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.article-body :where(th, td) {
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    text-align: start;
+}
+
+.article-body hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.5rem 0;
+}
