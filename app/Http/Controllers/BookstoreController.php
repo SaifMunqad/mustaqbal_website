@@ -4,12 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\BookCategory;
+use App\Services\PdfThumbnailService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class BookstoreController extends Controller
 {
+    public function __construct(private readonly PdfThumbnailService $thumbnails)
+    {
+    }
+
     public function index(Request $request): Response
     {
         $search = $request->string('search')->toString();
@@ -25,17 +33,7 @@ class BookstoreController extends Controller
             ->orderByDesc('created_at')
             ->paginate(12)
             ->withQueryString()
-            ->through(fn (Book $book): array => [
-                'id' => $book->id,
-                'title' => $book->title,
-                'slug' => $book->slug,
-                'author' => $book->author,
-                'price_afn' => (float) $book->price_afn,
-                'cover_image' => $book->cover_image,
-                'stock' => $book->stock,
-                'is_available' => $book->is_available,
-                'category' => $book->category?->translatedName(),
-            ]);
+            ->through(fn (Book $book): array => $this->presentCard($book));
 
         return Inertia::render('school/store/index', [
             'books' => $books,
@@ -60,19 +58,9 @@ class BookstoreController extends Controller
         $related = Book::query()
             ->whereKeyNot($book->id)
             ->when($book->book_category_id, fn ($q) => $q->where('book_category_id', $book->book_category_id))
-            ->purchasable()
             ->limit(4)
             ->get()
-            ->map(fn (Book $item): array => [
-                'id' => $item->id,
-                'title' => $item->title,
-                'slug' => $item->slug,
-                'author' => $item->author,
-                'price_afn' => (float) $item->price_afn,
-                'cover_image' => $item->cover_image,
-                'stock' => $item->stock,
-                'is_available' => $item->is_available,
-            ]);
+            ->map(fn (Book $item): array => $this->presentCard($item));
 
         return Inertia::render('school/store/show', [
             'book' => [
@@ -80,16 +68,64 @@ class BookstoreController extends Controller
                 'title' => $book->title,
                 'slug' => $book->slug,
                 'author' => $book->author,
+                'published_year' => $book->published_year,
+                'publisher' => $book->publisher,
                 'isbn' => $book->isbn,
                 'description' => $book->description,
-                'price_afn' => (float) $book->price_afn,
-                'cover_image' => $book->cover_image,
+                'thumbnail' => $this->thumbnailUrl($book),
                 'images' => $book->images,
-                'stock' => $book->stock,
-                'is_available' => $book->is_available,
+                'downloadable' => $book->isDownloadable(),
+                'download_url' => $book->isDownloadable() ? route('store.books.download', $book->slug) : null,
                 'category' => $book->category?->translatedName(),
             ],
             'related' => $related,
         ]);
+    }
+
+    /**
+     * Stream the book's PDF to the visitor for free, direct download.
+     */
+    public function download(Book $book): StreamedResponse
+    {
+        abort_unless($book->isDownloadable(), 404);
+
+        $name = Str::slug($book->title).'.pdf';
+
+        return response()
+            ->streamDownload(
+                fn () => print(Storage::disk('public')->get($book->file_path)),
+                $name,
+                ['Content-Type' => 'application/pdf'],
+            );
+    }
+
+    /**
+     * Shared shape for a book card on both the listing and related sections.
+     *
+     * @return array<string, mixed>
+     */
+    private function presentCard(Book $book): array
+    {
+        return [
+            'id' => $book->id,
+            'title' => $book->title,
+            'slug' => $book->slug,
+            'author' => $book->author,
+            'published_year' => $book->published_year,
+            'publisher' => $book->publisher,
+            'thumbnail' => $this->thumbnailUrl($book),
+            'downloadable' => $book->isDownloadable(),
+            'download_url' => $book->isDownloadable() ? route('store.books.download', $book->slug) : null,
+            'category' => $book->category?->translatedName(),
+        ];
+    }
+
+    /**
+     * The book's image is the thumbnail, generated from the PDF's first page
+     * (or replaced manually by an admin).
+     */
+    private function thumbnailUrl(Book $book): ?string
+    {
+        return $this->thumbnails->url($book->thumbnail_path);
     }
 }

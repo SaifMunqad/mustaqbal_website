@@ -1,5 +1,5 @@
 import MainLayout from '@/layouts/app/main-layout';
-import { ShoppingBagIcon } from '@heroicons/react/24/outline';
+import { BookOpenIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,10 +9,11 @@ interface Book {
     title: string;
     slug: string;
     author?: string | null;
-    price_afn: number;
-    cover_image?: string | null;
-    stock: number;
-    is_available: boolean;
+    published_year?: number | null;
+    publisher?: string | null;
+    thumbnail?: string | null;
+    downloadable: boolean;
+    download_url?: string | null;
     category?: string | null;
 }
 
@@ -28,8 +29,6 @@ interface Props {
     [key: string]: unknown;
 }
 
-const formatMoney = (value: number) => new Intl.NumberFormat('en', { maximumFractionDigits: 0 }).format(value);
-
 function StoreIndexPage() {
     const { books, categories, filters } = usePage<Props>().props;
     const { t } = useTranslation();
@@ -37,10 +36,6 @@ function StoreIndexPage() {
 
     const applyFilters = (category: string) => {
         router.get('/store', { search, category }, { preserveState: true, replace: true });
-    };
-
-    const addToCart = (bookId: number) => {
-        router.post('/store/cart', { book_id: bookId, quantity: 1 }, { preserveScroll: true });
     };
 
     return (
@@ -99,11 +94,11 @@ function StoreIndexPage() {
                                 className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-gray-900"
                             >
                                 <Link href={`/store/books/${book.slug}`} className="block">
-                                    {book.cover_image ? (
-                                        <img src={book.cover_image} alt={book.title} className="h-48 w-full object-cover" />
+                                    {book.thumbnail ? (
+                                        <img src={book.thumbnail} alt={book.title} className="h-48 w-full object-cover" />
                                     ) : (
                                         <div className="flex h-48 w-full items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                                            <ShoppingBagIcon className="size-10" />
+                                            <BookOpenIcon className="size-10" />
                                         </div>
                                     )}
                                 </Link>
@@ -113,16 +108,16 @@ function StoreIndexPage() {
                                         {book.title}
                                     </Link>
                                     {book.author ? <p className="text-xs text-slate-500">{book.author}</p> : null}
-                                    <div className="mt-auto flex items-center justify-between pt-3">
-                                        <span className="font-bold text-slate-900 dark:text-white">{formatMoney(book.price_afn)} AFN</span>
-                                        <button
-                                            type="button"
-                                            disabled={!book.is_available || book.stock <= 0}
-                                            onClick={() => addToCart(book.id)}
-                                            className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                    {book.published_year ? <p className="text-xs text-slate-400">{t('store.publishedYear')}: {book.published_year}</p> : null}
+                                    {book.publisher ? <p className="text-xs text-slate-400">{book.publisher}</p> : null}
+                                    <div className="mt-auto pt-3">
+                                        <a
+                                            href={book.download_url ?? `/store/books/${book.slug}`}
+                                            className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-blue-700"
                                         >
-                                            {book.is_available && book.stock > 0 ? t('store.addToCart') : t('store.unavailable')}
-                                        </button>
+                                            <ArrowDownTrayIcon className="size-4" />
+                                            {t('store.download')}
+                                        </a>
                                     </div>
                                 </div>
                             </div>

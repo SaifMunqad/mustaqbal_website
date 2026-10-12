@@ -1,7 +1,7 @@
 import MainLayout from '@/layouts/app/main-layout';
-import { ShoppingBagIcon } from '@heroicons/react/24/outline';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { ReactNode, useState } from 'react';
+import { BookOpenIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { Head, Link, usePage } from '@inertiajs/react';
+import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface Book {
@@ -9,13 +9,14 @@ interface Book {
     title: string;
     slug: string;
     author?: string | null;
+    published_year?: number | null;
+    publisher?: string | null;
     isbn?: string | null;
     description?: string | null;
-    price_afn: number;
-    cover_image?: string | null;
+    thumbnail?: string | null;
     images?: string[] | null;
-    stock: number;
-    is_available: boolean;
+    downloadable: boolean;
+    download_url?: string | null;
     category?: string | null;
 }
 
@@ -23,8 +24,7 @@ interface RelatedBook {
     id: number;
     title: string;
     slug: string;
-    price_afn: number;
-    cover_image?: string | null;
+    thumbnail?: string | null;
 }
 
 interface Props {
@@ -33,19 +33,11 @@ interface Props {
     [key: string]: unknown;
 }
 
-const formatMoney = (value: number) => new Intl.NumberFormat('en', { maximumFractionDigits: 0 }).format(value);
-
 function StoreShowPage() {
     const { book, related } = usePage<Props>().props;
     const { t } = useTranslation();
-    const [quantity, setQuantity] = useState(1);
 
-    const purchasable = book.is_available && book.stock > 0;
-    const gallery = [book.cover_image, ...(book.images ?? [])].filter((image): image is string => Boolean(image));
-
-    const addToCart = () => {
-        router.post('/store/cart', { book_id: book.id, quantity }, { preserveScroll: true });
-    };
+    const gallery = [book.thumbnail, ...(book.images ?? [])].filter((image): image is string => Boolean(image));
 
     return (
         <>
@@ -62,7 +54,7 @@ function StoreShowPage() {
                             <img src={gallery[0]} alt={book.title} className="h-full max-h-[28rem] w-full object-cover" />
                         ) : (
                             <div className="flex h-80 items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                                <ShoppingBagIcon className="size-16" />
+                                <BookOpenIcon className="size-16" />
                             </div>
                         )}
                     </div>
@@ -71,38 +63,41 @@ function StoreShowPage() {
                         {book.category ? <span className="text-sm text-blue-600">{book.category}</span> : null}
                         <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{book.title}</h1>
                         {book.author ? <p className="text-slate-600 dark:text-slate-300">{t('store.by')} {book.author}</p> : null}
-                        {book.isbn ? <p className="text-xs text-slate-400">ISBN: {book.isbn}</p> : null}
-                        <p className="text-3xl font-bold text-slate-900 dark:text-white">{formatMoney(book.price_afn)} AFN</p>
 
-                        {purchasable ? (
-                            <p className="text-sm text-emerald-600">{t('store.inStock', { count: book.stock })}</p>
-                        ) : (
-                            <p className="text-sm text-red-600">{t('store.unavailable')}</p>
-                        )}
+                        <dl className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
+                            {book.published_year ? (
+                                <div>
+                                    <dt className="text-slate-400">{t('store.publishedYear')}</dt>
+                                    <dd className="font-medium text-slate-900 dark:text-white">{book.published_year}</dd>
+                                </div>
+                            ) : null}
+                            {book.publisher ? (
+                                <div>
+                                    <dt className="text-slate-400">{t('store.publisher')}</dt>
+                                    <dd className="font-medium text-slate-900 dark:text-white">{book.publisher}</dd>
+                                </div>
+                            ) : null}
+                            {book.isbn ? (
+                                <div>
+                                    <dt className="text-slate-400">ISBN</dt>
+                                    <dd className="font-medium text-slate-900 dark:text-white">{book.isbn}</dd>
+                                </div>
+                            ) : null}
+                        </dl>
 
-                        <div className="flex items-center gap-3 pt-2">
-                            <div className="flex items-center rounded-xl border border-border">
-                                <button type="button" onClick={() => setQuantity((q) => Math.max(1, q - 1))} className="px-3 py-2 text-slate-600 dark:text-slate-300">
-                                    −
-                                </button>
-                                <span className="w-10 text-center">{quantity}</span>
-                                <button
-                                    type="button"
-                                    onClick={() => setQuantity((q) => Math.min(book.stock || 1, q + 1))}
-                                    className="px-3 py-2 text-slate-600 dark:text-slate-300"
-                                >
-                                    +
-                                </button>
-                            </div>
-                            <button
-                                type="button"
-                                disabled={!purchasable}
-                                onClick={addToCart}
-                                className="flex-1 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        <p className="text-sm font-medium text-emerald-600">{t('store.freeDownload')}</p>
+
+                        {book.downloadable ? (
+                            <a
+                                href={book.download_url ?? '#'}
+                                className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
                             >
-                                {t('store.addToCart')}
-                            </button>
-                        </div>
+                                <ArrowDownTrayIcon className="size-5" />
+                                {t('store.download')}
+                            </a>
+                        ) : (
+                            <p className="text-sm text-red-600">{t('store.notDownloadable')}</p>
+                        )}
 
                         {book.description ? (
                             <div className="prose prose-sm max-w-none pt-4 text-slate-700 dark:text-slate-300">
@@ -131,16 +126,15 @@ function StoreShowPage() {
                                     href={`/store/books/${item.slug}`}
                                     className="overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-gray-900"
                                 >
-                                    {item.cover_image ? (
-                                        <img src={item.cover_image} alt={item.title} className="h-40 w-full object-cover" />
+                                    {item.thumbnail ? (
+                                        <img src={item.thumbnail} alt={item.title} className="h-40 w-full object-cover" />
                                     ) : (
                                         <div className="flex h-40 items-center justify-center bg-slate-100 dark:bg-slate-800">
-                                            <ShoppingBagIcon className="size-8 text-slate-400" />
+                                            <BookOpenIcon className="size-8 text-slate-400" />
                                         </div>
                                     )}
                                     <div className="space-y-1 p-3">
                                         <p className="text-sm font-medium text-slate-900 dark:text-white">{item.title}</p>
-                                        <p className="text-sm font-bold text-slate-900 dark:text-white">{formatMoney(item.price_afn)} AFN</p>
                                     </div>
                                 </Link>
                             ))}
