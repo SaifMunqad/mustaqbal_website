@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use Stevebauman\Purify\Facades\Purify;
 
 class DashboardArticleController extends Controller
 {
@@ -49,6 +50,8 @@ class DashboardArticleController extends Controller
 
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+            'writer_name' => ['nullable', 'string', 'max:255'],
+            'language' => ['nullable', 'string', 'max:10'],
             'excerpt' => ['nullable', 'string', 'max:1000'],
             'body' => ['required', 'string'],
             'cover_image' => ['nullable', new ImageLocation, 'max:2048'],
@@ -56,6 +59,8 @@ class DashboardArticleController extends Controller
             'images.*' => ['nullable', new ImageLocation, 'max:2048'],
             'is_published' => ['nullable', 'boolean'],
         ]);
+
+        $validated['body'] = Purify::clean($validated['body']);
 
         $images = array_values(array_filter($validated['images'] ?? [], static fn ($image) => filled($image)));
 
@@ -90,6 +95,8 @@ class DashboardArticleController extends Controller
 
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
+            'writer_name' => ['nullable', 'string', 'max:255'],
+            'language' => ['nullable', 'string', 'max:10'],
             'excerpt' => ['nullable', 'string', 'max:1000'],
             'body' => ['required', 'string'],
             'cover_image' => ['nullable', new ImageLocation, 'max:2048'],
@@ -97,6 +104,8 @@ class DashboardArticleController extends Controller
             'images.*' => ['nullable', new ImageLocation, 'max:2048'],
             'is_published' => ['nullable', 'boolean'],
         ]);
+
+        $validated['body'] = Purify::clean($validated['body']);
 
         $images = array_values(array_filter($validated['images'] ?? [], static fn ($image) => filled($image)));
 
