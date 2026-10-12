@@ -1,5 +1,7 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import DocumentFrame from '@/components/editor/document-frame';
+import { CheckboxField, SelectField, TextField } from '@/components/form-fields';
+import { Button } from '@/components/ui/button';
 import { useFormToast } from '@/components/use-form-toast';
 import { Form, usePage } from '@inertiajs/react';
 import posts from '@/routes/dashboard/posts';
@@ -11,8 +13,13 @@ interface UserOption {
     role: string;
 }
 
+interface TypeOption {
+    value: string;
+    label: string;
+}
+
 export default function DashboardPostsCreate() {
-    const { users } = usePage<{ users: UserOption[] }>().props;
+    const { users, postTypes } = usePage<{ users: UserOption[]; postTypes: TypeOption[] }>().props;
     const [content, setContent] = useState('');
     const [images, setImages] = useState<string[]>(['']);
     const { onError } = useFormToast('Post created successfully.');
@@ -31,38 +38,44 @@ export default function DashboardPostsCreate() {
                     bodyLabel="Post content"
                 >
                     <div className="grid gap-4 md:grid-cols-2">
-                        <select name="user_id" required className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
-                            {users.map((user) => (
-                                <option key={user.id} value={user.id}>{user.name} ({user.role})</option>
-                            ))}
-                        </select>
-                        <select name="type" required className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" defaultValue="news">
-                            <option value="news">News</option>
-                            <option value="job">Job</option>
-                            <option value="event">Event</option>
-                            <option value="achievement">Achievement</option>
-                            <option value="student_of_week">Student of Week</option>
-                            <option value="student_of_month">Student of Month</option>
-                        </select>
-                        <select name="visibility" required className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" defaultValue="community">
-                            <option value="community">Community</option>
-                            <option value="public">Public</option>
-                        </select>
-                        <select name="highlighted_student_id" className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" defaultValue="">
-                            <option value="">No highlighted student</option>
-                            {users.map((user) => (
-                                <option key={user.id} value={user.id}>{user.name}</option>
-                            ))}
-                        </select>
-                        <input name="title" required className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 md:col-span-2" placeholder="Title" />
-                        <input name="job_apply_url" className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Job apply URL" />
-                        <input name="scheduled_at" type="datetime-local" className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
-                        <input name="starts_at" type="datetime-local" className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
-                        <input name="ends_at" type="datetime-local" className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
+                        <SelectField
+                            label="Author"
+                            name="user_id"
+                            required
+                            options={users.map((user) => ({ value: String(user.id), label: `${user.name} (${user.role})` }))}
+                        />
+                        <SelectField label="Type" name="type" required defaultValue="news" options={postTypes} />
+                        <SelectField
+                            label="Visibility"
+                            name="visibility"
+                            required
+                            defaultValue="community"
+                            options={[
+                                { value: 'community', label: 'Community' },
+                                { value: 'public', label: 'Public' },
+                            ]}
+                        />
+                        <SelectField
+                            label="Highlighted student"
+                            name="highlighted_student_id"
+                            placeholder="No highlighted student"
+                            options={[
+                                { value: '', label: 'No highlighted student' },
+                                ...users.map((user) => ({ value: String(user.id), label: user.name })),
+                            ]}
+                        />
+                        <TextField label="Title" name="title" required placeholder="Title" className="md:col-span-2" />
+                        <TextField label="Job apply URL" name="job_apply_url" placeholder="Job apply URL" />
+                        <TextField label="Scheduled at" name="scheduled_at" type="datetime-local" />
+                        <TextField label="Starts at" name="starts_at" type="datetime-local" />
+                        <TextField label="Ends at" name="ends_at" type="datetime-local" />
+                        <CheckboxField label="Feature on homepage showcase" name="featured" value="1" />
+                        <TextField label="Featured from" name="featured_from" type="datetime-local" />
+                        <TextField label="Featured until" name="featured_until" type="datetime-local" />
                     </div>
                 </DocumentFrame>
 
-                <button className="w-fit rounded-xl bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700" type="submit">Save post</button>
+                <Button type="submit">Save post</Button>
             </Form>
         </DashboardPage>
     );

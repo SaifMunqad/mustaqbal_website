@@ -110,11 +110,7 @@ export default function NavbarMobile({
 
     return (
         <div
-            className={`mt-4 w-full overflow-hidden rounded-2xl lg:hidden ${
-                isSticky
-                    ? 'bg-white/20 backdrop-blur-xl'
-                    : 'bg-white/15 backdrop-blur-lg dark:bg-gray-800/15'
-            }`}
+            className="mt-4 w-full overflow-hidden rounded-2xl border border-gray-200/50 bg-white/95 backdrop-blur-xl lg:hidden dark:border-gray-800/50 dark:bg-gray-900/95"
         >
             <ul className="space-y-1 p-3">
                 {items.map((item) => {

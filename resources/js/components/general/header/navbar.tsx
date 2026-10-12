@@ -1,19 +1,22 @@
-import { Bars3Icon } from '@heroicons/react/24/outline';
+import { Bars3Icon, ShoppingBagIcon } from '@heroicons/react/24/outline';
 import { Link, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
+import CartDrawer from '@/components/general/cart/cart-drawer';
 import LanguageSwitcher from '@/components/general/header/language-switcher';
 import NavbarBrand from '@/components/general/header/navbar-brand';
 import NavbarDesktop from '@/components/general/header/navbar-desktop';
 import NavbarMobile from '@/components/general/header/navbar-mobile';
 import { navigationItems } from '@/lib/navigation';
+import type { SharedData } from '@/types';
 
 export default function Navbar() {
-    const page = usePage<{ auth?: { user?: unknown } }>();
+    const page = usePage<SharedData>();
     const { url, props } = page;
-    const { auth } = props;
+    const { auth, cart } = props;
     const isGuest = !auth?.user;
     const [isSticky, setIsSticky] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [cartOpen, setCartOpen] = useState(false);
     const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(
         null,
     );
@@ -38,10 +41,10 @@ export default function Navbar() {
 
     return (
         <nav
-            className={`sticky top-0 z-50 mx-auto block w-full rounded-2xl px-4 py-2 shadow-lg transition-all duration-500 lg:px-8 lg:py-3 ${
+            className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
                 isSticky
-                    ? 'top-3 border border-white/30 bg-white/20 shadow-xl backdrop-blur-xl backdrop-saturate-200 dark:border-gray-800/50 dark:bg-gray-900/30'
-                    : 'border border-gray-200/30 bg-white/15 backdrop-blur-lg backdrop-saturate-150 dark:border-gray-800/30 dark:bg-[#181818]/90'
+                    ? 'mt-1 mx-1 rounded-2xl border border-gray-200/50 bg-white/80 px-3 py-1.5 shadow-xl backdrop-blur-xl backdrop-saturate-200 lg:px-6 lg:py-2 dark:border-gray-800/50 dark:bg-gray-900/80'
+                    : 'w-full rounded-none border-b border-gray-200/40 bg-white/90 px-4 py-3 shadow-sm backdrop-blur-md backdrop-saturate-150 lg:px-8 lg:py-4 dark:border-gray-800/40 dark:bg-[#121212]/90'
             }`}
         >
             <div className="container mx-auto flex flex-wrap items-center justify-between">
@@ -55,14 +58,23 @@ export default function Navbar() {
 
                 <div className="ml-auto hidden lg:block">
                     <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setCartOpen(true)}
+                            aria-label="Open cart"
+                            className="relative rounded-xl border border-gray-200/40 bg-white/20 p-2 text-slate-700 transition-all duration-300 hover:bg-white/40 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-200 dark:hover:bg-gray-800/40"
+                        >
+                            <ShoppingBagIcon className="size-5" />
+                            {cart && cart.count > 0 ? (
+                                <span className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
+                                    {cart.count}
+                                </span>
+                            ) : null}
+                        </button>
                         {isGuest ? (
                             <Link
                                 href="/login"
-                                className={`rounded-xl border px-3 py-2 text-sm font-medium transition-all duration-300 ${
-                                    isSticky
-                                        ? 'border-white/30 bg-white/20 text-white hover:bg-white/30'
-                                        : 'border-gray-200/40 bg-white/20 text-slate-700 hover:bg-white/30 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-200 dark:hover:bg-gray-800/30'
-                                }`}
+                                className="rounded-xl border border-gray-200/40 bg-white/20 px-3 py-1.5 text-sm font-medium text-slate-700 transition-all duration-300 hover:bg-white/40 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-200 dark:hover:bg-gray-800/40"
                             >
                                 Login
                             </Link>
@@ -71,22 +83,29 @@ export default function Navbar() {
                     </div>
                 </div>
 
-                <button
-                    onClick={() => setMobileMenuOpen((value) => !value)}
-                    className={`relative ml-2 h-8 w-8 rounded-xl text-center align-middle transition-all duration-300 lg:hidden ${
-                        isSticky
-                            ? 'bg-white/20 text-white hover:bg-white/30'
-                            : 'bg-white/20 text-slate-700 hover:bg-white/30 dark:bg-gray-800/20 dark:text-slate-300 dark:hover:bg-gray-800/30'
-                    }`}
-                    type="button"
-                >
-                    <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform">
+                <div className="flex items-center gap-2 lg:hidden">
+                    <button
+                        type="button"
+                        onClick={() => setCartOpen(true)}
+                        aria-label="Open cart"
+                        className="relative rounded-xl border border-gray-200/40 bg-white/20 p-2 text-slate-700 transition-all duration-300 hover:bg-white/40 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-200 dark:hover:bg-gray-800/40"
+                    >
+                        <ShoppingBagIcon className="size-5" />
+                        {cart && cart.count > 0 ? (
+                            <span className="absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-blue-600 text-[9px] font-bold text-white">
+                                {cart.count}
+                            </span>
+                        ) : null}
+                    </button>
+                    <LanguageSwitcher isSticky={isSticky} />
+                    <button
+                        onClick={() => setMobileMenuOpen((value) => !value)}
+                        className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200/40 bg-white/20 text-slate-700 transition-all duration-300 hover:bg-white/40 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-200 dark:hover:bg-gray-800/40"
+                        type="button"
+                        aria-label="Toggle mobile menu"
+                    >
                         <Bars3Icon className="h-5 w-5" />
-                    </span>
-                </button>
-
-                <div className="mt-4 w-full lg:hidden">
-                    <LanguageSwitcher isSticky={isSticky} className="w-fit" />
+                    </button>
                 </div>
 
                 <NavbarMobile
@@ -100,6 +119,8 @@ export default function Navbar() {
                     showLoginButton={isGuest}
                 />
             </div>
+
+            <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
         </nav>
     );
 }

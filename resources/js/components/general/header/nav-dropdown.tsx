@@ -43,13 +43,9 @@ export default function Dropdown({
     return (
         <div
             ref={dropdownRef}
-            className={`absolute left-0 z-50 mt-2 w-64 overflow-hidden rounded-2xl shadow-xl ${
-                isSticky
-                    ? 'border border-white/30 bg-white/20 backdrop-blur-lg backdrop-saturate-150'
-                    : 'border border-gray-200/20 bg-white/10 backdrop-blur-lg backdrop-saturate-150 dark:border-gray-700/20 dark:bg-gray-900/20'
-            }`}
+            className="absolute left-0 z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-gray-200/50 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-gray-700/50 dark:bg-gray-900/95"
         >
-            <div className="p-2">
+            <div className="p-1">
                 {items.map((item) => {
                     const Icon = item.icon;
                     const isActive = url === item.href;
@@ -61,15 +57,15 @@ export default function Dropdown({
                             onClick={onClose}
                             className={`group flex items-start gap-x-3 rounded-xl p-3 transition-all duration-200 ${
                                 isActive
-                                    ? 'border border-white/40 bg-white/30 shadow-sm dark:border-gray-700/40 dark:bg-gray-800/30'
-                                    : 'hover:border hover:border-white/30 hover:bg-white/20 dark:hover:border-gray-700/30 dark:hover:bg-gray-800/20'
+                                    ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400'
+                                    : 'hover:bg-slate-100/70 dark:hover:bg-gray-800/70'
                             }`}
                         >
                             <div
                                 className={`rounded-lg p-2 ${
                                     isActive
-                                        ? 'bg-white/40 dark:bg-gray-800/40'
-                                        : 'bg-white/20 group-hover:bg-white/30 dark:bg-gray-800/20 dark:group-hover:bg-gray-800/30'
+                                        ? 'bg-blue-100 dark:bg-blue-900/40'
+                                        : 'bg-slate-100 group-hover:bg-slate-200 dark:bg-gray-800 dark:group-hover:bg-gray-700'
                                 }`}
                             >
                                 <Icon

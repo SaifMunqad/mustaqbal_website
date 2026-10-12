@@ -9,22 +9,32 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { type NavItem, type SharedData } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import {
     BookOpen,
+    CalendarDays,
+    Coins,
     FileText,
+    Folder,
+    Globe,
     LayoutGrid,
+    Library,
     Mail,
     MessageSquare,
     Newspaper,
     School,
+    Settings,
+    Users,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import AppLogo from './app-logo';
 
 export function AppSidebar() {
     const { t } = useTranslation();
+    const { auth } = usePage<SharedData>().props;
+    const canManageUsers = ['admin', 'management'].includes(auth.user?.role ?? '');
+    const isAdmin = auth.user?.role === 'admin';
 
     const mainNavItems: NavItem[] = [
         {
@@ -41,6 +51,11 @@ export function AppSidebar() {
             title: t('dashboard.tabs.posts'),
             href: '/dashboard/posts',
             icon: FileText,
+        },
+        {
+            title: t('dashboard.tabs.events'),
+            href: '/dashboard/events',
+            icon: CalendarDays,
         },
         {
             title: t('dashboard.tabs.contacts'),
@@ -62,6 +77,48 @@ export function AppSidebar() {
             href: '/dashboard/site-pages',
             icon: BookOpen,
         },
+        ...(canManageUsers
+            ? [
+                  {
+                      title: t('dashboard.tabs.settings'),
+                      href: '/dashboard/site-settings',
+                      icon: Settings,
+                  },
+              ]
+            : []),
+        ...(canManageUsers
+            ? [
+                  {
+                      title: t('dashboard.tabs.books'),
+                      href: '/dashboard/books',
+                      icon: Library,
+                  },
+                  {
+                      title: t('dashboard.tabs.categories'),
+                      href: '/dashboard/categories',
+                      icon: Folder,
+                  },
+                  {
+                      title: t('dashboard.tabs.orders'),
+                      href: '/dashboard/orders',
+                      icon: Coins,
+                  },
+                  {
+                      title: t('dashboard.tabs.users'),
+                      href: '/dashboard/users',
+                      icon: Users,
+                  },
+              ]
+            : []),
+        ...(isAdmin
+            ? [
+                  {
+                      title: t('dashboard.tabs.languages'),
+                      href: '/dashboard/languages',
+                      icon: Globe,
+                  },
+              ]
+            : []),
     ];
 
     return (

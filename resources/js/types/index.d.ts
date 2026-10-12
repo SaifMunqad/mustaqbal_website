@@ -22,10 +22,74 @@ export interface NavItem {
     isActive?: boolean;
 }
 
+export interface CartItem {
+    book_id: number;
+    title: string;
+    slug: string;
+    cover_image?: string | null;
+    author?: string | null;
+    price_afn: number;
+    stock: number;
+    quantity: number;
+    line_total: number;
+    purchasable: boolean;
+}
+
+export interface CartState {
+    count: number;
+    total: number;
+    items: CartItem[];
+}
+
+export interface SiteSettings {
+    brand_name: string;
+    brand_short_name: string;
+    tagline?: string | null;
+    logo_url?: string | null;
+    home: {
+        title?: string | null;
+        subtitle?: string | null;
+        cta_primary?: string | null;
+        cta_secondary?: string | null;
+        hero_image?: string | null;
+    };
+    contact?: {
+        email?: string | null;
+        phone_primary?: string | null;
+        phone_secondary?: string | null;
+        address?: string | null;
+        map_latitude?: number | null;
+        map_longitude?: number | null;
+        map_zoom?: number | null;
+        map_embed_url?: string | null;
+    };
+    social: {
+        facebook?: string | null;
+        instagram?: string | null;
+        twitter?: string | null;
+        youtube?: string | null;
+        whatsapp?: string | null;
+    };
+    footer_text?: string | null;
+}
+
+export interface LanguageOption {
+    code: string;
+    name: string;
+    dir: 'ltr' | 'rtl';
+}
+
 export interface SharedData {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
+    cart?: CartState;
+    site: SiteSettings;
+    languages?: {
+        available: LanguageOption[];
+        current: string;
+        default: string;
+    };
     flash?: {
         toast?: {
             variant?: 'success' | 'error' | 'info';
@@ -41,7 +105,8 @@ export interface User {
     id: number;
     name: string;
     email: string;
-    role: 'family' | 'teacher' | 'management';
+    role: 'family' | 'teacher' | 'management' | 'admin';
+    status?: 'pending' | 'active' | 'suspended';
     avatar?: string;
     email_verified_at: string | null;
     two_factor_enabled?: boolean;

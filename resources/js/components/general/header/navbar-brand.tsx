@@ -1,5 +1,6 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
+import type { SharedData } from '@/types';
 
 interface NavbarBrandProps {
     isSticky: boolean;
@@ -7,20 +8,30 @@ interface NavbarBrandProps {
 
 export default function NavbarBrand({ isSticky }: NavbarBrandProps) {
     const { t } = useTranslation();
+    const { site } = usePage<SharedData>().props;
+
+    const shortName = site?.brand_short_name || t('brand.shortName');
+
+    if (site?.logo_url) {
+        return (
+            <Link href="/" className="mr-4 flex items-center">
+                <img
+                    src={site.logo_url}
+                    alt={site.brand_name || shortName}
+                    className="h-9 w-auto"
+                />
+            </Link>
+        );
+    }
 
     return (
         <Link
             href="/"
-            className={`mr-4 block cursor-pointer py-1.5 text-lg font-bold tracking-tight transition-all duration-500 ${
-                isSticky
-                    ? 'text-white drop-shadow-lg'
-                    : 'text-slate-800 dark:text-white'
-            }`}
+            className="mr-4 block cursor-pointer py-1.5 text-lg font-bold tracking-tight text-slate-800 transition-all duration-300 dark:text-white"
         >
             <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-                {t('brand.shortName')}
+                {shortName}
             </span>
         </Link>
     );
 }
-

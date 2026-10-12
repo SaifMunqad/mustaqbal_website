@@ -17,6 +17,10 @@ interface OverviewStats {
     messages: number;
     programs: number;
     pages: number;
+    events: number;
+    enrollments: number;
+    orders: number;
+    pending_orders: number;
 }
 
 export default function Dashboard() {
@@ -60,6 +64,21 @@ export default function Dashboard() {
                         <p className="text-sm text-slate-500">{t('dashboard.stats.pages')}</p>
                         <p className="text-2xl font-bold">{stats.pages}</p>
                     </div>
+                    <div className="rounded-xl border p-4">
+                        <p className="text-sm text-slate-500">{t('dashboard.stats.events')}</p>
+                        <p className="text-2xl font-bold">{stats.events}</p>
+                    </div>
+                    <div className="rounded-xl border p-4">
+                        <p className="text-sm text-slate-500">{t('dashboard.stats.enrollments')}</p>
+                        <p className="text-2xl font-bold">{stats.enrollments}</p>
+                    </div>
+                    <div className="rounded-xl border p-4">
+                        <p className="text-sm text-slate-500">{t('dashboard.stats.orders')}</p>
+                        <p className="text-2xl font-bold">{stats.orders}</p>
+                        {stats.pending_orders > 0 ? (
+                            <p className="mt-1 text-xs text-amber-600">{t('dashboard.stats.pendingOrders', { count: stats.pending_orders })}</p>
+                        ) : null}
+                    </div>
                 </section>
 
                 <section className="rounded-xl border p-4">
@@ -67,6 +86,8 @@ export default function Dashboard() {
                     <div className={`mt-3 flex flex-wrap gap-2 ${isRtl ? 'justify-end' : 'justify-start'}`}>
                         <Link href="/dashboard/articles/create" className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white">{t('dashboard.actions.newArticle')}</Link>
                         <Link href="/dashboard/posts/create" className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white">{t('dashboard.actions.newPost')}</Link>
+                        <Link href="/dashboard/events/create" className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white">{t('dashboard.actions.newEvent')}</Link>
+                        <Link href="/dashboard/books/create" className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white">{t('dashboard.actions.newBook')}</Link>
                         <Link href="/dashboard/programs/create" className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white">{t('dashboard.actions.newProgram')}</Link>
                     </div>
                 </section>

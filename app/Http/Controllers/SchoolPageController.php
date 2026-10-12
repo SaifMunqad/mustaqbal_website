@@ -14,24 +14,7 @@ class SchoolPageController extends Controller
         $page = SitePage::query()->where('slug', 'about')->where('is_published', true)->first();
 
         return Inertia::render('school/about/index', [
-            'page' => $page ?? [
-                'title' => 'About Mustaqbal School',
-                'hero_image' => 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1200&q=80',
-                'content' => [
-                    'vision' => 'Build a future-ready generation rooted in values and excellence.',
-                    'manager_message' => 'Welcome to Mustaqbal School. We are committed to academic quality and character development.',
-                    'goals' => [
-                        'High quality modern curriculum',
-                        'Strong Islamic and cultural values',
-                        'Safe and inspiring environment',
-                    ],
-                    'main_points' => [
-                        'Experienced teachers',
-                        'Parent-school collaboration',
-                        'Student clubs and activities',
-                    ],
-                ],
-            ],
+            'page' => $page,
         ]);
     }
 
@@ -70,15 +53,7 @@ class SchoolPageController extends Controller
         $page = SitePage::query()->where('slug', 'contact')->where('is_published', true)->first();
 
         return Inertia::render('school/contact/index', [
-            'page' => $page ?? [
-                'title' => 'Contact Mustaqbal School',
-                'content' => [
-                    'phone_numbers' => ['+93 700 000 001', '+93 799 000 001'],
-                    'email' => 'info@mustaqbal.af',
-                    'address' => 'Kart-e-Char, Kabul, Afghanistan',
-                    'map_embed_url' => 'https://maps.google.com/maps?q=Kabul%20Afghanistan&t=&z=13&ie=UTF8&iwloc=&output=embed',
-                ],
-            ],
+            'page' => $page,
         ]);
     }
 

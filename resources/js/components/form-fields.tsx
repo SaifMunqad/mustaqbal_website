@@ -1,5 +1,7 @@
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import DateObject from 'react-date-object';
@@ -93,27 +95,66 @@ function TextAreaField({ label, error, hint, className, ...props }: TextAreaFiel
     );
 }
 
-interface SelectFieldProps extends ComponentProps<'select'> {
+interface SelectOption {
+    value: string;
     label: string;
-    error?: string;
-    hint?: string;
 }
 
-function SelectField({ label, error, hint, className, ...props }: SelectFieldProps) {
+interface SelectFieldProps {
+    label: string;
+    name: string;
+    options: SelectOption[];
+    defaultValue?: string;
+    error?: string;
+    hint?: string;
+    className?: string;
+    required?: boolean;
+    placeholder?: string;
+}
+
+// Radix reserves an empty string for the placeholder, so a real "none" option
+// (e.g. "No category") is mapped to this sentinel and translated back for the
+// native input that Inertia submits by name.
+const SELECT_NONE_SENTINEL = '__none__';
+
+function SelectField({
+    label,
+    name,
+    options,
+    defaultValue = '',
+    error,
+    hint,
+    className,
+    required,
+    placeholder = 'Select an option',
+}: SelectFieldProps) {
+    const [value, setValue] = useState<string>(defaultValue === '' ? '' : defaultValue);
+
+    const hiddenValue = value === SELECT_NONE_SENTINEL ? '' : value;
+
     return (
-        <FieldWrapper label={label} error={error} hint={hint}>
-            <select
-                className={cn(
-                    'border-input focus-visible:ring-ring rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs focus-visible:ring-1 focus-visible:outline-none',
-                    className,
-                )}
-                {...props}
-            />
+        <FieldWrapper label={label} error={error} hint={hint} className={className}>
+            <Select value={value} onValueChange={setValue}>
+                <SelectTrigger id={name}>
+                    <SelectValue placeholder={placeholder} />
+                </SelectTrigger>
+                <SelectContent>
+                    {options.map((option) => {
+                        const itemValue = option.value === '' ? SELECT_NONE_SENTINEL : option.value;
+                        return (
+                            <SelectItem key={itemValue} value={itemValue}>
+                                {option.label}
+                            </SelectItem>
+                        );
+                    })}
+                </SelectContent>
+            </Select>
+            <input type="hidden" name={name} value={hiddenValue} required={required} />
         </FieldWrapper>
     );
 }
 
-interface CheckboxFieldProps extends Omit<ComponentProps<'input'>, 'type'> {
+interface CheckboxFieldProps extends Omit<ComponentProps<typeof Checkbox>, 'children'> {
     label: string;
     error?: string;
     hint?: string;
@@ -123,7 +164,7 @@ function CheckboxField({ label, error, hint, className, ...props }: CheckboxFiel
     return (
         <div className={cn('grid gap-2', className)}>
             <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" className="size-4 rounded border-border" {...props} />
+                <Checkbox {...props} />
                 <span>{label}</span>
             </label>
             {hint ? <p className="text-xs text-slate-500">{hint}</p> : null}

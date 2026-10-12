@@ -28,10 +28,8 @@ function DesktopNavItem({
 
     const sharedClassName = `group flex items-center gap-x-2 rounded-xl p-2 text-sm transition-all duration-300 ${
         isActive
-            ? 'border border-white/40 bg-white/30 font-medium text-blue-600 dark:border-gray-700/40 dark:bg-gray-800/30 dark:text-blue-400'
-            : isSticky
-              ? 'text-white hover:border hover:border-white/30 hover:bg-white/20'
-              : 'text-slate-700 hover:border hover:border-gray-200/30 hover:bg-white/20 dark:text-slate-300 dark:hover:border-gray-700/30 dark:hover:bg-gray-800/20'
+            ? 'border border-blue-500/30 bg-blue-500/10 font-medium text-blue-600 dark:border-blue-400/30 dark:bg-blue-400/10 dark:text-blue-400'
+            : 'text-slate-700 hover:border hover:border-gray-200/40 hover:bg-slate-100/60 dark:text-slate-200 dark:hover:border-gray-700/40 dark:hover:bg-gray-800/40'
     }`;
 
     return (

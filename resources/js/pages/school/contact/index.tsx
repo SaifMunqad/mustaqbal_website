@@ -1,6 +1,7 @@
 import { Form, Head, usePage } from '@inertiajs/react';
 import MainLayout from '@/layouts/app/main-layout';
 import { ReactNode } from 'react';
+import type { SiteSettings } from '@/types';
 
 interface ContactContent {
     phone_numbers?: string[];
@@ -15,16 +16,18 @@ interface ContactPageData {
 }
 
 function Contact() {
-    const { page } = usePage<{ page: ContactPageData }>().props;
-    const content = page.content ?? {};
+    const { page, site } = usePage<{ page: ContactPageData | null; site: SiteSettings }>().props;
+
+    const title = page?.title ?? site?.brand_name ?? '';
+    const content: ContactContent = page?.content ?? {};
 
     return (
         <>
-            <Head title={page.title} />
+            <Head title={title} />
 
             <section className="rounded-3xl bg-white p-6 shadow-sm dark:bg-gray-900 md:p-10">
                 <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-                    {page.title}
+                    {title}
                 </h1>
 
                 <div className="mt-6 grid gap-8 lg:grid-cols-2">

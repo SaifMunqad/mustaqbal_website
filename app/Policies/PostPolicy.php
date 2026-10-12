@@ -27,6 +27,10 @@ class PostPolicy
             return false;
         }
 
+        if ($user->role === UserRole::Admin) {
+            return true;
+        }
+
         if ($postType->isManagementOwned()) {
             return $user->role === UserRole::Management;
         }
@@ -36,6 +40,22 @@ class PostPolicy
         }
 
         return false;
+    }
+
+    public function update(User $user, Post $post): bool
+    {
+        if ($user->role->atLeast(UserRole::Management)) {
+            return true;
+        }
+
+        return $post->user_id === $user->id
+            && $post->type->isTeacherOwned()
+            && $user->isTeacher();
+    }
+
+    public function delete(User $user, Post $post): bool
+    {
+        return $this->update($user, $post);
     }
 
     public function interact(User $user, Post $post): bool

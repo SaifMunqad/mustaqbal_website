@@ -3,9 +3,11 @@ import {
     ChevronDownIcon,
     LanguageIcon,
 } from '@heroicons/react/24/outline';
+import { router, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { languageOptions, type LanguageCode } from '@/lib/navigation';
+import { setKnownLanguages } from '@/i18n';
+import type { LanguageOption, SharedData } from '@/types';
 
 interface LanguageSwitcherProps {
     isSticky: boolean;
@@ -18,7 +20,20 @@ export default function LanguageSwitcher({
 }: LanguageSwitcherProps) {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
-    const { i18n, t } = useTranslation();
+    const { i18n } = useTranslation();
+    const { languages } = usePage<SharedData>().props;
+
+    const available: LanguageOption[] =
+        languages?.available && languages.available.length > 0
+            ? languages.available
+            : [{ code: i18n.language, name: i18n.language.toUpperCase(), dir: 'ltr' }];
+
+    // Keep text direction / fallback in sync with the admin-managed languages.
+    useEffect(() => {
+        if (languages?.available?.length) {
+            setKnownLanguages(languages.available, languages.default);
+        }
+    }, [languages]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -36,28 +51,26 @@ export default function LanguageSwitcher({
         };
     }, [isOpen]);
 
-    const changeLanguage = (language: LanguageCode) => {
+    const changeLanguage = (language: string) => {
         void i18n.changeLanguage(language);
         setIsOpen(false);
+
+        // The SetLocale middleware reads the cookie to re-localize server-rendered
+        // content and the <html dir>, so reload after the switcher writes it.
+        router.reload();
     };
 
-    const currentLanguage = languageOptions.find(
-        ({ code }) => code === i18n.language,
-    )?.labelKey;
+    const currentLanguage = available.find(({ code }) => code === i18n.language);
 
     return (
         <div ref={menuRef} className={`relative ${className}`}>
             <button
                 type="button"
                 onClick={() => setIsOpen((value) => !value)}
-                className={`flex items-center gap-x-2 rounded-xl border p-2 text-sm transition-all duration-300 ${
-                    isSticky
-                        ? 'border-white/30 bg-white/20 text-white hover:bg-white/30'
-                        : 'border-gray-200/30 bg-white/20 text-slate-700 hover:bg-white/30 dark:border-gray-700/30 dark:bg-gray-800/20 dark:text-slate-300 dark:hover:bg-gray-800/30'
-                }`}
+                className="flex items-center gap-x-2 rounded-xl border border-gray-200/40 bg-white/20 p-2 text-sm text-slate-700 transition-all duration-300 hover:bg-white/40 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-300 dark:hover:bg-gray-800/40"
             >
                 <LanguageIcon className="h-4 w-4" />
-                <span>{currentLanguage ? t(currentLanguage) : t('language.label')}</span>
+                <span>{currentLanguage ? currentLanguage.name : 'Language'}</span>
                 <ChevronDownIcon
                     className={`h-3.5 w-3.5 transition-transform duration-200 ${
                         isOpen ? 'rotate-180' : ''
@@ -67,13 +80,9 @@ export default function LanguageSwitcher({
 
             {isOpen && (
                 <div
-                    className={`absolute right-0 z-50 mt-2 min-w-44 overflow-hidden rounded-xl border p-1 shadow-xl ${
-                        isSticky
-                            ? 'border-white/30 bg-white/20 backdrop-blur-lg'
-                            : 'border-gray-200/30 bg-white/20 backdrop-blur-lg dark:border-gray-700/30 dark:bg-gray-900/40'
-                    }`}
+                    className="absolute right-0 z-50 mt-2 min-w-44 overflow-hidden rounded-xl border border-gray-200/50 bg-white/95 p-1 shadow-xl backdrop-blur-xl dark:border-gray-700/50 dark:bg-gray-900/95"
                 >
-                    {languageOptions.map((option) => {
+                    {available.map((option) => {
                         const isActive = i18n.language === option.code;
 
                         return (
@@ -83,11 +92,11 @@ export default function LanguageSwitcher({
                                 onClick={() => changeLanguage(option.code)}
                                 className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-colors ${
                                     isActive
-                                        ? 'bg-white/40 text-blue-600 dark:bg-gray-800/50 dark:text-blue-400'
-                                        : 'hover:bg-white/30 dark:hover:bg-gray-800/30'
+                                        ? 'bg-blue-50 text-blue-600 dark:bg-gray-800/80 dark:text-blue-400'
+                                        : 'hover:bg-slate-100/80 dark:hover:bg-gray-800/40'
                                 }`}
                             >
-                                <span>{t(option.labelKey)}</span>
+                                <span>{option.name}</span>
                                 {isActive && <CheckIcon className="h-4 w-4" />}
                             </button>
                         );
@@ -97,4 +106,3 @@ export default function LanguageSwitcher({
         </div>
     );
 }
-

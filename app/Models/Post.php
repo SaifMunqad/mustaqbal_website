@@ -26,6 +26,9 @@ class Post extends Model
         'starts_at',
         'ends_at',
         'job_apply_url',
+        'featured',
+        'featured_from',
+        'featured_until',
     ];
 
     protected function casts(): array
@@ -37,6 +40,9 @@ class Post extends Model
             'scheduled_at' => 'datetime',
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
+            'featured' => 'boolean',
+            'featured_from' => 'datetime',
+            'featured_until' => 'datetime',
         ];
     }
 
@@ -60,19 +66,27 @@ class Post extends Model
         return $this->hasMany(Like::class);
     }
 
+    public function scopeFeaturedCurrently(Builder $query): Builder
+    {
+        return $query
+            ->where('featured', true)
+            ->where(fn (Builder $query): Builder => $query
+                ->whereNull('featured_from')
+                ->orWhere('featured_from', '<=', now()))
+            ->where(fn (Builder $query): Builder => $query
+                ->whereNull('featured_until')
+                ->orWhere('featured_until', '>=', now()));
+    }
+
     public function scopeVisibleTo(Builder $query, ?User $user): Builder
     {
         if ($user) {
             return $query;
         }
 
-        return $query
-            ->whereIn('type', [
-                PostType::News->value,
-                PostType::Job->value,
-                PostType::Event->value,
-            ])
-            ->where('visibility', PostVisibility::Public->value);
+        // Guests see posts explicitly marked public; recognition posts are included
+        // so honored students/teachers/staff appear on the public showcase.
+        return $query->where('visibility', PostVisibility::Public->value);
     }
 }
 

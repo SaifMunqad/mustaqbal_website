@@ -1,6 +1,7 @@
 import { Head, usePage } from '@inertiajs/react';
 import MainLayout from '@/layouts/app/main-layout';
 import { ReactNode } from 'react';
+import type { SiteSettings } from '@/types';
 
 interface AboutContent {
     vision?: string;
@@ -16,25 +17,27 @@ interface AboutPageData {
 }
 
 function About() {
-    const { page } = usePage<{ page: AboutPageData }>().props;
-    const content = page.content ?? {};
+    const { page, site } = usePage<{ page: AboutPageData | null; site: SiteSettings }>().props;
+    const content = page?.content ?? {};
+    const title = page?.title ?? site?.brand_name ?? '';
+    const heroImage = page?.hero_image ?? site?.home?.hero_image ?? null;
 
     return (
         <>
-            <Head title={page.title} />
+            <Head title={title} />
 
             <section className="overflow-hidden rounded-3xl bg-white shadow-sm dark:bg-gray-900">
-                {page.hero_image ? (
+                {heroImage ? (
                     <img
-                        src={page.hero_image}
-                        alt={page.title}
+                        src={heroImage}
+                        alt={title}
                         className="h-72 w-full object-cover"
                     />
                 ) : null}
 
                 <div className="space-y-6 p-6 md:p-10">
                     <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-                        {page.title}
+                        {title}
                     </h1>
 
                     {content.vision ? (

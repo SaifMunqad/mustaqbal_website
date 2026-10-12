@@ -1,5 +1,7 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import DocumentFrame from '@/components/editor/document-frame';
+import { CheckboxField, TextField } from '@/components/form-fields';
+import { Button } from '@/components/ui/button';
 import { useFormToast } from '@/components/use-form-toast';
 import { Form } from '@inertiajs/react';
 import articles from '@/routes/dashboard/articles';
@@ -23,19 +25,14 @@ export default function DashboardArticlesCreate() {
                     bodyLabel="Article body"
                 >
                     <div className="grid gap-4 md:grid-cols-2">
-                        <input name="title" required className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Title" />
-                        <input name="excerpt" className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Excerpt" />
-                        <input name="cover_image" className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 md:col-span-2" placeholder="Cover image URL" />
-                        <label className="flex items-center gap-2 text-sm text-foreground md:col-span-2">
-                            <input type="checkbox" name="is_published" value="1" className="size-4 rounded border-border" />
-                            Publish now
-                        </label>
+                        <TextField label="Title" name="title" required placeholder="Title" className="md:col-span-2" />
+                        <TextField label="Excerpt" name="excerpt" placeholder="Excerpt" />
+                        <TextField label="Cover image" name="cover_image" placeholder="Cover image URL" className="md:col-span-2" />
+                        <CheckboxField label="Publish now" name="is_published" value="1" className="md:col-span-2" />
                     </div>
                 </DocumentFrame>
 
-                <button className="w-fit rounded-xl bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700" type="submit">
-                    Save article
-                </button>
+                <Button type="submit">Save article</Button>
             </Form>
         </DashboardPage>
     );

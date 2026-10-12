@@ -1,5 +1,7 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import DocumentFrame from '@/components/editor/document-frame';
+import { CheckboxField, TextField } from '@/components/form-fields';
+import { Button } from '@/components/ui/button';
 import { useFormToast } from '@/components/use-form-toast';
 import { Form, usePage } from '@inertiajs/react';
 import articles from '@/routes/dashboard/articles';
@@ -34,19 +36,14 @@ export default function DashboardArticlesEdit() {
                     bodyLabel="Article body"
                 >
                     <div className="grid gap-4 md:grid-cols-2">
-                        <input name="title" required defaultValue={article.title} className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
-                        <input name="excerpt" defaultValue={article.excerpt ?? ''} className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" />
-                        <input name="cover_image" defaultValue={article.cover_image ?? ''} className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 md:col-span-2" placeholder="Cover image URL" />
-                        <label className="flex items-center gap-2 text-sm text-foreground md:col-span-2">
-                            <input type="checkbox" name="is_published" value="1" defaultChecked={article.is_published} className="size-4 rounded border-border" />
-                            Published
-                        </label>
+                        <TextField label="Title" name="title" required defaultValue={article.title} className="md:col-span-2" />
+                        <TextField label="Excerpt" name="excerpt" defaultValue={article.excerpt ?? ''} />
+                        <TextField label="Cover image" name="cover_image" defaultValue={article.cover_image ?? ''} placeholder="Cover image URL" className="md:col-span-2" />
+                        <CheckboxField label="Published" name="is_published" value="1" defaultChecked={article.is_published} className="md:col-span-2" />
                     </div>
                 </DocumentFrame>
 
-                <button className="w-fit rounded-xl bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700" type="submit">
-                    Update article
-                </button>
+                <Button type="submit">Update article</Button>
             </Form>
         </DashboardPage>
     );

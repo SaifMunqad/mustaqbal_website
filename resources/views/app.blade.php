@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 @php
     $locale = app()->getLocale();
-    $isRtlLocale = in_array($locale, ['ps', 'fa_AF', 'ar'], true);
+    $dir = \App\Models\Language::dirFor($locale);
+    $isRtlLocale = $dir === 'rtl';
 @endphp
-<html lang="{{ str_replace('_', '-', $locale) }}" data-app-font="{{ $isRtlLocale ? 'rubik' : 'tajawal' }}" @class(['dark' => ($appearance ?? 'system') == 'dark'])>
+<html lang="{{ str_replace('_', '-', $locale) }}" dir="{{ $dir }}" data-app-font="{{ $isRtlLocale ? 'rubik' : 'tajawal' }}" @class(['dark' => ($appearance ?? 'system') == 'dark'])>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">

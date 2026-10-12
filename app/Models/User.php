@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\UserRole;
+use App\Enums\UserStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -24,6 +25,7 @@ class User extends Authenticatable
         'name',
         'email',
         'role',
+        'status',
         'password',
     ];
 
@@ -49,6 +51,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'role' => UserRole::class,
+            'status' => UserStatus::class,
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
@@ -85,6 +88,16 @@ class User extends Authenticatable
         return $this->hasMany(Message::class);
     }
 
+    public function events(): HasMany
+    {
+        return $this->hasMany(Event::class);
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public function isTeacher(): bool
     {
         return $this->role === UserRole::Teacher;
@@ -93,5 +106,15 @@ class User extends Authenticatable
     public function isManagement(): bool
     {
         return $this->role === UserRole::Management;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === UserRole::Admin;
+    }
+
+    public function isSuspended(): bool
+    {
+        return $this->status === UserStatus::Suspended;
     }
 }

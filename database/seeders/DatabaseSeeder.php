@@ -9,6 +9,7 @@ use App\Models\Program;
 use App\Models\ProgramTranslation;
 use App\Models\ProgramTypeTranslation;
 use App\Models\SitePage;
+use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -19,16 +20,31 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Global, DB-driven site content (branding, home hero, contact, social).
+        // Only created when empty so admin edits are never overwritten on reseed.
+        if (SiteSetting::query()->count() === 0) {
+            SiteSetting::query()->create(SiteSetting::defaults());
+        }
+
         $languages = collect([
-            ['code' => 'ar', 'name' => 'Arabic'],
-            ['code' => 'ps', 'name' => 'Pashto'],
-            ['code' => 'en', 'name' => 'English'],
-            ['code' => 'fa_AF', 'name' => 'Dari'],
+            ['code' => 'en', 'name' => 'English', 'dir' => 'ltr', 'is_default' => true, 'sort_order' => 1],
+            ['code' => 'ps', 'name' => 'Pashto', 'dir' => 'rtl', 'is_default' => false, 'sort_order' => 2],
+            ['code' => 'fa_AF', 'name' => 'Dari', 'dir' => 'rtl', 'is_default' => false, 'sort_order' => 3],
         ])->mapWithKeys(function (array $language): array {
             $model = Language::query()->updateOrCreate(
                 ['code' => $language['code']],
-                ['name' => $language['name']],
+                [
+                    'name' => $language['name'],
+                    'dir' => $language['dir'],
+                    'is_active' => true,
+                    'is_default' => $language['is_default'],
+                    'sort_order' => $language['sort_order'],
+                ],
             );
+
+            if ($language['is_default']) {
+                $model->makeDefault();
+            }
 
             return [$language['code'] => $model];
         });
@@ -42,6 +58,23 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
+
+        // Default admin account, created only when seeded from the environment so
+        // credentials never live in the repository.
+        $adminEmail = env('SEED_ADMIN_EMAIL');
+        $adminPassword = env('SEED_ADMIN_PASSWORD');
+
+        if (filled($adminEmail) && filled($adminPassword)) {
+            User::firstOrCreate(
+                ['email' => $adminEmail],
+                [
+                    'name' => 'Site Admin',
+                    'role' => UserRole::Admin->value,
+                    'password' => $adminPassword,
+                    'email_verified_at' => now(),
+                ]
+            );
+        }
 
         SitePage::updateOrCreate(
             ['slug' => 'about'],
@@ -138,11 +171,6 @@ class DatabaseSeeder extends Seeder
                     'name' => $program['name'],
                     'description' => $program['description'],
                 ],
-                'ar' => match ($program['program_type']) {
-                    'school' => ['name' => 'برنامج المرحلة الابتدائية', 'description' => 'تعليم ابتدائي اساسي مع تعلم قائم على الانشطة.'],
-                    'courses' => ['name' => 'دورة اللغة الانجليزية', 'description' => 'دروس لغة انجليزية تركز على التواصل لفئة الشباب.'],
-                    default => ['name' => 'اساسيات المدرسة الاسلامية', 'description' => 'برنامج تأسيسي في القران والتجويد والدراسات الاسلامية.'],
-                },
                 'ps' => match ($program['program_type']) {
                     'school' => ['name' => 'د ابتدايي ښوونځي پروګرام', 'description' => 'بنسټيزه ابتدايي زده کړه د فعاليت-محور زده کړې سره.'],
                     'courses' => ['name' => 'د انګليسي ژبې کورس', 'description' => 'د ځوانانو لپاره د اړيکو-محور انګليسي ټولګي.'],
@@ -169,19 +197,16 @@ class DatabaseSeeder extends Seeder
         $programTypeTranslations = [
             'school' => [
                 'en' => 'School Programs',
-                'ar' => 'البرامج المدرسية',
                 'ps' => 'ښوونيز پروګرامونه',
                 'fa_AF' => 'برنامه هاي مکتب',
             ],
             'courses' => [
                 'en' => 'Courses',
-                'ar' => 'الدورات',
                 'ps' => 'کورسونه',
                 'fa_AF' => 'دوره ها',
             ],
             'islamic_madrasa' => [
                 'en' => 'Islamic Madrasa',
-                'ar' => 'المدرسة الاسلامية',
                 'ps' => 'اسلامي مدرسه',
                 'fa_AF' => 'مدرسه اسلامي',
             ],

@@ -1,7 +1,9 @@
 import '../css/app.css';
 
 import '@/i18n';
+import { bootstrapLanguage } from '@/i18n';
 import { ToastProvider } from '@/components/toast';
+import type { SharedData } from '@/types';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { StrictMode } from 'react';
@@ -18,6 +20,10 @@ createInertiaApp({
             import.meta.glob('./pages/**/*.tsx'),
         ),
     setup({ el, App, props }) {
+        // Seed the browser language cache from the server-resolved locale so a
+        // visitor's first-priority language is remembered across visits.
+        bootstrapLanguage((props as Partial<SharedData>).languages);
+
         const root = createRoot(el);
 
         root.render(

@@ -13,12 +13,12 @@ Route::prefix('community')->group(function () {
     Route::get('/posts', [PostController::class, 'index'])->name('community.posts.index');
     Route::get('/posts/{post}', [PostController::class, 'show'])->name('community.posts.show');
 
-    Route::post('/contact', [ContactController::class, 'store'])->name('community.contact.store');
-    Route::post('/enrollments', [EnrollmentController::class, 'store'])->name('community.enrollments.store');
+    Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:public-forms')->name('community.contact.store');
+    Route::post('/enrollments', [EnrollmentController::class, 'store'])->middleware('throttle:public-forms')->name('community.enrollments.store');
     Route::post('/enrollments/resend-email', [EnrollmentController::class, 'resendEmail'])
         ->name('community.enrollments.resend-email');
 
-    Route::middleware(['auth', 'verified'])->group(function () {
+    Route::middleware(['auth', 'verified', 'active'])->group(function () {
         Route::post('/posts', [PostController::class, 'store'])
             ->middleware('role:teacher,management')
             ->name('community.posts.store');

@@ -1,4 +1,6 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
+import { TextAreaField, TextField } from '@/components/form-fields';
+import { Button } from '@/components/ui/button';
 import { Form, usePage } from '@inertiajs/react';
 
 interface Contact {
@@ -22,13 +24,15 @@ export default function DashboardContactsEdit() {
     return (
         <DashboardPage titleKey="dashboard.contacts.editTitle">
             <Form action={`/dashboard/contacts/${contact.id}`} method="put" className="grid gap-3 rounded-xl border p-4">
-                <input name="name" required defaultValue={contact.name} className="rounded border p-2" />
-                <input name="email" type="email" required defaultValue={contact.email} className="rounded border p-2" />
-                <input name="phone" defaultValue={contact.phone ?? ''} className="rounded border p-2" />
-                <input name="subject" defaultValue={contact.subject ?? ''} className="rounded border p-2" />
-                <textarea name="message" required defaultValue={contact.message} className="h-32 rounded border p-2" />
-                <input name="resolved_at" type="datetime-local" defaultValue={toDateTimeInput(contact.resolved_at)} className="rounded border p-2" />
-                <button className="w-fit rounded bg-blue-600 px-4 py-2 text-white" type="submit">Update</button>
+                <TextField label="Name" name="name" required defaultValue={contact.name} />
+                <TextField label="Email" name="email" type="email" required defaultValue={contact.email} />
+                <TextField label="Phone" name="phone" defaultValue={contact.phone ?? ''} />
+                <TextField label="Subject" name="subject" defaultValue={contact.subject ?? ''} />
+                <TextAreaField label="Message" name="message" required defaultValue={contact.message} />
+                <TextField label="Resolved at" name="resolved_at" type="datetime-local" defaultValue={toDateTimeInput(contact.resolved_at)} />
+                <Button className="w-fit" type="submit">
+                    Update
+                </Button>
             </Form>
         </DashboardPage>
     );

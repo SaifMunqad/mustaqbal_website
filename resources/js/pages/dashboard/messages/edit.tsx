@@ -1,5 +1,6 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { SelectField, TextAreaField, TextField } from '@/components/form-fields';
+import { Button } from '@/components/ui/button';
 import { useFormToast } from '@/components/use-form-toast';
 import { Form, usePage } from '@inertiajs/react';
 import messages from '@/routes/dashboard/messages';
@@ -39,23 +40,31 @@ export default function DashboardMessagesEdit() {
     return (
         <DashboardPage titleKey="dashboard.messages.editTitle">
             <Form {...messages.update.form(message.id)} onError={onError} className="grid gap-3 rounded-xl border p-4">
-                <SelectField label="Conversation" name="conversation_id" required defaultValue={String(message.conversation_id)}>
-                    {conversations.map((conversation) => (
-                        <option key={conversation.id} value={conversation.id}>
-                            {conversation.topic ?? `Conversation ${conversation.id}`}
-                        </option>
-                    ))}
-                </SelectField>
-                <SelectField label="Author" name="user_id" required defaultValue={String(message.user_id)}>
-                    {users.map((user) => (
-                        <option key={user.id} value={user.id}>
-                            {user.name} ({user.role})
-                        </option>
-                    ))}
-                </SelectField>
+                <SelectField
+                    label="Conversation"
+                    name="conversation_id"
+                    required
+                    defaultValue={String(message.conversation_id)}
+                    options={conversations.map((conversation) => ({
+                        value: String(conversation.id),
+                        label: conversation.topic ?? `Conversation ${conversation.id}`,
+                    }))}
+                />
+                <SelectField
+                    label="Author"
+                    name="user_id"
+                    required
+                    defaultValue={String(message.user_id)}
+                    options={users.map((user) => ({
+                        value: String(user.id),
+                        label: `${user.name} (${user.role})`,
+                    }))}
+                />
                 <TextAreaField label="Message" name="body" required defaultValue={message.body} className="h-36" />
                 <TextField label="Read at" name="read_at" type="datetime-local" defaultValue={toDateTimeInput(message.read_at)} />
-                <button className="w-fit rounded bg-blue-600 px-4 py-2 text-white" type="submit">Update</button>
+                <Button className="w-fit" type="submit">
+                    Update
+                </Button>
             </Form>
         </DashboardPage>
     );

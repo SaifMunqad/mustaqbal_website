@@ -40,6 +40,8 @@ class DashboardArticleController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        $this->authorize('create', Article::class);
+
         $request->merge([
             'images' => array_values(array_filter($request->input('images', []), static fn ($image) => filled($image))),
         ]);
@@ -79,6 +81,8 @@ class DashboardArticleController extends Controller
 
     public function update(Request $request, Article $article): RedirectResponse
     {
+        $this->authorize('update', $article);
+
         $request->merge([
             'images' => array_values(array_filter($request->input('images', []), static fn ($image) => filled($image))),
         ]);

@@ -2,14 +2,18 @@ import {
     AcademicCapIcon,
     BookOpenIcon,
     BuildingLibraryIcon,
+    CalendarDaysIcon,
     ClipboardDocumentCheckIcon,
     EnvelopeIcon,
     HomeIcon,
+    MagnifyingGlassIcon,
     PhoneIcon,
+    ShoppingBagIcon,
+    TrophyIcon,
 } from '@heroicons/react/24/outline';
 import { ComponentType } from 'react';
 
-export type LanguageCode = 'en' | 'ps' | 'fa_AF' | 'ar';
+export type LanguageCode = string;
 
 export interface NavigationChildItem {
     key: string;
@@ -71,6 +75,22 @@ export const navigationItems: NavigationItem[] = [
                 icon: AcademicCapIcon,
             },
             {
+                key: 'showcase',
+                name: 'Showcase',
+                nameKey: 'navigation.showcase',
+                descriptionKey: 'navigationDescriptions.showcase',
+                href: '/school/showcase',
+                icon: TrophyIcon,
+            },
+            {
+                key: 'events',
+                name: 'Events',
+                nameKey: 'navigation.events',
+                descriptionKey: 'navigationDescriptions.events',
+                href: '/school/events',
+                icon: CalendarDaysIcon,
+            },
+            {
                 key: 'articles',
                 name: 'Articles',
                 nameKey: 'navigation.articles',
@@ -104,6 +124,27 @@ export const navigationItems: NavigationItem[] = [
         icon: BookOpenIcon,
     },
     {
+        key: 'events',
+        name: 'Events',
+        nameKey: 'navigation.events',
+        href: '/school/events',
+        icon: CalendarDaysIcon,
+    },
+    {
+        key: 'store',
+        name: 'Bookstore',
+        nameKey: 'navigation.store',
+        href: '/store',
+        icon: ShoppingBagIcon,
+    },
+    {
+        key: 'search',
+        name: 'Search',
+        nameKey: 'navigation.search',
+        href: '/school/search',
+        icon: MagnifyingGlassIcon,
+    },
+    {
         key: 'contact',
         name: 'Contact',
         nameKey: 'navigation.contact',
@@ -129,6 +170,9 @@ export const footerSections: FooterSection[] = [
                 href: '/school/articles',
             },
             { key: 'enroll', labelKey: 'navigation.enroll', href: '/school/enroll' },
+            { key: 'showcase', labelKey: 'navigation.showcase', href: '/school/showcase' },
+            { key: 'events', labelKey: 'navigation.events', href: '/school/events' },
+            { key: 'store', labelKey: 'navigation.store', href: '/store' },
         ],
     },
     {
@@ -160,11 +204,4 @@ export const footerSections: FooterSection[] = [
             },
         ],
     },
-];
-
-export const languageOptions: Array<{ code: LanguageCode; labelKey: string }> = [
-    { code: 'en', labelKey: 'language.english' },
-    { code: 'ps', labelKey: 'language.pashto' },
-    { code: 'fa_AF', labelKey: 'language.dari' },
-    { code: 'ar', labelKey: 'language.arabic' },
 ];

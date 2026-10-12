@@ -20,6 +20,11 @@ class EnsureUserHasRole
             abort(401);
         }
 
+        // Admins pass every role gate.
+        if ($user->role === UserRole::Admin) {
+            return $next($request);
+        }
+
         $allowedRoles = array_filter($roles, static fn (string $role): bool => in_array($role, UserRole::values(), true));
 
         if ($allowedRoles === []) {
