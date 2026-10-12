@@ -15,23 +15,21 @@ class Book extends Model
         'title',
         'slug',
         'author',
+        'published_year',
+        'publisher',
         'isbn',
         'description',
-        'price_afn',
-        'stock',
-        'cover_image',
         'images',
+        'file_path',
+        'thumbnail_path',
         'book_category_id',
-        'is_available',
     ];
 
     protected function casts(): array
     {
         return [
-            'price_afn' => 'decimal:2',
-            'stock' => 'integer',
+            'published_year' => 'integer',
             'images' => 'array',
-            'is_available' => 'boolean',
         ];
     }
 
@@ -40,9 +38,13 @@ class Book extends Model
         return $this->belongsTo(BookCategory::class, 'book_category_id');
     }
 
-    public function scopePurchasable(Builder $query): Builder
+    /**
+     * A book is downloadable once its PDF file is present. Availability no
+     * longer depends on stock/pricing since books are offered for free.
+     */
+    public function isDownloadable(): bool
     {
-        return $query->where('is_available', true)->where('stock', '>', 0);
+        return filled($this->file_path);
     }
 
     public function scopeSearch(Builder $query, ?string $term): Builder
@@ -56,39 +58,9 @@ class Book extends Model
         return $query->where(function (Builder $inner) use ($term): void {
             $inner->where('title', 'like', "%{$term}%")
                 ->orWhere('author', 'like', "%{$term}%")
-                ->orWhere('isbn', 'like', "%{$term}%");
+                ->orWhere('publisher', 'like', "%{$term}%")
+                ->orWhere('isbn', 'like', "%{$term}%")
+                ->orWhere('published_year', 'like', "%{$term}%");
         });
-    }
-
-    public function isPurchasable(): bool
-    {
-        return $this->is_available && $this->stock > 0;
-    }
-
-    /**
-     * Reduce stock, never dropping below zero. Returns true when at least one
-     * unit was available and decremented. The `stock >= quantity` guard makes
-     * this an atomic conditional update.
-     */
-    public function decrementStock(int $quantity): bool
-    {
-        $affected = $this->newQuery()
-            ->whereKey($this->id)
-            ->where('stock', '>=', $quantity)
-            ->decrement('stock', $quantity);
-
-        if ($affected > 0) {
-            $this->refresh();
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public function restoreStock(int $quantity): void
-    {
-        $this->newQuery()->whereKey($this->id)->increment('stock', $quantity);
-        $this->refresh();
     }
 }
