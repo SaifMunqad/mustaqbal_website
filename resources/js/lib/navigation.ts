@@ -6,6 +6,7 @@ import {
     ClipboardDocumentCheckIcon,
     EnvelopeIcon,
     HomeIcon,
+    MagnifyingGlassIcon,
     PhoneIcon,
     ShoppingBagIcon,
     TrophyIcon,
@@ -125,6 +126,13 @@ export const navigationItems: NavigationItem[] = [
         nameKey: 'navigation.store',
         href: '/store',
         icon: ShoppingBagIcon,
+    },
+    {
+        key: 'search',
+        name: 'Search',
+        nameKey: 'navigation.search',
+        href: '/school/search',
+        icon: MagnifyingGlassIcon,
     },
     {
         key: 'contact',

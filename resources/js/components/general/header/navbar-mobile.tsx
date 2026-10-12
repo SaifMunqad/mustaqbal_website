@@ -34,7 +34,7 @@ function MobileDropdown({
 
     return (
         <div
-            className={`mt-2 ml-6 space-y-1 overflow-hidden rounded-xl ${
+            className={`mt-2 ms-6 space-y-1 overflow-hidden rounded-xl ${
                 isSticky
                     ? 'bg-white/15 backdrop-blur-lg'
                     : 'bg-white/10 backdrop-blur-lg dark:bg-gray-800/10'

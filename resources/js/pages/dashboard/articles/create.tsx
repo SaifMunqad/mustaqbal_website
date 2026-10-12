@@ -27,7 +27,7 @@ export default function DashboardArticlesCreate() {
     const { i18n } = useTranslation();
     const { languages } = usePage<SharedData>().props;
 
-    const available = languages?.available ?? [];
+    const available = useMemo(() => languages?.available ?? [], [languages]);
     const languageOptions = useMemo(
         () => available.map((language) => ({ value: language.code, label: language.name })),
         [available],

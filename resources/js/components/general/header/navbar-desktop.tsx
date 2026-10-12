@@ -1,6 +1,6 @@
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { Link } from '@inertiajs/react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Dropdown from '@/components/general/header/nav-dropdown';
 import { isNavigationItemActive } from '@/components/general/header/navbar-utils';
@@ -22,6 +22,7 @@ function DesktopNavItem({
     isSticky: boolean;
 }) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
     const { t } = useTranslation();
     const Icon = item.icon;
     const isActive = isNavigationItemActive(item, currentUrl);
@@ -42,7 +43,7 @@ function DesktopNavItem({
     return (
         <li className="relative">
             {item.dropdown ? (
-                <div className="relative">
+                <div className="relative" ref={containerRef}>
                     <button
                         type="button"
                         onClick={() => setIsDropdownOpen((value) => !value)}
@@ -64,6 +65,7 @@ function DesktopNavItem({
                         isOpen={isDropdownOpen}
                         onClose={() => setIsDropdownOpen(false)}
                         isSticky={isSticky}
+                        containerRef={containerRef}
                     />
                 </div>
             ) : (

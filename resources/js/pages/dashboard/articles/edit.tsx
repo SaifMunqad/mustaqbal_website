@@ -42,7 +42,7 @@ export default function DashboardArticlesEdit() {
     const { onError } = useFormToast('Article updated successfully.');
     const { i18n } = useTranslation();
 
-    const available = languages?.available ?? [];
+    const available = useMemo(() => languages?.available ?? [], [languages]);
     const languageOptions = useMemo(
         () => available.map((language) => ({ value: language.code, label: language.name })),
         [available],

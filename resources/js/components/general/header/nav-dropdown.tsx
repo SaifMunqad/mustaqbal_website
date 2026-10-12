@@ -1,6 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import { useEffect, useRef } from 'react';
+import { RefObject, useEffect, useRef } from 'react';
 import type { NavigationChildItem } from '@/lib/navigation';
 
 export default function Dropdown({
@@ -8,23 +8,26 @@ export default function Dropdown({
     isOpen,
     onClose,
     isSticky,
+    containerRef,
 }: {
     items: NavigationChildItem[];
     isOpen: boolean;
     onClose: () => void;
     isSticky: boolean;
+    // A ref wrapping both the trigger button and the dropdown panel so that
+    // clicking the trigger toggles cleanly instead of being treated as an
+    // outside click (which would close then immediately re-open it).
+    containerRef?: RefObject<HTMLDivElement | null>;
 }) {
     const dropdownRef = useRef<HTMLDivElement>(null);
     const { url } = usePage();
     const { t } = useTranslation();
 
-    // Close dropdown when clicking outside
+    // Close dropdown when clicking outside the trigger + panel container.
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target as Node)
-            ) {
+            const container = containerRef?.current ?? dropdownRef.current;
+            if (container && !container.contains(event.target as Node)) {
                 onClose();
             }
         };
@@ -36,14 +39,14 @@ export default function Dropdown({
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isOpen, onClose]);
+    }, [isOpen, onClose, containerRef]);
 
     if (!isOpen) return null;
 
     return (
         <div
             ref={dropdownRef}
-            className="absolute left-0 z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-gray-200/50 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-gray-700/50 dark:bg-gray-900/95"
+            className="absolute start-0 z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-gray-200/50 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-gray-700/50 dark:bg-gray-900/95"
         >
             <div className="p-1">
                 {items.map((item) => {
@@ -95,7 +98,7 @@ export default function Dropdown({
                             </div>
 
                             {isActive && (
-                                <div className="ml-2 h-4 w-1 rounded-full bg-blue-500/50" />
+                                <div className="ms-2 h-4 w-1 rounded-full bg-blue-500/50" />
                             )}
                         </Link>
                     );

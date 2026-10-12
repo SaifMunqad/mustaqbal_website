@@ -1,4 +1,4 @@
-import { Bars3Icon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon } from '@heroicons/react/24/outline';
 import { Link, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import LanguageSwitcher from '@/components/general/header/language-switcher';
@@ -65,27 +65,11 @@ export default function Navbar() {
                                 Login
                             </Link>
                         ) : null}
-                        <Link
-                            href="/school/search"
-                            aria-label="Search"
-                            title="Search"
-                            className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200/40 bg-white/20 text-slate-700 transition-all duration-300 hover:bg-white/40 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-200 dark:hover:bg-gray-800/40"
-                        >
-                            <MagnifyingGlassIcon className="h-5 w-5" />
-                        </Link>
                         <LanguageSwitcher isSticky={isSticky} />
                     </div>
                 </div>
 
                 <div className="flex items-center gap-2 lg:hidden">
-                    <Link
-                        href="/school/search"
-                        aria-label="Search"
-                        title="Search"
-                        className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200/40 bg-white/20 text-slate-700 transition-all duration-300 hover:bg-white/40 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-200 dark:hover:bg-gray-800/40"
-                    >
-                        <MagnifyingGlassIcon className="h-5 w-5" />
-                    </Link>
                     <LanguageSwitcher isSticky={isSticky} />
                     <button
                         onClick={() => setMobileMenuOpen((value) => !value)}
