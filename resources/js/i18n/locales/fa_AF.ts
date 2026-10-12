@@ -76,6 +76,12 @@ const faAF = {
         until: 'پايان',
         moreUpcoming: 'پېښه های پيش روی ديگر',
     },
+    articles: {
+        title: 'مقالات',
+        readArticle: 'خواندن مقاله',
+        defaultAuthor: 'تیم مستقبل',
+        empty: 'هنوز هیچ مقاله ی منتشر نشده است.',
+    },
     store: {
         title: 'کتاب خانه',
         subtitle: 'کتاب ها و مواد مطالعه ی مکتب را ببينيد و رایگان دانلود کنيد.',

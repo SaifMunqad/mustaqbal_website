@@ -76,6 +76,12 @@ const ps = {
         until: 'پای',
         moreUpcoming: 'نورې راتلونکې پېښې',
     },
+    articles: {
+        title: 'مقالې',
+        readArticle: 'مقاله ولولئ',
+        defaultAuthor: 'د تیم مستقبل',
+        empty: 'تر اوسه هیڅ مقاله خپره شوې نه ده.',
+    },
     store: {
         title: 'کتابتون',
         subtitle: 'د ښوونځي کتابونه او د لوستلو توکي وګورئ او وړیا یې ښکته کړئ.',

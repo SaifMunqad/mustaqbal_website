@@ -76,6 +76,12 @@ const en = {
         until: 'Ends',
         moreUpcoming: 'More upcoming events',
     },
+    articles: {
+        title: 'Articles',
+        readArticle: 'Read article',
+        defaultAuthor: 'Mustaqbal Team',
+        empty: 'No articles published yet.',
+    },
     store: {
         title: 'Book Library',
         subtitle: 'Browse and download school books and reading materials for free.',

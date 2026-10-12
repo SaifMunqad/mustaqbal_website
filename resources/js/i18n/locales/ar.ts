@@ -72,6 +72,12 @@ const ar = {
         until: 'ينتهي',
         moreUpcoming: 'المزيد من الفعاليات القادمة',
     },
+    articles: {
+        title: 'المقالات',
+        readArticle: 'اقرأ المقال',
+        defaultAuthor: 'فريق مستقبل',
+        empty: 'لا توجد مقالات منشورة بعد.',
+    },
     store: {
         title: 'مكتبة الكتب',
         subtitle: 'تصفح وحمّل كتب ومواد المدرسة الدراسية مجانًا.',
