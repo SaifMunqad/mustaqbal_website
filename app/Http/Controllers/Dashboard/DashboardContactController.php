@@ -39,7 +39,7 @@ class DashboardContactController extends Controller
 
         return redirect()
             ->route('dashboard.contacts.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Contact created successfully.']);
+            ->with('success', 'Contact created successfully.');
     }
 
     public function edit(Contact $contact): Response
@@ -64,7 +64,7 @@ class DashboardContactController extends Controller
 
         return redirect()
             ->route('dashboard.contacts.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Contact updated successfully.']);
+            ->with('success', 'Contact updated successfully.');
     }
 }
 

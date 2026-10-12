@@ -13,10 +13,10 @@ interface NavbarDesktopProps {
 }
 
 function DesktopNavItem({
-    item,
-    currentUrl,
-    isSticky,
-}: {
+                            item,
+                            currentUrl,
+                            isSticky,
+                        }: {
     item: NavigationItem;
     currentUrl: string;
     isSticky: boolean;
@@ -26,10 +26,17 @@ function DesktopNavItem({
     const Icon = item.icon;
     const isActive = isNavigationItemActive(item, currentUrl);
 
-    const sharedClassName = `group flex items-center gap-x-2 rounded-xl p-2 text-sm transition-all duration-300 ${
+    const sharedClassName = `group flex items-center gap-x-2 rounded-xl py-1 px-4 text-sm transition-all duration-300 ${
         isActive
             ? 'border border-blue-500/30 bg-blue-500/10 font-medium text-blue-600 dark:border-blue-400/30 dark:bg-blue-400/10 dark:text-blue-400'
-            : 'text-slate-700 hover:border hover:border-gray-200/40 hover:bg-slate-100/60 dark:text-slate-200 dark:hover:border-gray-700/40 dark:hover:bg-gray-800/40'
+            : 'text-slate-700 border border-transparent hover:border-gray-200/40 hover:bg-slate-100/60 dark:text-slate-200 dark:hover:border-gray-700/40 dark:hover:bg-gray-800/40'
+    }`;
+
+    // Reusable icon wrapper styles for consistency
+    const iconWrapperClassName = `flex items-center justify-center rounded-lg p-1 transition-colors duration-300 ${
+        isActive
+            ? 'bg-white/40 dark:bg-gray-800/40'
+            : 'bg-white/20 group-hover:bg-white/30 dark:bg-gray-800/20 dark:group-hover:bg-gray-800/30'
     }`;
 
     return (
@@ -41,14 +48,8 @@ function DesktopNavItem({
                         onClick={() => setIsDropdownOpen((value) => !value)}
                         className={sharedClassName}
                     >
-                        <div
-                            className={`rounded-lg p-1.5 transition-colors duration-300 ${
-                                isActive
-                                    ? 'bg-white/40 dark:bg-gray-800/40'
-                                    : 'bg-white/20 group-hover:bg-white/30 dark:bg-gray-800/20 dark:group-hover:bg-gray-800/30'
-                            }`}
-                        >
-                            <Icon className="h-4 w-4" />
+                        <div className={iconWrapperClassName}>
+                            <Icon className="size-4" />
                         </div>
                         <span>{t(item.nameKey)}</span>
                         <ChevronDownIcon
@@ -67,14 +68,8 @@ function DesktopNavItem({
                 </div>
             ) : (
                 <Link href={item.href} className={sharedClassName}>
-                    <div
-                        className={`rounded-lg p-1.5 transition-colors duration-300 ${
-                            isActive
-                                ? 'bg-white/40 dark:bg-gray-800/40'
-                                : 'bg-white/20 group-hover:bg-white/30 dark:bg-gray-800/20 dark:group-hover:bg-gray-800/30'
-                        }`}
-                    >
-                        <Icon className="h-4 w-4" />
+                    <div className={iconWrapperClassName}>
+                        <Icon className="size-4" />
                     </div>
                     <span>{t(item.nameKey)}</span>
                 </Link>
@@ -84,10 +79,10 @@ function DesktopNavItem({
 }
 
 export default function NavbarDesktop({
-    items,
-    currentUrl,
-    isSticky,
-}: NavbarDesktopProps) {
+                                          items,
+                                          currentUrl,
+                                          isSticky,
+                                      }: NavbarDesktopProps) {
     return (
         <div className="hidden lg:block">
             <ul className="flex items-center gap-1">
@@ -103,4 +98,3 @@ export default function NavbarDesktop({
         </div>
     );
 }
-

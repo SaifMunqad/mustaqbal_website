@@ -47,7 +47,7 @@ class DashboardSitePageController extends Controller
 
         return redirect()
             ->route('dashboard.site-pages.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Page created successfully.']);
+            ->with('success', 'Page created successfully.');
     }
 
     public function edit(SitePage $sitePage): Response
@@ -80,7 +80,7 @@ class DashboardSitePageController extends Controller
 
         return redirect()
             ->route('dashboard.site-pages.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Page updated successfully.']);
+            ->with('success', 'Page updated successfully.');
     }
 }
 

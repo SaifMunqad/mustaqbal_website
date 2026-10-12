@@ -57,7 +57,7 @@ class DashboardBookController extends Controller
 
         return redirect()
             ->route('dashboard.books.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Book created.']);
+            ->with('success', 'Book created.');
     }
 
     public function edit(Book $book): Response
@@ -80,7 +80,7 @@ class DashboardBookController extends Controller
 
         return redirect()
             ->route('dashboard.books.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Book updated.']);
+            ->with('success', 'Book updated.');
     }
 
     public function destroy(Book $book): RedirectResponse
@@ -89,7 +89,7 @@ class DashboardBookController extends Controller
 
         return redirect()
             ->route('dashboard.books.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Book deleted.']);
+            ->with('success', 'Book deleted.');
     }
 
     private function validateBook(Request $request): array

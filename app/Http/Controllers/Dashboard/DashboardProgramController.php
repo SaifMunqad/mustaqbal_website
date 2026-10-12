@@ -64,7 +64,7 @@ class DashboardProgramController extends Controller
 
         return redirect()
             ->route('dashboard.programs.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Program created successfully.']);
+            ->with('success', 'Program created successfully.');
     }
 
     public function edit(Program $program): Response
@@ -98,7 +98,7 @@ class DashboardProgramController extends Controller
 
         return redirect()
             ->route('dashboard.programs.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Program updated successfully.']);
+            ->with('success', 'Program updated successfully.');
     }
 }
 

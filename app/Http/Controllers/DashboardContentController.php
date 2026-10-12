@@ -29,7 +29,7 @@ class DashboardContentController extends Controller
             'is_published' => ! empty($validated['is_published']),
         ]);
 
-        return back()->with('toast', ['variant' => 'success', 'title' => 'Article saved successfully.']);
+        return back()->with('success', 'Article saved successfully.');
     }
 
     public function storeProgram(Request $request): RedirectResponse
@@ -54,7 +54,7 @@ class DashboardContentController extends Controller
 
         $program->syncDefaultTranslation();
 
-        return back()->with('toast', ['variant' => 'success', 'title' => 'Program saved successfully.']);
+        return back()->with('success', 'Program saved successfully.');
     }
 
     public function upsertPage(Request $request): RedirectResponse
@@ -83,7 +83,7 @@ class DashboardContentController extends Controller
             ],
         );
 
-        return back()->with('toast', ['variant' => 'success', 'title' => 'Page saved successfully.']);
+        return back()->with('success', 'Page saved successfully.');
     }
 }
 

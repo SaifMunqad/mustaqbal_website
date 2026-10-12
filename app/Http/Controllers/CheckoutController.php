@@ -27,7 +27,7 @@ class CheckoutController extends Controller
         if ($this->cart->content()->isEmpty()) {
             return redirect()
                 ->route('store.index')
-                ->with('toast', ['variant' => 'error', 'title' => 'Your cart is empty.']);
+                ->with('error', 'Your cart is empty.');
         }
 
         return Inertia::render('school/store/checkout', [
@@ -49,8 +49,7 @@ class CheckoutController extends Controller
         } catch (InsufficientStockException $exception) {
             return redirect()
                 ->route('store.checkout')
-                ->with('toast', [
-                    'variant' => 'error',
+                ->with('error', [
                     'title' => 'Some items are no longer available.',
                     'description' => implode(', ', $exception->titles),
                 ]);

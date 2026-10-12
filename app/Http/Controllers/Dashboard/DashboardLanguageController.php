@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Language;
+use App\Support\Flash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -51,9 +52,9 @@ class DashboardLanguageController extends Controller
             'sort_order' => $validated['sort_order'] ?? 0,
         ]);
 
-        return redirect()
-            ->route('dashboard.languages.index')
-            ->with('toast', ['variant' => 'success', 'title' => "Language {$language->name} created."]);
+        Flash::notification("Language {$language->name} created.");
+
+        return redirect()->route('dashboard.languages.index');
     }
 
     public function update(Request $request, Language $language): RedirectResponse
@@ -76,9 +77,9 @@ class DashboardLanguageController extends Controller
 
         $language->makeDefault();
 
-        return redirect()
-            ->route('dashboard.languages.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Language updated.']);
+        Flash::notification('Language updated.');
+
+        return redirect()->route('dashboard.languages.index');
     }
 
     public function reorder(Request $request): RedirectResponse
@@ -89,24 +90,34 @@ class DashboardLanguageController extends Controller
         ]);
 
         foreach ($validated['order'] as $index => $id) {
-            Language::query()->whereKey($id)->update(['sort_order' => $index]);
+            Language::query()->whereKey($id)->update([
+                'sort_order' => $index,
+                // The top row becomes the default fallback language; dragging a
+                // language up therefore also promotes it to default.
+                'is_default' => $index === 0,
+            ]);
         }
 
-        return back()->with('toast', ['variant' => 'success', 'title' => 'Language order saved.']);
+        // Query-builder updates skip the model events, so refresh the cache.
+        Language::flushCache();
+
+        Flash::notification('Language order saved.');
+
+        return back();
     }
 
     public function destroy(Language $language): RedirectResponse
     {
         if ($language->is_default) {
-            return redirect()
-                ->route('dashboard.languages.index')
-                ->with('toast', ['variant' => 'error', 'title' => 'The default language cannot be deleted.']);
+            Flash::notification('The default language cannot be deleted.', 'error');
+
+            return redirect()->route('dashboard.languages.index');
         }
 
         $language->delete();
 
-        return redirect()
-            ->route('dashboard.languages.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Language deleted.']);
+        Flash::notification('Language deleted.');
+
+        return redirect()->route('dashboard.languages.index');
     }
 }

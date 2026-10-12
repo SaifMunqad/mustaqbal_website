@@ -80,7 +80,7 @@ class DashboardPostController extends Controller
 
         return redirect()
             ->route('dashboard.posts.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Post created successfully.']);
+            ->with('success', 'Post created successfully.');
     }
 
     public function edit(Request $request, Post $post): Response
@@ -130,7 +130,7 @@ class DashboardPostController extends Controller
 
         return redirect()
             ->route('dashboard.posts.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Post updated successfully.']);
+            ->with('success', 'Post updated successfully.');
     }
 }
 

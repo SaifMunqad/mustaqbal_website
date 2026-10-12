@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use App\Models\Language;
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 
 class SetLocale
@@ -40,17 +39,11 @@ class SetLocale
         $response = $next($request);
 
         if ($isNewVisitor && in_array($locale, $active, true)) {
-            $response->headers->setCookie(Cookie::make(
-                self::COOKIE,
-                $locale,
-                time() + (self::COOKIE_MINUTES * 60),
-                '/',
-                null,
-                $request->secure(),
-                false,
-                false,
-                'Lax',
-            ));
+            // Use Laravel's cookie helper (the Symfony Cookie class has no static
+            // factory). The cookie is excluded from encryption elsewhere.
+            $response->headers->setCookie(
+                cookie(self::COOKIE, $locale, self::COOKIE_MINUTES, '/', null, $request->secure(), false, false, 'Lax')
+            );
         }
 
         return $response;

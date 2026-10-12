@@ -4,8 +4,10 @@ namespace App\Http\Middleware;
 
 use App\Models\Language;
 use App\Support\Cart;
+use App\Support\Flash;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Models\SiteSetting;
 use Inertia\Middleware;
 
@@ -46,7 +48,7 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'flash' => [
-                'toast' => $request->session()->get('toast'),
+                'notification' => fn () => $this->notification($request),
             ],
             'auth' => [
                 'user' => $request->user(),
@@ -60,6 +62,69 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
+    }
+
+    /**
+     * Normalize the flashed notification into a single, de-duplicatable payload.
+     *
+     * Controllers emit a message with the simplest possible form:
+     *     return back()->with('success', 'Saved!');
+     *     return back()->with('error', "Can't do that");
+     *     return back()->with('info', 'translate.contact.form.success');
+     *
+     * The message may be a plain string or an i18n key (resolved on the client),
+     * or an array carrying a `description`. A stable id is stamped here so the
+     * frontend can show each notification exactly once. Legacy `toast` payloads
+     * are still understood during the migration.
+     *
+     * @return array{id: string, variant: string, title: string, description: string|null}|null
+     */
+    private function notification(Request $request): ?array
+    {
+        $session = $request->session();
+
+        foreach (['success', 'error', 'info'] as $variant) {
+            if (! $session->has($variant)) {
+                continue;
+            }
+
+            $payload = $session->get($variant);
+
+            if (is_array($payload)) {
+                $title = (string) ($payload['title'] ?? ($payload['message'] ?? ''));
+                $description = isset($payload['description']) ? (string) $payload['description'] : null;
+            } else {
+                $title = (string) $payload;
+                $description = null;
+            }
+
+            if ($title === '') {
+                continue;
+            }
+
+            return [
+                'id' => (string) Str::uuid(),
+                'variant' => $variant,
+                'title' => $title,
+                'description' => $description,
+            ];
+        }
+
+        // Legacy support: ->with('toast', ['variant' => ..., 'title' => ...]).
+        if ($legacy = $session->get('toast')) {
+            $variant = in_array($legacy['variant'] ?? 'info', ['success', 'error', 'info'], true)
+                ? $legacy['variant']
+                : 'info';
+
+            return [
+                'id' => (string) Str::uuid(),
+                'variant' => $variant,
+                'title' => (string) ($legacy['title'] ?? ''),
+                'description' => isset($legacy['description']) ? (string) $legacy['description'] : null,
+            ];
+        }
+
+        return null;
     }
 
     /**

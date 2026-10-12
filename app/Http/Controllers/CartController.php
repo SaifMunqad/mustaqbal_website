@@ -23,18 +23,12 @@ class CartController extends Controller
         $book = Book::query()->findOrFail($validated['book_id']);
 
         if (! $book->isPurchasable()) {
-            return back()->with('toast', [
-                'variant' => 'error',
-                'title' => 'That book is currently unavailable.',
-            ]);
+            return back()->with('error', 'That book is currently unavailable.');
         }
 
         $this->cart->add($book, (int) ($validated['quantity'] ?? 1));
 
-        return back()->with('toast', [
-            'variant' => 'success',
-            'title' => 'Added to cart.',
-        ]);
+        return back()->with('success', 'Added to cart.');
     }
 
     public function update(Request $request): RedirectResponse

@@ -91,10 +91,11 @@ export interface SharedData {
         default: string;
     };
     flash?: {
-        toast?: {
-            variant?: 'success' | 'error' | 'info';
+        notification?: {
+            id: string;
+            variant: 'success' | 'error' | 'info';
             title: string;
-            description?: string;
+            description?: string | null;
         } | null;
     };
     sidebarOpen: boolean;

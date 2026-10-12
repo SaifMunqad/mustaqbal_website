@@ -102,9 +102,6 @@ class DashboardOrderController extends Controller
 
         $order->transitionTo($target);
 
-        return back()->with('toast', [
-            'variant' => 'success',
-            'title' => "Order marked as {$target->label()}.",
-        ]);
+        return back()->with('success', "Order marked as {$target->label()}.");
     }
 }

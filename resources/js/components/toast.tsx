@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
-import { usePage } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
+import i18n from '@/i18n';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { CheckCircle2, CircleAlert, Info } from 'lucide-react';
@@ -13,11 +14,62 @@ export interface ToastInput {
     duration?: number;
 }
 
+/**
+ * A server-flashed notification, normalized by the Inertia middleware. The id is
+ * generated once per flash so the client can guarantee it is shown exactly once.
+ */
+export interface FlashNotification {
+    id: string;
+    variant: ToastVariant;
+    title: string;
+    description?: string | null;
+}
+
+export interface FlashProps {
+    notification?: FlashNotification | null;
+}
+
+// Browser-cached record of notification ids already shown, so reloads and
+// re-renders never replay a toast. Kept small and rolling.
+const SEEN_KEY = 'mustaqbal.toast.seen';
+const MAX_SEEN = 50;
+
+const readSeenIds = (): string[] => {
+    if (typeof window === 'undefined') {
+        return [];
+    }
+
+    try {
+        const parsed = JSON.parse(window.localStorage.getItem(SEEN_KEY) ?? '[]');
+
+        return Array.isArray(parsed) ? parsed.filter((id) => typeof id === 'string') : [];
+    } catch {
+        return [];
+    }
+};
+
+const rememberSeenId = (id: string): void => {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
+    try {
+        const next = [...readSeenIds().filter((seen) => seen !== id), id].slice(-MAX_SEEN);
+        window.localStorage.setItem(SEEN_KEY, JSON.stringify(next));
+    } catch {
+        // Ignore storage failures (private mode / quota); the toast still shows.
+    }
+};
+
+// The backend may send either a plain message or an i18n key; translate when a
+// matching key exists, otherwise show the string verbatim.
+const resolveText = (text: string): string => (i18n.exists(text) ? String(i18n.t(text)) : text);
+
 interface ToastRecord extends Required<Pick<ToastInput, 'title'>> {
     id: string;
     description?: string;
     variant: ToastVariant;
-    state: 'visible' | 'closing';
+    state: 'entering' | 'visible' | 'closing';
 }
 
 interface ToastContextValue {
@@ -29,7 +81,7 @@ interface ToastContextValue {
 
 const ToastContext = createContext<ToastContextValue | null>(null);
 const DEFAULT_DURATION = 3500;
-const EXIT_DURATION = 250;
+const EXIT_DURATION = 300;
 
 const variantStyles: Record<ToastVariant, string> = {
     success: 'border-emerald-200 bg-emerald-50 text-emerald-950 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-50',
@@ -43,7 +95,13 @@ const iconByVariant: Record<ToastVariant, React.ComponentType<{ className?: stri
     info: Info,
 };
 
-export function ToastProvider({ children }: { children: ReactNode }) {
+export function ToastProvider({
+    children,
+    initialFlash,
+}: {
+    children: ReactNode;
+    initialFlash?: FlashProps | null;
+}) {
     const [toasts, setToasts] = useState<ToastRecord[]>([]);
     const timers = useRef(new Map<string, number>());
 
@@ -69,10 +127,23 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             title: input.title,
             description: input.description,
             variant: input.variant ?? 'info',
-            state: 'visible',
+            state: 'entering',
         };
 
         setToasts((current) => [...current, record]);
+
+        // Mount off-screen above, then slide down into view on the next paint.
+        requestAnimationFrame(() =>
+            requestAnimationFrame(() => {
+                setToasts((current) =>
+                    current.map((toastItem) =>
+                        toastItem.id === id && toastItem.state === 'entering'
+                            ? { ...toastItem, state: 'visible' }
+                            : toastItem,
+                    ),
+                );
+            }),
+        );
 
         const timer = window.setTimeout(() => dismiss(id), input.duration ?? DEFAULT_DURATION);
         timers.current.set(id, timer);
@@ -86,6 +157,54 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         error: (title, description) => toast({ title, description, variant: 'error' }),
         info: (title, description) => toast({ title, description, variant: 'info' }),
     }), [toast]);
+
+    const showNotification = useCallback(
+        (notification?: FlashNotification | null) => {
+            if (! notification?.id || typeof window === 'undefined') {
+                return;
+            }
+
+            if (readSeenIds().includes(notification.id)) {
+                return;
+            }
+
+            rememberSeenId(notification.id);
+
+            toast({
+                title: resolveText(notification.title),
+                description: notification.description ? resolveText(notification.description) : undefined,
+                variant: notification.variant,
+            });
+        },
+        [toast],
+    );
+
+    // Consume flashed notifications globally: the initial page load plus every
+    // subsequent Inertia navigation. Living here means layouts need no wiring.
+    useEffect(() => {
+        let cancelled = false;
+
+        const handle = (notification?: FlashNotification | null) => {
+            if (! cancelled) {
+                showNotification(notification);
+            }
+        };
+
+        // Defer the initial flash one tick so we never set state synchronously
+        // inside the effect body.
+        const initialTimer = window.setTimeout(() => handle(initialFlash?.notification), 0);
+
+        const removeListener = router.on('navigate', (event) => {
+            const flash = (event.detail.page.props as { flash?: FlashProps | null }).flash;
+            handle(flash?.notification);
+        });
+
+        return () => {
+            cancelled = true;
+            window.clearTimeout(initialTimer);
+            removeListener();
+        };
+    }, [showNotification, initialFlash]);
 
     useEffect(() => {
         return () => {
@@ -108,11 +227,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                                       <div
                                           key={toastItem.id}
                                           className={cn(
-                                              'pointer-events-auto flex w-full items-start gap-3 rounded-full border px-4 py-3 shadow-lg backdrop-blur transition-all duration-300',
+                                              'pointer-events-auto flex w-full items-start gap-3 rounded-full border px-4 py-3 shadow-lg backdrop-blur transition-transform duration-300 ease-out',
                                               variantStyles[toastItem.variant],
-                                              toastItem.state === 'closing'
-                                                  ? '-translate-y-4 opacity-0'
-                                                  : 'translate-y-0 opacity-100',
+                                              toastItem.state === 'visible'
+                                                  ? 'translate-y-0'
+                                                  : '-translate-y-[200%]',
                                           )}
                                       >
                                           <Icon className="mt-0.5 size-5 shrink-0" />
@@ -146,29 +265,6 @@ export function useToast() {
     }
 
     return context;
-}
-
-export function FlashToastBridge() {
-    const { props } = usePage<{ flash?: { toast?: ToastInput | null } }>();
-    const { toast } = useToast();
-    const lastToast = useRef<string>('');
-
-    useEffect(() => {
-        const flashToast = props.flash?.toast;
-        if (!flashToast) {
-            return;
-        }
-
-        const signature = JSON.stringify(flashToast);
-        if (signature === lastToast.current) {
-            return;
-        }
-
-        lastToast.current = signature;
-        toast(flashToast);
-    }, [props.flash, toast]);
-
-    return null;
 }
 
 

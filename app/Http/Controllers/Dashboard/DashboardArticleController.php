@@ -69,7 +69,7 @@ class DashboardArticleController extends Controller
 
         return redirect()
             ->route('dashboard.articles.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Article created successfully.']);
+            ->with('success', 'Article created successfully.');
     }
 
     public function edit(Article $article): Response
@@ -110,7 +110,7 @@ class DashboardArticleController extends Controller
 
         return redirect()
             ->route('dashboard.articles.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Article updated successfully.']);
+            ->with('success', 'Article updated successfully.');
     }
 }
 

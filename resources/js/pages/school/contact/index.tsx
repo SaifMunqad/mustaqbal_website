@@ -12,14 +12,26 @@ interface ContactContent {
 
 interface ContactPageData {
     title: string;
-    content?: ContactContent;
 }
 
 function Contact() {
     const { page, site } = usePage<{ page: ContactPageData | null; site: SiteSettings }>().props;
 
     const title = page?.title ?? site?.brand_name ?? '';
-    const content: ContactContent = page?.content ?? {};
+
+    // Contact details are managed centrally in Site Settings and shared as
+    // `site.contact`, so this page always reflects whatever an admin edits in
+    // the dashboard (and the footer shows the same values).
+    const phoneNumbers = [site?.contact?.phone_primary, site?.contact?.phone_secondary].filter(
+        (phone): phone is string => Boolean(phone),
+    );
+
+    const content: ContactContent = {
+        phone_numbers: phoneNumbers,
+        email: site?.contact?.email ?? undefined,
+        address: site?.contact?.address ?? undefined,
+        map_embed_url: site?.contact?.map_embed_url ?? undefined,
+    };
 
     return (
         <>

@@ -51,6 +51,6 @@ class DashboardSiteSettingController extends Controller
 
         return redirect()
             ->route('dashboard.site-settings.edit')
-            ->with('toast', ['variant' => 'success', 'title' => 'Site settings updated successfully.']);
+            ->with('success', 'Site settings updated successfully.');
     }
 }

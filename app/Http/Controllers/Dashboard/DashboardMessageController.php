@@ -46,7 +46,7 @@ class DashboardMessageController extends Controller
 
         return redirect()
             ->route('dashboard.messages.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Message created successfully.']);
+            ->with('success', 'Message created successfully.');
     }
 
     public function edit(Message $message): Response
@@ -71,7 +71,7 @@ class DashboardMessageController extends Controller
 
         return redirect()
             ->route('dashboard.messages.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Message updated successfully.']);
+            ->with('success', 'Message updated successfully.');
     }
 }
 

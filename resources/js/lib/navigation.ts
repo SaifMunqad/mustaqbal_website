@@ -40,6 +40,10 @@ export interface FooterSection {
         key: string;
         labelKey: string;
         href: string;
+        // When set, the link's href and text are resolved at render time from
+        // the shared site settings (`site.contact`) instead of the static
+        // `href`, so admin edits in the dashboard are reflected automatically.
+        contact?: 'email' | 'phone_primary' | 'phone_secondary';
     }>;
 }
 
@@ -180,12 +184,12 @@ export const footerSections: FooterSection[] = [
         titleKey: 'footer.support',
         links: [
             { key: 'contact', labelKey: 'navigation.contact', href: '/school/contact' },
-            { key: 'phone1', labelKey: 'footer.phoneMain', href: 'tel:+93700000001' },
-            {
-                key: 'phone2',
-                labelKey: 'footer.phoneSecondary',
-                href: 'tel:+93799000001',
-            },
+            // Phone/email are driven by the shared Site Settings contact
+            // details rather than hard-coded numbers, so the footer stays in
+            // sync with what an admin edits in the dashboard.
+            { key: 'phone1', labelKey: 'footer.phoneMain', href: '', contact: 'phone_primary' },
+            { key: 'phone2', labelKey: 'footer.phoneSecondary', href: '', contact: 'phone_secondary' },
+            { key: 'email', labelKey: 'footer.email', href: '', contact: 'email' },
         ],
     },
     {

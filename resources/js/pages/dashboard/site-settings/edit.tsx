@@ -188,13 +188,16 @@ export default function DashboardSiteSettingsEdit() {
                                 onChange={handlePick}
                             />
 
-                            {/* Persisted coordinates + derived embed URL. */}
+                            {/* Persisted coordinates. */}
                             <input type="hidden" name="map_latitude" value={latitude ?? ''} />
                             <input type="hidden" name="map_longitude" value={longitude ?? ''} />
                             <input type="hidden" name="map_zoom" value={zoom} />
-                            <input type="hidden" name="map_embed_url" value={embedUrl} />
 
-                            {!mapsKey ? (
+                            {mapsKey ? (
+                                // With a key the embed URL is derived from the pin.
+                                <input type="hidden" name="map_embed_url" value={embedUrl} />
+                            ) : (
+                                // Without a key the admin pastes it directly.
                                 <TextField
                                     label="Map embed URL"
                                     name="map_embed_url"
@@ -203,7 +206,7 @@ export default function DashboardSiteSettingsEdit() {
                                     defaultValue={settings.map_embed_url ?? ''}
                                     hint="No Google Maps key configured: paste an embed URL to show a map on the public page."
                                 />
-                            ) : null}
+                            )}
                         </Group>
 
                         <Group title="Social links">

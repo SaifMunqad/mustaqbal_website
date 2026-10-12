@@ -1,5 +1,4 @@
 import AuthLayoutTemplate from '@/layouts/auth/auth-simple-layout';
-import { FlashToastBridge } from '@/components/flash-toast-bridge';
 import { ReactNode } from 'react';
 
 export default function AuthLayout({
@@ -14,7 +13,6 @@ export default function AuthLayout({
 }) {
     return (
         <AuthLayoutTemplate title={title} description={description} {...props}>
-            <FlashToastBridge />
             {children}
         </AuthLayoutTemplate>
     );

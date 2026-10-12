@@ -41,10 +41,10 @@ export default function Navbar() {
 
     return (
         <nav
-            className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+            className={`fixed top-0 inset-x-0 z-50 transition-all shadow-sm duration-300 py-1 px-3 ${
                 isSticky
-                    ? 'mt-1 mx-1 rounded-2xl border border-gray-200/50 bg-white/80 px-3 py-1.5 shadow-xl backdrop-blur-xl backdrop-saturate-200 lg:px-6 lg:py-2 dark:border-gray-800/50 dark:bg-gray-900/80'
-                    : 'w-full rounded-none border-b border-gray-200/40 bg-white/90 px-4 py-3 shadow-sm backdrop-blur-md backdrop-saturate-150 lg:px-8 lg:py-4 dark:border-gray-800/40 dark:bg-[#121212]/90'
+                    ? 'rounded-2xl border border-gray-200/50 bg-white/80 backdrop-blur-xl backdrop-saturate-200 dark:border-gray-800/50 dark:bg-gray-900/80'
+                    : 'w-full rounded-none border-b border-gray-200/40 bg-white/90 backdrop-blur-md backdrop-saturate-150  dark:border-gray-800/40 dark:bg-[#121212]/90'
             }`}
         >
             <div className="container mx-auto flex flex-wrap items-center justify-between">

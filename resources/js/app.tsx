@@ -2,7 +2,7 @@ import '../css/app.css';
 
 import '@/i18n';
 import { bootstrapLanguage } from '@/i18n';
-import { ToastProvider } from '@/components/toast';
+import { ToastProvider, type FlashProps } from '@/components/toast';
 import type { SharedData } from '@/types';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
@@ -26,9 +26,11 @@ createInertiaApp({
 
         const root = createRoot(el);
 
+        const initialFlash = (props.initialPage.props as { flash?: FlashProps | null }).flash;
+
         root.render(
             <StrictMode>
-                <ToastProvider>
+                <ToastProvider initialFlash={initialFlash}>
                     <App {...props} />
                 </ToastProvider>
             </StrictMode>,

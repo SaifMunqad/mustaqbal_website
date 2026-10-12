@@ -90,14 +90,14 @@ class DashboardUserController extends Controller
 
             return redirect()
                 ->route('dashboard.users.index')
-                ->with('toast', ['variant' => 'success', 'title' => 'Account created. A verification email was sent.']);
+                ->with('success', 'Account created. A verification email was sent.');
         }
 
         Password::broker()->sendResetLink(['email' => $user->email]);
 
         return redirect()
             ->route('dashboard.users.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Account created. A password setup link was emailed.']);
+            ->with('success', 'Account created. A password setup link was emailed.');
     }
 
     public function edit(Request $request, User $user): Response
@@ -167,7 +167,7 @@ class DashboardUserController extends Controller
 
         return redirect()
             ->route('dashboard.users.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Account updated successfully.']);
+            ->with('success', 'Account updated successfully.');
     }
 
     public function destroy(Request $request, User $user): RedirectResponse
@@ -184,7 +184,7 @@ class DashboardUserController extends Controller
 
         return redirect()
             ->route('dashboard.users.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Account deleted.']);
+            ->with('success', 'Account deleted.');
     }
 
     /**

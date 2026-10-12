@@ -55,7 +55,7 @@ class DashboardBookCategoryController extends Controller
 
         return redirect()
             ->route('dashboard.categories.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Category created.']);
+            ->with('success', 'Category created.');
     }
 
     public function edit(BookCategory $category): Response
@@ -77,7 +77,7 @@ class DashboardBookCategoryController extends Controller
 
         return redirect()
             ->route('dashboard.categories.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Category updated.']);
+            ->with('success', 'Category updated.');
     }
 
     public function destroy(BookCategory $category): RedirectResponse
@@ -86,7 +86,7 @@ class DashboardBookCategoryController extends Controller
 
         return redirect()
             ->route('dashboard.categories.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Category deleted. Books in it are kept but uncategorized.']);
+            ->with('success', 'Category deleted. Books in it are kept but uncategorized.');
     }
 
     private function validateCategory(Request $request): array

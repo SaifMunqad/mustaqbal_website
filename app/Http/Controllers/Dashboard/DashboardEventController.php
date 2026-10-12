@@ -68,10 +68,7 @@ class DashboardEventController extends Controller
 
         return redirect()
             ->route('dashboard.events.index')
-            ->with('toast', [
-                'variant' => 'success',
-                'title' => $canPublish ? 'Event created.' : 'Event saved as a draft for review.',
-            ]);
+            ->with('success', $canPublish ? 'Event created.' : 'Event saved as a draft for review.');
     }
 
     public function edit(Request $request, Event $event): Response
@@ -103,7 +100,7 @@ class DashboardEventController extends Controller
 
         return redirect()
             ->route('dashboard.events.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Event updated.']);
+            ->with('success', 'Event updated.');
     }
 
     public function destroy(Request $request, Event $event): RedirectResponse
@@ -114,7 +111,7 @@ class DashboardEventController extends Controller
 
         return redirect()
             ->route('dashboard.events.index')
-            ->with('toast', ['variant' => 'success', 'title' => 'Event deleted.']);
+            ->with('success', 'Event deleted.');
     }
 
     /**
