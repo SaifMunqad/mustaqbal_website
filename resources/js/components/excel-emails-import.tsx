@@ -12,7 +12,7 @@ export interface ExtractedEmails {
     column: string | null;
 }
 
-const EMAIL_RE = /^[^\s@,;:<>"'\u0000-\u001F]+@[^\s@,;:<>"'\u0000-\u001F]+\.[^\s@,;:<>"'\u0000-\u001F]{2,}$/;
+const EMAIL_RE = /^[^\s@,;:<>]+@[^\s@,;:<>]+(?:\.[^\s@,;:<>]+)+$/;
 
 const EMPTY_RESULT: ExtractedEmails = { emails: [], invalid: 0, duplicates: 0, column: null };
 
