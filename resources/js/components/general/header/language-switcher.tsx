@@ -1,6 +1,5 @@
 import {
     CheckIcon,
-    ChevronDownIcon,
     LanguageIcon,
 } from '@heroicons/react/24/outline';
 import { router, usePage } from '@inertiajs/react';
@@ -15,7 +14,6 @@ interface LanguageSwitcherProps {
 }
 
 export default function LanguageSwitcher({
-    isSticky,
     className = '',
 }: LanguageSwitcherProps) {
     const [isOpen, setIsOpen] = useState(false);
@@ -67,15 +65,11 @@ export default function LanguageSwitcher({
             <button
                 type="button"
                 onClick={() => setIsOpen((value) => !value)}
-                className="flex items-center gap-x-2 rounded-xl border border-gray-200/40 bg-white/20 p-2 text-sm text-slate-700 transition-all duration-300 hover:bg-white/40 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-300 dark:hover:bg-gray-800/40"
+                aria-label="Change language"
+                title={currentLanguage ? currentLanguage.name : 'Language'}
+                className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200/40 bg-white/20 text-slate-700 transition-all duration-300 hover:bg-white/40 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-300 dark:hover:bg-gray-800/40"
             >
                 <LanguageIcon className="h-4 w-4" />
-                <span>{currentLanguage ? currentLanguage.name : 'Language'}</span>
-                <ChevronDownIcon
-                    className={`h-3.5 w-3.5 transition-transform duration-200 ${
-                        isOpen ? 'rotate-180' : ''
-                    }`}
-                />
             </button>
 
             {isOpen && (
