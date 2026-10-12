@@ -64,8 +64,10 @@ interface ImageUploadFieldProps extends BaseProps {
     onChange: (url: string) => void;
     /** File input accept filter. Defaults to images; favicons pass `.ico,image/x-icon`. */
     accept?: string;
-    /** Preview size classes. Defaults to a full-width banner; icons pass a compact box. */
+    /** Size classes for the previewed image. Defaults to a full-width banner. */
     previewClassName?: string;
+    /** Size classes for the empty drop-zone. Defaults to `h-40 w-full`. */
+    dropzoneClassName?: string;
 }
 
 /**
@@ -83,6 +85,7 @@ export function ImageUploadField({
     className,
     accept = 'image/*',
     previewClassName,
+    dropzoneClassName,
 }: ImageUploadFieldProps) {
     const inputRef = useRef<HTMLInputElement>(null);
     const { uploading, uploadError, run } = useUploader();
@@ -135,8 +138,8 @@ export function ImageUploadField({
                         handleFiles(event.dataTransfer.files);
                     }}
                     className={cn(
-                        'flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-muted/20 text-sm text-muted-foreground transition hover:border-blue-400 hover:bg-muted/40',
-                        previewClassName ?? 'h-40 w-full',
+                        'flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-muted/20 px-3 text-center text-sm text-muted-foreground transition hover:border-blue-400 hover:bg-muted/40',
+                        dropzoneClassName ?? 'h-40 w-full',
                     )}
                 >
                     <PhotoIcon className="size-7" />
@@ -156,9 +159,9 @@ export function ImageUploadField({
                 onChange={(event) => handleFiles(event.target.files)}
             />
             <Input
-                type="url"
+                type="text"
                 value={value}
-                placeholder="https://example.com/image.jpg"
+                placeholder="/storage/uploads/image.jpg or https://..."
                 onChange={(event) => onChange(event.target.value)}
             />
         </FieldShell>
@@ -268,9 +271,9 @@ export function GalleryUploadField({
             />
             <div className="flex gap-2">
                 <Input
-                    type="url"
+                    type="text"
                     value={draft}
-                    placeholder="Paste an image URL to add"
+                    placeholder="Paste an image URL or path to add"
                     onChange={(event) => setDraft(event.target.value)}
                     onKeyDown={(event) => {
                         if (event.key === 'Enter') {
