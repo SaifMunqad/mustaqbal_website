@@ -1,6 +1,7 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import MainLayout from '@/layouts/app/main-layout';
 import { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Article {
     id: number;
@@ -21,14 +22,15 @@ function ArticlesPage() {
             data: Article[];
         };
     }>().props;
+    const { t } = useTranslation();
 
     return (
         <>
-            <Head title="Articles" />
+            <Head title={t('articles.title')} />
 
             <section className="rounded-3xl bg-white p-6 shadow-sm dark:bg-gray-900 md:p-10">
                 <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-                    Mustaqbal Articles
+                    {t('articles.title')}
                 </h1>
 
                 <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -53,23 +55,17 @@ function ArticlesPage() {
                                     </p>
                                 ) : null}
                                 <p className="text-xs text-slate-500">
-                                    {article.author?.name ?? 'Mustaqbal Team'}
+                                    {article.author?.name ?? t('articles.defaultAuthor')}
                                 </p>
                                 <span className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                                    Read article
+                                    {t('articles.readArticle')}
                                 </span>
                             </div>
                         </Link>
                     ))}
                     {articles.data.length === 0 ? (
-                        <p className="text-sm text-slate-500">No articles published yet.</p>
+                        <p className="text-sm text-slate-500">{t('articles.empty')}</p>
                     ) : null}
-                </div>
-
-                <div className="mt-6">
-                    <Link href="/login" className="text-sm text-blue-600 underline">
-                        Login to access dashboard management
-                    </Link>
                 </div>
             </section>
         </>

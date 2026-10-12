@@ -121,20 +121,6 @@ export const navigationItems: NavigationItem[] = [
         ],
     },
     {
-        key: 'articles',
-        name: 'Articles',
-        nameKey: 'navigation.articles',
-        href: '/school/articles',
-        icon: BookOpenIcon,
-    },
-    {
-        key: 'events',
-        name: 'Events',
-        nameKey: 'navigation.events',
-        href: '/school/events',
-        icon: CalendarDaysIcon,
-    },
-    {
         key: 'store',
         name: 'Bookstore',
         nameKey: 'navigation.store',
