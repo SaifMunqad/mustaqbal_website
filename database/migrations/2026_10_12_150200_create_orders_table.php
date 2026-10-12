@@ -1,8 +1,5 @@
 <?php
 
-use App\Enums\OrderStatus;
-use App\Enums\PaymentMethod;
-use App\Enums\PaymentStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -19,9 +16,9 @@ return new class extends Migration
             $table->string('customer_email');
             $table->string('customer_phone')->nullable();
             $table->text('notes')->nullable();
-            $table->string('status')->default(OrderStatus::Pending->value);
-            $table->string('payment_method')->default(PaymentMethod::CashOnDelivery->value);
-            $table->string('payment_status')->default(PaymentStatus::Unpaid->value);
+            $table->string('status')->default('pending');
+            $table->string('payment_method')->default('cash_on_delivery');
+            $table->string('payment_status')->default('unpaid');
             $table->decimal('total', 10, 2)->default(0);
             $table->timestamps();
 

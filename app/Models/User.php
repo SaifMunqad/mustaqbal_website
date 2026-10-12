@@ -93,11 +93,6 @@ class User extends Authenticatable
         return $this->hasMany(Event::class);
     }
 
-    public function orders(): HasMany
-    {
-        return $this->hasMany(Order::class);
-    }
-
     public function isTeacher(): bool
     {
         return $this->role === UserRole::Teacher;

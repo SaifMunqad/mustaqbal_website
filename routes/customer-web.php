@@ -1,8 +1,6 @@
 <?php
 
 use App\Http\Controllers\BookstoreController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\SchoolArticleController;
 use App\Http\Controllers\SchoolEventController;
 use App\Http\Controllers\SchoolPageController;
@@ -32,13 +30,6 @@ Route::prefix('school')->group(function () {
 Route::prefix('store')->name('store.')->group(function () {
     Route::get('/', [BookstoreController::class, 'index'])->name('index');
     Route::get('/books/{book:slug}', [BookstoreController::class, 'show'])->name('books.show');
-
-    Route::post('/cart', [CartController::class, 'store'])->middleware('throttle:public-forms')->name('cart.store');
-    Route::put('/cart', [CartController::class, 'update'])->name('cart.update');
-    Route::delete('/cart/{bookId}', [CartController::class, 'destroy'])->name('cart.destroy');
-    Route::delete('/cart', [CartController::class, 'clear'])->name('cart.clear');
-
-    Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout');
-    Route::post('/checkout', [CheckoutController::class, 'store'])->middleware('throttle:checkout')->name('checkout.store');
-    Route::get('/order/{orderNumber}', [CheckoutController::class, 'show'])->name('order');
+    // Books are offered for free and downloaded directly from the site.
+    Route::get('/books/{book:slug}/download', [BookstoreController::class, 'download'])->name('books.download');
 });

@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Models\Language;
-use App\Support\Cart;
 use App\Support\Flash;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
@@ -53,7 +52,6 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'cart' => fn () => app(Cart::class)->summary(),
             'site' => fn () => $this->siteSettings(),
             'languages' => fn () => [
                 'available' => Language::activeList(),
