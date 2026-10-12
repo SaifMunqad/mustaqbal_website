@@ -246,6 +246,10 @@ class DatabaseSeeder extends Seeder
         // a generated PDF and first-page cover thumbnail).
         $this->call(BookLibrarySeeder::class);
 
+        // Multilingual blog/news articles across Dari (fa_AF), Pashto (ps) and
+        // English, interleaved for a naturally mixed public article list.
+        $this->call(ArticleSeeder::class);
+
         // Events calendar: current-month events plus backfill around it,
         // giving the multi-calendar view upcoming/ongoing/past data.
         $this->call(EventSeeder::class);

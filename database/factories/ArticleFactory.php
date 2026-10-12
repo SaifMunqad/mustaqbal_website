@@ -44,4 +44,20 @@ class ArticleFactory extends Factory
             'published_at' => null,
         ]);
     }
+
+    /**
+     * Pin the slug and cover image to a stable, ASCII seed key.
+     *
+     * Used by seeders so re-running produces the same slug (idempotent upserts)
+     * and a deterministic cover, instead of a random suffix on every run.
+     */
+    public function forSeedKey(string $key): static
+    {
+        $slug = Str::slug($key);
+
+        return $this->state(fn (array $attributes) => [
+            'slug' => $slug,
+            'cover_image' => 'https://picsum.photos/seed/'.$slug.'/1200/675',
+        ]);
+    }
 }
