@@ -12,15 +12,15 @@ export default function FooterBrand() {
 
     return (
         <div>
-            <Link href="/" className="inline-flex items-center gap-x-3">
+            <Link href="/" className="flex flex-col">
                 {site?.logo_url ? (
-                    <img src={site.logo_url} alt={name} className="h-10 w-auto" />
+                    <img src={site.logo_url} alt={name} className="w-full pe-4 lg:pe-6 object-contain" />
                 ) : (
-                    <span className="rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 px-2 py-1 text-sm font-bold text-white">
+                    <span className="w-fit rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 px-2 py-1 text-sm font-bold text-white">
                         {initials}
                     </span>
                 )}
-                <div>
+                <div className="mt-3">
                     <p className="text-lg font-semibold text-gray-900 dark:text-white">
                         {name}
                     </p>
