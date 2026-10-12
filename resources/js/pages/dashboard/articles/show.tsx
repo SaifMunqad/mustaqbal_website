@@ -1,12 +1,11 @@
+import ArticleBody from '@/components/editor/article-body';
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import DocumentFrame from '@/components/editor/document-frame';
 import { Button } from '@/components/ui/button';
 import { Link, usePage } from '@inertiajs/react';
 import {
     ArrowLeftIcon,
     CalendarDaysIcon,
     CheckBadgeIcon,
-    PhotoIcon,
     UserCircleIcon,
 } from '@heroicons/react/24/outline';
 
@@ -20,16 +19,11 @@ interface Article {
     is_published: boolean;
     published_at?: string | null;
     author?: { name: string } | null;
+    writer_name?: string | null;
 }
 
 export default function DashboardArticlesShow() {
     const { article } = usePage<{ article: Article }>().props;
-    const images = [article.cover_image, ...(article.images ?? [])].filter(
-        (image): image is string => Boolean(image),
-    );
-    const copyText = [article.title, article.excerpt, article.body, ...images]
-        .filter(Boolean)
-        .join('\n\n');
 
     return (
         <DashboardPage titleKey="dashboard.articles.title">
@@ -47,54 +41,45 @@ export default function DashboardArticlesShow() {
                 </Button>
             </div>
 
-            <DocumentFrame
-                title={article.title}
-                description={article.excerpt ?? 'Article details and preview.'}
-                body={article.body}
-                images={images}
-                copyText={copyText}
-                bodyLabel="Article body"
-            >
-                <div className="grid gap-3 md:grid-cols-3">
-                    <div className="rounded-2xl border border-border bg-muted/20 p-4">
-                        <div className="flex items-center gap-2 text-sm font-medium">
-                            <CheckBadgeIcon className="size-4 text-emerald-600" aria-hidden="true" />
-                            Status
-                        </div>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                            {article.is_published ? 'Published' : 'Draft'}
-                        </p>
+            <div className="grid gap-3 md:grid-cols-3">
+                <div className="rounded-2xl border border-border bg-muted/20 p-4">
+                    <div className="flex items-center gap-2 text-sm font-medium">
+                        <CheckBadgeIcon className="size-4 text-emerald-600" aria-hidden="true" />
+                        Status
                     </div>
-                    <div className="rounded-2xl border border-border bg-muted/20 p-4">
-                        <div className="flex items-center gap-2 text-sm font-medium">
-                            <UserCircleIcon className="size-4 text-blue-600" aria-hidden="true" />
-                            Author
-                        </div>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                            {article.author?.name ?? 'Unknown author'}
-                        </p>
-                    </div>
-                    <div className="rounded-2xl border border-border bg-muted/20 p-4">
-                        <div className="flex items-center gap-2 text-sm font-medium">
-                            <CalendarDaysIcon className="size-4 text-amber-600" aria-hidden="true" />
-                            Published
-                        </div>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                            {article.published_at ?? 'Not published yet'}
-                        </p>
-                    </div>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                        {article.is_published ? 'Published' : 'Draft'}
+                    </p>
                 </div>
-
-                {images.length ? (
-                    <div className="rounded-2xl border border-border bg-muted/20 p-4">
-                        <div className="flex items-center gap-2 text-sm font-medium">
-                            <PhotoIcon className="size-4 text-blue-600" aria-hidden="true" />
-                            Gallery preview
-                        </div>
+                <div className="rounded-2xl border border-border bg-muted/20 p-4">
+                    <div className="flex items-center gap-2 text-sm font-medium">
+                        <UserCircleIcon className="size-4 text-blue-600" aria-hidden="true" />
+                        Writer
                     </div>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                        {article.writer_name ?? article.author?.name ?? 'Unknown author'}
+                    </p>
+                </div>
+                <div className="rounded-2xl border border-border bg-muted/20 p-4">
+                    <div className="flex items-center gap-2 text-sm font-medium">
+                        <CalendarDaysIcon className="size-4 text-amber-600" aria-hidden="true" />
+                        Published
+                    </div>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                        {article.published_at ?? 'Not published yet'}
+                    </p>
+                </div>
+            </div>
+
+            <section className="rounded-3xl border border-border bg-card p-6 shadow-sm md:p-10">
+                <h1 className="mb-2 text-2xl font-bold text-foreground md:text-3xl">
+                    {article.title}
+                </h1>
+                {article.excerpt ? (
+                    <p className="mb-6 text-muted-foreground">{article.excerpt}</p>
                 ) : null}
-            </DocumentFrame>
+                <ArticleBody body={article.body} />
+            </section>
         </DashboardPage>
     );
 }
-

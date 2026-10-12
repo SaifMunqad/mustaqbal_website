@@ -1,5 +1,5 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import DocumentFrame from '@/components/editor/document-frame';
+import RichTextEditor from '@/components/editor/rich-text-editor';
 import { CheckboxField, TextField } from '@/components/form-fields';
 import FormSection from '@/components/form/form-section';
 import {
@@ -55,14 +55,20 @@ export default function DashboardArticlesCreate() {
                                         maxLength={1000}
                                         error={errors.excerpt}
                                     />
+                                    <TextField
+                                        label="Writer name"
+                                        name="writer_name"
+                                        placeholder="The person who actually wrote the article"
+                                        className="md:col-span-2"
+                                        hint="Shown as the byline. The signed-in account is recorded as the uploader."
+                                        error={errors.writer_name}
+                                    />
                                 </FormSection>
 
-                                <DocumentFrame
-                                    title="Article body"
-                                    description="Write the article and preview it before publishing."
-                                    body={body}
-                                    onBodyChange={setBody}
-                                    bodyLabel="Article body"
+                                <RichTextEditor
+                                    name="body"
+                                    value={body}
+                                    onChange={setBody}
                                 />
 
                                 <FormSection

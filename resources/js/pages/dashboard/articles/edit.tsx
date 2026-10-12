@@ -1,5 +1,5 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import DocumentFrame from '@/components/editor/document-frame';
+import RichTextEditor from '@/components/editor/rich-text-editor';
 import { CheckboxField, TextField } from '@/components/form-fields';
 import FormSection from '@/components/form/form-section';
 import {
@@ -20,6 +20,7 @@ import { useState } from 'react';
 interface Article {
     id: number;
     title: string;
+    writer_name?: string | null;
     excerpt?: string | null;
     body: string;
     cover_image?: string | null;
@@ -68,14 +69,20 @@ export default function DashboardArticlesEdit() {
                                         maxLength={1000}
                                         error={errors.excerpt}
                                     />
+                                    <TextField
+                                        label="Writer name"
+                                        name="writer_name"
+                                        defaultValue={article.writer_name ?? ''}
+                                        className="md:col-span-2"
+                                        hint="Shown as the byline. The signed-in account is recorded as the uploader."
+                                        error={errors.writer_name}
+                                    />
                                 </FormSection>
 
-                                <DocumentFrame
-                                    title="Article body"
-                                    description="Keep the writing and preview in sync while editing."
-                                    body={body}
-                                    onBodyChange={setBody}
-                                    bodyLabel="Article body"
+                                <RichTextEditor
+                                    name="body"
+                                    value={body}
+                                    onChange={setBody}
                                 />
 
                                 <FormSection
