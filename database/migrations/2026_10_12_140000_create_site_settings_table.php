@@ -24,6 +24,13 @@ return new class extends Migration
             $table->string('home_cta_secondary')->nullable();
             $table->string('home_hero_image')->nullable();
 
+            // Contact details
+            $table->string('contact_email')->nullable();
+            $table->string('contact_phone_primary')->nullable();
+            $table->string('contact_phone_secondary')->nullable();
+            $table->string('address')->nullable();
+            $table->text('map_embed_url')->nullable();
+
             // Social links
             $table->string('social_facebook')->nullable();
             $table->string('social_instagram')->nullable();

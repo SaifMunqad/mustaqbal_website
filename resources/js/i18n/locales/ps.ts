@@ -154,6 +154,7 @@ const ps = {
             events: 'پېښې',
             contacts: 'اړيکې',
             messages: 'پيغامونه',
+            emailCampaigns: 'ټوليز ايميل',
             programs: 'پروګرامونه',
             pages: 'پاڼې',
             users: 'کاروونکي',
@@ -210,6 +211,14 @@ const ps = {
             title: 'پيغامونه',
             createTitle: 'پيغام جوړول',
             editTitle: 'پيغام سمول',
+            incoming: 'راغلي',
+            sent: 'لېڭل شوي',
+        },
+        emailCampaigns: {
+            title: 'ټوليز ايميل',
+            createTitle: 'نوی کمپاین',
+            showTitle: 'د کمپاین جزئیات',
+            new: 'نوی کمپاین',
         },
         programs: {
             title: 'پروګرامونه',

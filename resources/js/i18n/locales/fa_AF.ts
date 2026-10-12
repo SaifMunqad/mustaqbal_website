@@ -154,6 +154,7 @@ const faAF = {
             events: 'پېښه ها',
             contacts: 'تماس ها',
             messages: 'پيام ها',
+            emailCampaigns: 'ايميل گروهي',
             programs: 'برنامه ها',
             pages: 'صفحه ها',
             users: 'کاربرها',
@@ -210,6 +211,14 @@ const faAF = {
             title: 'پيام ها',
             createTitle: 'ايجاد پيام',
             editTitle: 'ويرايش پيام',
+            incoming: 'آمده',
+            sent: 'فرسته شده',
+        },
+        emailCampaigns: {
+            title: 'ايميل گروهي',
+            createTitle: 'کمپين جديد',
+            showTitle: 'جزئیات کمپين',
+            new: 'کمپين جديد',
         },
         programs: {
             title: 'برنامه ها',

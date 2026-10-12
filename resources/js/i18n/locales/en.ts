@@ -154,6 +154,7 @@ const en = {
             events: 'Events',
             contacts: 'Contacts',
             messages: 'Messages',
+            emailCampaigns: 'Bulk Email',
             programs: 'Programs',
             pages: 'Pages',
             users: 'Users',
@@ -212,6 +213,14 @@ const en = {
             title: 'Messages',
             createTitle: 'Create Message',
             editTitle: 'Edit Message',
+            incoming: 'Incoming',
+            sent: 'Sent',
+        },
+        emailCampaigns: {
+            title: 'Bulk Email',
+            createTitle: 'New Campaign',
+            showTitle: 'Campaign Details',
+            new: 'New Campaign',
         },
         programs: {
             title: 'Programs',

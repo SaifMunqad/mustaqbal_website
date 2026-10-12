@@ -13,15 +13,26 @@ use Inertia\Response;
 
 class DashboardMessageController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $box = in_array($request->query('box'), ['incoming', 'sent'], true)
+            ? $request->query('box')
+            : 'incoming';
+
         $messages = Message::query()
             ->with(['conversation:id,topic', 'author:id,name,role'])
+            ->when(
+                $box === 'sent',
+                fn ($query) => $query->where('user_id', $request->user()->id),
+                fn ($query) => $query->where('user_id', '!=', $request->user()->id),
+            )
             ->latest()
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
         return Inertia::render('dashboard/messages/index', [
             'messages' => $messages,
+            'box' => $box,
         ]);
     }
 

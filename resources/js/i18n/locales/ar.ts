@@ -150,6 +150,7 @@ const ar = {
             events: 'الفعاليات',
             contacts: 'جهات الاتصال',
             messages: 'الرسائل',
+            emailCampaigns: 'البريد الجماعي',
             programs: 'البرامج',
             pages: 'الصفحات',
             users: 'المستخدمون',
@@ -206,6 +207,14 @@ const ar = {
             title: 'الرسائل',
             createTitle: 'إنشاء رسالة',
             editTitle: 'تعديل رسالة',
+            incoming: 'الواردة',
+            sent: 'المرسلة',
+        },
+        emailCampaigns: {
+            title: 'البريد الجماعي',
+            createTitle: 'حملة جديدة',
+            showTitle: 'تفاصيل الحملة',
+            new: 'حملة جديدة',
         },
         programs: {
             title: 'البرامج',

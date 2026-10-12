@@ -24,6 +24,7 @@ import {
     MessageSquare,
     Newspaper,
     School,
+    Send,
     Settings,
     Users,
 } from 'lucide-react';
@@ -67,6 +68,15 @@ export function AppSidebar() {
             href: '/dashboard/messages',
             icon: MessageSquare,
         },
+        ...(canManageUsers
+            ? [
+                  {
+                      title: t('dashboard.tabs.emailCampaigns'),
+                      href: '/dashboard/email-campaigns',
+                      icon: Send,
+                  },
+              ]
+            : []),
         {
             title: t('dashboard.tabs.programs'),
             href: '/dashboard/programs',

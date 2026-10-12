@@ -1,6 +1,7 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { DataTable, DataTableColumn } from '@/components/table';
 import { Link, usePage } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 
 interface Message {
     id: number;
@@ -11,7 +12,13 @@ interface Message {
 }
 
 export default function DashboardMessagesIndex() {
-    const { messages } = usePage<{ messages: { data: Message[] } }>().props;
+    const { messages, box } = usePage<{ messages: { data: Message[] }; box: 'incoming' | 'sent' }>().props;
+    const { t } = useTranslation();
+
+    const boxes: { key: 'incoming' | 'sent'; href: string }[] = [
+        { key: 'incoming', href: '/dashboard/messages?box=incoming' },
+        { key: 'sent', href: '/dashboard/messages?box=sent' },
+    ];
 
     const columns: DataTableColumn<Message>[] = [
         { key: 'id', header: '#', cell: (message) => message.id, sortValue: (message) => message.id },
@@ -54,6 +61,21 @@ export default function DashboardMessagesIndex() {
             createHref="/dashboard/messages/create"
             createLabelKey="dashboard.actions.newMessage"
         >
+            <div className="flex gap-2">
+                {boxes.map((item) => (
+                    <Link
+                        key={item.key}
+                        href={item.href}
+                        className={`rounded-lg px-3 py-1.5 text-sm transition ${
+                            box === item.key
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700'
+                        }`}
+                    >
+                        {t(`dashboard.messages.${item.key}`)}
+                    </Link>
+                ))}
+            </div>
             <DataTable
                 data={messages.data}
                 columns={columns}
