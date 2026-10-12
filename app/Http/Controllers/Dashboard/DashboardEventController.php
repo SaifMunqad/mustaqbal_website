@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Enums\EventAudience;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Support\Rules\ImageLocation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -123,9 +124,9 @@ class DashboardEventController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'excerpt' => ['nullable', 'string', 'max:1000'],
             'body' => ['nullable', 'string'],
-            'cover_image' => ['nullable', 'url', 'max:2048'],
+            'cover_image' => ['nullable', new ImageLocation, 'max:2048'],
             'images' => ['nullable', 'array'],
-            'images.*' => ['nullable', 'url', 'max:2048'],
+            'images.*' => ['nullable', new ImageLocation, 'max:2048'],
             'location' => ['nullable', 'string', 'max:255'],
             'start_at' => ['required', 'date'],
             'end_at' => ['nullable', 'date', 'after_or_equal:start_at'],

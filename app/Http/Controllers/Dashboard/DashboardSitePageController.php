@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\SitePage;
+use App\Support\Rules\ImageLocation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -30,7 +31,7 @@ class DashboardSitePageController extends Controller
         $validated = $request->validate([
             'slug' => ['required', 'string', 'max:100', 'unique:site_pages,slug'],
             'title' => ['required', 'string', 'max:255'],
-            'hero_image' => ['nullable', 'url', 'max:2048'],
+            'hero_image' => ['nullable', new ImageLocation, 'max:2048'],
             'content' => ['nullable', 'string'],
             'is_published' => ['nullable', 'boolean'],
         ]);
@@ -63,7 +64,7 @@ class DashboardSitePageController extends Controller
         $validated = $request->validate([
             'slug' => ['required', 'string', 'max:100', 'unique:site_pages,slug,'.$sitePage->id],
             'title' => ['required', 'string', 'max:255'],
-            'hero_image' => ['nullable', 'url', 'max:2048'],
+            'hero_image' => ['nullable', new ImageLocation, 'max:2048'],
             'content' => ['nullable', 'string'],
             'is_published' => ['nullable', 'boolean'],
         ]);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Enums\PostType;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
+use App\Support\Rules\ImageLocation;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -59,7 +60,7 @@ class DashboardPostController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
             'images' => ['nullable', 'array'],
-            'images.*' => ['nullable', 'url', 'max:2048'],
+            'images.*' => ['nullable', new ImageLocation, 'max:2048'],
             'highlighted_student_id' => ['nullable', 'exists:users,id'],
             'scheduled_at' => ['nullable', 'date'],
             'starts_at' => ['nullable', 'date'],
@@ -109,7 +110,7 @@ class DashboardPostController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
             'images' => ['nullable', 'array'],
-            'images.*' => ['nullable', 'url', 'max:2048'],
+            'images.*' => ['nullable', new ImageLocation, 'max:2048'],
             'highlighted_student_id' => ['nullable', 'exists:users,id'],
             'scheduled_at' => ['nullable', 'date'],
             'starts_at' => ['nullable', 'date'],

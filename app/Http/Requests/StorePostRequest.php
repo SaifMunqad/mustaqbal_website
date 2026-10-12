@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\PostType;
 use App\Enums\PostVisibility;
+use App\Support\Rules\ImageLocation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -33,7 +34,7 @@ class StorePostRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
             'images' => ['nullable', 'array'],
-            'images.*' => ['nullable', 'url', 'max:2048'],
+            'images.*' => ['nullable', new ImageLocation, 'max:2048'],
             'highlighted_student_id' => ['nullable', 'exists:users,id'],
             'scheduled_at' => ['nullable', 'date'],
             'starts_at' => ['nullable', 'date'],

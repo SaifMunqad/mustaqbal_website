@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\SiteSetting;
+use App\Support\Rules\ImageLocation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -25,13 +26,13 @@ class DashboardSiteSettingController extends Controller
             'brand_name' => ['required', 'string', 'max:255'],
             'brand_short_name' => ['required', 'string', 'max:100'],
             'tagline' => ['nullable', 'string', 'max:255'],
-            'logo_url' => ['nullable', 'url', 'max:2048'],
-            'favicon_url' => ['nullable', 'url', 'max:2048'],
+            'logo_url' => ['nullable', new ImageLocation, 'max:2048'],
+            'favicon_url' => ['nullable', new ImageLocation, 'max:2048'],
             'home_title' => ['nullable', 'string', 'max:255'],
             'home_subtitle' => ['nullable', 'string', 'max:2000'],
             'home_cta_primary' => ['nullable', 'string', 'max:255'],
             'home_cta_secondary' => ['nullable', 'string', 'max:255'],
-            'home_hero_image' => ['nullable', 'url', 'max:2048'],
+            'home_hero_image' => ['nullable', new ImageLocation, 'max:2048'],
             'contact_email' => ['nullable', 'email', 'max:255'],
             'contact_phone_primary' => ['nullable', 'string', 'max:100'],
             'contact_phone_secondary' => ['nullable', 'string', 'max:100'],

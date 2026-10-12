@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\Program;
 use App\Models\SitePage;
+use App\Support\Rules\ImageLocation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -17,7 +18,7 @@ class DashboardContentController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'excerpt' => ['nullable', 'string', 'max:1000'],
             'body' => ['required', 'string'],
-            'cover_image' => ['nullable', 'url', 'max:2048'],
+            'cover_image' => ['nullable', new ImageLocation, 'max:2048'],
             'is_published' => ['nullable', 'boolean'],
         ]);
 
@@ -62,7 +63,7 @@ class DashboardContentController extends Controller
         $validated = $request->validate([
             'slug' => ['required', 'in:about,programs,contact'],
             'title' => ['required', 'string', 'max:255'],
-            'hero_image' => ['nullable', 'url', 'max:2048'],
+            'hero_image' => ['nullable', new ImageLocation, 'max:2048'],
             'content' => ['nullable', 'string'],
             'is_published' => ['nullable', 'boolean'],
         ]);
