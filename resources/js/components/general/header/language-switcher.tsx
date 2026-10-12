@@ -80,7 +80,7 @@ export default function LanguageSwitcher({
 
             {isOpen && (
                 <div
-                    className="absolute right-0 z-50 mt-2 min-w-44 overflow-hidden rounded-xl border border-gray-200/50 bg-white/95 p-1 shadow-xl backdrop-blur-xl dark:border-gray-700/50 dark:bg-gray-900/95"
+                    className="absolute end-0 z-50 mt-2 min-w-44 overflow-hidden rounded-xl border border-gray-200/50 bg-white/95 p-1 shadow-xl backdrop-blur-xl dark:border-gray-700/50 dark:bg-gray-900/95"
                 >
                     {available.map((option) => {
                         const isActive = i18n.language === option.code;
@@ -90,7 +90,7 @@ export default function LanguageSwitcher({
                                 key={option.code}
                                 type="button"
                                 onClick={() => changeLanguage(option.code)}
-                                className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                                className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-start text-sm transition-colors ${
                                     isActive
                                         ? 'bg-blue-50 text-blue-600 dark:bg-gray-800/80 dark:text-blue-400'
                                         : 'hover:bg-slate-100/80 dark:hover:bg-gray-800/40'

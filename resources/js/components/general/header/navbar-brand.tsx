@@ -14,7 +14,7 @@ export default function NavbarBrand({ isSticky }: NavbarBrandProps) {
 
     if (site?.logo_url) {
         return (
-            <Link href="/" className="mr-4 flex items-center">
+            <Link href="/" className="me-4 flex items-center">
                 <img
                     src={site.logo_url}
                     alt={site.brand_name || shortName}
@@ -27,7 +27,7 @@ export default function NavbarBrand({ isSticky }: NavbarBrandProps) {
     return (
         <Link
             href="/"
-            className="mr-4 block cursor-pointer py-1.5 text-lg font-bold tracking-tight text-slate-800 transition-all duration-300 dark:text-white"
+            className="me-4 block cursor-pointer py-1.5 text-lg font-bold tracking-tight text-slate-800 transition-all duration-300 dark:text-white"
         >
             <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
                 {shortName}

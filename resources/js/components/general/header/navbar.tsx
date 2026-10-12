@@ -55,7 +55,7 @@ export default function Navbar() {
                     isSticky={isSticky}
                 />
 
-                <div className="ml-auto hidden lg:block">
+                <div className="ms-auto hidden lg:block">
                     <div className="flex items-center gap-2">
                         {isGuest ? (
                             <Link
