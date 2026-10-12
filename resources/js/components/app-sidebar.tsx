@@ -14,7 +14,6 @@ import { Link, usePage } from '@inertiajs/react';
 import {
     BookOpen,
     CalendarDays,
-    Coins,
     FileText,
     Folder,
     Globe,
@@ -107,11 +106,6 @@ export function AppSidebar() {
                       title: t('dashboard.tabs.categories'),
                       href: '/dashboard/categories',
                       icon: Folder,
-                  },
-                  {
-                      title: t('dashboard.tabs.orders'),
-                      href: '/dashboard/orders',
-                      icon: Coins,
                   },
                   {
                       title: t('dashboard.tabs.users'),

@@ -22,25 +22,6 @@ export interface NavItem {
     isActive?: boolean;
 }
 
-export interface CartItem {
-    book_id: number;
-    title: string;
-    slug: string;
-    cover_image?: string | null;
-    author?: string | null;
-    price_afn: number;
-    stock: number;
-    quantity: number;
-    line_total: number;
-    purchasable: boolean;
-}
-
-export interface CartState {
-    count: number;
-    total: number;
-    items: CartItem[];
-}
-
 export interface SiteSettings {
     brand_name: string;
     brand_short_name: string;
@@ -84,7 +65,6 @@ export interface SharedData {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
-    cart?: CartState;
     site: SiteSettings;
     languages?: {
         available: LanguageOption[];

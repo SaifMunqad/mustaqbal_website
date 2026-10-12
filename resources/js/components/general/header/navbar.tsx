@@ -1,7 +1,6 @@
-import { Bars3Icon, ShoppingBagIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon } from '@heroicons/react/24/outline';
 import { Link, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
-import CartDrawer from '@/components/general/cart/cart-drawer';
 import LanguageSwitcher from '@/components/general/header/language-switcher';
 import NavbarBrand from '@/components/general/header/navbar-brand';
 import NavbarDesktop from '@/components/general/header/navbar-desktop';
@@ -12,11 +11,10 @@ import type { SharedData } from '@/types';
 export default function Navbar() {
     const page = usePage<SharedData>();
     const { url, props } = page;
-    const { auth, cart } = props;
+    const { auth } = props;
     const isGuest = !auth?.user;
     const [isSticky, setIsSticky] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [cartOpen, setCartOpen] = useState(false);
     const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(
         null,
     );
@@ -58,19 +56,6 @@ export default function Navbar() {
 
                 <div className="ml-auto hidden lg:block">
                     <div className="flex items-center gap-2">
-                        <button
-                            type="button"
-                            onClick={() => setCartOpen(true)}
-                            aria-label="Open cart"
-                            className="relative rounded-xl border border-gray-200/40 bg-white/20 p-2 text-slate-700 transition-all duration-300 hover:bg-white/40 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-200 dark:hover:bg-gray-800/40"
-                        >
-                            <ShoppingBagIcon className="size-5" />
-                            {cart && cart.count > 0 ? (
-                                <span className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
-                                    {cart.count}
-                                </span>
-                            ) : null}
-                        </button>
                         {isGuest ? (
                             <Link
                                 href="/login"
@@ -84,19 +69,6 @@ export default function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-2 lg:hidden">
-                    <button
-                        type="button"
-                        onClick={() => setCartOpen(true)}
-                        aria-label="Open cart"
-                        className="relative rounded-xl border border-gray-200/40 bg-white/20 p-2 text-slate-700 transition-all duration-300 hover:bg-white/40 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-200 dark:hover:bg-gray-800/40"
-                    >
-                        <ShoppingBagIcon className="size-5" />
-                        {cart && cart.count > 0 ? (
-                            <span className="absolute -top-1.5 -right-1.5 flex size-4 items-center justify-center rounded-full bg-blue-600 text-[9px] font-bold text-white">
-                                {cart.count}
-                            </span>
-                        ) : null}
-                    </button>
                     <LanguageSwitcher isSticky={isSticky} />
                     <button
                         onClick={() => setMobileMenuOpen((value) => !value)}
@@ -119,8 +91,6 @@ export default function Navbar() {
                     showLoginButton={isGuest}
                 />
             </div>
-
-            <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
         </nav>
     );
 }

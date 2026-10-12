@@ -19,8 +19,7 @@ interface OverviewStats {
     pages: number;
     events: number;
     enrollments: number;
-    orders: number;
-    pending_orders: number;
+    books: number;
 }
 
 export default function Dashboard() {
@@ -73,11 +72,8 @@ export default function Dashboard() {
                         <p className="text-2xl font-bold">{stats.enrollments}</p>
                     </div>
                     <div className="rounded-xl border p-4">
-                        <p className="text-sm text-slate-500">{t('dashboard.stats.orders')}</p>
-                        <p className="text-2xl font-bold">{stats.orders}</p>
-                        {stats.pending_orders > 0 ? (
-                            <p className="mt-1 text-xs text-amber-600">{t('dashboard.stats.pendingOrders', { count: stats.pending_orders })}</p>
-                        ) : null}
+                        <p className="text-sm text-slate-500">{t('dashboard.stats.books')}</p>
+                        <p className="text-2xl font-bold">{stats.books}</p>
                     </div>
                 </section>
 

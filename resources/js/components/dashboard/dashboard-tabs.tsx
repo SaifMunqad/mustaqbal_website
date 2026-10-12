@@ -21,7 +21,6 @@ const tabs: DashboardTab[] = [
     { key: 'pages', href: '/dashboard/site-pages', labelKey: 'dashboard.tabs.pages' },
     { key: 'books', href: '/dashboard/books', labelKey: 'dashboard.tabs.books', roles: ['admin', 'management'] },
     { key: 'categories', href: '/dashboard/categories', labelKey: 'dashboard.tabs.categories', roles: ['admin', 'management'] },
-    { key: 'orders', href: '/dashboard/orders', labelKey: 'dashboard.tabs.orders', roles: ['admin', 'management'] },
     { key: 'users', href: '/dashboard/users', labelKey: 'dashboard.tabs.users', roles: ['admin', 'management'] },
 ];
 
