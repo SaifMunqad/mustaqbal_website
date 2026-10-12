@@ -7,9 +7,9 @@ interface Row {
     id: number;
     title: string;
     author?: string | null;
-    price_afn: number;
-    stock: number;
-    is_available: boolean;
+    published_year?: number | null;
+    publisher?: string | null;
+    has_file: boolean;
     category?: string | null;
 }
 
@@ -18,8 +18,6 @@ interface Props {
     filters: { search: string };
     [key: string]: unknown;
 }
-
-const formatMoney = (value: number) => new Intl.NumberFormat('en', { maximumFractionDigits: 0 }).format(value);
 
 export default function DashboardBooksIndex() {
     const { books, filters } = usePage<Props>().props;
@@ -35,14 +33,14 @@ export default function DashboardBooksIndex() {
         { key: 'id', header: '#', cell: (row) => row.id, sortValue: (row) => row.id },
         { key: 'title', header: 'Title', cell: (row) => row.title, sortValue: (row) => row.title },
         { key: 'author', header: 'Author', cell: (row) => row.author ?? '-', sortValue: (row) => row.author ?? '' },
+        { key: 'published_year', header: 'Year', cell: (row) => row.published_year ?? '-', sortValue: (row) => row.published_year ?? 0 },
+        { key: 'publisher', header: 'Publisher', cell: (row) => row.publisher ?? '-', sortValue: (row) => row.publisher ?? '' },
         { key: 'category', header: 'Category', cell: (row) => row.category ?? '-', sortValue: (row) => row.category ?? '' },
-        { key: 'price', header: 'Price', cell: (row) => `${formatMoney(row.price_afn)} AFN`, sortValue: (row) => row.price_afn },
-        { key: 'stock', header: 'Stock', cell: (row) => row.stock, sortValue: (row) => row.stock },
         {
-            key: 'available',
-            header: 'Available',
-            cell: (row) => (row.is_available && row.stock > 0 ? 'Yes' : 'No'),
-            sortValue: (row) => row.is_available && row.stock > 0,
+            key: 'file',
+            header: 'PDF',
+            cell: (row) => (row.has_file ? 'Uploaded' : 'Missing'),
+            sortValue: (row) => row.has_file,
         },
         {
             key: 'actions',

@@ -5,14 +5,18 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\Book;
 use App\Models\BookCategory;
+use App\Support\Rules\ImageLocation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class DashboardBookController extends Controller
 {
+    private const DISK = 'public';
+
     public function index(Request $request): Response
     {
         $books = Book::query()
@@ -25,9 +29,10 @@ class DashboardBookController extends Controller
                 'id' => $book->id,
                 'title' => $book->title,
                 'author' => $book->author,
-                'price_afn' => (float) $book->price_afn,
-                'stock' => $book->stock,
-                'is_available' => $book->is_available,
+                'published_year' => $book->published_year,
+                'publisher' => $book->publisher,
+                'has_file' => $book->isDownloadable(),
+                'thumbnail' => $this->displayImage($book),
                 'category' => $book->category?->name,
             ]);
 
@@ -51,8 +56,7 @@ class DashboardBookController extends Controller
         Book::query()->create([
             ...$validated,
             'slug' => $this->uniqueSlug($validated['title']),
-            'images' => $this->cleanImages($validated['images'] ?? []),
-            'is_available' => (bool) ($validated['is_available'] ?? false),
+            'images' => $this->cleanImages($request->input('images', [])),
         ]);
 
         return redirect()
@@ -63,7 +67,22 @@ class DashboardBookController extends Controller
     public function edit(Book $book): Response
     {
         return Inertia::render('dashboard/books/edit', [
-            'book' => $book,
+            'book' => [
+                'id' => $book->id,
+                'title' => $book->title,
+                'slug' => $book->slug,
+                'author' => $book->author,
+                'published_year' => $book->published_year,
+                'publisher' => $book->publisher,
+                'isbn' => $book->isbn,
+                'description' => $book->description,
+                'images' => $book->images ?? [],
+                'thumbnail_path' => $book->thumbnail_path,
+                'thumbnail' => $this->displayImage($book),
+                'file_path' => $book->file_path,
+                'file_url' => $book->file_path ? Storage::disk(self::DISK)->url($book->file_path) : null,
+                'book_category_id' => $book->book_category_id,
+            ],
             'categories' => $this->categoryOptions(),
         ]);
     }
@@ -72,11 +91,22 @@ class DashboardBookController extends Controller
     {
         $validated = $this->validateBook($request);
 
-        $book->update([
+        $previousFile = $book->file_path;
+        $previousThumb = $book->thumbnail_path;
+
+        $book->fill([
             ...$validated,
-            'images' => $this->cleanImages($validated['images'] ?? []),
-            'is_available' => (bool) ($validated['is_available'] ?? false),
+            'images' => $this->cleanImages($request->input('images', [])),
         ]);
+
+        $book->save();
+
+        // When the PDF is replaced, drop the orphaned file and thumbnail.
+        if ($previousFile && $previousFile !== $book->file_path) {
+            $this->deleteFiles($previousFile, $previousThumb);
+        } elseif ($previousThumb && $previousThumb !== $book->thumbnail_path) {
+            $this->deleteFiles(null, $previousThumb);
+        }
 
         return redirect()
             ->route('dashboard.books.index')
@@ -85,6 +115,8 @@ class DashboardBookController extends Controller
 
     public function destroy(Book $book): RedirectResponse
     {
+        $this->deleteFiles($book->file_path, $book->thumbnail_path);
+
         $book->delete();
 
         return redirect()
@@ -92,20 +124,46 @@ class DashboardBookController extends Controller
             ->with('success', 'Book deleted.');
     }
 
+    /**
+     * @param  array<int, string|null>  $paths
+     */
+    private function deleteFiles(?string ...$paths): void
+    {
+        foreach ($paths as $path) {
+            if ($path !== null && Storage::disk(self::DISK)->exists($path)) {
+                Storage::disk(self::DISK)->delete($path);
+            }
+        }
+    }
+
+    /**
+     * Resolve a displayable image URL from the book's thumbnail — the first
+     * page of the PDF, or a manually uploaded replacement.
+     */
+    private function displayImage(Book $book): ?string
+    {
+        if (filled($book->thumbnail_path)) {
+            return Storage::disk(self::DISK)->url($book->thumbnail_path);
+        }
+
+        return null;
+    }
+
     private function validateBook(Request $request): array
     {
         return $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'author' => ['nullable', 'string', 'max:255'],
+            'published_year' => ['nullable', 'integer', 'min:1000', 'max:2100'],
+            'publisher' => ['nullable', 'string', 'max:255'],
             'isbn' => ['nullable', 'string', 'max:64'],
             'description' => ['nullable', 'string', 'max:5000'],
-            'price_afn' => ['required', 'numeric', 'min:0', 'max:9999999'],
-            'stock' => ['required', 'integer', 'min:0', 'max:1000000'],
-            'cover_image' => ['nullable', 'url', 'max:2048'],
             'images' => ['nullable', 'array'],
-            'images.*' => ['nullable', 'url', 'max:2048'],
+            'images.*' => ['nullable', new ImageLocation, 'max:2048'],
             'book_category_id' => ['nullable', 'exists:book_categories,id'],
-            'is_available' => ['nullable', 'boolean'],
+            // Populated by the PDF uploader; stored as disk-relative paths.
+            'file_path' => ['nullable', 'string', 'max:2048'],
+            'thumbnail_path' => ['nullable', 'string', 'max:2048'],
         ]);
     }
 
