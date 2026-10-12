@@ -14,11 +14,14 @@ use App\Http\Controllers\Dashboard\DashboardSitePageController;
 use App\Http\Controllers\Dashboard\DashboardSiteSettingController;
 use App\Http\Controllers\Dashboard\DashboardUserController;
 use App\Http\Controllers\Dashboard\EmailCampaignController;
+use App\Http\Controllers\Dashboard\UploadController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::post('/upload', [UploadController::class, 'store'])->name('dashboard.upload');
 
     Route::prefix('users')->name('dashboard.users.')->group(function () {
         Route::get('/', [DashboardUserController::class, 'index'])->name('index');
@@ -106,7 +109,7 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
             ->name('update');
     });
 
-    Route::prefix('email-campaigns')->name('dashboard.email-campaigns.')->middleware('role:management')->group(function () {
+    Route::prefix('email-campaigns')->name('dashboard.email-campaigns.')->middleware('role:admin')->group(function () {
         Route::get('/', [EmailCampaignController::class, 'index'])->name('index');
         Route::get('/create', [EmailCampaignController::class, 'create'])->name('create');
         Route::post('/', [EmailCampaignController::class, 'store'])->name('store');

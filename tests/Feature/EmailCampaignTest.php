@@ -21,23 +21,27 @@ class EmailCampaignTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function management(): User
+    private function admin(): User
     {
-        return User::factory()->create(['role' => UserRole::Management->value]);
+        return User::factory()->create(['role' => UserRole::Admin->value]);
     }
 
-    public function test_family_users_cannot_access_email_campaigns(): void
+    public function test_non_admins_cannot_access_email_campaigns(): void
     {
         $this->actingAs(User::factory()->create(['role' => UserRole::Family->value]))
             ->get(route('dashboard.email-campaigns.index'))
             ->assertForbidden();
+
+        $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
+            ->get(route('dashboard.email-campaigns.index'))
+            ->assertForbidden();
     }
 
-    public function test_management_can_queue_campaign_with_custom_emails(): void
+    public function test_admin_can_queue_campaign_with_custom_emails(): void
     {
         Queue::fake();
 
-        $response = $this->actingAs($this->management())
+        $response = $this->actingAs($this->admin())
             ->post(route('dashboard.email-campaigns.store'), [
                 'subject' => 'Eid Mubarak',
                 'body' => 'School will be closed for Eid holidays.',
@@ -64,7 +68,7 @@ class EmailCampaignTest extends TestCase
         Contact::query()->create(['name' => 'Inquiry', 'email' => 'shared@example.com', 'message' => 'Hello']);
         Contact::query()->create(['name' => 'Other', 'email' => 'inquiry@example.com', 'message' => 'Hello']);
 
-        $this->actingAs($this->management())
+        $this->actingAs($this->admin())
             ->post(route('dashboard.email-campaigns.store'), [
                 'subject' => 'New semester',
                 'body' => 'Classes start next week.',
@@ -80,7 +84,7 @@ class EmailCampaignTest extends TestCase
 
     public function test_empty_custom_list_is_rejected_with_error_flash(): void
     {
-        $this->actingAs($this->management())
+        $this->actingAs($this->admin())
             ->post(route('dashboard.email-campaigns.store'), [
                 'subject' => 'Test',
                 'body' => 'Body',
@@ -145,7 +149,7 @@ class EmailCampaignTest extends TestCase
             'status' => EmailDeliveryStatus::Sent,
         ]);
 
-        $this->actingAs($this->management())
+        $this->actingAs($this->admin())
             ->post(route('dashboard.email-campaigns.retry', $campaign))
             ->assertSessionHas('success');
 
@@ -156,7 +160,7 @@ class EmailCampaignTest extends TestCase
 
     public function test_messages_index_splits_incoming_and_sent_boxes(): void
     {
-        $admin = $this->management();
+        $admin = $this->admin();
         $other = User::factory()->create();
         $conversation = Conversation::query()->create(['created_by' => $admin->id, 'topic' => 'General']);
 

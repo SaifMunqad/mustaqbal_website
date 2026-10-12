@@ -20,6 +20,7 @@ class SiteSetting extends Model
         'brand_short_name',
         'tagline',
         'logo_url',
+        'favicon_url',
         'home_title',
         'home_subtitle',
         'home_cta_primary',
@@ -96,6 +97,7 @@ class SiteSetting extends Model
             'brand_short_name' => $this->brand_short_name,
             'tagline' => $this->tagline,
             'logo_url' => $this->logo_url,
+            'favicon_url' => $this->favicon_url,
             'home' => [
                 'title' => $this->home_title,
                 'subtitle' => $this->home_subtitle,

@@ -16,7 +16,7 @@ const tabs: DashboardTab[] = [
     { key: 'events', href: '/dashboard/events', labelKey: 'dashboard.tabs.events' },
     { key: 'contacts', href: '/dashboard/contacts', labelKey: 'dashboard.tabs.contacts' },
     { key: 'messages', href: '/dashboard/messages', labelKey: 'dashboard.tabs.messages' },
-    { key: 'email-campaigns', href: '/dashboard/email-campaigns', labelKey: 'dashboard.tabs.emailCampaigns', roles: ['admin', 'management'] },
+    { key: 'email-campaigns', href: '/dashboard/email-campaigns', labelKey: 'dashboard.tabs.emailCampaigns', roles: ['admin'] },
     { key: 'programs', href: '/dashboard/programs', labelKey: 'dashboard.tabs.programs' },
     { key: 'pages', href: '/dashboard/site-pages', labelKey: 'dashboard.tabs.pages' },
     { key: 'books', href: '/dashboard/books', labelKey: 'dashboard.tabs.books', roles: ['admin', 'management'] },

@@ -46,6 +46,7 @@ export interface SiteSettings {
     brand_short_name: string;
     tagline?: string | null;
     logo_url?: string | null;
+    favicon_url?: string | null;
     home: {
         title?: string | null;
         subtitle?: string | null;

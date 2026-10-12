@@ -1,5 +1,6 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import GoogleLocationPicker, { PickedLocation } from '@/components/google-location-picker';
+import { ImageUploadField } from '@/components/form/image-upload-field';
 import { TextAreaField, TextField } from '@/components/form-fields';
 import { useFormToast } from '@/components/use-form-toast';
 import { Form, usePage } from '@inertiajs/react';
@@ -15,6 +16,7 @@ interface SiteSettingRecord {
     brand_short_name: string;
     tagline?: string | null;
     logo_url?: string | null;
+    favicon_url?: string | null;
     home_title?: string | null;
     home_subtitle?: string | null;
     home_cta_primary?: string | null;
@@ -53,6 +55,12 @@ export default function DashboardSiteSettingsEdit() {
         mapsKey?: string | null;
     }>().props;
     const { onError } = useFormToast('Site settings updated successfully.');
+
+    // Brand assets are uploaded through the shared /dashboard/upload endpoint,
+    // which returns a public URL kept in controlled state so the live preview
+    // and the submitted hidden input stay in sync.
+    const [logoUrl, setLogoUrl] = useState(settings.logo_url ?? '');
+    const [faviconUrl, setFaviconUrl] = useState(settings.favicon_url ?? '');
 
     // Map/location state is controlled so the picker, the derived embed URL and
     // the address box stay in sync before submit.
@@ -104,13 +112,26 @@ export default function DashboardSiteSettingsEdit() {
                                 error={errors.tagline}
                                 defaultValue={settings.tagline ?? ''}
                             />
-                            <TextField
-                                label="Logo URL"
-                                name="logo_url"
-                                error={errors.logo_url}
-                                placeholder="https://..."
-                                defaultValue={settings.logo_url ?? ''}
-                            />
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <ImageUploadField
+                                    label="Logo (PNG)"
+                                    name="logo_url"
+                                    value={logoUrl}
+                                    onChange={setLogoUrl}
+                                    error={errors.logo_url}
+                                    hint="Shown in the public nav bar, footer and dashboard sidebar. PNG recommended."
+                                />
+                                <ImageUploadField
+                                    label="Favicon (.ico)"
+                                    name="favicon_url"
+                                    value={faviconUrl}
+                                    onChange={setFaviconUrl}
+                                    error={errors.favicon_url}
+                                    accept=".ico,image/x-icon,image/vnd.microsoft.icon"
+                                    previewClassName="h-16 w-16 object-contain"
+                                    hint="Browser tab icon. Upload an .ico file; falls back to the default icon when empty."
+                                />
+                            </div>
                         </Group>
 
                         <Group title="Home page">

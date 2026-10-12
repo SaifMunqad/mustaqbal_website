@@ -26,6 +26,7 @@ class DashboardSiteSettingController extends Controller
             'brand_short_name' => ['required', 'string', 'max:100'],
             'tagline' => ['nullable', 'string', 'max:255'],
             'logo_url' => ['nullable', 'url', 'max:2048'],
+            'favicon_url' => ['nullable', 'url', 'max:2048'],
             'home_title' => ['nullable', 'string', 'max:255'],
             'home_subtitle' => ['nullable', 'string', 'max:2000'],
             'home_cta_primary' => ['nullable', 'string', 'max:255'],

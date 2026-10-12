@@ -180,29 +180,39 @@ export function ToastProvider({
     );
 
     // Consume flashed notifications globally: the initial page load plus every
-    // subsequent Inertia navigation. Living here means layouts need no wiring.
+    // subsequent Inertia visit. Living here means layouts need no wiring.
     useEffect(() => {
         let cancelled = false;
 
-        const handle = (notification?: FlashNotification | null) => {
-            if (! cancelled) {
-                showNotification(notification);
+        const showFromPage = (page: { props: unknown }) => {
+            if (cancelled) {
+                return;
             }
+
+            const flash = (page.props as { flash?: FlashProps | null }).flash;
+            showNotification(flash?.notification);
         };
 
         // Defer the initial flash one tick so we never set state synchronously
         // inside the effect body.
-        const initialTimer = window.setTimeout(() => handle(initialFlash?.notification), 0);
+        const initialTimer = window.setTimeout(() => {
+            if (! cancelled) {
+                showNotification(initialFlash?.notification);
+            }
+        }, 0);
 
-        const removeListener = router.on('navigate', (event) => {
-            const flash = (event.detail.page.props as { flash?: FlashProps | null }).flash;
-            handle(flash?.notification);
-        });
+        // `success` fires on every clean visit — including the async/partial
+        // reloads a create/update triggers — whereas `navigate` is skipped when
+        // the visit uses `replace`. Listening to both covers every redirect;
+        // the seen-id store keeps the toast from firing twice.
+        const offSuccess = router.on('success', (event) => showFromPage(event.detail.page));
+        const offNavigate = router.on('navigate', (event) => showFromPage(event.detail.page));
 
         return () => {
             cancelled = true;
             window.clearTimeout(initialTimer);
-            removeListener();
+            offSuccess();
+            offNavigate();
         };
     }, [showNotification, initialFlash]);
 

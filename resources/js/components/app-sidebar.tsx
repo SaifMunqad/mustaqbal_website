@@ -68,7 +68,7 @@ export function AppSidebar() {
             href: '/dashboard/messages',
             icon: MessageSquare,
         },
-        ...(canManageUsers
+        ...(isAdmin
             ? [
                   {
                       title: t('dashboard.tabs.emailCampaigns'),

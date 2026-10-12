@@ -88,7 +88,6 @@ export default function DashboardLanguagesIndex() {
             <Form
                 action="/dashboard/languages"
                 method="post"
-                onSuccess={createToast.onSuccess}
                 onError={createToast.onError}
                 className="flex flex-wrap items-end gap-3 rounded-2xl border border-border bg-background p-4"
             >
@@ -150,7 +149,6 @@ export default function DashboardLanguagesIndex() {
                                     <Form
                                         action={`/dashboard/languages/${language.id}`}
                                         method="put"
-                                        onSuccess={updateToast.onSuccess}
                                         onError={updateToast.onError}
                                         className="flex flex-wrap items-center gap-2"
                                     >
