@@ -41,7 +41,8 @@ export default function Navbar() {
         <nav
             className={`fixed top-0 inset-x-0 z-50 transition-all shadow-sm duration-300 py-1 px-3 ${
                 isSticky
-                    ? 'rounded-2xl border border-gray-200/50 bg-white/80 backdrop-blur-xl backdrop-saturate-200 dark:border-gray-800/50 dark:bg-gray-900/80'
+                    ? 'w-full rounded-none border-b border-gray-200/40 bg-white/90 backdrop-blur-md backdrop-saturate-150  dark:border-gray-800/40 dark:bg-[#121212]/90'
+                    // ? 'rounded-2xl border border-gray-200/50 bg-white/80 backdrop-blur-xl backdrop-saturate-200 dark:border-gray-800/50 dark:bg-gray-900/80'
                     : 'w-full rounded-none border-b border-gray-200/40 bg-white/90 backdrop-blur-md backdrop-saturate-150  dark:border-gray-800/40 dark:bg-[#121212]/90'
             }`}
         >
