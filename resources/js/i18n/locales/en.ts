@@ -209,6 +209,7 @@ const en = {
             title: 'Pages',
             createTitle: 'Create Page',
             editTitle: 'Edit Page',
+            helpTitle: 'Writing Guide',
         },
         users: {
             title: 'Accounts',

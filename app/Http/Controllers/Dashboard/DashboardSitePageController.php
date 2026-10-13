@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Stevebauman\Purify\Facades\Purify;
 
 class DashboardSitePageController extends Controller
 {
@@ -26,23 +27,32 @@ class DashboardSitePageController extends Controller
         return Inertia::render('dashboard/site-pages/create');
     }
 
+    /**
+     * Static in-dashboard guide explaining how editors author site pages
+     * (rich text + Word import), linked from the pages list.
+     */
+    public function help(): Response
+    {
+        return Inertia::render('dashboard/site-pages/help');
+    }
+
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'slug' => ['required', 'string', 'max:100', 'unique:site_pages,slug'],
             'title' => ['required', 'string', 'max:255'],
             'hero_image' => ['nullable', new ImageLocation, 'max:2048'],
-            'content' => ['nullable', 'string'],
+            'body' => ['nullable', 'string'],
             'is_published' => ['nullable', 'boolean'],
         ]);
-
-        $decoded = json_decode($validated['content'] ?? '[]', true);
 
         SitePage::query()->create([
             'slug' => $validated['slug'],
             'title' => $validated['title'],
             'hero_image' => $validated['hero_image'] ?? null,
-            'content' => is_array($decoded) ? $decoded : [],
+            // Rich-text body is stored as sanitized HTML inside the content JSON,
+            // alongside any legacy structured fields the frontend may still read.
+            'content' => ['body' => Purify::clean($validated['body'] ?? '')],
             'is_published' => ! empty($validated['is_published']),
         ]);
 
@@ -53,9 +63,11 @@ class DashboardSitePageController extends Controller
 
     public function edit(SitePage $sitePage): Response
     {
+        $content = is_array($sitePage->content) ? $sitePage->content : [];
+
         return Inertia::render('dashboard/site-pages/edit', [
             'page' => $sitePage,
-            'contentJson' => json_encode($sitePage->content ?? [], JSON_PRETTY_PRINT),
+            'body' => $content['body'] ?? '',
         ]);
     }
 
@@ -65,17 +77,19 @@ class DashboardSitePageController extends Controller
             'slug' => ['required', 'string', 'max:100', 'unique:site_pages,slug,'.$sitePage->id],
             'title' => ['required', 'string', 'max:255'],
             'hero_image' => ['nullable', new ImageLocation, 'max:2048'],
-            'content' => ['nullable', 'string'],
+            'body' => ['nullable', 'string'],
             'is_published' => ['nullable', 'boolean'],
         ]);
 
-        $decoded = json_decode($validated['content'] ?? '[]', true);
+        // Preserve any legacy structured keys (vision, goals, ...) while the
+        // editor writes the rich-text body.
+        $existing = is_array($sitePage->content) ? $sitePage->content : [];
 
         $sitePage->update([
             'slug' => $validated['slug'],
             'title' => $validated['title'],
             'hero_image' => $validated['hero_image'] ?? null,
-            'content' => is_array($decoded) ? $decoded : [],
+            'content' => [...$existing, 'body' => Purify::clean($validated['body'] ?? '')],
             'is_published' => ! empty($validated['is_published']),
         ]);
 

@@ -5,6 +5,7 @@ use App\Http\Controllers\Dashboard\DashboardBookCategoryController;
 use App\Http\Controllers\Dashboard\DashboardBookController;
 use App\Http\Controllers\Dashboard\DashboardContactController;
 use App\Http\Controllers\Dashboard\DashboardEventController;
+use App\Http\Controllers\Dashboard\DashboardJobController;
 use App\Http\Controllers\Dashboard\DashboardLanguageController;
 use App\Http\Controllers\Dashboard\DashboardMessageController;
 use App\Http\Controllers\Dashboard\DashboardPostController;
@@ -137,6 +138,7 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
 
     Route::prefix('site-pages')->name('dashboard.site-pages.')->group(function () {
         Route::get('/', [DashboardSitePageController::class, 'index'])->name('index');
+        Route::get('/help', [DashboardSitePageController::class, 'help'])->name('help');
         Route::get('/create', [DashboardSitePageController::class, 'create'])->name('create');
         Route::get('/{sitePage}/edit', [DashboardSitePageController::class, 'edit'])->name('edit');
         Route::post('/', [DashboardSitePageController::class, 'store'])
@@ -154,6 +156,15 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
         Route::put('/', [DashboardSiteSettingController::class, 'update'])
             ->middleware('role:management')
             ->name('update');
+    });
+
+    Route::prefix('jobs')->name('dashboard.jobs.')->middleware('role:management')->group(function () {
+        Route::get('/', [DashboardJobController::class, 'index'])->name('index');
+        Route::get('/create', [DashboardJobController::class, 'create'])->name('create');
+        Route::post('/', [DashboardJobController::class, 'store'])->name('store');
+        Route::get('/{job}/edit', [DashboardJobController::class, 'edit'])->name('edit');
+        Route::put('/{job}', [DashboardJobController::class, 'update'])->name('update');
+        Route::delete('/{job}', [DashboardJobController::class, 'destroy'])->name('destroy');
     });
 });
 

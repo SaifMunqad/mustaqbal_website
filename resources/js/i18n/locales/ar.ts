@@ -202,6 +202,7 @@ const ar = {
             title: 'الصفحات',
             createTitle: 'إنشاء صفحة',
             editTitle: 'تعديل صفحة',
+            helpTitle: 'دليل الكتابة',
         },
         users: {
             title: 'الحسابات',

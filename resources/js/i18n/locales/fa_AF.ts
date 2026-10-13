@@ -206,6 +206,7 @@ const faAF = {
             title: 'صفحه ها',
             createTitle: 'ايجاد صفحه',
             editTitle: 'ويرايش صفحه',
+            helpTitle: 'رهنماي نگارش',
         },
         users: {
             title: 'حساب ها',

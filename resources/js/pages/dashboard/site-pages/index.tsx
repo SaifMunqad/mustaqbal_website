@@ -1,5 +1,6 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { DataTable, DataTableColumn } from '@/components/table';
+import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import { Link, usePage } from '@inertiajs/react';
 
 interface SitePage {
@@ -37,6 +38,15 @@ export default function DashboardSitePagesIndex() {
             createHref="/dashboard/site-pages/create"
             createLabelKey="dashboard.actions.newPage"
         >
+            <div className="flex justify-end">
+                <Link
+                    href="/dashboard/site-pages/help"
+                    className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+                >
+                    <QuestionMarkCircleIcon className="size-4" />
+                    How to write a page
+                </Link>
+            </div>
             <DataTable
                 data={pages.data}
                 columns={columns}

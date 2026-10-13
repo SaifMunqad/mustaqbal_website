@@ -206,6 +206,7 @@ const ps = {
             title: 'پاڼې',
             createTitle: 'پاڼه جوړول',
             editTitle: 'پاڼه سمول',
+            helpTitle: 'د لیکلو لارښود',
         },
         users: {
             title: 'حسابونه',
