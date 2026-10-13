@@ -3,10 +3,11 @@ import { Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
 /**
- * Automatic "latest jobs" block on the home page. Reads live, active openings
- * resolved in ShowcaseController::home (same ordering/visibility as the public
- * jobs listing) and reuses the shared JobCard so a home card always matches its
- * listing view. The whole section is hidden when there are no open positions.
+ * "latest jobs" block on the home page. Reads a small random sample (max 2) of
+ * active openings resolved in ShowcaseController::home and reuses the shared
+ * JobCard so a home card always matches its listing view. Two jobs sit side by
+ * side in a grid; a single job spans the full width. The whole section is hidden
+ * when there are no open positions.
  */
 export default function LatestJobs({ jobs }: { jobs: Job[] }) {
     const { t } = useTranslation();
@@ -28,7 +29,13 @@ export default function LatestJobs({ jobs }: { jobs: Job[] }) {
                     {t('home.viewAllJobs')}
                 </Link>
             </header>
-            <div className="grid gap-5 md:grid-cols-1 lg:grid-cols-2">
+            <div
+                className={
+                    jobs.length === 1
+                        ? 'grid gap-5'
+                        : 'grid gap-5 md:grid-cols-1 lg:grid-cols-2'
+                }
+            >
                 {jobs.map((job) => (
                     <JobCard key={job.id} job={job} />
                 ))}

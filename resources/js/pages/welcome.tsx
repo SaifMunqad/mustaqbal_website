@@ -33,8 +33,16 @@ function Welcome() {
     const home = site?.home ?? {};
     const tagline = site?.tagline;
 
+    // Curated sections are admin-managed content; the template gives them fixed
+    // slots: banner blocks sit between Jobs and "Why families choose", and every
+    // other curated block (articles, events, recognition, announcements) lands
+    // after "Why families choose". Relative order within each slot still follows
+    // the admin's sort_order.
     const curated = sections ?? [];
+    const bannerSections = curated.filter((section) => section.variant === 'banner');
+    const otherSections = curated.filter((section) => section.variant !== 'banner');
     const legacyShowcase = showcase ?? [];
+    const hasCurated = curated.length > 0;
 
     return (
         <div className="space-y-8">
@@ -42,16 +50,22 @@ function Welcome() {
 
             <HomeHero home={home} tagline={tagline} />
 
-            <StatsBar stats={site?.stats ?? []} />
+            <ProgramsHighlight programs={programs ?? []} />
 
             <FeatureGrid features={site?.features ?? []} />
-
-            <ProgramsHighlight programs={programs ?? []} />
+            <StatsBar stats={site?.stats ?? []} />
 
             <LatestJobs jobs={jobs ?? []} />
 
-            {curated.length > 0 ? (
-                <HomeSections sections={curated} />
+            {bannerSections.length > 0 ? (
+                <HomeSections sections={bannerSections} />
+            ) : null}
+
+
+            {hasCurated ? (
+                otherSections.length > 0 ? (
+                    <HomeSections sections={otherSections} />
+                ) : null
             ) : legacyShowcase.length > 0 ? (
                 <ShowcaseSection groups={legacyShowcase} />
             ) : null}

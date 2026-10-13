@@ -6,9 +6,9 @@ import { useTranslation } from 'react-i18next';
 
 /**
  * Automatic "programs" highlight. Cards are pulled live from the Program model
- * (top 4, localized) in ShowcaseController::home, so this stays in sync with the
- * programs an admin manages elsewhere. Renders nothing when there are no
- * programs yet.
+ * (a small random sample, localized) in ShowcaseController::home, so this stays
+ * in sync with the programs an admin manages elsewhere. Renders nothing when
+ * there are no programs yet.
  */
 export default function ProgramsHighlight({
     programs,

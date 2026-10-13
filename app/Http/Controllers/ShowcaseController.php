@@ -72,21 +72,22 @@ class ShowcaseController extends Controller
     }
 
     /**
-     * Top programs for the home-page highlight, resolved in the current locale.
+     * Programs for the home-page highlight, resolved in the current locale.
      * Mirrors SchoolPageController::programs so names/descriptions follow the
-     * active language. Degrades to an empty list if the table isn't ready.
+     * active language. Picks a small random sample so the home page surfaces
+     * variety rather than always the same top entries. Degrades to an empty
+     * list if the table isn't ready.
      *
      * @return list<array<string, mixed>>
      */
-    private function featuredPrograms(int $limit = 4): array
+    private function featuredPrograms(int $limit = 2): array
     {
         $locale = app()->getLocale();
 
         try {
             return Program::query()
                 ->with(['translations.language', 'typeTranslations.language'])
-                ->orderBy('display_order')
-                ->orderBy('name')
+                ->inRandomOrder()
                 ->limit($limit)
                 ->get()
                 ->map(fn (Program $program): array => [
@@ -108,17 +109,20 @@ class ShowcaseController extends Controller
     }
 
     /**
-     * Latest active job postings for the home-page "latest jobs" block.
-     * Reuses the same ordering/visibility rules as the public jobs listing and
-     * the shared card payload, so a home card always matches its listing view.
+     * Active job postings for the home-page "latest jobs" block. Shows a small
+     * random sample (max 2) of the open positions, reusing the same visibility
+     * rules as the public jobs listing and the shared card payload, so a home
+     * card always matches its listing view.
      *
      * @return list<array<string, mixed>>
      */
-    private function featuredJobs(int $limit = 3): array
+    private function featuredJobs(int $limit = 2): array
     {
         try {
             return Job::query()
                 ->active()
+                ->reorder()
+                ->inRandomOrder()
                 ->limit($limit)
                 ->get()
                 ->map(fn (Job $job): array => $job->toCard())
@@ -139,8 +143,8 @@ class ShowcaseController extends Controller
             'canRegister' => Features::enabled(Features::registration()),
             'sections' => $sections,
             'showcase' => $sections === [] ? $this->groups(3) : [],
-            'programs' => $this->featuredPrograms(4),
-            'jobs' => $this->featuredJobs(3),
+            'programs' => $this->featuredPrograms(2),
+            'jobs' => $this->featuredJobs(2),
         ]);
     }
 }
