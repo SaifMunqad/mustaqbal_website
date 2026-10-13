@@ -1,3 +1,4 @@
+import Reveal from '@/components/ui/reveal';
 import ProgramCard, {
     type Program,
 } from '@/pages/school/programs/program-card';
@@ -41,8 +42,10 @@ export default function ProgramsHighlight({
             </header>
 
             <div className="grid items-start gap-5 md:grid-cols-2">
-                {programs.map((program) => (
-                    <ProgramCard key={program.id} program={program} />
+                {programs.map((program, index) => (
+                    <Reveal key={program.id} delay={index * 110}>
+                        <ProgramCard program={program} />
+                    </Reveal>
                 ))}
             </div>
         </section>

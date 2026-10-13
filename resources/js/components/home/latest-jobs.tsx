@@ -1,4 +1,5 @@
 import JobCard, { type Job } from '@/components/school/job-card';
+import Reveal from '@/components/ui/reveal';
 import { Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
@@ -36,8 +37,10 @@ export default function LatestJobs({ jobs }: { jobs: Job[] }) {
                         : 'grid gap-5 md:grid-cols-1 lg:grid-cols-2'
                 }
             >
-                {jobs.map((job) => (
-                    <JobCard key={job.id} job={job} />
+                {jobs.map((job, index) => (
+                    <Reveal key={job.id} delay={index * 110}>
+                        <JobCard job={job} />
+                    </Reveal>
                 ))}
             </div>
         </section>

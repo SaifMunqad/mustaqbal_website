@@ -1,7 +1,8 @@
-import { Head } from '@inertiajs/react';
-import { useTranslation } from 'react-i18next';
+import Reveal from '@/components/ui/reveal';
 import MainLayout from '@/layouts/app/main-layout';
+import { Head } from '@inertiajs/react';
 import { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 function SchoolAdmissions() {
     const { t } = useTranslation();
@@ -10,14 +11,16 @@ function SchoolAdmissions() {
         <>
             <Head title={t('navigation.admissions')} />
 
-            <section className="rounded-3xl bg-white p-6 shadow-sm dark:bg-gray-900 md:p-10">
-                <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-                    {t('admissions.title')}
-                </h1>
-                <p className="mt-4 text-slate-700 dark:text-slate-300">
-                    {t('admissions.paragraph')}
-                </p>
-            </section>
+            <Reveal direction="fade" defaultInView>
+                <section className="rounded-3xl bg-white p-6 shadow-sm md:p-10 dark:bg-gray-900">
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+                        {t('admissions.title')}
+                    </h1>
+                    <p className="mt-4 text-slate-700 dark:text-slate-300">
+                        {t('admissions.paragraph')}
+                    </p>
+                </section>
+            </Reveal>
         </>
     );
 }
@@ -25,4 +28,3 @@ function SchoolAdmissions() {
 SchoolAdmissions.layout = (page: ReactNode) => <MainLayout children={page} />;
 
 export default SchoolAdmissions;
-

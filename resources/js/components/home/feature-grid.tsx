@@ -1,3 +1,4 @@
+import Reveal from '@/components/ui/reveal';
 import type { HomeFeature } from '@/types';
 import {
     Building2,
@@ -56,22 +57,25 @@ export default function FeatureGrid({ features }: { features: HomeFeature[] }) {
                     const Icon = ICON_MAP[feature.icon ?? ''] ?? Sparkles;
 
                     return (
-                        <article
+                        <Reveal
                             key={`${feature.title}-${index}`}
-                            className="flex h-full flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-800 dark:bg-gray-900"
+                            className="h-full"
+                            delay={index * 100}
                         >
-                            <div
-                                className={`flex size-12 items-center justify-center rounded-xl ${ACCENTS[index % ACCENTS.length]}`}
-                            >
-                                <Icon className="size-6" aria-hidden />
-                            </div>
-                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                                {feature.title}
-                            </h3>
-                            <p className="text-sm text-slate-600 dark:text-slate-300">
-                                {feature.description}
-                            </p>
-                        </article>
+                            <article className="flex h-full flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-800 dark:bg-gray-900">
+                                <div
+                                    className={`flex size-12 items-center justify-center rounded-xl ${ACCENTS[index % ACCENTS.length]}`}
+                                >
+                                    <Icon className="size-6" aria-hidden />
+                                </div>
+                                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                                    {feature.title}
+                                </h3>
+                                <p className="text-sm text-slate-600 dark:text-slate-300">
+                                    {feature.description}
+                                </p>
+                            </article>
+                        </Reveal>
                     );
                 })}
             </div>

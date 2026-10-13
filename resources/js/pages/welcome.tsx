@@ -11,6 +11,7 @@ import LatestJobs from '@/components/home/latest-jobs';
 import ProgramsHighlight from '@/components/home/programs-highlight';
 import StatsBar from '@/components/home/stats-bar';
 import type { Job } from '@/components/school/job-card';
+import Reveal from '@/components/ui/reveal';
 import MainLayout from '@/layouts/app/main-layout';
 import type { Program } from '@/pages/school/programs/program-card';
 import type { SharedData } from '@/types';
@@ -39,8 +40,12 @@ function Welcome() {
     // after "Why families choose". Relative order within each slot still follows
     // the admin's sort_order.
     const curated = sections ?? [];
-    const bannerSections = curated.filter((section) => section.variant === 'banner');
-    const otherSections = curated.filter((section) => section.variant !== 'banner');
+    const bannerSections = curated.filter(
+        (section) => section.variant === 'banner',
+    );
+    const otherSections = curated.filter(
+        (section) => section.variant !== 'banner',
+    );
     const legacyShowcase = showcase ?? [];
     const hasCurated = curated.length > 0;
 
@@ -48,29 +53,46 @@ function Welcome() {
         <div className="space-y-8">
             <Head title={t('navigation.home')} />
 
-            <HomeHero home={home} tagline={tagline} />
+            <Reveal direction="fade" defaultInView>
+                <HomeHero home={home} tagline={tagline} />
+            </Reveal>
 
-            <ProgramsHighlight programs={programs ?? []} />
+            <Reveal>
+                <ProgramsHighlight programs={programs ?? []} />
+            </Reveal>
 
-            <FeatureGrid features={site?.features ?? []} />
-            <StatsBar stats={site?.stats ?? []} />
+            <Reveal>
+                <FeatureGrid features={site?.features ?? []} />
+            </Reveal>
+            <Reveal>
+                <StatsBar stats={site?.stats ?? []} />
+            </Reveal>
 
-            <LatestJobs jobs={jobs ?? []} />
+            <Reveal>
+                <LatestJobs jobs={jobs ?? []} />
+            </Reveal>
 
             {bannerSections.length > 0 ? (
-                <HomeSections sections={bannerSections} />
+                <Reveal>
+                    <HomeSections sections={bannerSections} />
+                </Reveal>
             ) : null}
-
 
             {hasCurated ? (
                 otherSections.length > 0 ? (
-                    <HomeSections sections={otherSections} />
+                    <Reveal>
+                        <HomeSections sections={otherSections} />
+                    </Reveal>
                 ) : null
             ) : legacyShowcase.length > 0 ? (
-                <ShowcaseSection groups={legacyShowcase} />
+                <Reveal>
+                    <ShowcaseSection groups={legacyShowcase} />
+                </Reveal>
             ) : null}
 
-            <CtaBand />
+            <Reveal>
+                <CtaBand />
+            </Reveal>
         </div>
     );
 }

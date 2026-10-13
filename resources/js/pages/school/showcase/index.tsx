@@ -1,4 +1,7 @@
-import ShowcaseSection, { ShowcaseGroup } from '@/components/general/showcase/showcase-section';
+import ShowcaseSection, {
+    ShowcaseGroup,
+} from '@/components/general/showcase/showcase-section';
+import Reveal from '@/components/ui/reveal';
 import MainLayout from '@/layouts/app/main-layout';
 import { Head, usePage } from '@inertiajs/react';
 import { ReactNode } from 'react';
@@ -13,16 +16,20 @@ function SchoolShowcase() {
             <Head title={t('showcase.title')} />
 
             <div className="space-y-4">
-                <section className="rounded-3xl bg-blue-50 p-6 shadow-md md:p-10 dark:bg-blue-950">
-                    <h1 className="text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-                        {t('showcase.title')}
-                    </h1>
-                    <p className="mt-3 max-w-3xl text-base text-slate-700 md:text-lg dark:text-slate-300">
-                        {t('showcase.subtitle')}
-                    </p>
-                </section>
+                <Reveal direction="fade" defaultInView>
+                    <section className="rounded-3xl bg-blue-50 p-6 shadow-md md:p-10 dark:bg-blue-950">
+                        <h1 className="text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
+                            {t('showcase.title')}
+                        </h1>
+                        <p className="mt-3 max-w-3xl text-base text-slate-700 md:text-lg dark:text-slate-300">
+                            {t('showcase.subtitle')}
+                        </p>
+                    </section>
+                </Reveal>
 
-                <ShowcaseSection groups={groups} withHeading={false} />
+                <Reveal>
+                    <ShowcaseSection groups={groups} withHeading={false} />
+                </Reveal>
             </div>
         </>
     );

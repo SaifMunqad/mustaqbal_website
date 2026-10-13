@@ -1,3 +1,4 @@
+import Reveal from '@/components/ui/reveal';
 import type { HomeStat } from '@/types';
 
 /**
@@ -15,17 +16,20 @@ export default function StatsBar({ stats }: { stats: HomeStat[] }) {
     return (
         <section className="grid gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:grid-cols-2 lg:grid-cols-4 dark:border-slate-800 dark:bg-gray-900">
             {items.map((stat, index) => (
-                <div
+                <Reveal
                     key={`${stat.label}-${index}`}
-                    className="flex flex-col items-center gap-1 text-center"
+                    delay={index * 120}
+                    direction="zoom"
                 >
-                    <span className="text-3xl font-bold text-blue-600 md:text-4xl dark:text-blue-400">
-                        {stat.value}
-                    </span>
-                    <span className="text-sm font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400">
-                        {stat.label}
-                    </span>
-                </div>
+                    <div className="flex flex-col items-center gap-1 text-center">
+                        <span className="text-3xl font-bold text-blue-600 md:text-4xl dark:text-blue-400">
+                            {stat.value}
+                        </span>
+                        <span className="text-sm font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400">
+                            {stat.label}
+                        </span>
+                    </div>
+                </Reveal>
             ))}
         </section>
     );

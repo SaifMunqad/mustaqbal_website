@@ -1,8 +1,9 @@
-import { FormEvent, ReactNode, useState } from 'react';
-import { Head } from '@inertiajs/react';
-import MainLayout from '@/layouts/app/main-layout';
 import { DateField, TextField } from '@/components/form-fields';
 import { useToast } from '@/components/toast';
+import Reveal from '@/components/ui/reveal';
+import MainLayout from '@/layouts/app/main-layout';
+import { Head } from '@inertiajs/react';
+import { FormEvent, ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 function SchoolEnrollResendEmail() {
@@ -27,13 +28,15 @@ function SchoolEnrollResendEmail() {
         const data = await response.json().catch(() => ({}));
 
         if (!response.ok) {
-            const errorMessage = data.message ?? t('enroll.resend.failedMessage');
+            const errorMessage =
+                data.message ?? t('enroll.resend.failedMessage');
             setMessage(errorMessage);
             error(t('enroll.resend.failed'), errorMessage);
             return;
         }
 
-        const successMessage = data.message ?? t('enroll.resend.successMessage');
+        const successMessage =
+            data.message ?? t('enroll.resend.successMessage');
         setMessage(successMessage);
         success(t('enroll.resend.success'), successMessage);
     };
@@ -41,28 +44,43 @@ function SchoolEnrollResendEmail() {
     return (
         <>
             <Head title={t('enroll.resend.title')} />
-            <section className="rounded-3xl bg-white p-6 shadow-sm dark:bg-gray-900 md:p-10">
-                <h1 className="text-2xl font-bold">{t('enroll.resend.heading')}</h1>
-                <form className="mt-6 grid gap-3" onSubmit={handleSubmit}>
-                    <TextField
-                        label={t('enroll.guardianEmail')}
-                        name="email"
-                        type="email"
-                        placeholder={t('enroll.guardianEmail')}
-                        required
-                    />
-                    <DateField label={t('enroll.dateOfBirth')} name="date_of_birth" calendar="islamic" required />
-                    <button className="rounded bg-blue-600 px-4 py-2 text-white" type="submit">
-                        {t('enroll.resend.button')}
-                    </button>
-                </form>
-                {message ? <p className="mt-4 text-sm text-green-600">{message}</p> : null}
-            </section>
+            <Reveal direction="fade" defaultInView>
+                <section className="rounded-3xl bg-white p-6 shadow-sm md:p-10 dark:bg-gray-900">
+                    <h1 className="text-2xl font-bold">
+                        {t('enroll.resend.heading')}
+                    </h1>
+                    <form className="mt-6 grid gap-3" onSubmit={handleSubmit}>
+                        <TextField
+                            label={t('enroll.guardianEmail')}
+                            name="email"
+                            type="email"
+                            placeholder={t('enroll.guardianEmail')}
+                            required
+                        />
+                        <DateField
+                            label={t('enroll.dateOfBirth')}
+                            name="date_of_birth"
+                            calendar="islamic"
+                            required
+                        />
+                        <button
+                            className="rounded bg-blue-600 px-4 py-2 text-white"
+                            type="submit"
+                        >
+                            {t('enroll.resend.button')}
+                        </button>
+                    </form>
+                    {message ? (
+                        <p className="mt-4 text-sm text-green-600">{message}</p>
+                    ) : null}
+                </section>
+            </Reveal>
         </>
     );
 }
 
-SchoolEnrollResendEmail.layout = (page: ReactNode) => <MainLayout children={page} />;
+SchoolEnrollResendEmail.layout = (page: ReactNode) => (
+    <MainLayout children={page} />
+);
 
 export default SchoolEnrollResendEmail;
-
