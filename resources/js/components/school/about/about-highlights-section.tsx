@@ -1,0 +1,28 @@
+import { useTranslation } from 'react-i18next';
+import { CheckCircle2 } from 'lucide-react';
+import AboutSectionHeading from '@/components/school/about/about-section-heading';
+import type { Highlight } from '@/components/school/about/about-types';
+
+export default function AboutHighlightsSection({ highlights }: { highlights: Highlight[] }) {
+    const { t } = useTranslation();
+
+    return (
+        <section className="space-y-8">
+            <AboutSectionHeading eyebrow={t('about.highlightsEyebrow')} title={t('about.highlightsTitle')} />
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {highlights.map((item, index) => (
+                    <div
+                        key={`${item.title}-${index}`}
+                        className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-gray-900"
+                    >
+                        <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-500" aria-hidden />
+                        <div>
+                            <h3 className="font-semibold text-slate-900 dark:text-white">{item.title}</h3>
+                            {item.text ? <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{item.text}</p> : null}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </section>
+    );
+}
