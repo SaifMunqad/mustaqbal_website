@@ -9,9 +9,9 @@ interface Props {
 
 export default function MainLayout({ children }: Props) {
     return (
-        <div className="space-y-3 bg-[#FDFDFC] p-2 sm:p-4 md:space-y-5 md:p-6 lg:p-8 dark:bg-[#0a0a0a]">
+        <div className="space-y-3 bg-[#FDFDFC] md:space-y-5 dark:bg-[#0a0a0a]">
             <Navbar />
-            <main className={'mx-auto px-1 md:px-2 lg:px-3 mt-12'}>{children}</main>
+            <main className={'mx-auto px-1 md:px-2 lg:px-3 mt-18 max-w-400'}>{children}</main>
             <Footer />
         </div>
     );

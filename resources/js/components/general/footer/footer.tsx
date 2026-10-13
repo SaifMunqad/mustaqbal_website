@@ -5,9 +5,9 @@ import { footerSections } from '@/lib/navigation';
 
 export default function Footer() {
     return (
-        <div className="mb-3">
+        <div className="">
             <footer className="rounded-2xl bg-gray-100 px-4 py-2 shadow-md backdrop-blur-lg backdrop-saturate-150 lg:px-8 lg:py-3 dark:bg-gray-800">
-                <div className="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
+                <div className="mx-auto w-full max-w-400 p-4 py-6 lg:py-8">
                     <div className="grid grid-cols-1 gap-8 md:grid-cols-4 md:gap-6">
                         <div className="md:col-span-1">
                             <FooterBrand />
