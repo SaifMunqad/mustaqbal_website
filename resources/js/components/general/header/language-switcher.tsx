@@ -1,8 +1,4 @@
-import {
-    CheckIcon,
-    ChevronDownIcon,
-    LanguageIcon,
-} from '@heroicons/react/24/outline';
+import { CheckIcon, LanguageIcon } from '@heroicons/react/24/outline';
 import { router, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -67,15 +63,11 @@ export default function LanguageSwitcher({
             <button
                 type="button"
                 onClick={() => setIsOpen((value) => !value)}
-                className="flex items-center gap-x-2 rounded-xl border border-gray-200/40 bg-white/20 p-2 text-sm text-slate-700 transition-all duration-300 hover:bg-white/40 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-300 dark:hover:bg-gray-800/40"
+                aria-label={i18n.language ? `Language (${currentLanguage ? currentLanguage.name : i18n.language})` : 'Language'}
+                title={currentLanguage ? currentLanguage.name : 'Language'}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200/40 bg-white/20 text-slate-700 transition-all duration-300 hover:bg-white/40 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-200 dark:hover:bg-gray-800/40"
             >
-                <LanguageIcon className="h-4 w-4" />
-                <span>{currentLanguage ? currentLanguage.name : 'Language'}</span>
-                <ChevronDownIcon
-                    className={`h-3.5 w-3.5 transition-transform duration-200 ${
-                        isOpen ? 'rotate-180' : ''
-                    }`}
-                />
+                <LanguageIcon className="h-5 w-5" />
             </button>
 
             {isOpen && (

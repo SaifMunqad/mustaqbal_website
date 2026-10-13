@@ -1,6 +1,7 @@
-import { Bars3Icon } from '@heroicons/react/24/outline';
+import { Bars3Icon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { Link, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '@/components/general/header/language-switcher';
 import NavbarBrand from '@/components/general/header/navbar-brand';
 import NavbarDesktop from '@/components/general/header/navbar-desktop';
@@ -9,6 +10,7 @@ import { navigationItems } from '@/lib/navigation';
 import type { SharedData } from '@/types';
 
 export default function Navbar() {
+    const { t } = useTranslation();
     const page = usePage<SharedData>();
     const { url, props } = page;
     const { auth } = props;
@@ -57,6 +59,14 @@ export default function Navbar() {
 
                 <div className="ms-auto hidden lg:block">
                     <div className="flex items-center gap-2">
+                        <Link
+                            href="/school/search"
+                            aria-label={t('navigation.search')}
+                            title={t('navigation.search')}
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200/40 bg-white/20 text-slate-700 transition-all duration-300 hover:bg-white/40 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-200 dark:hover:bg-gray-800/40"
+                        >
+                            <MagnifyingGlassIcon className="h-5 w-5" />
+                        </Link>
                         {isGuest ? (
                             <Link
                                 href="/login"
@@ -70,6 +80,14 @@ export default function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-2 lg:hidden">
+                    <Link
+                        href="/school/search"
+                        aria-label={t('navigation.search')}
+                        title={t('navigation.search')}
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200/40 bg-white/20 text-slate-700 transition-all duration-300 hover:bg-white/40 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-200 dark:hover:bg-gray-800/40"
+                    >
+                        <MagnifyingGlassIcon className="h-5 w-5" />
+                    </Link>
                     <LanguageSwitcher isSticky={isSticky} />
                     <button
                         onClick={() => setMobileMenuOpen((value) => !value)}
