@@ -19,20 +19,37 @@ class BookFactory extends Factory
     public function definition(): array
     {
         $title = Str::title(trim(fake()->words(random_int(2, 5), true)));
+        $slug = Str::slug($title).'-'.Str::lower(Str::random(5));
 
         return [
             'title' => $title,
-            'slug' => Str::slug($title).'-'.Str::lower(Str::random(5)),
+            'slug' => $slug,
             'author' => fake()->name(),
             'published_year' => fake()->numberBetween(1985, 2025),
             'publisher' => fake()->company(),
             'isbn' => '978'.fake()->numerify('##########'),
             'description' => fake()->sentences(3, true),
-            'images' => [],
+            'images' => $this->galleryImages($slug),
             'file_path' => null,
             'thumbnail_path' => null,
             'book_category_id' => null,
         ];
+    }
+
+    /**
+     * A small set of portrait cover/preview images for the book's gallery.
+     *
+     * Keyed to the slug so the pictures are stable for a given book. The store
+     * detail page renders these directly as <img> sources alongside the
+     * PDF-generated thumbnail.
+     *
+     * @return list<string>
+     */
+    private function galleryImages(string $slug): array
+    {
+        return collect(range(1, random_int(2, 4)))
+            ->map(fn (int $n): string => 'https://picsum.photos/seed/'.$slug.'-'.$n.'/800/1000')
+            ->all();
     }
 
     /**

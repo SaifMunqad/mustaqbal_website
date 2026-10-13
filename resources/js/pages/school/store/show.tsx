@@ -37,7 +37,7 @@ function StoreShowPage() {
     const { book, related } = usePage<Props>().props;
     const { t } = useTranslation();
 
-    const gallery = [book.thumbnail, ...(book.images ?? [])].filter((image): image is string => Boolean(image));
+    const gallery = Array.from(new Set([book.thumbnail, ...(book.images ?? [])].filter((image): image is string => Boolean(image))));
 
     return (
         <>

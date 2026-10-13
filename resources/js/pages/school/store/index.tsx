@@ -95,9 +95,13 @@ function StoreIndexPage() {
                             >
                                 <Link href={`/store/books/${book.slug}`} className="block">
                                     {book.thumbnail ? (
-                                        <img src={book.thumbnail} alt={book.title} className="h-48 w-full object-cover" />
+                                        <img
+                                            src={book.thumbnail}
+                                            alt={book.title}
+                                            className="aspect-[3/4] w-full object-cover"
+                                        />
                                     ) : (
-                                        <div className="flex h-48 w-full items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                                        <div className="flex aspect-[3/4] w-full items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                                             <BookOpenIcon className="size-10" />
                                         </div>
                                     )}

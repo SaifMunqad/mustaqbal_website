@@ -121,11 +121,15 @@ class BookstoreController extends Controller
     }
 
     /**
-     * The book's image is the thumbnail, generated from the PDF's first page
-     * (or replaced manually by an admin).
+     * The image shown for a book (on cards and as the detail hero).
+     *
+     * Prefers the first gallery image (a real cover picture) and falls back to
+     * the PDF-generated thumbnail when the book has no gallery images.
      */
     private function thumbnailUrl(Book $book): ?string
     {
-        return $this->thumbnails->url($book->thumbnail_path);
+        $cover = $book->images[0] ?? null;
+
+        return filled($cover) ? $cover : $this->thumbnails->url($book->thumbnail_path);
     }
 }
