@@ -1,4 +1,5 @@
 import MainLayout from '@/layouts/app/main-layout';
+import BookCard, { BookCardData } from '@/components/store/book-card';
 import { BookOpenIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { ReactNode } from 'react';
@@ -20,16 +21,9 @@ interface Book {
     category?: string | null;
 }
 
-interface RelatedBook {
-    id: number;
-    title: string;
-    slug: string;
-    thumbnail?: string | null;
-}
-
 interface Props {
     book: Book;
-    related: RelatedBook[];
+    related: BookCardData[];
     [key: string]: unknown;
 }
 
@@ -121,22 +115,7 @@ function StoreShowPage() {
                         <h2 className="text-xl font-bold text-slate-900 dark:text-white">{t('store.related')}</h2>
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             {related.map((item) => (
-                                <Link
-                                    key={item.id}
-                                    href={`/store/books/${item.slug}`}
-                                    className="overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-gray-900"
-                                >
-                                    {item.thumbnail ? (
-                                        <img src={item.thumbnail} alt={item.title} className="h-40 w-full object-cover" />
-                                    ) : (
-                                        <div className="flex h-40 items-center justify-center bg-slate-100 dark:bg-slate-800">
-                                            <BookOpenIcon className="size-8 text-slate-400" />
-                                        </div>
-                                    )}
-                                    <div className="space-y-1 p-3">
-                                        <p className="text-sm font-medium text-slate-900 dark:text-white">{item.title}</p>
-                                    </div>
-                                </Link>
+                                <BookCard key={item.id} book={item} />
                             ))}
                         </div>
                     </div>

@@ -1,6 +1,6 @@
 import MainLayout from '@/layouts/app/main-layout';
-import { BookOpenIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import BookCard from '@/components/store/book-card';
+import { Head, router, usePage } from '@inertiajs/react';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -89,42 +89,7 @@ function StoreIndexPage() {
                 ) : (
                     <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         {books.data.map((book) => (
-                            <div
-                                key={book.id}
-                                className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-gray-900"
-                            >
-                                <Link href={`/store/books/${book.slug}`} className="block">
-                                    {book.thumbnail ? (
-                                        <img
-                                            src={book.thumbnail}
-                                            alt={book.title}
-                                            className="aspect-[3/4] w-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="flex aspect-[3/4] w-full items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                                            <BookOpenIcon className="size-10" />
-                                        </div>
-                                    )}
-                                </Link>
-                                <div className="flex flex-1 flex-col gap-1 p-4">
-                                    {book.category ? <span className="text-xs text-blue-600">{book.category}</span> : null}
-                                    <Link href={`/store/books/${book.slug}`} className="font-semibold text-slate-900 hover:underline dark:text-white">
-                                        {book.title}
-                                    </Link>
-                                    {book.author ? <p className="text-xs text-slate-500">{book.author}</p> : null}
-                                    {book.published_year ? <p className="text-xs text-slate-400">{t('store.publishedYear')}: {book.published_year}</p> : null}
-                                    {book.publisher ? <p className="text-xs text-slate-400">{book.publisher}</p> : null}
-                                    <div className="mt-auto pt-3">
-                                        <a
-                                            href={book.download_url ?? `/store/books/${book.slug}`}
-                                            className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-blue-700"
-                                        >
-                                            <ArrowDownTrayIcon className="size-4" />
-                                            {t('store.download')}
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+                            <BookCard key={book.id} book={book} />
                         ))}
                     </section>
                 )}
