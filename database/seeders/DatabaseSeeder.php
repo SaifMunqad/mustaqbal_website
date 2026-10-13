@@ -76,28 +76,10 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-        SitePage::updateOrCreate(
-            ['slug' => 'about'],
-            [
-                'title' => 'About Mustaqbal School',
-                'hero_image' => 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1400&q=80',
-                'content' => [
-                    'vision' => 'Build a confident and capable generation guided by knowledge and values.',
-                    'manager_message' => 'We welcome every learner to a safe, modern, and inspiring environment.',
-                    'goals' => [
-                        'Academic excellence',
-                        'Character building',
-                        'Community service and leadership',
-                    ],
-                    'main_points' => [
-                        'Experienced teachers',
-                        'Modern classrooms',
-                        'Balanced extracurricular programs',
-                    ],
-                ],
-                'is_published' => true,
-            ],
-        );
+        // Rich, sectioned About page (story, stats, mission & vision, values,
+        // highlights, goals, leadership message, timeline, team, FAQ, gallery).
+        // Idempotent and kept in a dedicated seeder so it is easy to extend.
+        $this->call(AboutPageSeeder::class);
 
         SitePage::updateOrCreate(
             ['slug' => 'programs'],
