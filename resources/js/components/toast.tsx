@@ -217,9 +217,12 @@ export function ToastProvider({
     }, [showNotification, initialFlash]);
 
     useEffect(() => {
+        // timers.current is a stable ref that is never reassigned; capture it so
+        // the cleanup runs without referencing the mutable ref in the effect body.
+        const timerSet = timers.current;
         return () => {
-            timers.current.forEach((timer) => window.clearTimeout(timer));
-            timers.current.clear();
+            timerSet.forEach((timer) => window.clearTimeout(timer));
+            timerSet.clear();
         };
     }, []);
 
