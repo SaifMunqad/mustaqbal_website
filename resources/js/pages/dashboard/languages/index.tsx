@@ -1,4 +1,5 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
+import ConfirmDialog from '@/components/form/confirm-dialog';
 import { useFormToast } from '@/components/use-form-toast';
 import { Form, router, usePage } from '@inertiajs/react';
 import { GripVertical } from 'lucide-react';
@@ -39,9 +40,7 @@ export default function DashboardLanguagesIndex() {
     }, [languages]);
 
     const remove = (language: LanguageRow) => {
-        if (window.confirm(`Delete "${language.name}" (${language.code})?`)) {
-            router.delete(`/dashboard/languages/${language.id}`, { preserveScroll: true });
-        }
+        router.delete(`/dashboard/languages/${language.id}`, { preserveScroll: true });
     };
 
     const handleDragStart = (index: number) => {
@@ -214,13 +213,16 @@ export default function DashboardLanguagesIndex() {
                                     )}
                                 </td>
                                 <td className="px-4 py-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => remove(language)}
-                                        className="text-red-600 underline"
+                                    <ConfirmDialog
+                                        title={`Delete "${language.name}" (${language.code})?`}
+                                        description="This cannot be undone."
+                                        confirmLabel={t('dashboard.languages.delete')}
+                                        onConfirm={() => remove(language)}
                                     >
-                                        {t('dashboard.languages.delete')}
-                                    </button>
+                                        <button type="button" className="text-red-600 underline">
+                                            {t('dashboard.languages.delete')}
+                                        </button>
+                                    </ConfirmDialog>
                                 </td>
                             </tr>
                         ))}

@@ -1,5 +1,6 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { Button } from '@/components/ui/button';
+import ConfirmDialog from '@/components/form/confirm-dialog';
 import { Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -45,9 +46,7 @@ function SectionList({ sections }: { sections: SectionRow[] }) {
     };
 
     const remove = (id: number) => {
-        if (window.confirm('Remove this section from the home page?')) {
-            router.delete(`/dashboard/home-sections/${id}`, { preserveScroll: true });
-        }
+        router.delete(`/dashboard/home-sections/${id}`, { preserveScroll: true });
     };
 
     if (rows.length === 0) {
@@ -136,13 +135,16 @@ function SectionList({ sections }: { sections: SectionRow[] }) {
                         >
                             Edit
                         </Link>
-                        <button
-                            type="button"
-                            onClick={() => remove(row.id)}
-                            className="text-sm font-semibold text-red-600 underline"
+                        <ConfirmDialog
+                            title="Remove this section?"
+                            description="The section will be removed from the home page. This cannot be undone."
+                            confirmLabel="Delete"
+                            onConfirm={() => remove(row.id)}
                         >
-                            Delete
-                        </button>
+                            <Button type="button" variant="link" className="text-sm font-semibold text-red-600 underline">
+                                Delete
+                            </Button>
+                        </ConfirmDialog>
                     </div>
                 </div>
             ))}

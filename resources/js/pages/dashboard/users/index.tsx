@@ -1,4 +1,5 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
+import ResourceFilterBar, { filterSelectClass } from '@/components/dashboard/resource-filter-bar';
 import { DataTable, DataTableColumn } from '@/components/table';
 import { Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
@@ -91,17 +92,16 @@ export default function DashboardUsersIndex() {
             createHref="/dashboard/users/create"
             createLabelKey="dashboard.actions.newUser"
         >
-            <div className="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-background p-3">
-                <input
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                    placeholder="Search name or email"
-                    className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-                />
+            <ResourceFilterBar
+                search={search}
+                onSearchChange={setSearch}
+                onApply={applyFilters}
+                placeholder="Search name or email"
+            >
                 <select
                     value={role}
                     onChange={(event) => setRole(event.target.value)}
-                    className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none"
+                    className={filterSelectClass}
                 >
                     <option value="">All roles</option>
                     {roleOptions.map((option) => (
@@ -113,7 +113,7 @@ export default function DashboardUsersIndex() {
                 <select
                     value={status}
                     onChange={(event) => setStatus(event.target.value)}
-                    className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none"
+                    className={filterSelectClass}
                 >
                     <option value="">All statuses</option>
                     {statusOptions.map((option) => (
@@ -122,14 +122,7 @@ export default function DashboardUsersIndex() {
                         </option>
                     ))}
                 </select>
-                <button
-                    type="button"
-                    onClick={applyFilters}
-                    className="rounded-xl bg-blue-600 px-4 py-2 text-sm text-white transition hover:bg-blue-700"
-                >
-                    Filter
-                </button>
-            </div>
+            </ResourceFilterBar>
 
             <DataTable
                 data={users.data}

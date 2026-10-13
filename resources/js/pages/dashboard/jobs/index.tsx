@@ -1,4 +1,5 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
+import ResourceFilterBar from '@/components/dashboard/resource-filter-bar';
 import { DataTable, DataTableColumn } from '@/components/table';
 import { Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
@@ -112,21 +113,12 @@ export default function DashboardJobsIndex() {
             createHref="/dashboard/jobs/create"
             createLabelKey="dashboard.actions.newJob"
         >
-            <div className="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-background p-3">
-                <input
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                    placeholder="Search jobs"
-                    className="rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-                />
-                <button
-                    type="button"
-                    onClick={() => router.get('/dashboard/jobs', { search }, { preserveState: true, replace: true })}
-                    className="rounded-xl bg-blue-600 px-4 py-2 text-sm text-white transition hover:bg-blue-700"
-                >
-                    Filter
-                </button>
-            </div>
+            <ResourceFilterBar
+                search={search}
+                onSearchChange={setSearch}
+                onApply={() => router.get('/dashboard/jobs', { search }, { preserveState: true, replace: true })}
+                placeholder="Search jobs"
+            />
 
             <DataTable
                 data={jobs.data}

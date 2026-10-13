@@ -1,5 +1,7 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { DataTable, DataTableColumn } from '@/components/table';
+import ConfirmDialog from '@/components/form/confirm-dialog';
+import { Button } from '@/components/ui/button';
 import { Link, router, usePage } from '@inertiajs/react';
 
 interface CategoryRow {
@@ -18,9 +20,7 @@ export default function DashboardCategoriesIndex() {
     const { categories } = usePage<CategoriesIndexProps>().props;
 
     const remove = (id: number) => {
-        if (window.confirm('Delete this category? Its books will be kept but become uncategorized.')) {
-            router.delete(`/dashboard/categories/${id}`, { preserveScroll: true });
-        }
+        router.delete(`/dashboard/categories/${id}`, { preserveScroll: true });
     };
 
     const columns: DataTableColumn<CategoryRow>[] = [
@@ -36,9 +36,16 @@ export default function DashboardCategoriesIndex() {
                     <Link href={`/dashboard/categories/${row.id}/edit`} className="text-blue-600 underline">
                         Edit
                     </Link>
-                    <button type="button" onClick={() => remove(row.id)} className="text-red-600 underline">
-                        Delete
-                    </button>
+                    <ConfirmDialog
+                        title="Delete this category?"
+                        description="Its books will be kept but become uncategorized. This cannot be undone."
+                        confirmLabel="Delete"
+                        onConfirm={() => remove(row.id)}
+                    >
+                        <Button type="button" variant="destructive">
+                            Delete
+                        </Button>
+                    </ConfirmDialog>
                 </div>
             ),
         },
