@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { ComponentProps, ReactNode, useEffect, useMemo, useState } from 'react';
+import { ComponentProps, ReactNode, useMemo, useState } from 'react';
 import DateObject from 'react-date-object';
 import arabic from 'react-date-object/calendars/arabic';
 import gregorian from 'react-date-object/calendars/gregorian';
@@ -276,11 +276,17 @@ function DateField({
         fromGregorianValue(value ?? defaultValue ?? null, calendar),
     );
 
-    useEffect(() => {
+    // Keep the picker in sync when the controlled value or calendar changes,
+    // adjusting state during render (instead of an effect) per React's
+    // derived-state guidance. Only controlled values (value !== undefined)
+    // re-sync, matching the previous effect behaviour.
+    const [syncKey, setSyncKey] = useState({ value, calendar });
+    if (syncKey.value !== value || syncKey.calendar !== calendar) {
+        setSyncKey({ value, calendar });
         if (value !== undefined) {
             setSelected(fromGregorianValue(value, calendar));
         }
-    }, [calendar, value]);
+    }
 
     const config = calendarConfig[calendar];
     const gregorianValue = useMemo(

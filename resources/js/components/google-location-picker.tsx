@@ -1,5 +1,10 @@
 import { Autocomplete, GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, useSyncExternalStore } from 'react';
+
+// Client-only gate without a mount effect: the server snapshot is false (render
+// the placeholder) and the client snapshot is true (render the map), giving the
+// same "loading then map" sequence while staying SSR-safe.
+const emptySubscribe = () => () => {};
 
 export interface PickedLocation {
     latitude: number;
@@ -44,12 +49,18 @@ function PickerInner({ apiKey, latitude, longitude, zoom, onChange }: GoogleLoca
     }));
     const [currentZoom, setCurrentZoom] = useState(zoom ?? DEFAULT_ZOOM);
 
-    // Keep the marker centred on the latest saved coordinates from the parent.
-    useEffect(() => {
-        if (latitude != null && longitude != null) {
-            setCenter({ lat: latitude, lng: longitude });
-        }
-    }, [latitude, longitude]);
+    // Keep the marker centred on the latest saved coordinates from the parent,
+    // adjusting state during render (instead of an effect) per React's
+    // derived-state guidance.
+    const [syncKey, setSyncKey] = useState({ latitude, longitude });
+    if (
+        latitude != null &&
+        longitude != null &&
+        (syncKey.latitude !== latitude || syncKey.longitude !== longitude)
+    ) {
+        setSyncKey({ latitude, longitude });
+        setCenter({ lat: latitude, lng: longitude });
+    }
 
     const emit = (lat: number, lng: number, nextZoom: number, address?: string) => {
         setCenter({ lat, lng });
@@ -144,11 +155,11 @@ function PickerInner({ apiKey, latitude, longitude, zoom, onChange }: GoogleLoca
 
 export default function GoogleLocationPicker(props: GoogleLocationPickerProps) {
     // Defer the map to the client only; keeps SSR from touching window/document.
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    const mounted = useSyncExternalStore(
+        emptySubscribe,
+        () => true,
+        () => false,
+    );
 
     if (!props.apiKey) {
         return (
