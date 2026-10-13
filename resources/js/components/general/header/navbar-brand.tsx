@@ -2,11 +2,7 @@ import { Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import type { SharedData } from '@/types';
 
-interface NavbarBrandProps {
-    isSticky: boolean;
-}
-
-export default function NavbarBrand({ isSticky }: NavbarBrandProps) {
+export default function NavbarBrand() {
     const { t } = useTranslation();
     const { site } = usePage<SharedData>().props;
 

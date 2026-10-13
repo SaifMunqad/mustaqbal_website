@@ -7,13 +7,11 @@ export default function Dropdown({
     items,
     isOpen,
     onClose,
-    isSticky,
     containerRef,
 }: {
     items: NavigationChildItem[];
     isOpen: boolean;
     onClose: () => void;
-    isSticky: boolean;
     // A ref wrapping both the trigger button and the dropdown panel so that
     // clicking the trigger toggles cleanly instead of being treated as an
     // outside click (which would close then immediately re-open it).

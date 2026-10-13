@@ -9,17 +9,14 @@ import type { NavigationItem } from '@/lib/navigation';
 interface NavbarDesktopProps {
     items: NavigationItem[];
     currentUrl: string;
-    isSticky: boolean;
 }
 
 function DesktopNavItem({
                             item,
                             currentUrl,
-                            isSticky,
                         }: {
     item: NavigationItem;
     currentUrl: string;
-    isSticky: boolean;
 }) {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -64,7 +61,6 @@ function DesktopNavItem({
                         items={item.dropdown}
                         isOpen={isDropdownOpen}
                         onClose={() => setIsDropdownOpen(false)}
-                        isSticky={isSticky}
                         containerRef={containerRef}
                     />
                 </div>
@@ -83,7 +79,6 @@ function DesktopNavItem({
 export default function NavbarDesktop({
                                           items,
                                           currentUrl,
-                                          isSticky,
                                       }: NavbarDesktopProps) {
     return (
         <div className="hidden lg:block">
@@ -93,7 +88,6 @@ export default function NavbarDesktop({
                         key={item.key}
                         item={item}
                         currentUrl={currentUrl}
-                        isSticky={isSticky}
                     />
                 ))}
             </ul>

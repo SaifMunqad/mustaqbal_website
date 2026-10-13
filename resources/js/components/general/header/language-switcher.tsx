@@ -6,12 +6,10 @@ import { setKnownLanguages } from '@/i18n';
 import type { LanguageOption, SharedData } from '@/types';
 
 interface LanguageSwitcherProps {
-    isSticky: boolean;
     className?: string;
 }
 
 export default function LanguageSwitcher({
-    isSticky,
     className = '',
 }: LanguageSwitcherProps) {
     const [isOpen, setIsOpen] = useState(false);

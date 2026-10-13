@@ -40,21 +40,13 @@ export default function Navbar() {
     }, [url]);
 
     return (
-        <nav
-            className={`fixed top-0 inset-x-0 z-50 transition-all shadow-sm duration-300 py-1 px-3 ${
-                isSticky
-                    ? 'w-full rounded-none border-b border-gray-200/40 bg-white/90 backdrop-blur-md backdrop-saturate-150  dark:border-gray-800/40 dark:bg-[#121212]/90'
-                    // ? 'rounded-2xl border border-gray-200/50 bg-white/80 backdrop-blur-xl backdrop-saturate-200 dark:border-gray-800/50 dark:bg-gray-900/80'
-                    : 'w-full rounded-none border-b border-gray-200/40 bg-white/90 backdrop-blur-md backdrop-saturate-150  dark:border-gray-800/40 dark:bg-[#121212]/90'
-            }`}
-        >
+        <nav className="fixed top-0 inset-x-0 z-50 w-full rounded-none border-b border-gray-200/40 bg-white/90 px-3 py-1 shadow-sm backdrop-blur-md backdrop-saturate-150 transition-all duration-300 dark:border-gray-800/40 dark:bg-[#121212]/90">
             <div className="container mx-auto flex flex-wrap items-center justify-between">
-                <NavbarBrand isSticky={isSticky} />
+                <NavbarBrand />
 
                 <NavbarDesktop
                     items={navigationItems}
                     currentUrl={url}
-                    isSticky={isSticky}
                 />
 
                 <div className="ms-auto hidden lg:block">
@@ -75,7 +67,7 @@ export default function Navbar() {
                                 Login
                             </Link>
                         ) : null}
-                        <LanguageSwitcher isSticky={isSticky} />
+                        <LanguageSwitcher />
                     </div>
                 </div>
 
@@ -88,7 +80,7 @@ export default function Navbar() {
                     >
                         <MagnifyingGlassIcon className="h-5 w-5" />
                     </Link>
-                    <LanguageSwitcher isSticky={isSticky} />
+                    <LanguageSwitcher />
                     <button
                         onClick={() => setMobileMenuOpen((value) => !value)}
                         className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200/40 bg-white/20 text-slate-700 transition-all duration-300 hover:bg-white/40 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-200 dark:hover:bg-gray-800/40"
