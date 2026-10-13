@@ -3,6 +3,7 @@
 use App\Http\Controllers\BookstoreController;
 use App\Http\Controllers\SchoolArticleController;
 use App\Http\Controllers\SchoolEventController;
+use App\Http\Controllers\SchoolJobController;
 use App\Http\Controllers\SchoolPageController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ShowcaseController;
@@ -19,6 +20,7 @@ Route::prefix('school')->group(function () {
     Route::get('/showcase', [ShowcaseController::class, 'index'])->name('school.showcase');
     Route::get('/events', [SchoolEventController::class, 'index'])->name('school.events');
     Route::get('/events/{event:slug}', [SchoolEventController::class, 'show'])->name('school.events.show');
+    Route::get('/jobs', [SchoolJobController::class, 'index'])->name('school.jobs');
     Route::get('/enroll', [SchoolPageController::class, 'enrollment'])->name('school.enroll');
     Route::get('/enroll/resend-email', [SchoolPageController::class, 'resendEnrollmentEmail'])
         ->name('school.enroll.resend-email');

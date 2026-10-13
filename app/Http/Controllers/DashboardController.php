@@ -7,6 +7,7 @@ use App\Models\Book;
 use App\Models\Contact;
 use App\Models\Enrollment;
 use App\Models\Event;
+use App\Models\Job;
 use App\Models\Message;
 use App\Models\Post;
 use App\Models\Program;
@@ -28,6 +29,7 @@ class DashboardController extends Controller
                 'pages' => SitePage::query()->count(),
                 'events' => Event::query()->upcoming()->count(),
                 'enrollments' => Enrollment::query()->count(),
+                'jobs' => Job::query()->active()->count(),
                 'books' => Book::query()->count(),
             ],
         ]);

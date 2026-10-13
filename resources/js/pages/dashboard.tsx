@@ -19,6 +19,7 @@ interface OverviewStats {
     pages: number;
     events: number;
     enrollments: number;
+    jobs: number;
     books: number;
 }
 
@@ -72,6 +73,10 @@ export default function Dashboard() {
                         <p className="text-2xl font-bold">{stats.enrollments}</p>
                     </div>
                     <div className="rounded-xl border p-4">
+                        <p className="text-sm text-slate-500">{t('dashboard.stats.jobs')}</p>
+                        <p className="text-2xl font-bold">{stats.jobs}</p>
+                    </div>
+                    <div className="rounded-xl border p-4">
                         <p className="text-sm text-slate-500">{t('dashboard.stats.books')}</p>
                         <p className="text-2xl font-bold">{stats.books}</p>
                     </div>
@@ -85,6 +90,7 @@ export default function Dashboard() {
                         <Link href="/dashboard/events/create" className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white">{t('dashboard.actions.newEvent')}</Link>
                         <Link href="/dashboard/books/create" className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white">{t('dashboard.actions.newBook')}</Link>
                         <Link href="/dashboard/programs/create" className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white">{t('dashboard.actions.newProgram')}</Link>
+                        <Link href="/dashboard/jobs/create" className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white">{t('dashboard.actions.newJob')}</Link>
                     </div>
                 </section>
             </div>
