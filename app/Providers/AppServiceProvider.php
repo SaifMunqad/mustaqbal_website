@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Enums\UserRole;
 use App\Models\Article;
 use App\Models\Event;
 use App\Models\Post;
@@ -52,5 +53,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(Article::class, ArticlePolicy::class);
         Gate::policy(Event::class, EventPolicy::class);
+
+        // Restrict Pulse dashboard to Management and Admin roles.
+        Gate::define('viewPulse', function (User $user) {
+            return $user->role?->atLeast(UserRole::Management) ?? false;
+        });
     }
 }
