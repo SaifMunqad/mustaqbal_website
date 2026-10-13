@@ -23,6 +23,7 @@ const en = {
         search: 'Search',
         admissions: 'Admissions',
         enroll: 'Enroll',
+        jobs: 'Active Jobs',
         contact: 'Contact',
     },
     navigationDescriptions: {
@@ -33,6 +34,7 @@ const en = {
         events: 'See upcoming school events and the calendar',
         admissions: 'Apply and start your journey',
         enroll: 'Complete student enrollment details',
+        jobs: 'View open positions and apply',
         contact: 'Talk to our team',
     },
     home: {
@@ -128,6 +130,7 @@ const en = {
         },
         tabs: {
             overview: 'Overview',
+            homePage: 'Home Page',
             articles: 'Articles',
             posts: 'Posts',
             events: 'Events',
@@ -135,6 +138,7 @@ const en = {
             messages: 'Messages',
             emailCampaigns: 'Bulk Email',
             programs: 'Programs',
+            jobs: 'Jobs',
             pages: 'Pages',
             users: 'Users',
             books: 'Books',
@@ -151,6 +155,7 @@ const en = {
             pages: 'Pages',
             events: 'Upcoming Events',
             enrollments: 'Enrollments',
+            jobs: 'Active Jobs',
             books: 'Books',
         },
         actions: {
@@ -165,6 +170,7 @@ const en = {
             newBook: 'New Book',
             newCategory: 'New Category',
             newLanguage: 'New Language',
+            newJob: 'New Job',
         },
         articles: {
             title: 'Articles',
@@ -180,6 +186,11 @@ const en = {
             title: 'Events',
             createTitle: 'Create Event',
             editTitle: 'Edit Event',
+        },
+        jobs: {
+            title: 'Jobs',
+            createTitle: 'Create Job',
+            editTitle: 'Edit Job',
         },
         contacts: {
             title: 'Contacts',
@@ -250,6 +261,12 @@ const en = {
         settings: {
             title: 'Site Settings',
             editTitle: 'Site Settings',
+        },
+        homeSections: {
+            title: 'Home Page',
+            createTitle: 'Add Home Section',
+            editTitle: 'Edit Home Section',
+            add: 'Add section',
         },
     },
 };

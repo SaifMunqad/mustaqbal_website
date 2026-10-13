@@ -253,5 +253,13 @@ class DatabaseSeeder extends Seeder
         // Events calendar: current-month events plus backfill around it,
         // giving the multi-calendar view upcoming/ongoing/past data.
         $this->call(EventSeeder::class);
+
+        // Job postings: 20 active positions and 5 closed ones for the careers portal.
+        $this->call(JobSeeder::class);
+
+        // Home page layout: authored banner/announcement blocks plus curated
+        // sections wired to the articles/events/recognition seeded above, so the
+        // home page is populated on a fresh seed instead of showing nothing.
+        $this->call(HomeSectionSeeder::class);
     }
 }

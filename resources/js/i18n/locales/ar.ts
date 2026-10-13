@@ -23,6 +23,7 @@ const ar = {
         search: 'بحث',
         admissions: 'التسجيل',
         enroll: 'التسجيل',
+        jobs: 'الوظائف',
         contact: 'اتصل بنا',
     },
     navigationDescriptions: {
@@ -33,6 +34,7 @@ const ar = {
         events: 'مشاهدة الفعاليات القادمة والتقويم المدرسي',
         admissions: 'قدم طلبك وابدأ رحلتك',
         enroll: 'اكمل بيانات تسجيل الطالب',
+        jobs: 'شاهد الوظائف الشاغرة وقدم طلبك',
         contact: 'تواصل مع فريقنا',
     },
     home: {
@@ -123,6 +125,7 @@ const ar = {
             platform: 'المنصة',
         },
         tabs: {
+            homePage: 'الصفحة الرئيسية',
             overview: 'نظرة عامة',
             articles: 'المقالات',
             posts: 'المنشورات',
@@ -131,6 +134,7 @@ const ar = {
             messages: 'الرسائل',
             emailCampaigns: 'البريد الجماعي',
             programs: 'البرامج',
+            jobs: 'الوظائف',
             pages: 'الصفحات',
             users: 'المستخدمون',
             books: 'الكتب',
@@ -146,6 +150,7 @@ const ar = {
             pages: 'الصفحات',
             events: 'الفعاليات القادمة',
             enrollments: 'التسجيلات',
+            jobs: 'الوظائف الشاغرة',
             books: 'الكتب',
         },
         actions: {
@@ -159,6 +164,7 @@ const ar = {
             newUser: 'حساب جديد',
             newBook: 'كتاب جديد',
             newCategory: 'تصنيف جديد',
+            newJob: 'وظيفة جديدة',
         },
         articles: {
             title: 'المقالات',
@@ -174,6 +180,11 @@ const ar = {
             title: 'الفعاليات',
             createTitle: 'إنشاء فعالية',
             editTitle: 'تعديل فعالية',
+        },
+        jobs: {
+            title: 'الوظائف',
+            createTitle: 'إنشاء وظيفة',
+            editTitle: 'تعديل وظيفة',
         },
         contacts: {
             title: 'جهات الاتصال',
@@ -222,6 +233,12 @@ const ar = {
         settings: {
             title: 'إعدادات الموقع',
             editTitle: 'إعدادات الموقع',
+        },
+        homeSections: {
+            title: 'الصفحة الرئيسية',
+            createTitle: 'إضافة قسم للرئيسية',
+            editTitle: 'تعديل قسم الصفحة الرئيسية',
+            add: 'إضافة قسم',
         },
     },
 };

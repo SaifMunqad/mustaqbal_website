@@ -23,6 +23,7 @@ const faAF = {
         search: 'جستجو',
         admissions: 'ثبت نام',
         enroll: 'نام نویسی',
+        jobs: 'دنده ها',
         contact: 'تماس',
     },
     navigationDescriptions: {
@@ -33,6 +34,7 @@ const faAF = {
         events: 'پېښه های پيش روی مکتب و جنتر را ببينيد',
         admissions: 'درخواست بدهيد و سفر خود را آغاز کنيد',
         enroll: 'معلومات نام نویسی شاگرد را تکميل کنيد',
+        jobs: 'دنده های خلاص را ببينيد و درخواست بدهيد',
         contact: 'با تيم ما گفتگو کنيد',
     },
     home: {
@@ -127,6 +129,7 @@ const faAF = {
             platform: 'پلتفرم',
         },
         tabs: {
+            homePage: 'صفحه اصلی',
             overview: 'نماى کلی',
             articles: 'مقالات',
             posts: 'پست ها',
@@ -135,6 +138,7 @@ const faAF = {
             messages: 'پيام ها',
             emailCampaigns: 'ايميل گروهي',
             programs: 'برنامه ها',
+            jobs: 'دنده ها',
             pages: 'صفحه ها',
             users: 'کاربرها',
             books: 'کتاب ها',
@@ -150,6 +154,7 @@ const faAF = {
             pages: 'صفحه ها',
             events: 'پېښه های پيش رو',
             enrollments: 'نام نويسي ها',
+            jobs: 'دنده های خلاص',
             books: 'کتاب ها',
         },
         actions: {
@@ -163,6 +168,7 @@ const faAF = {
             newUser: 'حساب جديد',
             newBook: 'کتاب جديد',
             newCategory: 'بخش جديد',
+            newJob: 'دنده جديد',
         },
         articles: {
             title: 'مقالات',
@@ -178,6 +184,11 @@ const faAF = {
             title: 'پېښه ها',
             createTitle: 'ايجاد پېښه',
             editTitle: 'ويرايش پېښه',
+        },
+        jobs: {
+            title: 'دنده ها',
+            createTitle: 'ايجاد دنده',
+            editTitle: 'ويرايش دنده',
         },
         contacts: {
             title: 'تماس ها',
@@ -226,6 +237,12 @@ const faAF = {
         settings: {
             title: 'تنظیمات سایت',
             editTitle: 'تنظیمات سایت',
+        },
+        homeSections: {
+            title: 'صفحه اصلی',
+            createTitle: 'افزودن بخش صفحه اصلی',
+            editTitle: 'ویرایش بخش صفحه اصلی',
+            add: 'افزودن بخش',
         },
     },
 };

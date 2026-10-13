@@ -23,6 +23,7 @@ const ps = {
         search: 'لټون',
         admissions: 'شموليت',
         enroll: 'نوم ليکنه',
+        jobs: 'دندې',
         contact: 'اړيکه',
     },
     navigationDescriptions: {
@@ -33,6 +34,7 @@ const ps = {
         events: 'راتلونکې پېښې او جنلی کالینډر وګورئ',
         admissions: 'غوښتنليک ورکړئ او خپل سفر پيل کړئ',
         enroll: 'د زده کوونکي نوم ليکنې معلومات بشپړ کړئ',
+        jobs: 'پرانيستلې دندې وګورئ او درخواست ورکړئ',
         contact: 'له ټيم سره مو اړيکه ونيسئ',
     },
     home: {
@@ -127,6 +129,7 @@ const ps = {
             platform: 'پلېټفارم',
         },
         tabs: {
+            homePage: 'کورنۍ پاڼه',
             overview: 'عمومي کتنه',
             articles: 'مقالې',
             posts: 'پوسټونه',
@@ -135,6 +138,7 @@ const ps = {
             messages: 'پيغامونه',
             emailCampaigns: 'ټوليز ايميل',
             programs: 'پروګرامونه',
+            jobs: 'دندې',
             pages: 'پاڼې',
             users: 'کاروونکي',
             books: 'کتابونه',
@@ -150,6 +154,7 @@ const ps = {
             pages: 'پاڼې',
             events: 'راتلونکې پېښې',
             enrollments: 'نوم ليکنې',
+            jobs: 'پرانيستلې دندې',
             books: 'کتابونه',
         },
         actions: {
@@ -163,6 +168,7 @@ const ps = {
             newUser: 'نوی حساب',
             newBook: 'نوی کتاب',
             newCategory: 'نوی ډول',
+            newJob: 'نوه دنده',
         },
         articles: {
             title: 'مقالې',
@@ -178,6 +184,11 @@ const ps = {
             title: 'پېښې',
             createTitle: 'پېښه جوړول',
             editTitle: 'پېښه سمول',
+        },
+        jobs: {
+            title: 'دندې',
+            createTitle: 'دنده جوړول',
+            editTitle: 'دنده سمول',
         },
         contacts: {
             title: 'اړيکې',
@@ -226,6 +237,12 @@ const ps = {
         settings: {
             title: 'د سایت تنظیمات',
             editTitle: 'د سایت تنظیمات',
+        },
+        homeSections: {
+            title: 'کورنۍ پاڼه',
+            createTitle: 'د کورنۍ پاڼې برخه اضافه کول',
+            editTitle: 'د کورنۍ پاڼې برخه سمول',
+            add: 'برخه اضافه کول',
         },
     },
 };

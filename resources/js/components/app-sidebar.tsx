@@ -13,10 +13,12 @@ import { type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {
     BookOpen,
+    Briefcase,
     CalendarDays,
     FileText,
     Folder,
     Globe,
+    Home,
     LayoutGrid,
     Library,
     Mail,
@@ -42,6 +44,15 @@ export function AppSidebar() {
             href: '/dashboard',
             icon: LayoutGrid,
         },
+        ...(canManageUsers
+            ? [
+                  {
+                      title: t('dashboard.tabs.homePage'),
+                      href: '/dashboard/home-sections',
+                      icon: Home,
+                  },
+              ]
+            : []),
         {
             title: t('dashboard.tabs.articles'),
             href: '/dashboard/articles',
@@ -81,6 +92,15 @@ export function AppSidebar() {
             href: '/dashboard/programs',
             icon: School,
         },
+        ...(canManageUsers
+            ? [
+                  {
+                      title: t('dashboard.tabs.jobs'),
+                      href: '/dashboard/jobs',
+                      icon: Briefcase,
+                  },
+              ]
+            : []),
         {
             title: t('dashboard.tabs.pages'),
             href: '/dashboard/site-pages',
