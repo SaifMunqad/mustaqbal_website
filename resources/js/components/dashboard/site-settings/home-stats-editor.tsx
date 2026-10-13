@@ -1,6 +1,6 @@
 import { type HomeStat } from '@/types';
+import { Button } from '@/components/ui/button';
 import {
-    addBtnClass,
     rowButtonClass,
     rowInputClass,
 } from '@/components/dashboard/site-settings/site-settings-shared';
@@ -29,9 +29,9 @@ export default function HomeStatsEditor({ stats, onChange }: HomeStatsEditorProp
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     Quick stats
                 </span>
-                <button type="button" className={addBtnClass} onClick={add}>
+                <Button type="button" size="sm" onClick={add}>
                     Add stat
-                </button>
+                </Button>
             </div>
             {stats.map((stat, index) => (
                 <div key={index} className="flex flex-wrap items-center gap-2">

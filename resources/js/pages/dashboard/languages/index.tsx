@@ -1,5 +1,6 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import ConfirmDialog from '@/components/form/confirm-dialog';
+import { Button } from '@/components/ui/button';
 import { useFormToast } from '@/components/use-form-toast';
 import { Form, router, usePage } from '@inertiajs/react';
 import { GripVertical } from 'lucide-react';
@@ -109,9 +110,7 @@ export default function DashboardLanguagesIndex() {
                     <input type="checkbox" name="is_active" value="1" defaultChecked />
                     {t('dashboard.languages.active')}
                 </label>
-                <button type="submit" className="rounded-xl bg-blue-600 px-4 py-2 text-sm text-white transition hover:bg-blue-700">
-                    {t('dashboard.languages.add')}
-                </button>
+                <Button type="submit">{t('dashboard.languages.add')}</Button>
             </Form>
 
             <p className="text-xs text-muted-foreground">{t('dashboard.languages.dragHint')}</p>
@@ -158,9 +157,9 @@ export default function DashboardLanguagesIndex() {
                                         </select>
                                         <input type="hidden" name="is_active" value={language.is_active ? '1' : '0'} />
                                         <input type="hidden" name="is_default" value={language.is_default ? '1' : '0'} />
-                                        <button type="submit" className="rounded-lg bg-slate-600 px-3 py-1.5 text-xs text-white hover:bg-slate-700">
+                                        <Button type="submit" size="sm" variant="secondary">
                                             {t('dashboard.languages.update')}
-                                        </button>
+                                        </Button>
                                     </Form>
                                 </td>
                                 <td className="px-4 py-3">{language.dir}</td>

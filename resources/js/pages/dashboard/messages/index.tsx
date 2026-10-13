@@ -107,7 +107,7 @@ export default function DashboardMessagesIndex() {
                         href={item.href}
                         className={`rounded-lg px-3 py-1.5 text-sm transition ${
                             box === item.key
-                                ? 'bg-blue-600 text-white'
+                                ? 'bg-primary text-primary-foreground'
                                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700'
                         }`}
                     >

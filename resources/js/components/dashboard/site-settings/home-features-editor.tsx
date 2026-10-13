@@ -1,6 +1,6 @@
 import { type HomeFeature } from '@/types';
+import { Button } from '@/components/ui/button';
 import {
-    addBtnClass,
     FEATURE_ICONS,
     rowButtonClass,
     rowInputClass,
@@ -31,9 +31,9 @@ export default function HomeFeaturesEditor({ features, onChange }: HomeFeaturesE
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     Why choose us (features)
                 </span>
-                <button type="button" className={addBtnClass} onClick={add}>
+                <Button type="button" size="sm" onClick={add}>
                     Add feature
-                </button>
+                </Button>
             </div>
             {features.map((feature, index) => (
                 <div

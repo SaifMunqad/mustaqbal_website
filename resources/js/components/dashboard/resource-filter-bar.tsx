@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { type ReactNode } from 'react';
 
 // Shared styling for the dashboard listing filter bars.
@@ -7,8 +8,6 @@ export const filterInputClass =
     'rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20';
 export const filterSelectClass =
     'rounded-2xl border border-border bg-background px-3 py-2 text-sm outline-none';
-export const filterButtonClass =
-    'rounded-xl bg-blue-600 px-4 py-2 text-sm text-white transition hover:bg-blue-700';
 
 interface ResourceFilterBarProps {
     search: string;
@@ -41,9 +40,9 @@ export default function ResourceFilterBar({
                 className={filterInputClass}
             />
             {children}
-            <button type="button" onClick={onApply} className={filterButtonClass}>
+            <Button type="button" onClick={onApply}>
                 Filter
-            </button>
+            </Button>
         </div>
     );
 }

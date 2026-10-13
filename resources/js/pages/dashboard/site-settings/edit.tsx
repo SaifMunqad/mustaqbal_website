@@ -7,6 +7,7 @@ import GoogleLocationPicker, {
 import { useFormToast } from '@/components/use-form-toast';
 import HomeStatsEditor from '@/components/dashboard/site-settings/home-stats-editor';
 import HomeFeaturesEditor from '@/components/dashboard/site-settings/home-features-editor';
+import { Button } from '@/components/ui/button';
 import {
     buildEmbedUrl,
     Group,
@@ -256,13 +257,9 @@ export default function DashboardSiteSettingsEdit() {
                             />
                         </Group>
 
-                        <button
-                            className="w-fit rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-60"
-                            type="submit"
-                            disabled={processing}
-                        >
+                        <Button className="w-fit" type="submit" disabled={processing}>
                             Save settings
-                        </button>
+                        </Button>
                     </>
                 )}
             </Form>

@@ -1,4 +1,5 @@
 import AppLayout from '@/layouts/app-layout';
+import { Button } from '@/components/ui/button';
 import { BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/react';
 import { ReactNode } from 'react';
@@ -33,12 +34,9 @@ export default function DashboardPage({
                 <div className={`flex items-center gap-2 ${isRtl ? 'justify-between flex-row-reverse' : 'justify-between'}`}>
                     <h1 className="text-2xl font-bold">{t(titleKey)}</h1>
                     {createHref && createLabelKey ? (
-                        <Link
-                            href={createHref}
-                            className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white"
-                        >
-                            {t(createLabelKey)}
-                        </Link>
+                        <Button asChild size="sm">
+                            <Link href={createHref}>{t(createLabelKey)}</Link>
+                        </Button>
                     ) : null}
                 </div>
 

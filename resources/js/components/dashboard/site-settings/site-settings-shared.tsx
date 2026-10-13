@@ -7,8 +7,6 @@ export const rowInputClass =
     'w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-gray-900 dark:text-slate-100';
 export const rowButtonClass =
     'shrink-0 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-gray-800';
-export const addBtnClass =
-    'rounded-md bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700';
 
 // Feature icon keys offered to the admin; must match ICON_MAP in
 // components/home/feature-grid.tsx so the chosen icon actually renders.
