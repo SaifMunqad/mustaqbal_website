@@ -21,14 +21,14 @@ interface Book {
     category?: string | null;
 }
 
-interface Props {
+interface SchoolStoreShowProps {
     book: Book;
     related: BookCardData[];
     [key: string]: unknown;
 }
 
-function StoreShowPage() {
-    const { book, related } = usePage<Props>().props;
+function SchoolStoreShow() {
+    const { book, related } = usePage<SchoolStoreShowProps>().props;
     const { t } = useTranslation();
 
     const gallery = Array.from(new Set([book.thumbnail, ...(book.images ?? [])].filter((image): image is string => Boolean(image))));
@@ -125,6 +125,6 @@ function StoreShowPage() {
     );
 }
 
-StoreShowPage.layout = (page: ReactNode) => <MainLayout children={page} />;
+SchoolStoreShow.layout = (page: ReactNode) => <MainLayout children={page} />;
 
-export default StoreShowPage;
+export default SchoolStoreShow;

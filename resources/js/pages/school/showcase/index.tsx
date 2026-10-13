@@ -4,7 +4,7 @@ import { Head, usePage } from '@inertiajs/react';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-function ShowcasePage() {
+function SchoolShowcase() {
     const { groups } = usePage<{ groups: ShowcaseGroup[] }>().props;
     const { t } = useTranslation();
 
@@ -28,6 +28,6 @@ function ShowcasePage() {
     );
 }
 
-ShowcasePage.layout = (page: ReactNode) => <MainLayout children={page} />;
+SchoolShowcase.layout = (page: ReactNode) => <MainLayout children={page} />;
 
-export default ShowcasePage;
+export default SchoolShowcase;

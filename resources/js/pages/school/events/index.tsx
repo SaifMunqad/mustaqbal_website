@@ -20,7 +20,7 @@ function formatDateTime(value: string, locale: string) {
     }
 }
 
-function EventsIndexPage() {
+function SchoolEventsIndex() {
     const { events, upcoming } = usePage<{ events: { data: EventItem[] }; upcoming: EventItem[] }>().props;
     const { t, i18n } = useTranslation();
     const locale = i18n.language === 'fa_AF' ? 'fa-AF' : i18n.language;
@@ -103,6 +103,6 @@ function EventsIndexPage() {
     );
 }
 
-EventsIndexPage.layout = (page: ReactNode) => <MainLayout children={page} />;
+SchoolEventsIndex.layout = (page: ReactNode) => <MainLayout children={page} />;
 
-export default EventsIndexPage;
+export default SchoolEventsIndex;

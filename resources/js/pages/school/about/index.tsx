@@ -456,7 +456,7 @@ function CtaBand() {
     );
 }
 
-function About() {
+function SchoolAbout() {
     const { t } = useTranslation();
     const { page, site } = usePage<{ page: AboutPageData | null; site: SiteSettings }>().props;
     const content = page?.content ?? {};
@@ -523,6 +523,6 @@ function About() {
     );
 }
 
-About.layout = (page: ReactNode) => <MainLayout children={page} />;
+SchoolAbout.layout = (page: ReactNode) => <MainLayout children={page} />;
 
-export default About;
+export default SchoolAbout;

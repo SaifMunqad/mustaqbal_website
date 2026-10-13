@@ -20,7 +20,7 @@ interface Article {
     language_dir?: 'rtl' | 'ltr';
 }
 
-function ArticleShowPage() {
+function SchoolArticlesShow() {
     const { t } = useTranslation();
     const { article } = usePage<{ article: Article }>().props;
     const gallery = (article.images ?? []).filter(
@@ -99,6 +99,6 @@ function ArticleShowPage() {
     );
 }
 
-ArticleShowPage.layout = (page: ReactNode) => <MainLayout children={page} />;
+SchoolArticlesShow.layout = (page: ReactNode) => <MainLayout children={page} />;
 
-export default ArticleShowPage;
+export default SchoolArticlesShow;

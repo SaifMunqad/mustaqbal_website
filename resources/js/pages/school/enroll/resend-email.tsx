@@ -5,7 +5,7 @@ import { DateField, TextField } from '@/components/form-fields';
 import { useToast } from '@/components/toast';
 import { useTranslation } from 'react-i18next';
 
-function ResendEnrollmentEmailPage() {
+function SchoolEnrollResendEmail() {
     const { t } = useTranslation();
     const [message, setMessage] = useState('');
     const { success, error } = useToast();
@@ -62,7 +62,7 @@ function ResendEnrollmentEmailPage() {
     );
 }
 
-ResendEnrollmentEmailPage.layout = (page: ReactNode) => <MainLayout children={page} />;
+SchoolEnrollResendEmail.layout = (page: ReactNode) => <MainLayout children={page} />;
 
-export default ResendEnrollmentEmailPage;
+export default SchoolEnrollResendEmail;
 

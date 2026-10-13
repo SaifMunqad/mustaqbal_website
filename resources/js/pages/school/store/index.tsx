@@ -22,15 +22,15 @@ interface Category {
     name: string;
 }
 
-interface Props {
+interface SchoolStoreIndexProps {
     books: { data: Book[] };
     categories: Category[];
     filters: { search: string; category: string };
     [key: string]: unknown;
 }
 
-function StoreIndexPage() {
-    const { books, categories, filters } = usePage<Props>().props;
+function SchoolStoreIndex() {
+    const { books, categories, filters } = usePage<SchoolStoreIndexProps>().props;
     const { t } = useTranslation();
     const [search, setSearch] = useState(filters.search);
 
@@ -98,6 +98,6 @@ function StoreIndexPage() {
     );
 }
 
-StoreIndexPage.layout = (page: ReactNode) => <MainLayout children={page} />;
+SchoolStoreIndex.layout = (page: ReactNode) => <MainLayout children={page} />;
 
-export default StoreIndexPage;
+export default SchoolStoreIndex;

@@ -27,7 +27,7 @@ function formatDateTime(value: string, locale: string) {
     }
 }
 
-function EventShowPage() {
+function SchoolEventsShow() {
     const { event, related } = usePage<{ event: EventDetail; related: EventDetail[] }>().props;
     const { t, i18n } = useTranslation();
     const locale = i18n.language === 'fa_AF' ? 'fa-AF' : i18n.language;
@@ -109,6 +109,6 @@ function EventShowPage() {
     );
 }
 
-EventShowPage.layout = (page: ReactNode) => <MainLayout children={page} />;
+SchoolEventsShow.layout = (page: ReactNode) => <MainLayout children={page} />;
 
-export default EventShowPage;
+export default SchoolEventsShow;

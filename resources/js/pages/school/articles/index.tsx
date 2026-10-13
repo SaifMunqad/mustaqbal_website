@@ -18,7 +18,7 @@ interface Article {
     } | null;
 }
 
-function ArticlesPage() {
+function SchoolArticlesIndex() {
     const { articles } = usePage<{
         articles: {
             data: Article[];
@@ -59,7 +59,7 @@ function ArticlesPage() {
     );
 }
 
-ArticlesPage.layout = (page: ReactNode) => <MainLayout children={page} />;
+SchoolArticlesIndex.layout = (page: ReactNode) => <MainLayout children={page} />;
 
-export default ArticlesPage;
+export default SchoolArticlesIndex;
 

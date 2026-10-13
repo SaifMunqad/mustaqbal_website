@@ -5,7 +5,7 @@ import { DateField, TextAreaField, TextField } from '@/components/form-fields';
 import { useToast } from '@/components/toast';
 import { useTranslation } from 'react-i18next';
 
-function EnrollPage() {
+function SchoolEnroll() {
     const { t } = useTranslation();
     const [message, setMessage] = useState('');
     const { success, error } = useToast();
@@ -101,7 +101,7 @@ function EnrollPage() {
     );
 }
 
-EnrollPage.layout = (page: ReactNode) => <MainLayout children={page} />;
+SchoolEnroll.layout = (page: ReactNode) => <MainLayout children={page} />;
 
-export default EnrollPage;
+export default SchoolEnroll;
 

@@ -13,7 +13,7 @@ export interface BookCardData {
     category?: string | null;
 }
 
-interface Props {
+interface BookCardProps {
     book: BookCardData;
 }
 
@@ -23,7 +23,7 @@ interface Props {
  * category (top start), a hover-revealed download button (top end), and the
  * title (bottom start) with publisher/year (bottom end).
  */
-export default function BookCard({ book }: Props) {
+export default function BookCard({ book }: BookCardProps) {
     const { t } = useTranslation();
 
     return (

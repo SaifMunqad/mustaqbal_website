@@ -132,7 +132,7 @@ function InfoCard({
     );
 }
 
-function Contact() {
+function SchoolContact() {
     const { t } = useTranslation();
     const { page, site } = usePage<{
         page: ContactPageData | null;
@@ -535,6 +535,6 @@ function Contact() {
     );
 }
 
-Contact.layout = (page: ReactNode) => <MainLayout children={page} />;
+SchoolContact.layout = (page: ReactNode) => <MainLayout children={page} />;
 
-export default Contact;
+export default SchoolContact;

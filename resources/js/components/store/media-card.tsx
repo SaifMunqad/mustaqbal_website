@@ -10,7 +10,7 @@ export interface MediaCardData {
     badge?: string | null;
 }
 
-interface Props {
+interface MediaCardProps {
     item: MediaCardData;
 }
 
@@ -20,7 +20,7 @@ interface Props {
  * gradient carries the title (start) and subtitle (end), and an optional badge
  * sits at the top start.
  */
-export default function MediaCard({ item }: Props) {
+export default function MediaCard({ item }: MediaCardProps) {
     return (
         <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:shadow-md dark:border-slate-700 dark:bg-gray-900">
             <Link href={item.href} className="relative block">

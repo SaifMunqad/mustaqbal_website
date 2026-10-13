@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import MainLayout from '@/layouts/app/main-layout';
 import { ReactNode } from 'react';
 
-function Admissions() {
+function SchoolAdmissions() {
     const { t } = useTranslation();
 
     return (
@@ -22,7 +22,7 @@ function Admissions() {
     );
 }
 
-Admissions.layout = (page: ReactNode) => <MainLayout children={page} />;
+SchoolAdmissions.layout = (page: ReactNode) => <MainLayout children={page} />;
 
-export default Admissions;
+export default SchoolAdmissions;
 

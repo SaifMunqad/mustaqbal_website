@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { RefObject, useEffect, useRef } from 'react';
 import type { NavigationChildItem } from '@/lib/navigation';
 
-export default function Dropdown({
+export default function NavDropdown({
     items,
     isOpen,
     onClose,

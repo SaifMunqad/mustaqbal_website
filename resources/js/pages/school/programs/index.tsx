@@ -130,7 +130,7 @@ function PathwaySection() {
     );
 }
 
-function Programs() {
+function SchoolPrograms() {
     const { programs, page } = usePage<{
         programs: Program[];
         page?: ProgramsPageData;
@@ -190,6 +190,6 @@ function Programs() {
     );
 }
 
-Programs.layout = (page: ReactNode) => <MainLayout children={page} />;
+SchoolPrograms.layout = (page: ReactNode) => <MainLayout children={page} />;
 
-export default Programs;
+export default SchoolPrograms;

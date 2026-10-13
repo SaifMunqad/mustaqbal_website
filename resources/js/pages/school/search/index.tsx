@@ -24,7 +24,7 @@ interface EventItem {
     date?: string | null;
 }
 
-interface Props {
+interface SchoolSearchProps {
     q: string;
     isSearch: boolean;
     results: {
@@ -44,8 +44,8 @@ function Section({ heading, children }: { heading: string; children: ReactNode }
     );
 }
 
-function SearchPage() {
-    const { q, isSearch, results } = usePage<Props>().props;
+function SchoolSearch() {
+    const { q, isSearch, results } = usePage<SchoolSearchProps>().props;
     const { t, i18n } = useTranslation();
     const [term, setTerm] = useState(q);
 
@@ -138,6 +138,6 @@ function SearchPage() {
     );
 }
 
-SearchPage.layout = (page: ReactNode) => <MainLayout children={page} />;
+SchoolSearch.layout = (page: ReactNode) => <MainLayout children={page} />;
 
-export default SearchPage;
+export default SchoolSearch;

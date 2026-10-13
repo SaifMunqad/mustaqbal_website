@@ -2,12 +2,12 @@ import type { SiteSettings } from '@/types';
 import { Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
-interface Props {
+interface HomeHeroProps {
     home: SiteSettings['home'];
     tagline?: string | null;
 }
 
-export default function HomeHero({ home, tagline }: Props) {
+export default function HomeHero({ home, tagline }: HomeHeroProps) {
     const { t, i18n } = useTranslation();
     const isRtl = i18n.dir() === 'rtl' || i18n.language === 'ar';
 

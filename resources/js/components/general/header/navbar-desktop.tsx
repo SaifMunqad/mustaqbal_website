@@ -2,7 +2,7 @@ import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { Link } from '@inertiajs/react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Dropdown from '@/components/general/header/nav-dropdown';
+import NavDropdown from '@/components/general/header/nav-dropdown';
 import { isNavigationItemActive } from '@/components/general/header/navbar-utils';
 import type { NavigationItem } from '@/lib/navigation';
 
@@ -57,7 +57,7 @@ function DesktopNavItem({
                         />
                     </button>
 
-                    <Dropdown
+                    <NavDropdown
                         items={item.dropdown}
                         isOpen={isDropdownOpen}
                         onClose={() => setIsDropdownOpen(false)}

@@ -4,13 +4,13 @@ import { Head, usePage } from '@inertiajs/react';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-interface Props {
+interface SchoolJobsProps {
     jobs: Job[];
     [key: string]: unknown;
 }
 
-function JobsPage() {
-    const { jobs } = usePage<Props>().props;
+function SchoolJobs() {
+    const { jobs } = usePage<SchoolJobsProps>().props;
     const { t } = useTranslation();
 
     return (
@@ -42,6 +42,6 @@ function JobsPage() {
     );
 }
 
-JobsPage.layout = (page: ReactNode) => <MainLayout children={page} />;
+SchoolJobs.layout = (page: ReactNode) => <MainLayout children={page} />;
 
-export default JobsPage;
+export default SchoolJobs;
