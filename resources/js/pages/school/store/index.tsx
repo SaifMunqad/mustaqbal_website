@@ -43,7 +43,7 @@ function StoreIndexPage() {
             <Head title={t('store.title')} />
 
             <div className="space-y-6">
-                <section className="rounded-3xl bg-gradient-to-r from-blue-100 to-purple-100 p-6 shadow-md md:p-10 dark:from-gray-900 dark:to-gray-800">
+                <section className="rounded-3xl bg-blue-50 p-6 shadow-md md:p-10 dark:bg-blue-950">
                     <h1 className="text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">{t('store.title')}</h1>
                     <p className="mt-3 max-w-3xl text-base text-slate-700 dark:text-slate-300">{t('store.subtitle')}</p>
                 </section>

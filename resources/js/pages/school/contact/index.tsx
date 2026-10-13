@@ -230,7 +230,7 @@ function Contact() {
             <Head title={title} />
 
             {/* Page intro band, consistent with the redesigned home hero. */}
-            <section className="overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-6 shadow-sm md:p-10 dark:border-slate-800 dark:from-blue-950/40 dark:via-[#0a0a0a] dark:to-emerald-950/30">
+            <section className="overflow-hidden rounded-3xl border border-slate-200 bg-blue-50 p-6 shadow-sm md:p-10 dark:border-slate-800 dark:bg-blue-950">
                 <h1 className="text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
                     {title}
                 </h1>
@@ -411,7 +411,7 @@ function Contact() {
                         {contact.email ? (
                             <a
                                 href={`mailto:${contact.email}`}
-                                className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+                                className="flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
                             >
                                 <EnvelopeIcon className="size-5" aria-hidden />
                                 {t('contact.emailUs')}
@@ -424,7 +424,7 @@ function Contact() {
                             href={`https://wa.me/${whatsappDigits}`}
                             target="_blank"
                             rel="noreferrer"
-                            className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800 transition hover:bg-emerald-100 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200"
+                            className="flex items-center gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-blue-800 transition hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-200"
                         >
                             <ChatBubbleLeftRightIcon
                                 className="size-6 shrink-0"

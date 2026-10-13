@@ -13,7 +13,7 @@ function ShowcasePage() {
             <Head title={t('showcase.title')} />
 
             <div className="space-y-4">
-                <section className="rounded-3xl bg-gradient-to-r from-blue-100 to-purple-100 p-6 shadow-md md:p-10 dark:from-gray-900 dark:to-gray-800">
+                <section className="rounded-3xl bg-blue-50 p-6 shadow-md md:p-10 dark:bg-blue-950">
                     <h1 className="text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
                         {t('showcase.title')}
                     </h1>

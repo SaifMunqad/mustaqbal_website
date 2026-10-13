@@ -22,11 +22,11 @@ export interface HomeSection {
 }
 
 const toneStyles: Record<string, string> = {
-    default: 'from-slate-100 to-slate-200 dark:from-gray-900 dark:to-gray-800',
-    blue: 'from-blue-100 to-indigo-200 dark:from-blue-950 dark:to-indigo-900',
-    green: 'from-emerald-100 to-teal-200 dark:from-emerald-950 dark:to-teal-900',
-    amber: 'from-amber-100 to-orange-200 dark:from-amber-950 dark:to-orange-900',
-    red: 'from-red-100 to-rose-200 dark:from-red-950 dark:to-rose-900',
+    default: 'from-blue-100 to-blue-200 dark:from-blue-950 dark:to-blue-900',
+    blue: 'from-blue-100 to-blue-200 dark:from-blue-950 dark:to-blue-900',
+    green: 'from-blue-100 to-blue-200 dark:from-blue-950 dark:to-blue-900',
+    amber: 'from-blue-100 to-blue-200 dark:from-blue-950 dark:to-blue-900',
+    red: 'from-blue-100 to-blue-200 dark:from-blue-950 dark:to-blue-900',
 };
 
 function CardsSection({ section }: { section: HomeSection }) {
@@ -104,16 +104,10 @@ function BannerSection({ section }: { section: HomeSection }) {
 
 function AnnouncementSection({ section }: { section: HomeSection }) {
     const config = section.config ?? {};
-    const tone = config.tone ?? 'default';
 
-    const accent =
-        tone === 'red'
-            ? 'border-red-300 bg-red-50 dark:bg-red-950/40'
-            : tone === 'amber'
-              ? 'border-amber-300 bg-amber-50 dark:bg-amber-950/40'
-              : tone === 'green'
-                ? 'border-emerald-300 bg-emerald-50 dark:bg-emerald-950/40'
-                : 'border-blue-300 bg-blue-50 dark:bg-blue-950/40';
+    // Customer-facing announcements use a single blue accent regardless of the
+    // stored tone, matching the site's simplified blue palette.
+    const accent = 'border-blue-300 bg-blue-50 dark:bg-blue-950/40';
 
     return (
         <section className={`rounded-2xl border p-5 ${accent}`}>

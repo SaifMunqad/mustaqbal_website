@@ -47,7 +47,7 @@ function StoreShowPage() {
                         {gallery[0] ? (
                             <img src={gallery[0]} alt={book.title} className="h-full max-h-[28rem] w-full object-cover" />
                         ) : (
-                            <div className="flex h-80 items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                            <div className="flex h-80 items-center justify-center bg-blue-600 text-white">
                                 <BookOpenIcon className="size-16" />
                             </div>
                         )}

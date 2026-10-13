@@ -74,7 +74,7 @@ export default function HomeCardItem({
                     className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
                 />
             ) : (
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-5xl font-bold text-white">
+                <div className="absolute inset-0 flex items-center justify-center bg-blue-600 text-5xl font-bold text-white">
                     {card.title.slice(0, 1)}
                 </div>
             )}

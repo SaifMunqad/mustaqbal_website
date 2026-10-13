@@ -47,23 +47,23 @@ interface TypeAccent {
 export const PROGRAM_ACCENTS: Record<ProgramType, TypeAccent> = {
     school: {
         icon: GraduationCap,
-        gradient: 'from-indigo-500 to-blue-500',
+        gradient: 'from-blue-500 to-blue-600',
         tile: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300',
-        ring: 'hover:border-indigo-300 dark:hover:border-indigo-500/50',
+        ring: 'hover:border-blue-300 dark:hover:border-blue-500/50',
         blurb: 'Full classroom-based schooling from Kindergarten through Grade 6.',
     },
     courses: {
         icon: BookOpen,
-        gradient: 'from-emerald-500 to-teal-500',
+        gradient: 'from-blue-500 to-blue-600',
         tile: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300',
-        ring: 'hover:border-emerald-300 dark:hover:border-emerald-500/50',
+        ring: 'hover:border-blue-300 dark:hover:border-blue-500/50',
         blurb: 'Focused after-school courses in languages, sciences and computing.',
     },
     islamic_madrasa: {
         icon: MoonStar,
-        gradient: 'from-amber-500 to-orange-500',
+        gradient: 'from-blue-500 to-blue-600',
         tile: 'bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
-        ring: 'hover:border-amber-300 dark:hover:border-amber-500/50',
+        ring: 'hover:border-blue-300 dark:hover:border-blue-500/50',
         blurb: 'Weekend madrasa building a foundation in Quran, Arabic and Islamic studies.',
     },
 };

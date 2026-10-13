@@ -32,7 +32,7 @@ export default function BookCard({ book }: Props) {
                 {book.thumbnail ? (
                     <img src={book.thumbnail} alt={book.title} className="aspect-[3/4] w-full object-cover" />
                 ) : (
-                    <div className="flex aspect-[3/4] w-full items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                    <div className="flex aspect-[3/4] w-full items-center justify-center bg-blue-600 text-white">
                         <BookOpenIcon className="size-10" />
                     </div>
                 )}

@@ -9,7 +9,7 @@ export default function CtaBand() {
     const { t } = useTranslation();
 
     return (
-        <section className="overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 to-emerald-600 shadow-md">
+        <section className="overflow-hidden rounded-3xl bg-blue-700 shadow-md">
             <div className="flex flex-col items-center gap-5 p-8 text-center md:flex-row md:justify-between md:p-10 md:text-start">
                 <div>
                     <h2 className="text-2xl font-bold text-white md:text-3xl">

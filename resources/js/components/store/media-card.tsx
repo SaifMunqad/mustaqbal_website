@@ -27,7 +27,7 @@ export default function MediaCard({ item }: Props) {
                 {item.image ? (
                     <img src={item.image} alt={item.title} className="aspect-[3/4] w-full object-cover" />
                 ) : (
-                    <div className="flex aspect-[3/4] w-full items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                    <div className="flex aspect-[3/4] w-full items-center justify-center bg-blue-600 text-white">
                         <DocumentTextIcon className="size-10" />
                     </div>
                 )}

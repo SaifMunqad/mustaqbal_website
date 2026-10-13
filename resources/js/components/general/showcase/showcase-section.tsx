@@ -24,7 +24,7 @@ function HonoreeCard({ post }: { post: ShowcasePost }) {
             {image ? (
                 <img src={image} alt={post.honoree ?? post.title} className="h-32 w-full rounded-xl object-cover" />
             ) : (
-                <div className="flex h-32 w-full items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-3xl font-bold text-white">
+                <div className="flex h-32 w-full items-center justify-center rounded-xl bg-blue-600 text-3xl font-bold text-white">
                     {(post.honoree ?? post.title).slice(0, 1)}
                 </div>
             )}

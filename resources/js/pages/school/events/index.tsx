@@ -32,7 +32,7 @@ function EventsIndexPage() {
             <Head title={t('events.title')} />
 
             <div className="space-y-6">
-                <section className="rounded-3xl bg-gradient-to-r from-blue-100 to-purple-100 p-6 shadow-md md:p-10 dark:from-gray-900 dark:to-gray-800">
+                <section className="rounded-3xl bg-blue-50 p-6 shadow-md md:p-10 dark:bg-blue-950">
                     <h1 className="text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">{t('events.title')}</h1>
                     <p className="mt-3 max-w-3xl text-base text-slate-700 dark:text-slate-300">{t('events.subtitle')}</p>
                 </section>
@@ -77,7 +77,7 @@ function EventsIndexPage() {
                                 {image ? (
                                     <img src={image} alt={event.title} className="h-40 w-full object-cover" />
                                 ) : (
-                                    <div className="flex h-40 w-full items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                                    <div className="flex h-40 w-full items-center justify-center bg-blue-600 text-white">
                                         <span className="px-4 text-center text-sm font-semibold">
                                             {formatDateTime(event.start_at, locale)}
                                         </span>
