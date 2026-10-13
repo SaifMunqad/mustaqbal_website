@@ -62,7 +62,6 @@ function BannerSection({ section }: { section: HomeSection }) {
             {config.image_url ? (
                 <img
                     src={
-
                         'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80'
                     }
                     alt={config.heading ?? ''}
@@ -91,7 +90,7 @@ function BannerSection({ section }: { section: HomeSection }) {
                     <div className="mt-6">
                         <Link
                             href={config.cta_url}
-                            className="inline-flex items-center rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-blue-500 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:outline-none"
+                            className="rounded-xl border-2 border-gray-200 bg-transparent px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-sky-600 hover:border-sky-700 dark:border-sky-400 dark:text-sky-300 dark:hover:bg-sky-500 dark:hover:text-white"
                         >
                             {config.cta_label}
                         </Link>
