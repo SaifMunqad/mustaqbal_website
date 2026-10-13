@@ -5,21 +5,21 @@ import { useFormToast } from '@/components/use-form-toast';
 import type { User } from '@/types';
 import { Form, router, usePage } from '@inertiajs/react';
 
-interface Option {
+interface UserOption {
     value: string;
     label: string;
 }
 
-interface Props {
+interface UserEditProps {
     user: User;
-    roleOptions: Option[];
-    statusOptions: Option[];
+    roleOptions: UserOption[];
+    statusOptions: UserOption[];
     canDelete: boolean;
     [key: string]: unknown;
 }
 
 export default function DashboardUsersEdit() {
-    const { user, roleOptions, statusOptions, canDelete } = usePage<Props>().props;
+    const { user, roleOptions, statusOptions, canDelete } = usePage<UserEditProps>().props;
     const { onError } = useFormToast('Account updated successfully.');
 
     const removeAccount = () => {

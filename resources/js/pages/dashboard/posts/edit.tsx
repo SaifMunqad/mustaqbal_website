@@ -49,7 +49,7 @@ interface TypeOption {
     label: string;
 }
 
-interface Props {
+interface PostEditProps {
     users: UserOption[];
     post: Post;
     postTypes: TypeOption[];
@@ -60,7 +60,7 @@ const toDateTimeInput = (value?: string | null): string =>
     value ? value.slice(0, 16) : '';
 
 export default function DashboardPostsEdit() {
-    const { users, post, postTypes } = usePage<Props>().props;
+    const { users, post, postTypes } = usePage<PostEditProps>().props;
     const [content, setContent] = useState(post.content);
     const [images, setImages] = useState<string[]>(
         (post.images ?? []).filter(Boolean),

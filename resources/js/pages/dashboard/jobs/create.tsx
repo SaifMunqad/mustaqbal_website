@@ -6,19 +6,19 @@ import { useFormToast } from '@/components/use-form-toast';
 import { BriefcaseIcon, DocumentTextIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 import { Form, usePage } from '@inertiajs/react';
 
-interface Option {
+interface JobOption {
     value: string;
     label: string;
 }
 
-interface Props {
-    employmentTypes: Option[];
-    categories: Option[];
+interface JobCreateProps {
+    employmentTypes: JobOption[];
+    categories: JobOption[];
     [key: string]: unknown;
 }
 
 export default function DashboardJobsCreate() {
-    const { employmentTypes, categories } = usePage<Props>().props;
+    const { employmentTypes, categories } = usePage<JobCreateProps>().props;
     const { onError } = useFormToast('Job created successfully.');
 
     return (

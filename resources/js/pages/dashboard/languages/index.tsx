@@ -15,7 +15,7 @@ interface LanguageRow {
     sort_order: number;
 }
 
-interface Props {
+interface LanguagesIndexProps {
     languages: LanguageRow[];
     [key: string]: unknown;
 }
@@ -25,7 +25,7 @@ const inputClass =
 
 export default function DashboardLanguagesIndex() {
     const { t } = useTranslation();
-    const { languages } = usePage<Props>().props;
+    const { languages } = usePage<LanguagesIndexProps>().props;
     const createToast = useFormToast(t('dashboard.languages.createTitle'));
     const updateToast = useFormToast('Language updated.');
 

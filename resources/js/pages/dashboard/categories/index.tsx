@@ -2,20 +2,20 @@ import DashboardPage from '@/components/dashboard/dashboard-page';
 import { DataTable, DataTableColumn } from '@/components/table';
 import { Link, router, usePage } from '@inertiajs/react';
 
-interface Row {
+interface CategoryRow {
     id: number;
     name: string;
     slug: string;
     books_count: number;
 }
 
-interface Props {
-    categories: { data: Row[] };
+interface CategoriesIndexProps {
+    categories: { data: CategoryRow[] };
     [key: string]: unknown;
 }
 
 export default function DashboardCategoriesIndex() {
-    const { categories } = usePage<Props>().props;
+    const { categories } = usePage<CategoriesIndexProps>().props;
 
     const remove = (id: number) => {
         if (window.confirm('Delete this category? Its books will be kept but become uncategorized.')) {
@@ -23,7 +23,7 @@ export default function DashboardCategoriesIndex() {
         }
     };
 
-    const columns: DataTableColumn<Row>[] = [
+    const columns: DataTableColumn<CategoryRow>[] = [
         { key: 'id', header: '#', cell: (row) => row.id, sortValue: (row) => row.id },
         { key: 'name', header: 'Name', cell: (row) => row.name, sortValue: (row) => row.name },
         { key: 'slug', header: 'Slug', cell: (row) => row.slug, sortValue: (row) => row.slug },

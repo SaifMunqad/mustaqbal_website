@@ -18,7 +18,7 @@ interface JobRow {
     created_at: string;
 }
 
-interface Props {
+interface JobsIndexProps {
     jobs: { data: JobRow[] };
     filters: { search: string };
     [key: string]: unknown;
@@ -31,7 +31,7 @@ const employmentTypeLabels: Record<string, string> = {
 };
 
 export default function DashboardJobsIndex() {
-    const { jobs, filters } = usePage<Props>().props;
+    const { jobs, filters } = usePage<JobsIndexProps>().props;
     const { i18n } = useTranslation();
     const locale = i18n.language === 'fa_AF' ? 'fa-AF' : i18n.language;
     const [search, setSearch] = useState(filters.search);

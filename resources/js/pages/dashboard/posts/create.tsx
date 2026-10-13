@@ -31,14 +31,14 @@ interface TypeOption {
     label: string;
 }
 
-interface Props {
+interface PostCreateProps {
     users: UserOption[];
     postTypes: TypeOption[];
     [key: string]: unknown;
 }
 
 export default function DashboardPostsCreate() {
-    const { users, postTypes } = usePage<Props>().props;
+    const { users, postTypes } = usePage<PostCreateProps>().props;
     const [content, setContent] = useState('');
     const [images, setImages] = useState<string[]>([]);
     const [type, setType] = useState('news');

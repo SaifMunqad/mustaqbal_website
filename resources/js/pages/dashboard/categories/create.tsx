@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useFormToast } from '@/components/use-form-toast';
 import { Form, usePage } from '@inertiajs/react';
 
-interface Props {
+interface CategoryCreateProps {
     translationLocales: string[];
     [key: string]: unknown;
 }
@@ -16,7 +16,7 @@ const localeLabels: Record<string, string> = {
 };
 
 export default function DashboardCategoriesCreate() {
-    const { translationLocales } = usePage<Props>().props;
+    const { translationLocales } = usePage<CategoryCreateProps>().props;
     const { onError } = useFormToast('Category created successfully.');
 
     return (

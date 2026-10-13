@@ -24,7 +24,7 @@ import {
 import { Form, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
-interface Option {
+interface EventOption {
     value: string;
     label: string;
 }
@@ -44,9 +44,9 @@ interface EventDetail {
     is_cancelled: boolean;
 }
 
-interface Props {
+interface EventEditProps {
     event: EventDetail;
-    audienceOptions: Option[];
+    audienceOptions: EventOption[];
     canPublish: boolean;
     canDelete: boolean;
     [key: string]: unknown;
@@ -57,7 +57,7 @@ const toDateTimeInput = (value?: string | null): string =>
 
 export default function DashboardEventsEdit() {
     const { event, audienceOptions, canPublish, canDelete } =
-        usePage<Props>().props;
+        usePage<EventEditProps>().props;
     const [body, setBody] = useState(event.body ?? '');
     const [coverImage, setCoverImage] = useState(event.cover_image ?? '');
     const [images, setImages] = useState<string[]>(

@@ -3,7 +3,7 @@ import { DataTable, DataTableColumn } from '@/components/table';
 import { Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
-interface Row {
+interface BookRow {
     id: number;
     title: string;
     author?: string | null;
@@ -13,14 +13,14 @@ interface Row {
     category?: string | null;
 }
 
-interface Props {
-    books: { data: Row[] };
+interface BooksIndexProps {
+    books: { data: BookRow[] };
     filters: { search: string };
     [key: string]: unknown;
 }
 
 export default function DashboardBooksIndex() {
-    const { books, filters } = usePage<Props>().props;
+    const { books, filters } = usePage<BooksIndexProps>().props;
     const [search, setSearch] = useState(filters.search);
 
     const remove = (id: number) => {
@@ -29,7 +29,7 @@ export default function DashboardBooksIndex() {
         }
     };
 
-    const columns: DataTableColumn<Row>[] = [
+    const columns: DataTableColumn<BookRow>[] = [
         { key: 'id', header: '#', cell: (row) => row.id, sortValue: (row) => row.id },
         { key: 'title', header: 'Title', cell: (row) => row.title, sortValue: (row) => row.title },
         { key: 'author', header: 'Author', cell: (row) => row.author ?? '-', sortValue: (row) => row.author ?? '' },

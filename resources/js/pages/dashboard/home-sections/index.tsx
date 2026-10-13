@@ -14,7 +14,7 @@ interface SectionRow {
     heading: string | null;
 }
 
-interface Props {
+interface HomeSectionsIndexProps {
     sections: SectionRow[];
     [key: string]: unknown;
 }
@@ -150,7 +150,7 @@ function SectionList({ sections }: { sections: SectionRow[] }) {
     );
 }
 
-export default function DashboardHomeSectionIndex({ sections }: Props) {
+export default function DashboardHomeSectionIndex({ sections }: HomeSectionsIndexProps) {
     // Encoding order + flags keeps the list re-seeded after reorder/toggle saves.
     const signature = sections.map((section) => `${section.id}:${section.is_active}`).join('|');
 

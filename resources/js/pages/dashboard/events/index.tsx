@@ -15,7 +15,7 @@ interface EventRow {
     author?: string | null;
 }
 
-interface Props {
+interface EventsIndexProps {
     events: { data: EventRow[] };
     filters: { search: string };
     [key: string]: unknown;
@@ -29,7 +29,7 @@ const statusStyles: Record<string, string> = {
 };
 
 export default function DashboardEventsIndex() {
-    const { events, filters } = usePage<Props>().props;
+    const { events, filters } = usePage<EventsIndexProps>().props;
     const { i18n } = useTranslation();
     const locale = i18n.language === 'fa_AF' ? 'fa-AF' : i18n.language;
     const [search, setSearch] = useState(filters.search);

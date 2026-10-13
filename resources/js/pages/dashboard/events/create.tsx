@@ -22,19 +22,19 @@ import {
 import { Form, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
-interface Option {
+interface EventOption {
     value: string;
     label: string;
 }
 
-interface Props {
-    audienceOptions: Option[];
+interface EventCreateProps {
+    audienceOptions: EventOption[];
     canPublish: boolean;
     [key: string]: unknown;
 }
 
 export default function DashboardEventsCreate() {
-    const { audienceOptions, canPublish } = usePage<Props>().props;
+    const { audienceOptions, canPublish } = usePage<EventCreateProps>().props;
     const [body, setBody] = useState('');
     const [coverImage, setCoverImage] = useState('');
     const [images, setImages] = useState<string[]>([]);

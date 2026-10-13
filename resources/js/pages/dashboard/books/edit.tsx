@@ -28,14 +28,14 @@ interface BookDetail {
     book_category_id?: number | null;
 }
 
-interface Props {
+interface BookEditProps {
     book: BookDetail;
     categories: CategoryOption[];
     [key: string]: unknown;
 }
 
 export default function DashboardBooksEdit() {
-    const { book, categories } = usePage<Props>().props;
+    const { book, categories } = usePage<BookEditProps>().props;
     const [images, setImages] = useState<string[]>(book.images?.length ? book.images : ['']);
     const [filePath, setFilePath] = useState(book.file_path ?? '');
     const [thumbnailPath, setThumbnailPath] = useState<string | null>(book.thumbnail_path ?? null);

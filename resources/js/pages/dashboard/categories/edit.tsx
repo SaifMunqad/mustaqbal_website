@@ -11,7 +11,7 @@ interface CategoryDetail {
     name_translations?: Record<string, string> | null;
 }
 
-interface Props {
+interface CategoryEditProps {
     category: CategoryDetail;
     translationLocales: string[];
     [key: string]: unknown;
@@ -24,7 +24,7 @@ const localeLabels: Record<string, string> = {
 };
 
 export default function DashboardCategoriesEdit() {
-    const { category, translationLocales } = usePage<Props>().props;
+    const { category, translationLocales } = usePage<CategoryEditProps>().props;
     const { onError } = useFormToast('Category updated successfully.');
 
     const remove = () => {

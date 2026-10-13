@@ -4,18 +4,18 @@ import { Button } from '@/components/ui/button';
 import { useFormToast } from '@/components/use-form-toast';
 import { Form, usePage } from '@inertiajs/react';
 
-interface Option {
+interface UserOption {
     value: string;
     label: string;
 }
 
-interface Props {
-    roleOptions: Option[];
+interface UserCreateProps {
+    roleOptions: UserOption[];
     [key: string]: unknown;
 }
 
 export default function DashboardUsersCreate() {
-    const { roleOptions } = usePage<Props>().props;
+    const { roleOptions } = usePage<UserCreateProps>().props;
     const { onError } = useFormToast('Account created successfully.');
 
     return (

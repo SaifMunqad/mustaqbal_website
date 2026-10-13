@@ -6,14 +6,14 @@ import HomeSectionForm, {
 import { useFormToast } from '@/components/use-form-toast';
 import { usePage } from '@inertiajs/react';
 
-interface Props {
+interface HomeSectionCreateProps {
     typeOptions: TypeOption[];
     availableItems: Record<string, AvailableItem[]>;
     [key: string]: unknown;
 }
 
 export default function DashboardHomeSectionCreate() {
-    const { typeOptions, availableItems } = usePage<Props>().props;
+    const { typeOptions, availableItems } = usePage<HomeSectionCreateProps>().props;
     const { onError } = useFormToast('Home section added.');
 
     return (

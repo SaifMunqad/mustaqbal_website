@@ -8,7 +8,7 @@ import { useFormToast } from '@/components/use-form-toast';
 import { BriefcaseIcon, DocumentTextIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 import { Form, router, usePage } from '@inertiajs/react';
 
-interface Option {
+interface JobOption {
     value: string;
     label: string;
 }
@@ -28,15 +28,15 @@ interface JobDetail {
     is_active: boolean;
 }
 
-interface Props {
+interface JobEditProps {
     job: JobDetail;
-    employmentTypes: Option[];
-    categories: Option[];
+    employmentTypes: JobOption[];
+    categories: JobOption[];
     [key: string]: unknown;
 }
 
 export default function DashboardJobsEdit() {
-    const { job, employmentTypes, categories } = usePage<Props>().props;
+    const { job, employmentTypes, categories } = usePage<JobEditProps>().props;
     const { onError } = useFormToast('Job updated successfully.');
 
     const removeJob = () => {

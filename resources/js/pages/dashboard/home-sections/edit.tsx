@@ -17,7 +17,7 @@ interface StoredConfig {
     tone?: string;
 }
 
-interface Props {
+interface HomeSectionEditProps {
     section: {
         id: number;
         section_type: string;
@@ -32,7 +32,7 @@ interface Props {
 }
 
 export default function DashboardHomeSectionEdit() {
-    const { section, typeOptions, availableItems } = usePage<Props>().props;
+    const { section, typeOptions, availableItems } = usePage<HomeSectionEditProps>().props;
     const { onError } = useFormToast('Home section updated.');
 
     const initial: Partial<HomeSectionFormData> = {

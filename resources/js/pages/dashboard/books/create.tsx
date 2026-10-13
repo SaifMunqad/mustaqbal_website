@@ -12,13 +12,13 @@ interface CategoryOption {
     name: string;
 }
 
-interface Props {
+interface BookCreateProps {
     categories: CategoryOption[];
     [key: string]: unknown;
 }
 
 export default function DashboardBooksCreate() {
-    const { categories } = usePage<Props>().props;
+    const { categories } = usePage<BookCreateProps>().props;
     const [images, setImages] = useState<string[]>(['']);
     const [filePath, setFilePath] = useState('');
     const [thumbnailPath, setThumbnailPath] = useState<string | null>(null);

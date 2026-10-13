@@ -13,15 +13,15 @@ interface Account {
     created_at: string;
 }
 
-interface Option {
+interface UserOption {
     value: string;
     label: string;
 }
 
-interface Props {
+interface UsersIndexProps {
     users: { data: Account[] };
-    roleOptions: Option[];
-    statusOptions: Option[];
+    roleOptions: UserOption[];
+    statusOptions: UserOption[];
     filters: { search: string; role: string; status: string };
     [key: string]: unknown;
 }
@@ -33,7 +33,7 @@ const statusStyles: Record<string, string> = {
 };
 
 export default function DashboardUsersIndex() {
-    const { users, roleOptions, statusOptions, filters } = usePage<Props>().props;
+    const { users, roleOptions, statusOptions, filters } = usePage<UsersIndexProps>().props;
     const [search, setSearch] = useState(filters.search);
     const [role, setRole] = useState(filters.role);
     const [status, setStatus] = useState(filters.status);
