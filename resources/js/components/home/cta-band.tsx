@@ -20,12 +20,12 @@ export default function CtaBand() {
                     </p>
                 </div>
                 <div className="flex shrink-0 flex-wrap justify-center gap-3">
-                    <Link
+                    {/*<Link
                         href="/school/enroll"
                         className="rounded-xl bg-white px-6 py-3 text-sm font-semibold text-blue-700 shadow-sm transition hover:bg-blue-50"
                     >
                         {t('home.admissionsCta')}
-                    </Link>
+                    </Link>*/}
                     <Link
                         href="/school/contact"
                         className="rounded-xl border border-white/60 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
