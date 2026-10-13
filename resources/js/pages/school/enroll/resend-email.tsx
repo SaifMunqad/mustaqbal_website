@@ -3,8 +3,10 @@ import { Head } from '@inertiajs/react';
 import MainLayout from '@/layouts/app/main-layout';
 import { DateField, TextField } from '@/components/form-fields';
 import { useToast } from '@/components/toast';
+import { useTranslation } from 'react-i18next';
 
 function ResendEnrollmentEmailPage() {
+    const { t } = useTranslation();
     const [message, setMessage] = useState('');
     const { success, error } = useToast();
 
@@ -25,27 +27,33 @@ function ResendEnrollmentEmailPage() {
         const data = await response.json().catch(() => ({}));
 
         if (!response.ok) {
-            const errorMessage = data.message ?? 'Could not resend the email.';
+            const errorMessage = data.message ?? t('enroll.resend.failedMessage');
             setMessage(errorMessage);
-            error('Resend failed', errorMessage);
+            error(t('enroll.resend.failed'), errorMessage);
             return;
         }
 
-        const successMessage = data.message ?? 'Email resend completed.';
+        const successMessage = data.message ?? t('enroll.resend.successMessage');
         setMessage(successMessage);
-        success('Email sent', successMessage);
+        success(t('enroll.resend.success'), successMessage);
     };
 
     return (
         <>
-            <Head title="Resend Enrollment Email" />
+            <Head title={t('enroll.resend.title')} />
             <section className="rounded-3xl bg-white p-6 shadow-sm dark:bg-gray-900 md:p-10">
-                <h1 className="text-2xl font-bold">Resend Enrollment Email</h1>
+                <h1 className="text-2xl font-bold">{t('enroll.resend.heading')}</h1>
                 <form className="mt-6 grid gap-3" onSubmit={handleSubmit}>
-                    <TextField label="Guardian email" name="email" type="email" placeholder="Guardian email" required />
-                    <DateField label="Date of birth" name="date_of_birth" calendar="islamic" required />
+                    <TextField
+                        label={t('enroll.guardianEmail')}
+                        name="email"
+                        type="email"
+                        placeholder={t('enroll.guardianEmail')}
+                        required
+                    />
+                    <DateField label={t('enroll.dateOfBirth')} name="date_of_birth" calendar="islamic" required />
                     <button className="rounded bg-blue-600 px-4 py-2 text-white" type="submit">
-                        Resend email
+                        {t('enroll.resend.button')}
                     </button>
                 </form>
                 {message ? <p className="mt-4 text-sm text-green-600">{message}</p> : null}

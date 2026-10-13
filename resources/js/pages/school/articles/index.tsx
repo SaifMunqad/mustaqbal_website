@@ -1,7 +1,8 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import MainLayout from '@/layouts/app/main-layout';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
+import HomeCardItem, { shapeForIndex, type HomeCard } from '@/components/home/home-card-item';
 
 interface Article {
     id: number;
@@ -11,6 +12,7 @@ interface Article {
     cover_image?: string | null;
     images?: string[] | null;
     published_at?: string | null;
+    language_dir?: string | null;
     author?: {
         name: string;
     } | null;
@@ -33,36 +35,21 @@ function ArticlesPage() {
                     {t('articles.title')}
                 </h1>
 
-                <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-                    {articles.data.map((article) => (
-                        <Link
-                            key={article.id}
-                            href={`/school/articles/${article.slug}`}
-                            className="overflow-hidden rounded-2xl border border-slate-200 transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700"
-                        >
-                            {(article.cover_image ?? article.images?.[0]) ? (
-                                <img
-                                    src={article.cover_image ?? article.images?.[0] ?? ''}
-                                    alt={article.title}
-                                    className="h-40 w-full object-cover"
-                                />
-                            ) : null}
-                            <div className="space-y-2 p-4">
-                                <h2 className="text-lg font-semibold">{article.title}</h2>
-                                {article.excerpt ? (
-                                    <p className="text-sm text-slate-600 dark:text-slate-300">
-                                        {article.excerpt}
-                                    </p>
-                                ) : null}
-                                <p className="text-xs text-slate-500">
-                                    {article.author?.name ?? t('articles.defaultAuthor')}
-                                </p>
-                                <span className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                                    {t('articles.readArticle')}
-                                </span>
-                            </div>
-                        </Link>
-                    ))}
+                <div className="mt-6 grid items-start gap-5 md:grid-cols-2 lg:grid-cols-3">
+                    {articles.data.map((article, index) => {
+                        const card: HomeCard = {
+                            id: article.id,
+                            title: article.title,
+                            subtitle: article.author?.name ?? null,
+                            excerpt: article.excerpt ?? null,
+                            image: article.cover_image ?? article.images?.[0] ?? null,
+                            url: `/school/articles/${article.slug}`,
+                            date: article.published_at ?? null,
+                            dir: article.language_dir ?? null,
+                        };
+
+                        return <HomeCardItem key={card.id} card={card} shapeClass={shapeForIndex(index)} />;
+                    })}
                     {articles.data.length === 0 ? (
                         <p className="text-sm text-slate-500">{t('articles.empty')}</p>
                     ) : null}

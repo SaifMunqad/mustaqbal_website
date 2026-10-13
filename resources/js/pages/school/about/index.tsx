@@ -2,6 +2,7 @@ import { Head, usePage } from '@inertiajs/react';
 import MainLayout from '@/layouts/app/main-layout';
 import ArticleBody from '@/components/editor/article-body';
 import { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { SiteSettings } from '@/types';
 
 interface AboutContent {
@@ -19,6 +20,7 @@ interface AboutPageData {
 }
 
 function About() {
+    const { t } = useTranslation();
     const { page, site } = usePage<{ page: AboutPageData | null; site: SiteSettings }>().props;
     const content = page?.content ?? {};
     const title = page?.title ?? site?.brand_name ?? '';
@@ -61,7 +63,7 @@ function About() {
                         <>
                             {content.vision ? (
                                 <div>
-                                    <h2 className="text-xl font-semibold">Vision</h2>
+                                    <h2 className="text-xl font-semibold">{t('about.vision')}</h2>
                                     <p className="mt-2 text-slate-700 dark:text-slate-300">
                                         {content.vision}
                                     </p>
@@ -70,7 +72,7 @@ function About() {
 
                             {content.manager_message ? (
                                 <div>
-                                    <h2 className="text-xl font-semibold">Manager Message</h2>
+                                    <h2 className="text-xl font-semibold">{t('about.managerMessage')}</h2>
                                     <p className="mt-2 text-slate-700 dark:text-slate-300">
                                         {content.manager_message}
                                     </p>
@@ -79,7 +81,7 @@ function About() {
 
                             {content.goals?.length ? (
                                 <div>
-                                    <h2 className="text-xl font-semibold">Goals</h2>
+                                    <h2 className="text-xl font-semibold">{t('about.goals')}</h2>
                                     <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-700 dark:text-slate-300">
                                         {content.goals.map((goal) => (
                                             <li key={goal}>{goal}</li>
@@ -90,7 +92,7 @@ function About() {
 
                             {content.main_points?.length ? (
                                 <div>
-                                    <h2 className="text-xl font-semibold">Main Points</h2>
+                                    <h2 className="text-xl font-semibold">{t('about.mainPoints')}</h2>
                                     <ul className="mt-2 list-disc space-y-1 pl-5 text-slate-700 dark:text-slate-300">
                                         {content.main_points.map((point) => (
                                             <li key={point}>{point}</li>
