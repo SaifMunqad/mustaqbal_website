@@ -129,17 +129,25 @@ class HomeSections
             : $query->latest('published_at')->limit($limit)->get();
 
         return $articles
-            ->map(fn (Article $article): array => [
-                'id' => $article->id,
-                'title' => $article->title,
-                'subtitle' => $article->writer_name ?: $article->author?->name,
-                'excerpt' => $article->excerpt ?: str($article->body)->limit(140)->toString(),
-                'image' => $article->cover_image ?: ($article->images[0] ?? null),
-                'url' => '/school/articles/'.$article->slug,
-                'date' => $article->published_at?->toIso8601String(),
-                'dir' => $article->language_dir,
-            ])
+            ->map(fn (Article $article): array => self::mapArticle($article))
             ->all();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function mapArticle(Article $article): array
+    {
+        return [
+            'id' => $article->id,
+            'title' => $article->title,
+            'subtitle' => $article->writer_name ?: $article->author?->name,
+            'excerpt' => $article->excerpt ?: str($article->body)->limit(140)->toString(),
+            'image' => $article->cover_image ?: ($article->images[0] ?? null),
+            'url' => '/school/articles/'.$article->slug,
+            'date' => $article->published_at?->toIso8601String(),
+            'dir' => $article->language_dir,
+        ];
     }
 
     /**
@@ -158,17 +166,25 @@ class HomeSections
             : (clone $base)->upcoming()->limit($limit)->get();
 
         return $events
-            ->map(fn (Event $event): array => [
-                'id' => $event->id,
-                'title' => $event->title,
-                'subtitle' => $event->location,
-                'excerpt' => $event->excerpt,
-                'image' => $event->cover_image ?: ($event->images[0] ?? null),
-                'url' => '/school/events/'.$event->slug,
-                'date' => $event->start_at?->toIso8601String(),
-                'dir' => null,
-            ])
+            ->map(fn (Event $event): array => self::mapEvent($event))
             ->all();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function mapEvent(Event $event): array
+    {
+        return [
+            'id' => $event->id,
+            'title' => $event->title,
+            'subtitle' => $event->location,
+            'excerpt' => $event->excerpt,
+            'image' => $event->cover_image ?: ($event->images[0] ?? null),
+            'url' => '/school/events/'.$event->slug,
+            'date' => $event->start_at?->toIso8601String(),
+            'dir' => null,
+        ];
     }
 
     /**

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Enums\PostType;
 use App\Enums\PostVisibility;
+use App\Models\Job;
 use App\Models\Post;
+use App\Models\Program;
 use App\Support\Home\HomeSections;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -69,6 +71,63 @@ class ShowcaseController extends Controller
         ]);
     }
 
+    /**
+     * Top programs for the home-page highlight, resolved in the current locale.
+     * Mirrors SchoolPageController::programs so names/descriptions follow the
+     * active language. Degrades to an empty list if the table isn't ready.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function featuredPrograms(int $limit = 4): array
+    {
+        $locale = app()->getLocale();
+
+        try {
+            return Program::query()
+                ->with(['translations.language', 'typeTranslations.language'])
+                ->orderBy('display_order')
+                ->orderBy('name')
+                ->limit($limit)
+                ->get()
+                ->map(fn (Program $program): array => [
+                    'id' => $program->id,
+                    'name' => $program->translatedName($locale),
+                    'program_type' => $program->program_type,
+                    'program_type_label' => $program->translatedProgramType($locale),
+                    'description' => $program->translatedDescription($locale),
+                    'schedule' => $program->schedule,
+                    'fees' => $program->fees,
+                    'age_recommendation' => $program->age_recommendation,
+                    'classroom_number' => $program->classroom_number,
+                    'available_for_enroll' => $program->available_for_enroll,
+                ])
+                ->all();
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
+    /**
+     * Latest active job postings for the home-page "latest jobs" block.
+     * Reuses the same ordering/visibility rules as the public jobs listing and
+     * the shared card payload, so a home card always matches its listing view.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function featuredJobs(int $limit = 3): array
+    {
+        try {
+            return Job::query()
+                ->active()
+                ->limit($limit)
+                ->get()
+                ->map(fn (Job $job): array => $job->toCard())
+                ->all();
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
     public function home(): Response
     {
         // Admin-curated layout when configured; otherwise fall back to the
@@ -80,6 +139,8 @@ class ShowcaseController extends Controller
             'canRegister' => Features::enabled(Features::registration()),
             'sections' => $sections,
             'showcase' => $sections === [] ? $this->groups(3) : [],
+            'programs' => $this->featuredPrograms(4),
+            'jobs' => $this->featuredJobs(3),
         ]);
     }
 }
