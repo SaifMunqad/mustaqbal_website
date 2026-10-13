@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\PostType;
 use App\Enums\PostVisibility;
 use App\Models\Post;
+use App\Support\Home\HomeSections;
 use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Fortify\Features;
@@ -70,9 +71,15 @@ class ShowcaseController extends Controller
 
     public function home(): Response
     {
+        // Admin-curated layout when configured; otherwise fall back to the
+        // legacy recognition showcase so the home page is never empty and the
+        // feature degrades gracefully if home_sections isn't migrated yet.
+        $sections = HomeSections::render();
+
         return Inertia::render('welcome', [
             'canRegister' => Features::enabled(Features::registration()),
-            'showcase' => $this->groups(3),
+            'sections' => $sections,
+            'showcase' => $sections === [] ? $this->groups(3) : [],
         ]);
     }
 }

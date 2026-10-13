@@ -5,6 +5,7 @@ use App\Http\Controllers\Dashboard\DashboardBookCategoryController;
 use App\Http\Controllers\Dashboard\DashboardBookController;
 use App\Http\Controllers\Dashboard\DashboardContactController;
 use App\Http\Controllers\Dashboard\DashboardEventController;
+use App\Http\Controllers\Dashboard\DashboardHomeSectionController;
 use App\Http\Controllers\Dashboard\DashboardJobController;
 use App\Http\Controllers\Dashboard\DashboardLanguageController;
 use App\Http\Controllers\Dashboard\DashboardMessageController;
@@ -165,6 +166,16 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
         Route::get('/{job}/edit', [DashboardJobController::class, 'edit'])->name('edit');
         Route::put('/{job}', [DashboardJobController::class, 'update'])->name('update');
         Route::delete('/{job}', [DashboardJobController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('home-sections')->name('dashboard.home-sections.')->middleware('role:management')->group(function () {
+        Route::get('/', [DashboardHomeSectionController::class, 'index'])->name('index');
+        Route::get('/create', [DashboardHomeSectionController::class, 'create'])->name('create');
+        Route::post('/', [DashboardHomeSectionController::class, 'store'])->name('store');
+        Route::put('/reorder', [DashboardHomeSectionController::class, 'reorder'])->name('reorder');
+        Route::get('/{homeSection}/edit', [DashboardHomeSectionController::class, 'edit'])->name('edit');
+        Route::put('/{homeSection}', [DashboardHomeSectionController::class, 'update'])->name('update');
+        Route::delete('/{homeSection}', [DashboardHomeSectionController::class, 'destroy'])->name('destroy');
     });
 });
 

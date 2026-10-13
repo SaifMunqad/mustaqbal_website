@@ -2,16 +2,22 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import MainLayout from '@/layouts/app/main-layout';
 import ShowcaseSection, { ShowcaseGroup } from '@/components/general/showcase/showcase-section';
+import HomeSections, { HomeSection } from '@/components/home/home-sections';
 import { ReactNode } from 'react';
 import type { SharedData } from '@/types';
 
 function Welcome() {
     const { t } = useTranslation();
-    const { showcase, site } = usePage<SharedData & { showcase?: ShowcaseGroup[] }>().props;
+    const { showcase, sections, site } = usePage<
+        SharedData & { showcase?: ShowcaseGroup[]; sections?: HomeSection[] }
+    >().props;
     const home = site?.home ?? {};
 
     const title = home.title || t('home.title');
     const subtitle = home.subtitle || t('home.subtitle');
+
+    const curated = sections ?? [];
+    const legacyShowcase = showcase ?? [];
 
     return (
         <>
@@ -49,7 +55,11 @@ function Welcome() {
             </section>
 
             <div className="mt-8">
-                <ShowcaseSection groups={showcase ?? []} />
+                {curated.length > 0 ? (
+                    <HomeSections sections={curated} />
+                ) : (
+                    <ShowcaseSection groups={legacyShowcase} />
+                )}
             </div>
         </>
     );
