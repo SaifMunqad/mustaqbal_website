@@ -30,10 +30,10 @@ export default function HomeHero({ home, tagline }: HomeHeroProps) {
     return (
         <section
             dir={isRtl ? 'rtl' : 'ltr'}
-            className={`relative overflow-hidden rounded-3xl border border-slate-200/80 shadow-md dark:border-slate-800 dark:from-slate-950 dark:via-[#0c2323] dark:to-emerald-950 ${
+            className={`relative overflow-hidden rounded-3xl border border-slate-200/80 shadow-md dark:border-slate-800 dark:from-slate-950 dark:via-[#0a192f] dark:to-blue-950 ${
                 isRtl
-                    ? 'bg-gradient-to-t from-sky-100 via-teal-100/70 to-emerald-700 lg:bg-gradient-to-l'
-                    : 'bg-gradient-to-t from-sky-100 via-teal-100/70 to-emerald-700 lg:bg-gradient-to-r'
+                    ? 'bg-gradient-to-t from-sky-100 via-blue-100/70 to-blue-700 lg:bg-gradient-to-l'
+                    : 'bg-gradient-to-t from-sky-100 via-blue-100/70 to-blue-700 lg:bg-gradient-to-r'
             }`}
         >
             {/* Ambient background glow */}
@@ -52,10 +52,8 @@ export default function HomeHero({ home, tagline }: HomeHeroProps) {
                   - md:    order-first, full width, 4:3 landscape (still on top)
                   - lg+:   order-last, 6 cols side-by-side, fills container height
                 */}
-                <div className="relative order-first aspect-square w-full md:aspect-[4/3] lg:order-last lg:col-span-6 lg:aspect-auto lg:h-full lg:self-stretch">
-                    <div
-                        className={`relative h-full w-full overflow-hidden ${maskClasses}`}
-                    >
+                <div className="relative order-first w-full aspect-square md:aspect-[4/3] lg:order-last lg:col-span-6 lg:h-full lg:aspect-auto lg:self-stretch">
+                    <div className={`relative h-full w-full overflow-hidden ${maskClasses}`}>
                         <img
                             src={heroImageSrc}
                             alt={title}
@@ -73,7 +71,7 @@ export default function HomeHero({ home, tagline }: HomeHeroProps) {
                     }`}
                 >
                     {tagline ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-md bg-emerald-900/90 px-3.5 py-1.5 text-xs font-bold tracking-wider text-emerald-100 uppercase shadow-sm">
+                        <span className="inline-flex items-center gap-1.5 rounded-md bg-blue-900/90 px-3.5 py-1.5 text-xs font-bold tracking-wider text-blue-100 uppercase shadow-sm">
                             {tagline}
                         </span>
                     ) : null}
