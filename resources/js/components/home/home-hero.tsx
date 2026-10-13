@@ -16,9 +16,9 @@ export default function HomeHero({ home, tagline }: HomeHeroProps) {
     const primaryLabel = home.cta_primary || t('home.ctaPrimary');
     const secondaryLabel = home.cta_secondary || t('home.ctaSecondary');
 
-    // Direction-aware and responsive mask:
-    // Mobile (< lg): fades out at the bottom edge to blend into the text below
-    // Desktop (lg+): fades horizontally towards the text side
+    // Direction & responsive mask:
+    // - < lg (mobile & tablet): Fades bottom edge into text below
+    // - lg+ (desktop): Fades horizontally towards adjacent text
     const maskClasses = isRtl
         ? '[mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)] [-webkit-mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)] lg:[mask-image:linear-gradient(to_left,transparent_0%,black_35%,black_100%)] lg:[-webkit-mask-image:linear-gradient(to_left,transparent_0%,black_35%,black_100%)]'
         : '[mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)] [-webkit-mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)] lg:[mask-image:linear-gradient(to_right,transparent_0%,black_35%,black_100%)] lg:[-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_35%,black_100%)]';
@@ -46,8 +46,13 @@ export default function HomeHero({ home, tagline }: HomeHeroProps) {
             />
 
             <div className="grid min-h-[420px] items-center gap-0 lg:grid-cols-12 lg:gap-6">
-                {/* Full-width square image on mobile (< lg), side banner on desktop (lg+) */}
-                <div className="relative order-first aspect-square w-full lg:order-last lg:col-span-6 lg:aspect-auto lg:h-full lg:self-stretch">
+                {/*
+                  Image container:
+                  - < md:  order-first, full width, 1:1 square
+                  - md:    order-first, full width, 4:3 landscape (still on top)
+                  - lg+:   order-last, 6 cols side-by-side, fills container height
+                */}
+                <div className="relative order-first aspect-square w-full md:aspect-[4/3] lg:order-last lg:col-span-6 lg:aspect-auto lg:h-full lg:self-stretch">
                     <div
                         className={`relative h-full w-full overflow-hidden ${maskClasses}`}
                     >
@@ -61,7 +66,7 @@ export default function HomeHero({ home, tagline }: HomeHeroProps) {
 
                 {/* Text Content */}
                 <div
-                    className={`relative z-10 px-8 py-10 md:py-14 lg:col-span-6 ${
+                    className={`relative z-10 px-8 py-10 md:py-12 lg:col-span-6 lg:py-14 ${
                         isRtl
                             ? 'text-right lg:pr-12 lg:pl-4'
                             : 'text-left lg:pr-4 lg:pl-12'
