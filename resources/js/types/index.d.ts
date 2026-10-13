@@ -22,6 +22,17 @@ export interface NavItem {
     isActive?: boolean;
 }
 
+export interface HomeStat {
+    value: string;
+    label: string;
+}
+
+export interface HomeFeature {
+    icon?: string | null;
+    title: string;
+    description: string;
+}
+
 export interface SiteSettings {
     brand_name: string;
     brand_short_name: string;
@@ -35,6 +46,8 @@ export interface SiteSettings {
         cta_secondary?: string | null;
         hero_image?: string | null;
     };
+    stats?: HomeStat[];
+    features?: HomeFeature[];
     contact?: {
         email?: string | null;
         phone_primary?: string | null;

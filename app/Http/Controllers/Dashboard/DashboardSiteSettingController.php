@@ -33,6 +33,13 @@ class DashboardSiteSettingController extends Controller
             'home_cta_primary' => ['nullable', 'string', 'max:255'],
             'home_cta_secondary' => ['nullable', 'string', 'max:255'],
             'home_hero_image' => ['nullable', new ImageLocation, 'max:2048'],
+            'home_stats' => ['nullable', 'array'],
+            'home_stats.*.value' => ['nullable', 'string', 'max:60'],
+            'home_stats.*.label' => ['nullable', 'string', 'max:120'],
+            'home_features' => ['nullable', 'array'],
+            'home_features.*.icon' => ['nullable', 'string', 'max:40'],
+            'home_features.*.title' => ['nullable', 'string', 'max:120'],
+            'home_features.*.description' => ['nullable', 'string', 'max:500'],
             'contact_email' => ['nullable', 'email', 'max:255'],
             'contact_phone_primary' => ['nullable', 'string', 'max:100'],
             'contact_phone_secondary' => ['nullable', 'string', 'max:100'],
@@ -48,6 +55,18 @@ class DashboardSiteSettingController extends Controller
             'social_whatsapp' => ['nullable', 'string', 'max:255'],
             'footer_text' => ['nullable', 'string', 'max:255'],
         ]);
+
+        // Drop fully-empty stats/features rows so blank template rows an admin
+        // left behind never render as empty tiles on the public home page.
+        $validated['home_stats'] = collect($validated['home_stats'] ?? [])
+            ->filter(fn (array $row): bool => filled($row['value'] ?? null) || filled($row['label'] ?? null))
+            ->values()
+            ->all();
+
+        $validated['home_features'] = collect($validated['home_features'] ?? [])
+            ->filter(fn (array $row): bool => filled($row['title'] ?? null) || filled($row['description'] ?? null))
+            ->values()
+            ->all();
 
         SiteSetting::resolved()->update($validated);
 
