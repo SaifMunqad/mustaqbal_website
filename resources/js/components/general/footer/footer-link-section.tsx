@@ -1,5 +1,6 @@
-import { Link, usePage } from '@inertiajs/react';
+import { usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
+import SmartLink from '@/components/general/elements/smart-link';
 import type { FooterSection } from '@/lib/navigation';
 import type { SharedData } from '@/types';
 
@@ -8,6 +9,8 @@ interface FooterLinkSectionProps {
 }
 
 type ContactField = NonNullable<FooterSection['links'][number]['contact']>;
+
+const FOOTER_LINK_CLASS = 'hover:text-gray-900 hover:underline dark:hover:text-white';
 
 // Build a usable href from a contact value pulled out of the shared settings.
 function contactHref(field: ContactField, value: string): string {
@@ -40,38 +43,18 @@ export default function FooterLinkSection({ section }: FooterLinkSectionProps) {
 
                         return (
                             <li key={link.key}>
-                                <a
-                                    href={contactHref(link.contact, value)}
-                                    className="hover:text-gray-900 hover:underline dark:hover:text-white"
-                                >
+                                <SmartLink href={contactHref(link.contact, value)} className={FOOTER_LINK_CLASS}>
                                     {`${t(link.labelKey)}: ${value}`}
-                                </a>
+                                </SmartLink>
                             </li>
                         );
                     }
 
-                    const isExternal =
-                        link.href.startsWith('http') ||
-                        link.href.startsWith('mailto:') ||
-                        link.href.startsWith('tel:');
-
                     return (
                         <li key={link.key}>
-                            {isExternal ? (
-                                <a
-                                    href={link.href}
-                                    className="hover:text-gray-900 hover:underline dark:hover:text-white"
-                                >
-                                    {t(link.labelKey)}
-                                </a>
-                            ) : (
-                                <Link
-                                    href={link.href}
-                                    className="hover:text-gray-900 hover:underline dark:hover:text-white"
-                                >
-                                    {t(link.labelKey)}
-                                </Link>
-                            )}
+                            <SmartLink href={link.href} className={FOOTER_LINK_CLASS}>
+                                {t(link.labelKey)}
+                            </SmartLink>
                         </li>
                     );
                 })}

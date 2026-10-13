@@ -3,6 +3,7 @@ import { router, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setKnownLanguages } from '@/i18n';
+import { navIconButtonClass } from '@/components/general/header/navbar-styles';
 import type { LanguageOption, SharedData } from '@/types';
 
 interface LanguageSwitcherProps {
@@ -63,7 +64,7 @@ export default function LanguageSwitcher({
                 onClick={() => setIsOpen((value) => !value)}
                 aria-label={i18n.language ? `Language (${currentLanguage ? currentLanguage.name : i18n.language})` : 'Language'}
                 title={currentLanguage ? currentLanguage.name : 'Language'}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200/40 bg-white/20 text-slate-700 transition-all duration-300 hover:bg-white/40 dark:border-gray-700/40 dark:bg-gray-800/20 dark:text-slate-200 dark:hover:bg-gray-800/40"
+                className={navIconButtonClass}
             >
                 <LanguageIcon className="h-5 w-5" />
             </button>

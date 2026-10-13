@@ -1,0 +1,54 @@
+import { Link } from '@inertiajs/react';
+import type { ReactNode } from 'react';
+
+interface OverlayMediaCardProps {
+    href: string;
+    image?: string | null;
+    title: string;
+    subtitle?: string | null;
+    badge?: string | null;
+    // Icon shown in place of the cover image when no image is available.
+    fallbackIcon: ReactNode;
+    // Extra content rendered on top of the card (e.g. an absolutely-positioned
+    // download button). Kept inside the group wrapper so group-hover works.
+    overlay?: ReactNode;
+}
+
+/**
+ * Cover-image card with a dark bottom gradient carrying the title (start) and an
+ * optional subtitle (end), plus an optional badge pinned to the top start.
+ * Shared by the library book card and the search media card so both read alike.
+ */
+export default function OverlayMediaCard({
+    href,
+    image,
+    title,
+    subtitle,
+    badge,
+    fallbackIcon,
+    overlay,
+}: OverlayMediaCardProps) {
+    return (
+        <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:shadow-md dark:border-slate-700 dark:bg-gray-900">
+            <Link href={href} className="relative block">
+                {image ? (
+                    <img src={image} alt={title} className="aspect-[3/4] w-full object-cover" />
+                ) : (
+                    <div className="flex aspect-[3/4] w-full items-center justify-center bg-blue-600 text-white">
+                        {fallbackIcon}
+                    </div>
+                )}
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-3">
+                    <h3 className="line-clamp-2 text-sm font-semibold text-white">{title}</h3>
+                    {subtitle ? <p className="shrink-0 text-end text-xs text-white/80">{subtitle}</p> : null}
+                </div>
+                {badge ? (
+                    <span className="absolute top-2 start-2 z-10 rounded-full bg-white/80 px-2 py-0.5 text-xs font-medium text-blue-600 shadow-sm backdrop-blur-sm">
+                        {badge}
+                    </span>
+                ) : null}
+            </Link>
+            {overlay}
+        </div>
+    );
+}

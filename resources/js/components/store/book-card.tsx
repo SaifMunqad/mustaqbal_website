@@ -1,6 +1,6 @@
-import { BookOpenIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
-import { Link } from '@inertiajs/react';
+import { ArrowDownTrayIcon, BookOpenIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
+import OverlayMediaCard from '@/components/general/cards/overlay-media-card';
 
 export interface BookCardData {
     id: number;
@@ -19,45 +19,31 @@ interface BookCardProps {
 
 /**
  * Shared book card used on the library listing and the "you may also like"
- * related section on the book detail page. Shows the cover with overlaid
- * category (top start), a hover-revealed download button (top end), and the
- * title (bottom start) with publisher/year (bottom end).
+ * related section on the book detail page. It reuses the cover-overlay media
+ * card and adds a hover-revealed download button on top.
  */
 export default function BookCard({ book }: BookCardProps) {
     const { t } = useTranslation();
+    const subtitle = [book.publisher, book.published_year].filter(Boolean).join(' · ');
 
     return (
-        <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:shadow-md dark:border-slate-700 dark:bg-gray-900">
-            <Link href={`/store/books/${book.slug}`} className="relative block">
-                {book.thumbnail ? (
-                    <img src={book.thumbnail} alt={book.title} className="aspect-[3/4] w-full object-cover" />
-                ) : (
-                    <div className="flex aspect-[3/4] w-full items-center justify-center bg-blue-600 text-white">
-                        <BookOpenIcon className="size-10" />
-                    </div>
-                )}
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-3">
-                    <h3 className="line-clamp-2 text-sm font-semibold text-white">{book.title}</h3>
-                    {book.publisher || book.published_year ? (
-                        <p className="shrink-0 text-end text-xs text-white/80">
-                            {[book.publisher, book.published_year].filter(Boolean).join(' · ')}
-                        </p>
-                    ) : null}
-                </div>
-                {book.category ? (
-                    <span className="absolute top-2 start-2 z-10 rounded-full bg-white/80 px-2 py-0.5 text-xs font-medium text-blue-600 shadow-sm backdrop-blur-sm">
-                        {book.category}
-                    </span>
-                ) : null}
-            </Link>
-            <a
-                href={book.download_url ?? `/store/books/${book.slug}`}
-                aria-label={t('store.download')}
-                title={t('store.download')}
-                className="absolute top-2 end-2 z-10 flex size-9 items-center justify-center rounded-full border border-slate-300 bg-white/80 text-slate-700 shadow-md backdrop-blur-sm transition hover:bg-white hover:text-slate-900 opacity-0 focus:opacity-100 group-hover:opacity-100"
-            >
-                <ArrowDownTrayIcon className="size-5" />
-            </a>
-        </div>
+        <OverlayMediaCard
+            href={`/store/books/${book.slug}`}
+            image={book.thumbnail}
+            title={book.title}
+            subtitle={subtitle || null}
+            badge={book.category}
+            fallbackIcon={<BookOpenIcon className="size-10" />}
+            overlay={
+                <a
+                    href={book.download_url ?? `/store/books/${book.slug}`}
+                    aria-label={t('store.download')}
+                    title={t('store.download')}
+                    className="absolute top-2 end-2 z-10 flex size-9 items-center justify-center rounded-full border border-slate-300 bg-white/80 text-slate-700 shadow-md backdrop-blur-sm transition hover:bg-white hover:text-slate-900 opacity-0 focus:opacity-100 group-hover:opacity-100"
+                >
+                    <ArrowDownTrayIcon className="size-5" />
+                </a>
+            }
+        />
     );
 }
