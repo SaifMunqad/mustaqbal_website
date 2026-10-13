@@ -16,23 +16,24 @@ export default function HomeHero({ home, tagline }: HomeHeroProps) {
     const primaryLabel = home.cta_primary || t('home.ctaPrimary');
     const secondaryLabel = home.cta_secondary || t('home.ctaSecondary');
 
-    // Direction-aware mask and gradient configurations
-    const maskStyle = {
-        maskImage: isRtl
-            ? 'linear-gradient(to left, transparent 0%, black 35%, black 100%)'
-            : 'linear-gradient(to right, transparent 0%, black 35%, black 100%)',
-        WebkitMaskImage: isRtl
-            ? 'linear-gradient(to left, transparent 0%, black 35%, black 100%)'
-            : 'linear-gradient(to right, transparent 0%, black 35%, black 100%)',
-    };
+    // Direction-aware and responsive mask:
+    // Mobile (< lg): fades out at the bottom edge to blend into the text below
+    // Desktop (lg+): fades horizontally towards the text side
+    const maskClasses = isRtl
+        ? '[mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)] [-webkit-mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)] lg:[mask-image:linear-gradient(to_left,transparent_0%,black_35%,black_100%)] lg:[-webkit-mask-image:linear-gradient(to_left,transparent_0%,black_35%,black_100%)]'
+        : '[mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)] [-webkit-mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)] lg:[mask-image:linear-gradient(to_right,transparent_0%,black_35%,black_100%)] lg:[-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_35%,black_100%)]';
+
+    const heroImageSrc =
+        home.hero_image ||
+        'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80';
 
     return (
         <section
             dir={isRtl ? 'rtl' : 'ltr'}
             className={`relative overflow-hidden rounded-3xl border border-slate-200/80 shadow-md dark:border-slate-800 dark:from-slate-950 dark:via-[#0c2323] dark:to-emerald-950 ${
                 isRtl
-                    ? 'bg-gradient-to-l from-sky-100 via-teal-100/70 to-emerald-700'
-                    : 'bg-gradient-to-r from-sky-100 via-teal-100/70 to-emerald-700'
+                    ? 'bg-gradient-to-t from-sky-100 via-teal-100/70 to-emerald-700 lg:bg-gradient-to-l'
+                    : 'bg-gradient-to-t from-sky-100 via-teal-100/70 to-emerald-700 lg:bg-gradient-to-r'
             }`}
         >
             {/* Ambient background glow */}
@@ -44,7 +45,20 @@ export default function HomeHero({ home, tagline }: HomeHeroProps) {
                 }`}
             />
 
-            <div className="grid min-h-[420px] items-center gap-6 lg:grid-cols-12">
+            <div className="grid min-h-[420px] items-center gap-0 lg:grid-cols-12 lg:gap-6">
+                {/* Full-width square image on mobile (< lg), side banner on desktop (lg+) */}
+                <div className="relative order-first aspect-square w-full lg:order-last lg:col-span-6 lg:aspect-auto lg:h-full lg:self-stretch">
+                    <div
+                        className={`relative h-full w-full overflow-hidden ${maskClasses}`}
+                    >
+                        <img
+                            src={heroImageSrc}
+                            alt={title}
+                            className="h-full w-full object-cover object-center"
+                        />
+                    </div>
+                </div>
+
                 {/* Text Content */}
                 <div
                     className={`relative z-10 px-8 py-10 md:py-14 lg:col-span-6 ${
@@ -81,39 +95,6 @@ export default function HomeHero({ home, tagline }: HomeHeroProps) {
                             {secondaryLabel}
                         </Link>
                     </div>
-                </div>
-
-                {/* Image Section with Directional Fade */}
-                <div className="relative h-72 w-full self-stretch lg:col-span-6 lg:h-full">
-                    {home.hero_image ? (
-                        <div
-                            className={`relative h-full w-full overflow-hidden ${
-                                isRtl
-                                    ? 'rounded-br-3xl lg:rounded-none'
-                                    : 'rounded-bl-3xl lg:rounded-none'
-                            }`}
-                            style={maskStyle}
-                        >
-                            <img
-                                src={home.hero_image}
-                                alt={title}
-                                className="h-full w-full object-cover object-center"
-                            />
-                        </div>
-                    ) : (
-                        <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
-                            <div
-                                className="h-full w-full bg-cover bg-center"
-                                style={maskStyle}
-                            >
-                                <img
-                                    src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80"
-                                    alt={title}
-                                    className="h-full w-full object-cover"
-                                />
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
         </section>
