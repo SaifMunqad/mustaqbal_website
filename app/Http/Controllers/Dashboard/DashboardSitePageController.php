@@ -43,6 +43,7 @@ class DashboardSitePageController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'hero_image' => ['nullable', new ImageLocation, 'max:2048'],
             'body' => ['nullable', 'string'],
+            'video_embed' => ['nullable', 'string', 'max:5000'],
             'is_published' => ['nullable', 'boolean'],
         ]);
 
@@ -52,7 +53,12 @@ class DashboardSitePageController extends Controller
             'hero_image' => $validated['hero_image'] ?? null,
             // Rich-text body is stored as sanitized HTML inside the content JSON,
             // alongside any legacy structured fields the frontend may still read.
-            'content' => ['body' => Purify::clean($validated['body'] ?? '')],
+            // The video embed is kept as raw text and rendered as a controlled,
+            // parsed iframe on the front-end (never injected as HTML).
+            'content' => [
+                'body' => Purify::clean($validated['body'] ?? ''),
+                'video_embed' => $validated['video_embed'] ?? '',
+            ],
             'is_published' => ! empty($validated['is_published']),
         ]);
 
@@ -68,6 +74,7 @@ class DashboardSitePageController extends Controller
         return Inertia::render('dashboard/site-pages/edit', [
             'page' => $sitePage,
             'body' => $content['body'] ?? '',
+            'videoEmbed' => $content['video_embed'] ?? '',
         ]);
     }
 
@@ -78,18 +85,23 @@ class DashboardSitePageController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'hero_image' => ['nullable', new ImageLocation, 'max:2048'],
             'body' => ['nullable', 'string'],
+            'video_embed' => ['nullable', 'string', 'max:5000'],
             'is_published' => ['nullable', 'boolean'],
         ]);
 
         // Preserve any legacy structured keys (vision, goals, ...) while the
-        // editor writes the rich-text body.
+        // editor writes the rich-text body and the optional video embed.
         $existing = is_array($sitePage->content) ? $sitePage->content : [];
 
         $sitePage->update([
             'slug' => $validated['slug'],
             'title' => $validated['title'],
             'hero_image' => $validated['hero_image'] ?? null,
-            'content' => [...$existing, 'body' => Purify::clean($validated['body'] ?? '')],
+            'content' => [
+                ...$existing,
+                'body' => Purify::clean($validated['body'] ?? ''),
+                'video_embed' => $validated['video_embed'] ?? '',
+            ],
             'is_published' => ! empty($validated['is_published']),
         ]);
 

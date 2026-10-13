@@ -77,8 +77,8 @@ class DatabaseSeeder extends Seeder
         }
 
         // Rich, sectioned About page (story, stats, mission & vision, values,
-        // highlights, goals, leadership message, timeline, team, FAQ, gallery).
-        // Idempotent and kept in a dedicated seeder so it is easy to extend.
+        // highlights, goals, leadership message, FAQ). Idempotent and kept in a
+        // dedicated seeder so it is easy to extend.
         $this->call(AboutPageSeeder::class);
 
         SitePage::updateOrCreate(

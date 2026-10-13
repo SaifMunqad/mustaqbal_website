@@ -44,19 +44,6 @@ interface LeadershipMessage {
     author_image?: string;
 }
 
-interface TimelineItem {
-    year?: string;
-    title?: string;
-    text?: string;
-}
-
-interface TeamMember {
-    name?: string;
-    role?: string;
-    image?: string;
-    bio?: string;
-}
-
 interface FaqItem {
     question?: string;
     answer?: string;
@@ -74,10 +61,8 @@ interface AboutContent {
     goals?: string[];
     main_points?: string[];
     message?: LeadershipMessage;
-    timeline?: TimelineItem[];
-    team?: TeamMember[];
     faq?: FaqItem[];
-    gallery?: string[];
+    video_embed?: string;
 }
 
 interface AboutPageData {
@@ -130,7 +115,7 @@ function Hero({ title, intro, image, tagline, enrollLabel, contactLabel }: { tit
             {image ? (
                 <img src={image} alt={title} className="absolute inset-0 h-full w-full object-cover" />
             ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-blue-600 to-purple-600" />
+                <div className="absolute inset-0 bg-blue-700" />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/70 to-slate-900/40" />
 
@@ -276,7 +261,7 @@ function HighlightsSection({ highlights }: { highlights: Highlight[] }) {
 function LeadershipMessage({ message }: { message: LeadershipMessage }) {
     const image = message.author_image;
     return (
-        <section className="overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-indigo-50 to-blue-50 shadow-sm dark:border-slate-800 dark:from-gray-900 dark:to-gray-800">
+        <section className="overflow-hidden rounded-3xl border border-slate-200 bg-blue-50 shadow-sm dark:border-slate-800 dark:bg-blue-950">
             <div className="flex flex-col items-center gap-6 p-6 md:flex-row md:p-10">
                 {image ? (
                     <img
@@ -304,83 +289,75 @@ function LeadershipMessage({ message }: { message: LeadershipMessage }) {
     );
 }
 
-function TimelineSection({ timeline }: { timeline: TimelineItem[] }) {
-    const { t } = useTranslation();
+/**
+ * Turn an admin-pasted value into a safe iframe `src`. Accepts either a full
+ * `<iframe>` embed code (we lift out its `src`) or a bare share URL, normalised
+ * to an embeddable form for the common providers. Anything that is not a plain
+ * http(s) URL is ignored, so the section hides itself rather than break.
+ */
+function resolveVideoSrc(embed?: string): string | null {
+    const value = embed?.trim();
+    if (!value) {
+        return null;
+    }
 
-    return (
-        <section className="space-y-8">
-            <SectionHeading eyebrow={t('about.timelineEyebrow')} title={t('about.timelineTitle')} />
-            <ol className="relative space-y-8 border-s-2 border-slate-200 ps-6 dark:border-slate-800">
-                {timeline.map((item, index) => (
-                    <li key={`${item.year}-${index}`} className="relative">
-                        <span className="absolute -start-[31px] flex size-6 items-center justify-center rounded-full bg-indigo-500 ring-4 ring-white dark:ring-gray-900" aria-hidden>
-                            <span className="size-2 rounded-full bg-white" />
-                        </span>
-                        {item.year ? (
-                            <div className="text-sm font-bold uppercase tracking-wide text-indigo-600 dark:text-indigo-400">
-                                {item.year}
-                            </div>
-                        ) : null}
-                        {item.title ? (
-                            <h3 className="mt-1 text-lg font-semibold text-slate-900 dark:text-white">{item.title}</h3>
-                        ) : null}
-                        {item.text ? <p className="mt-1 text-slate-600 dark:text-slate-300">{item.text}</p> : null}
-                    </li>
-                ))}
-            </ol>
-        </section>
-    );
+    const iframeSrc = value.match(/<iframe[^>]*\ssrc=["']([^"']+)["']/i)?.[1];
+    const candidate = (iframeSrc ?? value).trim();
+
+    if (!/^https?:\/\//i.test(candidate)) {
+        return null;
+    }
+
+    return normalizeEmbedUrl(candidate);
 }
 
-function TeamSection({ team }: { team: TeamMember[] }) {
-    const { t } = useTranslation();
+function normalizeEmbedUrl(url: string): string {
+    try {
+        const parsed = new URL(url);
 
-    return (
-        <section className="space-y-8">
-            <SectionHeading eyebrow={t('about.teamEyebrow')} title={t('about.teamTitle')} />
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                {team.map((member, index) => (
-                    <article
-                        key={`${member.name}-${index}`}
-                        className="overflow-hidden rounded-2xl border border-slate-200 bg-white text-center shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-800 dark:bg-gray-900"
-                    >
-                        {member.image ? (
-                            <img src={member.image} alt={member.name ?? ''} className="aspect-square w-full object-cover" />
-                        ) : (
-                            <div className="flex aspect-square w-full items-center justify-center bg-slate-100 text-slate-400 dark:bg-slate-800">
-                                <Users className="size-12" aria-hidden />
-                            </div>
-                        )}
-                        <div className="p-4">
-                            <h3 className="font-semibold text-slate-900 dark:text-white">{member.name}</h3>
-                            {member.role ? (
-                                <div className="text-sm text-indigo-600 dark:text-indigo-400">{member.role}</div>
-                            ) : null}
-                            {member.bio ? <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{member.bio}</p> : null}
-                        </div>
-                    </article>
-                ))}
-            </div>
-        </section>
-    );
+        // Convert YouTube watch/share links to their /embed/<id> form.
+        if (parsed.hostname.includes('youtube.com')) {
+            const id = parsed.searchParams.get('v');
+            if (id) {
+                return `https://www.youtube.com/embed/${id}`;
+            }
+        }
+        if (parsed.hostname === 'youtu.be') {
+            const id = parsed.pathname.slice(1);
+            if (id) {
+                return `https://www.youtube.com/embed/${id}`;
+            }
+        }
+
+        return url;
+    } catch {
+        return url;
+    }
 }
 
-function GallerySection({ images }: { images: string[] }) {
+function VideoSection({ embed, title }: { embed: string; title?: string }) {
     const { t } = useTranslation();
+    const src = resolveVideoSrc(embed);
+
+    if (!src) {
+        return null;
+    }
 
     return (
         <section className="space-y-8">
-            <SectionHeading eyebrow={t('about.galleryEyebrow')} title={t('about.galleryTitle')} />
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                {images.map((src, index) => (
-                    <img
-                        key={`${src}-${index}`}
+            <SectionHeading eyebrow={t('about.videoEyebrow')} title={t('about.videoTitle')} />
+            <div className="mx-auto max-w-4xl overflow-hidden rounded-3xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-gray-900">
+                <div className="relative aspect-video w-full overflow-hidden rounded-2xl">
+                    <iframe
                         src={src}
-                        alt=""
+                        title={title ? `${title} — ${t('about.videoTitle')}` : t('about.videoTitle')}
+                        className="absolute inset-0 h-full w-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen
                         loading="lazy"
-                        className="aspect-square w-full rounded-2xl object-cover shadow-sm transition hover:opacity-90"
                     />
-                ))}
+                </div>
             </div>
         </section>
     );
@@ -457,9 +434,9 @@ function CtaBand() {
     const { t } = useTranslation();
 
     return (
-        <section className="overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-blue-600 to-purple-600 p-8 text-center shadow-md md:p-12">
+        <section className="overflow-hidden rounded-3xl bg-blue-700 p-8 text-center shadow-md md:p-12">
             <h2 className="text-2xl font-bold text-white md:text-3xl">{t('about.ctaTitle')}</h2>
-            <p className="mx-auto mt-2 max-w-2xl text-indigo-100">{t('about.ctaText')}</p>
+            <p className="mx-auto mt-2 max-w-2xl text-blue-100">{t('about.ctaText')}</p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
                 <Link
                     href="/school/enroll"
@@ -503,12 +480,10 @@ function About() {
     const stats = (content.stats ?? []).filter((stat) => stat.value || stat.label);
     const values = (content.values ?? []).filter((value) => value.title);
     const highlights = (content.highlights ?? []).filter((item) => item.title);
-    const team = (content.team ?? []).filter((member) => member.name);
-    const timeline = (content.timeline ?? []).filter((item) => item.title || item.text);
     const faq = (content.faq ?? []).filter((item) => item.question);
-    const gallery = (content.gallery ?? []).filter(Boolean);
     const goals = content.goals ?? [];
     const mainPoints = content.main_points ?? [];
+    const videoEmbed = content.video_embed?.trim();
 
     return (
         <div className="space-y-6 md:space-y-8">
@@ -527,6 +502,8 @@ function About() {
 
             {body ? <StorySection body={body} /> : null}
 
+            {videoEmbed ? <VideoSection embed={videoEmbed} title={title} /> : null}
+
             <MissionVision mission={content.mission} vision={content.vision} />
 
             {values.length ? <ValuesSection values={values} /> : null}
@@ -534,12 +511,6 @@ function About() {
             {highlights.length ? <HighlightsSection highlights={highlights} /> : null}
 
             {message?.text ? <LeadershipMessage message={message} /> : null}
-
-            {timeline.length ? <TimelineSection timeline={timeline} /> : null}
-
-            {team.length ? <TeamSection team={team} /> : null}
-
-            {gallery.length ? <GallerySection images={gallery} /> : null}
 
             {goals.length || mainPoints.length ? (
                 <GoalsPointsSection goals={goals} mainPoints={mainPoints} />

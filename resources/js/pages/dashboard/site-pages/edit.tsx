@@ -1,6 +1,6 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import RichTextEditor from '@/components/editor/rich-text-editor';
-import { CheckboxField, TextField } from '@/components/form-fields';
+import { CheckboxField, TextAreaField, TextField } from '@/components/form-fields';
 import FormSection from '@/components/form/form-section';
 import { ImageUploadField } from '@/components/form/image-upload-field';
 import StickyFormFooter from '@/components/form/sticky-form-footer';
@@ -11,6 +11,7 @@ import {
     InformationCircleIcon,
     PhotoIcon,
     RocketLaunchIcon,
+    VideoCameraIcon,
 } from '@heroicons/react/24/outline';
 import { Form, Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
@@ -25,9 +26,10 @@ interface SitePage {
 }
 
 export default function DashboardSitePagesEdit() {
-    const { page, body: initialBody } = usePage<{
+    const { page, body: initialBody, videoEmbed: initialVideoEmbed } = usePage<{
         page: SitePage;
         body: string;
+        videoEmbed?: string;
     }>().props;
     const [body, setBody] = useState(initialBody ?? '');
     const [heroImage, setHeroImage] = useState(page.hero_image ?? '');
@@ -85,6 +87,22 @@ export default function DashboardSitePagesEdit() {
                                         value={heroImage}
                                         onChange={setHeroImage}
                                         error={errors.hero_image}
+                                    />
+                                </FormSection>
+
+                                <FormSection
+                                    title="Video / Embed"
+                                    description="Optional. Paste an embed code (e.g. a YouTube <iframe>) or a video URL. Shown as a responsive video on the page."
+                                    icon={<VideoCameraIcon className="size-5" />}
+                                >
+                                    <TextAreaField
+                                        label="Embed code or video URL"
+                                        name="video_embed"
+                                        defaultValue={initialVideoEmbed ?? ''}
+                                        placeholder='<iframe width="560" height="315" src="https://www.youtube.com/embed/..." ...></iframe>'
+                                        rows={4}
+                                        className="font-mono text-xs"
+                                        error={errors.video_embed}
                                     />
                                 </FormSection>
                             </div>
