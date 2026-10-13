@@ -43,6 +43,32 @@ class Job extends Model
     }
 
     /**
+     * Card-ready payload shared by the public jobs listing and the home-page
+     * "latest jobs" block so both render the same fields.
+     *
+     * @return array<string, mixed>
+     */
+    public function toCard(): array
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'slug' => $this->slug,
+            'department' => $this->department,
+            'category' => $this->category,
+            'category_label' => $this->categoryLabel(),
+            'description' => $this->description,
+            'requirements' => $this->requirements,
+            'employment_type' => $this->employment_type,
+            'working_hours' => $this->working_hours,
+            'application_email' => $this->application_email,
+            'application_url' => $this->application_url,
+            'deadline' => $this->deadline?->toDateString(),
+            'created_at' => $this->created_at?->toIso8601String(),
+        ];
+    }
+
+    /**
      * Human-readable label for the program-style category (Course / School /
      * Islamic Madrasa). Returns null when unset so the UI can hide the badge.
      */
