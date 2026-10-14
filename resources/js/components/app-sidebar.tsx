@@ -33,7 +33,7 @@ import { useTranslation } from 'react-i18next';
 import AppLogo from './app-logo';
 
 export function AppSidebar() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { auth } = usePage<SharedData>().props;
     const canManageUsers = ['admin', 'management'].includes(auth.user?.role ?? '');
     const isAdmin = auth.user?.role === 'admin';
@@ -146,7 +146,11 @@ export function AppSidebar() {
     ];
 
     return (
-        <Sidebar collapsible="icon" variant="inset" side={document.dir == 'ltr' ? 'left' : 'right'}>
+        <Sidebar
+            collapsible="icon"
+            variant="inset"
+            side={i18n.dir() === 'rtl' ? 'right' : 'left'}
+        >
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>

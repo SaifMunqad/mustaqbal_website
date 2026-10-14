@@ -20,7 +20,7 @@ export default function AppLogo() {
                     <AppLogoIcon className="size-5 fill-current text-white dark:text-black" />
                 )}
             </div>
-            <div className="ms-1 grid flex-1 text-start text-sm">
+            <div className="ms-1 grid min-w-0 flex-1 text-start text-sm">
                 <span className="mb-0.5 truncate leading-tight font-semibold">
                     {name}
                 </span>
