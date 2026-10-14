@@ -220,7 +220,7 @@ export default function RichTextEditor({
                     title="Import Word (.docx)"
                 >
                     <DocumentIcon className="size-4" />
-                    <span className="ml-1 text-xs">.docx</span>
+                    <span className="ms-1 text-xs">.docx</span>
                 </ToolButton>
                 {busy ? (
                     <span className="text-xs text-muted-foreground">{busy}</span>

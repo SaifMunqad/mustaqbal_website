@@ -117,7 +117,7 @@ export default function DashboardLanguagesIndex() {
 
             <div className="overflow-x-auto rounded-2xl border border-border">
                 <table className="w-full text-sm">
-                    <thead className="bg-muted/50 text-left">
+                    <thead className="bg-muted/50 text-start">
                         <tr>
                             <th className="w-8 px-2 py-3" aria-label={t('dashboard.languages.dragHint')} />
                             <th className="px-4 py-3">{t('dashboard.languages.code')}</th>

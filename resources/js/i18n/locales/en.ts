@@ -233,6 +233,56 @@ const en = {
         events: 'Events',
         books: 'Books',
     },
+    enums: {
+        postType: {
+            news: 'News',
+            job: 'Job',
+            event: 'Event',
+            achievement: 'Achievement',
+            student_of_week: 'Student of the Week',
+            student_of_month: 'Student of the Month',
+            teacher_of_month: 'Teacher of the Month',
+            employee_of_month: 'Employee of the Month',
+        },
+        eventAudience: {
+            public: 'Public',
+            families: 'Families',
+            teachers: 'Teachers',
+        },
+        eventStatus: {
+            upcoming: 'Upcoming',
+            ongoing: 'Ongoing',
+            past: 'Past',
+            cancelled: 'Cancelled',
+        },
+        userRole: {
+            family: 'Family',
+            teacher: 'Teacher',
+            management: 'Management',
+            admin: 'Admin',
+        },
+        userStatus: {
+            pending: 'Pending',
+            active: 'Active',
+            suspended: 'Suspended',
+        },
+        homeSectionType: {
+            banner: 'Banner',
+            announcement: 'Announcement',
+            recognition: 'Recognition highlights',
+            articles: 'Articles',
+            events: 'Events',
+        },
+        emailCampaignStatus: {
+            queued: 'Queued',
+            completed: 'Completed',
+        },
+        emailDeliveryStatus: {
+            pending: 'Pending',
+            sent: 'Sent',
+            failed: 'Failed',
+        },
+    },
     jobs: {
         employmentType: {
             full_time: 'Full Time',

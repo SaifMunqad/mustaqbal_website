@@ -11,6 +11,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { ComponentProps, ReactNode, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import DateObject from 'react-date-object';
 import arabic from 'react-date-object/calendars/arabic';
 import gregorian from 'react-date-object/calendars/gregorian';
@@ -138,6 +139,8 @@ function TextAreaField({
 interface SelectOption {
     value: string;
     label: string;
+    /** Optional i18n key; when present the label is translated with `label` as fallback. */
+    labelKey?: string;
 }
 
 interface SelectFieldProps {
@@ -170,6 +173,7 @@ function SelectField({
     placeholder = 'Select an option',
     onChange,
 }: SelectFieldProps) {
+    const { t } = useTranslation();
     const [value, setValue] = useState<string>(
         defaultValue === '' ? '' : defaultValue,
     );
@@ -201,7 +205,7 @@ function SelectField({
                                 : option.value;
                         return (
                             <SelectItem key={itemValue} value={itemValue}>
-                                {option.label}
+                                {t(option.labelKey ?? option.label, option.label)}
                             </SelectItem>
                         );
                     })}

@@ -79,7 +79,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="mr-2 h-[34px] w-[34px]"
+                                    className="me-2 h-[34px] w-[34px]"
                                 >
                                     <Menu className="h-5 w-5" />
                                 </Button>
@@ -91,7 +91,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 <SheetTitle className="sr-only">
                                     Navigation Menu
                                 </SheetTitle>
-                                <SheetHeader className="flex justify-start text-left">
+                                <SheetHeader className="flex justify-start text-start">
                                     <AppLogoIcon className="h-6 w-6 fill-current text-black dark:text-white" />
                                 </SheetHeader>
                                 <div className="flex h-full flex-1 flex-col space-y-4 p-4">
@@ -101,7 +101,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                 <Link
                                                     key={item.title}
                                                     href={item.href}
-                                                    className="flex items-center space-x-2 font-medium"
+                                                    className="flex items-center gap-2 font-medium"
                                                 >
                                                     {item.icon && (
                                                         <Icon
@@ -121,7 +121,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                     href={resolveUrl(item.href)}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="flex items-center space-x-2 font-medium"
+                                                    className="flex items-center gap-2 font-medium"
                                                 >
                                                     {item.icon && (
                                                         <Icon
@@ -142,15 +142,15 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                     <Link
                         href={dashboard()}
                         prefetch
-                        className="flex items-center space-x-2"
+                        className="flex items-center gap-2"
                     >
                         <AppLogo />
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <div className="ml-6 hidden h-full items-center space-x-6 lg:flex">
+                    <div className="ms-6 hidden h-full items-center gap-6 lg:flex">
                         <NavigationMenu className="flex h-full items-stretch">
-                            <NavigationMenuList className="flex h-full items-stretch space-x-2">
+                            <NavigationMenuList className="flex h-full items-stretch gap-2">
                                 {mainNavItems.map((item, index) => (
                                     <NavigationMenuItem
                                         key={index}
@@ -170,13 +170,13 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                             {item.icon && (
                                                 <Icon
                                                     iconNode={item.icon}
-                                                    className="mr-2 h-4 w-4"
+                                                    className="me-2 h-4 w-4"
                                                 />
                                             )}
                                             {item.title}
                                         </Link>
                                         {isSameUrl(page.url, item.href) && (
-                                            <div className="absolute bottom-0 left-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"></div>
+                                            <div className="absolute bottom-0 start-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"></div>
                                         )}
                                     </NavigationMenuItem>
                                 ))}
@@ -184,8 +184,8 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                         </NavigationMenu>
                     </div>
 
-                    <div className="ml-auto flex items-center space-x-2">
-                        <div className="relative flex items-center space-x-1">
+                    <div className="ms-auto flex items-center gap-2">
+                        <div className="relative flex items-center gap-1">
                             <Button
                                 variant="ghost"
                                 size="icon"
@@ -205,7 +205,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                     href={resolveUrl(item.href)}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="group ml-1 inline-flex h-9 w-9 items-center justify-center rounded-md bg-transparent p-0 text-sm font-medium text-accent-foreground ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+                                                    className="group ms-1 inline-flex h-9 w-9 items-center justify-center rounded-md bg-transparent p-0 text-sm font-medium text-accent-foreground ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
                                                 >
                                                     <span className="sr-only">
                                                         {item.title}

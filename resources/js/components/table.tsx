@@ -84,7 +84,7 @@ export function DataTable<T>({
                             const isActive = sortKey === column.key;
 
                             return (
-                                <th key={column.key} className={`p-3 text-left ${column.className ?? ''}`}>
+                                <th key={column.key} className={`p-3 text-start ${column.className ?? ''}`}>
                                     {column.sortValue ? (
                                         <button
                                             type="button"

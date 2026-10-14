@@ -31,7 +31,7 @@ const statusStyles: Record<string, string> = {
 
 export default function DashboardEventsIndex() {
     const { events, filters } = usePage<EventsIndexProps>().props;
-    const { i18n } = useTranslation();
+    const { t, i18n } = useTranslation();
     const locale = i18n.language === 'fa_AF' ? 'fa-AF' : i18n.language;
     const [search, setSearch] = useState(filters.search);
 
@@ -52,7 +52,7 @@ export default function DashboardEventsIndex() {
             header: 'Status',
             cell: (row) => (
                 <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${statusStyles[row.status] ?? ''}`}>
-                    {row.status}
+                    {t(`enums.eventStatus.${row.status}`, row.status)}
                 </span>
             ),
             sortValue: (row) => row.status,

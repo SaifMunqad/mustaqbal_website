@@ -1,4 +1,5 @@
 import { Link } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import HomeCardItem, { shapeForIndex, type HomeCard } from './home-card-item';
 
 export type { HomeCard };
@@ -17,6 +18,8 @@ export interface HomeSection {
     type: string;
     variant: 'cards' | 'banner' | 'announcement';
     title?: string | null;
+    /** i18n fallback heading used when the admin left the title blank. */
+    titleKey?: string;
     items?: HomeCard[];
     config?: HomeSectionConfig;
 }
@@ -30,11 +33,18 @@ const toneStyles: Record<string, string> = {
 };
 
 function CardsSection({ section }: { section: HomeSection }) {
+    const { t } = useTranslation();
+    const heading = section.title?.trim()
+        ? section.title
+        : section.titleKey
+          ? t(section.titleKey)
+          : '';
+
     return (
         <section className="space-y-4">
-            {section.title ? (
+            {heading ? (
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                    {section.title}
+                    {heading}
                 </h2>
             ) : null}
             <div className="grid items-start gap-5 md:grid-cols-2 lg:grid-cols-3">

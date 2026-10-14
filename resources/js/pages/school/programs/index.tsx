@@ -127,7 +127,7 @@ function PathwaySection() {
 
                             {index < PATHWAY.length - 1 ? (
                                 <ArrowLeftRight
-                                    className="absolute top-1/2 -right-3 z-10 hidden size-6 -translate-y-1/2 text-slate-300 md:block dark:text-slate-600"
+                                    className="absolute top-1/2 -end-3 z-10 hidden size-6 -translate-y-1/2 text-slate-300 md:block dark:text-slate-600"
                                     aria-hidden
                                 />
                             ) : null}

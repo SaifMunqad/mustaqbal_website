@@ -117,7 +117,7 @@ export default function EventCalendar({
                         <div
                             key={date.toISOString()}
                             className={cn(
-                                'min-h-16 rounded-lg border p-1 text-left align-top',
+                                'min-h-16 rounded-lg border p-1 text-start align-top',
                                 isToday
                                     ? 'border-blue-400 bg-blue-50 dark:bg-blue-950'
                                     : 'border-slate-100 dark:border-slate-800',
@@ -132,7 +132,7 @@ export default function EventCalendar({
                                         key={event.id}
                                         type="button"
                                         onClick={() => onSelectEvent?.(event)}
-                                        className="block w-full truncate rounded bg-blue-600 px-1 py-0.5 text-left text-[10px] text-white transition hover:bg-blue-700"
+                                        className="block w-full truncate rounded bg-blue-600 px-1 py-0.5 text-start text-[10px] text-white transition hover:bg-blue-700"
                                         title={event.title}
                                     >
                                         {event.title}

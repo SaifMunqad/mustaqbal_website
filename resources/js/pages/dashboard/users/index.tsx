@@ -3,6 +3,7 @@ import ResourceFilterBar, { filterSelectClass } from '@/components/dashboard/res
 import { DataTable, DataTableColumn } from '@/components/table';
 import { Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface Account {
     id: number;
@@ -17,6 +18,7 @@ interface Account {
 interface UserOption {
     value: string;
     label: string;
+    labelKey?: string;
 }
 
 interface UsersIndexProps {
@@ -34,6 +36,7 @@ const statusStyles: Record<string, string> = {
 };
 
 export default function DashboardUsersIndex() {
+    const { t } = useTranslation();
     const { users, roleOptions, statusOptions, filters } = usePage<UsersIndexProps>().props;
     const [search, setSearch] = useState(filters.search);
     const [role, setRole] = useState(filters.role);
@@ -50,7 +53,10 @@ export default function DashboardUsersIndex() {
         {
             key: 'role',
             header: 'Role',
-            cell: (user) => roleOptions.find((option) => option.value === user.role)?.label ?? user.role,
+            cell: (user) => {
+                const option = roleOptions.find((o) => o.value === user.role);
+                return option ? t(option.labelKey ?? option.label, option.label) : user.role;
+            },
             sortValue: (user) => user.role,
         },
         {
@@ -62,7 +68,7 @@ export default function DashboardUsersIndex() {
                         statusStyles[user.status ?? 'active'] ?? 'bg-slate-100 text-slate-700'
                     }`}
                 >
-                    {user.status ?? 'active'}
+                    {t(`enums.userStatus.${user.status ?? 'active'}`, user.status ?? 'active')}
                 </span>
             ),
             sortValue: (user) => user.status ?? 'active',
@@ -106,7 +112,7 @@ export default function DashboardUsersIndex() {
                     <option value="">All roles</option>
                     {roleOptions.map((option) => (
                         <option key={option.value} value={option.value}>
-                            {option.label}
+                            {t(option.labelKey ?? option.label, option.label)}
                         </option>
                     ))}
                 </select>
@@ -118,7 +124,7 @@ export default function DashboardUsersIndex() {
                     <option value="">All statuses</option>
                     {statusOptions.map((option) => (
                         <option key={option.value} value={option.value}>
-                            {option.label}
+                            {t(option.labelKey ?? option.label, option.label)}
                         </option>
                     ))}
                 </select>

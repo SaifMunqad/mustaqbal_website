@@ -150,7 +150,7 @@ export default function ExcelEmailsImport({ onExtract }: ExcelEmailsImportProps)
                     accept=".xlsx,.xls,.csv"
                     disabled={busy}
                     onChange={(event) => handleFile(event.target.files?.[0])}
-                    className="block w-full cursor-pointer text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:text-white hover:file:bg-blue-700 md:w-auto"
+                    className="block w-full cursor-pointer text-sm file:me-3 file:rounded-lg file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:text-white hover:file:bg-blue-700 md:w-auto"
                 />
                 {busy && <span className="text-sm text-slate-500">Reading file…</span>}
             </div>

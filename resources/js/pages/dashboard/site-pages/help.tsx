@@ -85,7 +85,7 @@ export default function DashboardSitePagesHelp() {
                     icon={<CommandLineIcon className="size-5" />}
                     title="Understand the Slug and Title"
                 >
-                    <ul className="list-disc space-y-1 pl-5">
+                    <ul className="list-disc space-y-1 ps-5">
                         <li>
                             <strong>Title</strong> is the big heading shown at
                             the top of the page.
@@ -134,7 +134,7 @@ export default function DashboardSitePagesHelp() {
                     icon={<PhotoIcon className="size-5" />}
                     title="Add images"
                 >
-                    <ul className="list-disc space-y-1 pl-5">
+                    <ul className="list-disc space-y-1 ps-5">
                         <li>
                             <strong>Inline images:</strong> use the image button
                             in the toolbar to place a picture inside the text.
@@ -152,7 +152,7 @@ export default function DashboardSitePagesHelp() {
                     icon={<LinkIcon className="size-5" />}
                     title="Tips for good pages"
                 >
-                    <ul className="list-disc space-y-1 pl-5">
+                    <ul className="list-disc space-y-1 ps-5">
                         <li>Use short headings to break long text into sections.</li>
                         <li>Keep paragraphs concise; the About page is often read on phones.</li>
                         <li>Add links with the link button so URLs open safely in a new tab.</li>

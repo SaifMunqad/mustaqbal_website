@@ -30,7 +30,7 @@ function GridScanIcon() {
                     {Array.from({ length: 5 }, (_, i) => (
                         <div
                             key={`col-${i + 1}`}
-                            className="border-r border-border last:border-r-0"
+                            className="border-e border-border last:border-e-0"
                         />
                     ))}
                 </div>
@@ -86,7 +86,7 @@ function TwoFactorSetupStep({
                         </div>
                     </div>
 
-                    <div className="flex w-full space-x-5">
+                    <div className="flex w-full gap-5">
                         <Button className="w-full" onClick={onNextStep}>
                             {buttonText}
                         </Button>
@@ -99,7 +99,7 @@ function TwoFactorSetupStep({
                         </span>
                     </div>
 
-                    <div className="flex w-full space-x-2">
+                    <div className="flex w-full gap-2">
                         <div className="flex w-full items-stretch overflow-hidden rounded-xl border border-border">
                             {!manualSetupKey ? (
                                 <div className="flex h-full w-full items-center justify-center bg-muted p-3">
@@ -115,7 +115,7 @@ function TwoFactorSetupStep({
                                     />
                                     <button
                                         onClick={() => copy(manualSetupKey)}
-                                        className="border-l border-border px-3 hover:bg-muted"
+                                        className="border-s border-border px-3 hover:bg-muted"
                                     >
                                         <IconComponent className="w-4" />
                                     </button>
@@ -192,7 +192,7 @@ function TwoFactorVerificationStep({
                             />
                         </div>
 
-                        <div className="flex w-full space-x-5">
+                        <div className="flex w-full gap-5">
                             <Button
                                 type="button"
                                 variant="outline"

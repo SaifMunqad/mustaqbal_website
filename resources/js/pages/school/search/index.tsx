@@ -108,14 +108,14 @@ function SchoolSearch() {
                             className="mt-4 flex flex-wrap gap-3"
                         >
                             <div className="relative min-w-52 flex-1">
-                                <MagnifyingGlassIcon className="absolute top-1/2 left-3 size-5 -translate-y-1/2 text-slate-400" />
+                                <MagnifyingGlassIcon className="absolute top-1/2 start-3 size-5 -translate-y-1/2 text-slate-400" />
                                 <input
                                     value={term}
                                     onChange={(event) =>
                                         setTerm(event.target.value)
                                     }
                                     placeholder={t('search.placeholder')}
-                                    className="w-full rounded-2xl border border-border bg-background py-2 pr-3 pl-10 text-sm transition outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                    className="w-full rounded-2xl border border-border bg-background py-2 pe-3 ps-10 text-sm transition outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                                 />
                             </div>
                             <button

@@ -59,7 +59,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                     )}
                 </Form>
 
-                <div className="space-x-1 text-center text-sm text-muted-foreground">
+                <div className="inline-flex flex-wrap items-center justify-center gap-1 text-center text-sm text-muted-foreground">
                     <span>Or, return to</span>
                     <TextLink href={login()}>log in</TextLink>
                 </div>

@@ -120,7 +120,7 @@ export function BookMediaField({
                     </div>
                 </div>
 
-                <div className="flex flex-wrap gap-2 sm:ml-auto">
+                <div className="flex flex-wrap gap-2 sm:ms-auto">
                     <Button
                         type="button"
                         variant="outline"

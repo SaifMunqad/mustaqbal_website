@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import ConfirmDialog from '@/components/form/confirm-dialog';
 import { Link, router } from '@inertiajs/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface SectionRow {
     id: number;
@@ -23,6 +24,7 @@ interface HomeSectionsIndexProps {
 // Remounting with a new key (whenever the server order/flags change) re-seeds
 // local order state from props without a setState-in-effect cascade.
 function SectionList({ sections }: { sections: SectionRow[] }) {
+    const { t } = useTranslation();
     const [rows, setRows] = useState<SectionRow[]>(sections);
     const [dirty, setDirty] = useState(false);
 
@@ -99,7 +101,7 @@ function SectionList({ sections }: { sections: SectionRow[] }) {
                     <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
                             <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                                {row.type_label}
+                                {t(`enums.homeSectionType.${row.section_type}`, row.type_label)}
                             </span>
                             <span
                                 className={`rounded-full px-2 py-0.5 text-xs font-medium ${

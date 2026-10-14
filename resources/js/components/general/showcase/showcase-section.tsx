@@ -14,6 +14,8 @@ export interface ShowcasePost {
 export interface ShowcaseGroup {
     type: string;
     label: string;
+    /** i18n key from the backend; the group heading is translated from it. */
+    labelKey?: string;
     posts: ShowcasePost[];
 }
 
@@ -101,7 +103,7 @@ export default function ShowcaseSection({
             {groups.map((group) => (
                 <div key={group.type} className="space-y-4">
                     <h3 className="text-lg font-semibold text-blue-700 dark:text-blue-400">
-                        {group.label}
+                        {t(group.labelKey ?? group.label, group.label)}
                     </h3>
                     <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                         {group.posts.map((post, index) => (

@@ -121,7 +121,7 @@ export function ImageUploadField({
                         type="button"
                         size="icon"
                         variant="secondary"
-                        className="absolute top-2 right-2 size-8 rounded-full"
+                        className="absolute top-2 end-2 size-8 rounded-full"
                         onClick={() => onChange('')}
                         aria-label="Remove image"
                     >
@@ -238,7 +238,7 @@ export function GalleryUploadField({
                             <button
                                 type="button"
                                 onClick={() => removeAt(index)}
-                                className="absolute top-1 right-1 rounded-full bg-black/60 p-1 text-white transition hover:bg-black/80"
+                                className="absolute top-1 end-1 rounded-full bg-black/60 p-1 text-white transition hover:bg-black/80"
                                 aria-label="Remove image"
                             >
                                 <XMarkIcon className="size-3.5" />
