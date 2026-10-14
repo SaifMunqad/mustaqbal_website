@@ -1,3 +1,5 @@
+import { cn } from '@/lib/utils';
+import { enroll } from '@/routes/school';
 import { Link } from '@inertiajs/react';
 import {
     ArrowLeftRight,
@@ -10,8 +12,6 @@ import {
     Wallet,
     type LucideIcon,
 } from 'lucide-react';
-import { enroll } from '@/routes/school';
-import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 
 export type ProgramType = 'school' | 'courses' | 'islamic_madrasa';
@@ -37,13 +37,12 @@ interface TypeAccent {
     tile: string;
     /** Soft ring/border highlight used on hover. */
     ring: string;
-    /** One-line blurb shown in the category section header. */
-    blurb: string;
 }
 
 /**
  * Per-category visual identity. Both the program card and the "how the programs
  * fit together" pathway read from this single map so the accents stay consistent.
+ * Textual labels live in the i18n bundles (`programs.categories.*`).
  */
 export const PROGRAM_ACCENTS: Record<ProgramType, TypeAccent> = {
     school: {
@@ -51,30 +50,41 @@ export const PROGRAM_ACCENTS: Record<ProgramType, TypeAccent> = {
         gradient: 'from-blue-500 to-blue-600',
         tile: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300',
         ring: 'hover:border-blue-300 dark:hover:border-blue-500/50',
-        blurb: 'Full classroom-based schooling from Kindergarten through Grade 6.',
     },
     courses: {
         icon: BookOpen,
         gradient: 'from-blue-500 to-blue-600',
         tile: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300',
         ring: 'hover:border-blue-300 dark:hover:border-blue-500/50',
-        blurb: 'Focused after-school courses in languages, sciences and computing.',
     },
     islamic_madrasa: {
         icon: MoonStar,
         gradient: 'from-blue-500 to-blue-600',
         tile: 'bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
         ring: 'hover:border-blue-300 dark:hover:border-blue-500/50',
-        blurb: 'Weekend madrasa building a foundation in Quran, Arabic and Islamic studies.',
     },
 };
 
-function MetaRow({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) {
+function MetaRow({
+    icon: Icon,
+    label,
+    value,
+}: {
+    icon: LucideIcon;
+    label: string;
+    value: string;
+}) {
     return (
         <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-            <Icon className="size-4 shrink-0 text-slate-400 dark:text-slate-500" aria-hidden />
+            <Icon
+                className="size-4 shrink-0 text-slate-400 dark:text-slate-500"
+                aria-hidden
+            />
             <span className="text-slate-500 dark:text-slate-400">{label}:</span>
-            <span className="truncate font-medium text-slate-800 dark:text-slate-100" title={value}>
+            <span
+                className="truncate font-medium text-slate-800 dark:text-slate-100"
+                title={value}
+            >
                 {value}
             </span>
         </div>
@@ -99,7 +109,9 @@ export default function ProgramCard({ program }: { program: Program }) {
                 accent.ring,
             )}
         >
-            <div className={cn('h-1.5 w-full bg-gradient-to-r', accent.gradient)} />
+            <div
+                className={cn('h-1.5 w-full bg-gradient-to-r', accent.gradient)}
+            />
 
             <div className="flex flex-1 flex-col gap-4 p-5">
                 <header className="flex items-start gap-3">
@@ -112,7 +124,7 @@ export default function ProgramCard({ program }: { program: Program }) {
                         <Icon className="size-6" aria-hidden />
                     </div>
                     <div className="min-w-0">
-                        <h3 className="text-lg font-semibold leading-snug text-slate-900 dark:text-white">
+                        <h3 className="text-lg leading-snug font-semibold text-slate-900 dark:text-white">
                             {program.name}
                         </h3>
                         <span
@@ -131,13 +143,28 @@ export default function ProgramCard({ program }: { program: Program }) {
                 </p>
 
                 <div className="mt-auto space-y-2 border-t border-slate-100 pt-4 dark:border-slate-800">
-                    <MetaRow icon={CalendarDays} label={t('programs.schedule')} value={program.schedule} />
-                    <MetaRow icon={Wallet} label={t('programs.fees')} value={program.fees} />
-                    <MetaRow icon={Users} label={t('programs.age')} value={program.age_recommendation} />
+                    <MetaRow
+                        icon={CalendarDays}
+                        label={t('programs.schedule')}
+                        value={program.schedule}
+                    />
+                    <MetaRow
+                        icon={Wallet}
+                        label={t('programs.fees')}
+                        value={program.fees}
+                    />
+                    <MetaRow
+                        icon={Users}
+                        label={t('programs.age')}
+                        value={program.age_recommendation}
+                    />
                     <MetaRow
                         icon={MapPin}
                         label={t('programs.classroom')}
-                        value={program.classroom_number ?? t('programs.toBeAnnounced')}
+                        value={
+                            program.classroom_number ??
+                            t('programs.toBeAnnounced')
+                        }
                     />
                 </div>
 
@@ -153,10 +180,14 @@ export default function ProgramCard({ program }: { program: Program }) {
                         <span
                             className={cn(
                                 'size-1.5 rounded-full',
-                                program.available_for_enroll ? 'bg-emerald-500' : 'bg-slate-400',
+                                program.available_for_enroll
+                                    ? 'bg-emerald-500'
+                                    : 'bg-slate-400',
                             )}
                         />
-                        {program.available_for_enroll ? t('programs.enrollmentOpen') : t('programs.enrollmentClosed')}
+                        {program.available_for_enroll
+                            ? t('programs.enrollmentOpen')
+                            : t('programs.enrollmentClosed')}
                     </span>
 
                     {program.available_for_enroll ? (

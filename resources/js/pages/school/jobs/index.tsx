@@ -31,7 +31,7 @@ function SchoolJobs() {
 
                 {jobs.length === 0 ? (
                     <div className="rounded-2xl border border-dashed border-gray-300 p-10 text-center text-gray-500 dark:border-gray-700 dark:text-gray-400">
-                        No open positions at the moment. Check back soon!
+                        {t('jobs.empty')}
                     </div>
                 ) : (
                     <div className="grid gap-5 md:grid-cols-1 lg:grid-cols-2">

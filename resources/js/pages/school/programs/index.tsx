@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { Head, usePage } from '@inertiajs/react';
 import { ArrowLeftRight } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import ProgramCard, {
     PROGRAM_ACCENTS,
     type Program,
@@ -21,34 +22,19 @@ interface ProgramsPageData {
 const TYPE_ORDER: ProgramType[] = ['school', 'courses', 'islamic_madrasa'];
 
 // "How the programs fit together": the three tracks read as one journey —
-// roots, core and enrichment — that a student can combine.
+// roots, core and enrichment — that a student can combine. Labels come from
+// the i18n bundle (`programs.pathway.*`); this only maps a track to its type.
 const PATHWAY: {
     type: ProgramType;
-    step: string;
-    title: string;
-    text: string;
+    key: 'roots' | 'core' | 'enrichment';
 }[] = [
-    {
-        type: 'islamic_madrasa',
-        step: 'Roots',
-        title: 'Values & foundation',
-        text: 'Weekend madrasa grounds every student in Quran, Arabic and Islamic studies — it runs alongside the other tracks.',
-    },
-    {
-        type: 'school',
-        step: 'Core',
-        title: 'Full schooling',
-        text: 'Our main classroom curriculum carries students from Kindergarten through Grade 6, following the national syllabus.',
-    },
-    {
-        type: 'courses',
-        step: 'Enrichment',
-        title: 'Go deeper',
-        text: 'Focused after-school courses in languages, sciences and computing let students build on the core and pursue interests.',
-    },
+    { type: 'islamic_madrasa', key: 'roots' },
+    { type: 'school', key: 'core' },
+    { type: 'courses', key: 'enrichment' },
 ];
 
 function CategoryHeader({ type, count }: { type: ProgramType; count: number }) {
+    const { t } = useTranslation();
     const accent = PROGRAM_ACCENTS[type];
     const Icon = accent.icon;
 
@@ -65,14 +51,14 @@ function CategoryHeader({ type, count }: { type: ProgramType; count: number }) {
             <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                     <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
-                        {accent.blurb.split('.')[0]}
+                        {t(`programs.categories.${type}.title`)}
                     </h2>
                     <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                        {count} {count === 1 ? 'program' : 'programs'}
+                        {t('programs.programCount', { count })}
                     </span>
                 </div>
                 <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
-                    {accent.blurb}
+                    {t(`programs.categories.${type}.blurb`)}
                 </p>
             </div>
         </div>
@@ -80,16 +66,16 @@ function CategoryHeader({ type, count }: { type: ProgramType; count: number }) {
 }
 
 function PathwaySection() {
+    const { t } = useTranslation();
+
     return (
         <section className="mt-12">
             <div className="text-center">
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                    How the programs fit together
+                    {t('programs.pathway.title')}
                 </h2>
                 <p className="mx-auto mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
-                    The three tracks are designed to complement each other. A
-                    student can combine them into a single, well-rounded
-                    journey.
+                    {t('programs.pathway.intro')}
                 </p>
             </div>
 
@@ -115,19 +101,20 @@ function PathwaySection() {
                                     <Icon className="size-7" aria-hidden />
                                 </div>
                                 <span className="mt-3 text-xs font-semibold tracking-wide text-slate-400 uppercase dark:text-slate-500">
-                                    {index + 1} · {item.step}
+                                    {index + 1} ·{' '}
+                                    {t(`programs.pathway.${item.key}.step`)}
                                 </span>
                                 <h3 className="mt-1 text-lg font-semibold text-slate-900 dark:text-white">
-                                    {item.title}
+                                    {t(`programs.pathway.${item.key}.title`)}
                                 </h3>
                                 <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                                    {item.text}
+                                    {t(`programs.pathway.${item.key}.text`)}
                                 </p>
                             </div>
 
                             {index < PATHWAY.length - 1 ? (
                                 <ArrowLeftRight
-                                    className="absolute top-1/2 -end-3 z-10 hidden size-6 -translate-y-1/2 text-slate-300 md:block dark:text-slate-600"
+                                    className="absolute -end-3 top-1/2 z-10 hidden size-6 -translate-y-1/2 text-slate-300 md:block dark:text-slate-600"
                                     aria-hidden
                                 />
                             ) : null}
@@ -140,6 +127,7 @@ function PathwaySection() {
 }
 
 function SchoolPrograms() {
+    const { t } = useTranslation();
     const { programs, page } = usePage<{
         programs: Program[];
         page?: ProgramsPageData;
@@ -155,16 +143,16 @@ function SchoolPrograms() {
 
     return (
         <>
-            <Head title={page?.title ?? 'Programs'} />
+            <Head title={page?.title ?? t('programs.title')} />
 
             <section className="rounded-3xl bg-white p-6 shadow-sm md:p-10 dark:bg-gray-900">
                 <Reveal direction="fade" defaultInView>
                     <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold tracking-wide text-slate-600 uppercase dark:bg-slate-800 dark:text-slate-300">
                         <span className="size-1.5 rounded-full bg-indigo-500" />
-                        What we offer
+                        {t('programs.badge')}
                     </div>
                     <h1 className="mt-3 text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
-                        {page?.title ?? 'Programs'}
+                        {page?.title ?? t('programs.title')}
                     </h1>
                     {page?.content?.intro ? (
                         <p className="mt-3 max-w-3xl text-slate-700 dark:text-slate-300">
@@ -196,7 +184,7 @@ function SchoolPrograms() {
                                 </div>
                             ) : (
                                 <p className="mt-4 text-sm text-slate-500">
-                                    No programs available in this category yet.
+                                    {t('programs.emptyCategory')}
                                 </p>
                             )}
                         </div>

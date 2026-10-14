@@ -39,6 +39,64 @@ const en = {
         jobs: 'View open positions and apply',
         contact: 'Talk to our team',
     },
+    auth: {
+        email: 'Email',
+        emailAddress: 'Email address',
+        password: 'Password',
+        emailPlaceholder: 'email@example.com',
+        login: {
+            headTitle: 'Log in',
+            heading: 'Log in to your account',
+            description: 'Enter your email and password below to log in',
+            forgotPassword: 'Forgot password?',
+            remember: 'Remember me',
+            submit: 'Log in',
+        },
+        forgotPassword: {
+            title: 'Forgot password',
+            description: 'Enter your email to receive a password reset link',
+            submit: 'Email password reset link',
+            backToLogin: 'Or, return to',
+            loginLink: 'log in',
+        },
+        resetPassword: {
+            title: 'Reset password',
+            description: 'Please enter your new password below',
+            confirm: 'Confirm password',
+            submit: 'Reset password',
+        },
+        confirmPassword: {
+            title: 'Confirm your password',
+            headTitle: 'Confirm password',
+            description:
+                'This is a secure area of the application. Please confirm your password before continuing.',
+            submit: 'Confirm password',
+        },
+        verifyEmail: {
+            title: 'Verify email',
+            headTitle: 'Email verification',
+            description:
+                'Please verify your email address by clicking on the link we just emailed to you.',
+            linkSent:
+                'A new verification link has been sent to the email address you provided during registration.',
+            resend: 'Resend verification email',
+            logout: 'Log out',
+        },
+        twoFactor: {
+            headTitle: 'Two-Factor Authentication',
+            codeTitle: 'Authentication Code',
+            codeDescription:
+                'Enter the authentication code provided by your authenticator application.',
+            codeToggle: 'login using a recovery code',
+            recoveryTitle: 'Recovery Code',
+            recoveryDescription:
+                'Please confirm access to your account by entering one of your emergency recovery codes.',
+            recoveryToggle: 'login using an authentication code',
+            recoveryPlaceholder: 'Enter recovery code',
+            orYouCan: 'or you can',
+            continue: 'Continue',
+        },
+    },
     home: {
         title: 'Welcome to Mustaqbal School',
         subtitle:
@@ -95,6 +153,7 @@ const en = {
         title: 'Academic Programs',
         paragraph:
             'Our programs combine strong core subjects, practical projects, and personal development from early grades to high school.',
+        badge: 'What we offer',
         schedule: 'Schedule',
         fees: 'Fees',
         age: 'Age',
@@ -102,6 +161,42 @@ const en = {
         toBeAnnounced: 'To be announced',
         enrollmentOpen: 'Enrollment open',
         enrollmentClosed: 'Enrollment closed',
+        emptyCategory: 'No programs available in this category yet.',
+        programCount_one: '{{count}} program',
+        programCount_other: '{{count}} programs',
+        categories: {
+            school: {
+                title: 'School',
+                blurb: 'Full classroom-based schooling from Kindergarten through Grade 6.',
+            },
+            courses: {
+                title: 'Courses',
+                blurb: 'Focused after-school courses in languages, sciences and computing.',
+            },
+            islamic_madrasa: {
+                title: 'Islamic Madrasa',
+                blurb: 'Weekend madrasa building a foundation in Quran, Arabic and Islamic studies.',
+            },
+        },
+        pathway: {
+            title: 'How the programs fit together',
+            intro: 'The three tracks are designed to complement each other. A student can combine them into a single, well-rounded journey.',
+            roots: {
+                step: 'Roots',
+                title: 'Values & foundation',
+                text: 'Weekend madrasa grounds every student in Quran, Arabic and Islamic studies — it runs alongside the other tracks.',
+            },
+            core: {
+                step: 'Core',
+                title: 'Full schooling',
+                text: 'Our main classroom curriculum carries students from Kindergarten through Grade 6, following the national syllabus.',
+            },
+            enrichment: {
+                step: 'Enrichment',
+                title: 'Go deeper',
+                text: 'Focused after-school courses in languages, sciences and computing let students build on the core and pursue interests.',
+            },
+        },
     },
     admissions: {
         title: 'Admissions',
@@ -299,6 +394,7 @@ const en = {
         deadline: 'Deadline',
         showEmail: 'Show Email',
         applyOnline: 'Apply Online',
+        empty: 'No open positions at the moment. Check back soon!',
     },
     footer: {
         school: 'School',
