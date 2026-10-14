@@ -1,7 +1,22 @@
 import AppLayout from '@/layouts/app-layout';
+import { Button } from '@/components/ui/button';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
+import {
+    BookOpen,
+    Briefcase,
+    CalendarDays,
+    FileText,
+    Library,
+    Mail,
+    MessageSquare,
+    Newspaper,
+    Plus,
+    School,
+    Users,
+    type LucideIcon,
+} from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -23,6 +38,42 @@ interface OverviewStats {
     books: number;
 }
 
+interface StatCard {
+    key: keyof OverviewStats;
+    labelKey: string;
+    icon: LucideIcon;
+}
+
+interface QuickAction {
+    href: string;
+    labelKey: string;
+    icon: LucideIcon;
+}
+
+// Icons mirror the sidebar navigation so the dashboard feels consistent and
+// makes it easy to spot which area each shortcut / metric belongs to.
+const statCards: StatCard[] = [
+    { key: 'articles', labelKey: 'dashboard.stats.articles', icon: Newspaper },
+    { key: 'posts', labelKey: 'dashboard.stats.posts', icon: FileText },
+    { key: 'events', labelKey: 'dashboard.stats.events', icon: CalendarDays },
+    { key: 'books', labelKey: 'dashboard.stats.books', icon: Library },
+    { key: 'programs', labelKey: 'dashboard.stats.programs', icon: School },
+    { key: 'jobs', labelKey: 'dashboard.stats.jobs', icon: Briefcase },
+    { key: 'pages', labelKey: 'dashboard.stats.pages', icon: BookOpen },
+    { key: 'contacts', labelKey: 'dashboard.stats.contacts', icon: Mail },
+    { key: 'messages', labelKey: 'dashboard.stats.messages', icon: MessageSquare },
+    { key: 'enrollments', labelKey: 'dashboard.stats.enrollments', icon: Users },
+];
+
+const quickActions: QuickAction[] = [
+    { href: '/dashboard/articles/create', labelKey: 'dashboard.actions.newArticle', icon: Newspaper },
+    { href: '/dashboard/posts/create', labelKey: 'dashboard.actions.newPost', icon: FileText },
+    { href: '/dashboard/events/create', labelKey: 'dashboard.actions.newEvent', icon: CalendarDays },
+    { href: '/dashboard/books/create', labelKey: 'dashboard.actions.newBook', icon: Library },
+    { href: '/dashboard/programs/create', labelKey: 'dashboard.actions.newProgram', icon: School },
+    { href: '/dashboard/jobs/create', labelKey: 'dashboard.actions.newJob', icon: Briefcase },
+];
+
 export default function Dashboard() {
     const { t, i18n } = useTranslation();
     const { stats } = usePage<{ stats: OverviewStats }>().props;
@@ -34,63 +85,43 @@ export default function Dashboard() {
 
             <div
                 dir={i18n.dir()}
-                className={`space-y-5 p-4 ${isRtl ? 'text-right' : 'text-left'}`}
+                className={`space-y-6 p-4 ${isRtl ? 'text-right' : 'text-left'}`}
             >
                 <h1 className="text-2xl font-bold">{t('dashboard.title')}</h1>
 
-
-                <section className="grid gap-3 md:grid-cols-3">
-                    <div className="rounded-xl border p-4">
-                        <p className="text-sm text-slate-500">{t('dashboard.stats.articles')}</p>
-                        <p className="text-2xl font-bold">{stats.articles}</p>
-                    </div>
-                    <div className="rounded-xl border p-4">
-                        <p className="text-sm text-slate-500">{t('dashboard.stats.posts')}</p>
-                        <p className="text-2xl font-bold">{stats.posts}</p>
-                    </div>
-                    <div className="rounded-xl border p-4">
-                        <p className="text-sm text-slate-500">{t('dashboard.stats.contacts')}</p>
-                        <p className="text-2xl font-bold">{stats.contacts}</p>
-                    </div>
-                    <div className="rounded-xl border p-4">
-                        <p className="text-sm text-slate-500">{t('dashboard.stats.messages')}</p>
-                        <p className="text-2xl font-bold">{stats.messages}</p>
-                    </div>
-                    <div className="rounded-xl border p-4">
-                        <p className="text-sm text-slate-500">{t('dashboard.stats.programs')}</p>
-                        <p className="text-2xl font-bold">{stats.programs}</p>
-                    </div>
-                    <div className="rounded-xl border p-4">
-                        <p className="text-sm text-slate-500">{t('dashboard.stats.pages')}</p>
-                        <p className="text-2xl font-bold">{stats.pages}</p>
-                    </div>
-                    <div className="rounded-xl border p-4">
-                        <p className="text-sm text-slate-500">{t('dashboard.stats.events')}</p>
-                        <p className="text-2xl font-bold">{stats.events}</p>
-                    </div>
-                    <div className="rounded-xl border p-4">
-                        <p className="text-sm text-slate-500">{t('dashboard.stats.enrollments')}</p>
-                        <p className="text-2xl font-bold">{stats.enrollments}</p>
-                    </div>
-                    <div className="rounded-xl border p-4">
-                        <p className="text-sm text-slate-500">{t('dashboard.stats.jobs')}</p>
-                        <p className="text-2xl font-bold">{stats.jobs}</p>
-                    </div>
-                    <div className="rounded-xl border p-4">
-                        <p className="text-sm text-slate-500">{t('dashboard.stats.books')}</p>
-                        <p className="text-2xl font-bold">{stats.books}</p>
-                    </div>
+                <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                    {statCards.map(({ key, labelKey, icon: Icon }) => (
+                        <div
+                            key={key}
+                            className="flex items-center gap-3 rounded-xl border bg-card p-4 transition-colors hover:bg-accent/40"
+                        >
+                            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-300">
+                                <Icon className="size-5" />
+                            </span>
+                            <div className="min-w-0">
+                                <p className="truncate text-sm text-slate-500">{t(labelKey)}</p>
+                                <p className="text-2xl font-bold leading-tight">{stats[key]}</p>
+                            </div>
+                        </div>
+                    ))}
                 </section>
 
-                <section className="rounded-xl border p-4">
-                    <h2 className="text-lg font-semibold">{t('dashboard.quickActions')}</h2>
-                    <div className={`mt-3 flex flex-wrap gap-2 ${isRtl ? 'justify-end' : 'justify-start'}`}>
-                        <Link href="/dashboard/articles/create" className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white">{t('dashboard.actions.newArticle')}</Link>
-                        <Link href="/dashboard/posts/create" className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white">{t('dashboard.actions.newPost')}</Link>
-                        <Link href="/dashboard/events/create" className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white">{t('dashboard.actions.newEvent')}</Link>
-                        <Link href="/dashboard/books/create" className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white">{t('dashboard.actions.newBook')}</Link>
-                        <Link href="/dashboard/programs/create" className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white">{t('dashboard.actions.newProgram')}</Link>
-                        <Link href="/dashboard/jobs/create" className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white">{t('dashboard.actions.newJob')}</Link>
+                <section className="rounded-xl border bg-card p-5">
+                    <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                        <h2 className="text-lg font-semibold">{t('dashboard.quickActions')}</h2>
+                    </div>
+                    <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {quickActions.map(({ href, labelKey, icon: Icon }) => (
+                            <Button key={href} asChild variant="outline" className="justify-start gap-3 py-7">
+                                <Link href={href} >
+                                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-300">
+                                        <Icon className="size-5" />
+                                    </span>
+                                    <span className="flex-1 text-left rtl:text-right">{t(labelKey)}</span>
+                                    <Plus className="size-4 text-slate-400" />
+                                </Link>
+                            </Button>
+                        ))}
                     </div>
                 </section>
             </div>
