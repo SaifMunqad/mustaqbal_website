@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { enroll } from '@/routes/school';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 export type ProgramType = 'school' | 'courses' | 'islamic_madrasa';
 
@@ -86,6 +87,7 @@ function MetaRow({ icon: Icon, label, value }: { icon: LucideIcon; label: string
  * enroll call-to-action. Flex column + mt-auto footer keeps cards aligned.
  */
 export default function ProgramCard({ program }: { program: Program }) {
+    const { t } = useTranslation();
     const accent = PROGRAM_ACCENTS[program.program_type];
     const Icon = accent.icon;
 
@@ -129,13 +131,13 @@ export default function ProgramCard({ program }: { program: Program }) {
                 </p>
 
                 <div className="mt-auto space-y-2 border-t border-slate-100 pt-4 dark:border-slate-800">
-                    <MetaRow icon={CalendarDays} label="Schedule" value={program.schedule} />
-                    <MetaRow icon={Wallet} label="Fees" value={program.fees} />
-                    <MetaRow icon={Users} label="Age" value={program.age_recommendation} />
+                    <MetaRow icon={CalendarDays} label={t('programs.schedule')} value={program.schedule} />
+                    <MetaRow icon={Wallet} label={t('programs.fees')} value={program.fees} />
+                    <MetaRow icon={Users} label={t('programs.age')} value={program.age_recommendation} />
                     <MetaRow
                         icon={MapPin}
-                        label="Classroom"
-                        value={program.classroom_number ?? 'To be announced'}
+                        label={t('programs.classroom')}
+                        value={program.classroom_number ?? t('programs.toBeAnnounced')}
                     />
                 </div>
 
@@ -154,7 +156,7 @@ export default function ProgramCard({ program }: { program: Program }) {
                                 program.available_for_enroll ? 'bg-emerald-500' : 'bg-slate-400',
                             )}
                         />
-                        {program.available_for_enroll ? 'Enrollment open' : 'Enrollment closed'}
+                        {program.available_for_enroll ? t('programs.enrollmentOpen') : t('programs.enrollmentClosed')}
                     </span>
 
                     {program.available_for_enroll ? (
@@ -162,7 +164,7 @@ export default function ProgramCard({ program }: { program: Program }) {
                             href={enroll.url()}
                             className="inline-flex items-center gap-1 rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-slate-700 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
                         >
-                            Enroll
+                            {t('navigation.enroll')}
                             <ArrowLeftRight className="size-4" aria-hidden />
                         </Link>
                     ) : null}

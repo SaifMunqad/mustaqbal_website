@@ -7,6 +7,7 @@ import {
     MapPinIcon,
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface Job {
     id: number;
@@ -24,12 +25,6 @@ export interface Job {
     deadline?: string | null;
     created_at: string;
 }
-
-const employmentTypeLabels: Record<string, string> = {
-    full_time: 'Full Time',
-    part_time: 'Part Time',
-    contract: 'Contract',
-};
 
 const categoryStyles: Record<
     string,
@@ -61,6 +56,7 @@ const categoryStyles: Record<
  * each card toggles independently.
  */
 export default function JobCard({ job }: { job: Job }) {
+    const { t } = useTranslation();
     const [showEmail, setShowEmail] = useState(false);
     const categoryMeta = job.category ? categoryStyles[job.category] : null;
 
@@ -84,7 +80,7 @@ export default function JobCard({ job }: { job: Job }) {
                                     className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${categoryMeta.classes}`}
                                 >
                                     <categoryMeta.Icon className="size-3.5" />
-                                    {categoryMeta.label}
+                                    {t(`jobs.category.${job.category ?? ''}`, categoryMeta.label)}
                                 </span>
                             ) : null}
                         </div>
@@ -92,15 +88,14 @@ export default function JobCard({ job }: { job: Job }) {
                 </div>
                 <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
                     <BriefcaseIcon className="size-3.5" />
-                    {employmentTypeLabels[job.employment_type] ??
-                        job.employment_type}
+                    {t(`jobs.employmentType.${job.employment_type}`, job.employment_type)}
                 </span>
             </div>
 
             {job.employment_type === 'part_time' && job.working_hours ? (
                 <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-slate-50 px-3 py-1.5 text-sm text-slate-700 dark:bg-slate-800/60 dark:text-slate-200">
                     <ClockIcon className="size-4" />
-                    <span className="font-medium">Hours:</span>
+                    <span className="font-medium">{t('jobs.hours')}:</span>
                     <span>{job.working_hours}</span>
                 </div>
             ) : null}
@@ -114,7 +109,7 @@ export default function JobCard({ job }: { job: Job }) {
             {job.requirements ? (
                 <div className="mt-3 rounded-xl bg-gray-50 p-4 dark:bg-gray-800/60">
                     <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                        Requirements
+                        {t('jobs.requirements')}
                     </h3>
                     <p className="mt-1 text-sm whitespace-pre-line text-gray-600 dark:text-gray-400">
                         {job.requirements}
@@ -140,7 +135,7 @@ export default function JobCard({ job }: { job: Job }) {
                                 className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700 transition hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/30 dark:text-blue-300 dark:hover:bg-blue-950/50"
                             >
                                 <EnvelopeIcon className="size-4" />
-                                Show Email
+                                {t('jobs.showEmail')}
                             </button>
                         )
                     ) : null}
@@ -152,7 +147,7 @@ export default function JobCard({ job }: { job: Job }) {
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700"
                         >
-                            Apply Online
+                            {t('jobs.applyOnline')}
                         </a>
                     ) : null}
                 </div>
@@ -161,7 +156,7 @@ export default function JobCard({ job }: { job: Job }) {
             {job.deadline ? (
                 <div className="mt-4 flex items-center justify-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
                     <CalendarDaysIcon className="size-4" />
-                    <span>Deadline: {job.deadline}</span>
+                    <span>{t('jobs.deadline')}: {job.deadline}</span>
                 </div>
             ) : null}
         </article>

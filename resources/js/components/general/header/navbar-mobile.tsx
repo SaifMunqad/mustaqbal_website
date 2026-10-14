@@ -233,7 +233,7 @@ export default function NavbarMobile({
                             onClick={() => setMenuOpen(false)}
                             className="block rounded-xl bg-blue-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-700"
                         >
-                            Login
+                            {t('navigation.login')}
                         </Link>
                     </li>
                 ) : null}

@@ -61,7 +61,7 @@ export default function Navbar() {
                                 href="/login"
                                 className={navTextButtonClass}
                             >
-                                Login
+                                {t('navigation.login')}
                             </Link>
                         ) : null}
                         <LanguageSwitcher />
@@ -74,7 +74,7 @@ export default function Navbar() {
                     </NavIconButton>
                     <LanguageSwitcher />
                     <NavIconButton
-                        label="Toggle mobile menu"
+                        label={t('navigation.toggleMenu')}
                         onClick={() => setMobileMenuOpen((value) => !value)}
                     >
                         <Bars3Icon className="h-5 w-5" />

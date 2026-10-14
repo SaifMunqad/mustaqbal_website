@@ -25,7 +25,7 @@ export default function EventCalendar({
     events: CalendarEvent[];
     onSelectEvent?: (event: CalendarEvent) => void;
 }) {
-    const { i18n } = useTranslation();
+    const { i18n, t } = useTranslation();
     const locale = i18n.language === 'fa_AF' ? 'fa-AF' : i18n.language;
     const [cursor, setCursor] = useState(() => startOfDay(new Date()));
 
@@ -79,7 +79,7 @@ export default function EventCalendar({
                 <div className="flex items-center gap-2">
                     <button
                         type="button"
-                        aria-label="Previous month"
+                        aria-label={t('events.prevMonth')}
                         onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))}
                         className="rounded-lg border border-border p-1.5 transition hover:bg-muted"
                     >
@@ -87,7 +87,7 @@ export default function EventCalendar({
                     </button>
                     <button
                         type="button"
-                        aria-label="Next month"
+                        aria-label={t('events.nextMonth')}
                         onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))}
                         className="rounded-lg border border-border p-1.5 transition hover:bg-muted"
                     >
@@ -139,7 +139,7 @@ export default function EventCalendar({
                                     </button>
                                 ))}
                                 {dayEvents.length > 2 ? (
-                                    <span className="text-[10px] text-slate-400">+{dayEvents.length - 2} more</span>
+                                    <span className="text-[10px] text-slate-400">{t('events.more', { count: dayEvents.length - 2 })}</span>
                                 ) : null}
                             </div>
                         </div>

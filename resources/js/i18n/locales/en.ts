@@ -25,6 +25,8 @@ const en = {
         enroll: 'Enroll',
         jobs: 'Active Jobs',
         contact: 'Contact',
+        login: 'Login',
+        toggleMenu: 'Toggle menu',
     },
     navigationDescriptions: {
         about: 'Learn about our mission and values',
@@ -93,6 +95,13 @@ const en = {
         title: 'Academic Programs',
         paragraph:
             'Our programs combine strong core subjects, practical projects, and personal development from early grades to high school.',
+        schedule: 'Schedule',
+        fees: 'Fees',
+        age: 'Age',
+        classroom: 'Classroom',
+        toBeAnnounced: 'To be announced',
+        enrollmentOpen: 'Enrollment open',
+        enrollmentClosed: 'Enrollment closed',
     },
     admissions: {
         title: 'Admissions',
@@ -181,6 +190,9 @@ const en = {
         back: 'Back to events',
         until: 'Ends',
         moreUpcoming: 'More upcoming events',
+        prevMonth: 'Previous month',
+        nextMonth: 'Next month',
+        more: '+{{count}} more',
     },
     articles: {
         title: 'Articles',
@@ -220,6 +232,23 @@ const en = {
         articles: 'Articles',
         events: 'Events',
         books: 'Books',
+    },
+    jobs: {
+        employmentType: {
+            full_time: 'Full Time',
+            part_time: 'Part Time',
+            contract: 'Contract',
+        },
+        category: {
+            school: 'School',
+            course: 'Course',
+            islamic_madrasa: 'Islamic Madrasa',
+        },
+        hours: 'Hours',
+        requirements: 'Requirements',
+        deadline: 'Deadline',
+        showEmail: 'Show Email',
+        applyOnline: 'Apply Online',
     },
     footer: {
         school: 'School',
