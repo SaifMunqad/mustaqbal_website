@@ -43,10 +43,10 @@ class SchoolPageController extends Controller
                 'program_type' => $program->program_type,
                 'program_type_label' => $program->translatedProgramType($locale),
                 'description' => $program->translatedDescription($locale),
-                'schedule' => $program->schedule,
+                'schedule' => $program->translatedSchedule($locale),
                 'fees' => $program->fees,
-                'age_recommendation' => $program->age_recommendation,
-                'classroom_number' => $program->classroom_number,
+                'age_recommendation' => $program->translatedAgeRecommendation($locale),
+                'classroom_number' => $program->translatedClassroomNumber($locale),
                 'available_for_enroll' => $program->available_for_enroll,
             ]);
 

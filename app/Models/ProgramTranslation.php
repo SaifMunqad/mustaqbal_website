@@ -15,6 +15,9 @@ class ProgramTranslation extends Model
         'language_id',
         'name',
         'description',
+        'schedule',
+        'age_recommendation',
+        'classroom_number',
     ];
 
     public function program(): BelongsTo

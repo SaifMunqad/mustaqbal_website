@@ -37,7 +37,7 @@ class Program extends Model
      */
     public function translatedAttributes(): array
     {
-        return ['name', 'description'];
+        return ['name', 'description', 'schedule', 'age_recommendation', 'classroom_number'];
     }
 
     public function typeTranslations(): HasMany
@@ -53,6 +53,23 @@ class Program extends Model
     public function translatedDescription(?string $languageCode = null): string
     {
         return (string) $this->translated('description', $languageCode, $this->description);
+    }
+
+    public function translatedSchedule(?string $languageCode = null): string
+    {
+        return (string) $this->translated('schedule', $languageCode, $this->schedule);
+    }
+
+    public function translatedAgeRecommendation(?string $languageCode = null): string
+    {
+        return (string) $this->translated('age_recommendation', $languageCode, $this->age_recommendation);
+    }
+
+    public function translatedClassroomNumber(?string $languageCode = null): ?string
+    {
+        $value = $this->translated('classroom_number', $languageCode, $this->classroom_number);
+
+        return filled($value) ? (string) $value : null;
     }
 
     public function translatedProgramType(?string $languageCode = null): string

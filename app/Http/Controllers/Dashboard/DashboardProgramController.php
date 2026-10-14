@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\Language;
 use App\Models\Program;
+use App\Support\Translation\TranslationPayload;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -11,6 +13,15 @@ use Inertia\Response;
 
 class DashboardProgramController extends Controller
 {
+    /**
+     * Program columns that vary per language. The parent `programs` row keeps
+     * mirroring the default-language values (source of truth); alternate
+     * languages are stored on `program_translations`.
+     *
+     * @var list<string>
+     */
+    private const TRANSLATED = ['name', 'description', 'schedule', 'age_recommendation', 'classroom_number'];
+
     public function index(): Response
     {
         $locale = app()->getLocale();
@@ -25,7 +36,7 @@ class DashboardProgramController extends Controller
                 'name' => $program->translatedName($locale),
                 'program_type' => $program->program_type,
                 'program_type_label' => $program->translatedProgramType($locale),
-                'schedule' => $program->schedule,
+                'schedule' => $program->translatedSchedule($locale),
                 'fees' => $program->fees,
                 'available_for_enroll' => $program->available_for_enroll,
             ]);
@@ -42,25 +53,21 @@ class DashboardProgramController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'program_type' => ['required', 'in:school,courses,islamic_madrasa'],
-            'description' => ['required', 'string'],
-            'schedule' => ['required', 'string', 'max:255'],
-            'fees' => ['required', 'numeric', 'min:0'],
-            'age_recommendation' => ['required', 'string', 'max:255'],
-            'classroom_number' => ['nullable', 'string', 'max:100'],
-            'available_for_enroll' => ['nullable', 'boolean'],
-            'display_order' => ['nullable', 'integer', 'min:0'],
-        ]);
+        $request->validate($this->rules());
+
+        $payload = $this->normalizedPayload($request);
+        $defaults = TranslationPayload::defaultAttributes($payload);
 
         $program = Program::query()->create([
-            ...$validated,
-            'available_for_enroll' => ! empty($validated['available_for_enroll']),
-            'display_order' => $validated['display_order'] ?? 0,
+            ...$this->configAttributes($request),
+            'name' => $defaults['name'] ?? '',
+            'description' => $defaults['description'] ?? '',
+            'schedule' => $defaults['schedule'] ?? '',
+            'age_recommendation' => $defaults['age_recommendation'] ?? '',
+            'classroom_number' => $defaults['classroom_number'] ?? null,
         ]);
 
-        $program->syncDefaultTranslation();
+        TranslationPayload::apply($program->translations(), $payload);
 
         return redirect()
             ->route('dashboard.programs.index')
@@ -69,36 +76,120 @@ class DashboardProgramController extends Controller
 
     public function edit(Program $program): Response
     {
+        $program->load(['translations.language']);
+
         return Inertia::render('dashboard/programs/edit', [
             'program' => $program,
+            'translations' => $this->existingTranslations($program),
         ]);
     }
 
     public function update(Request $request, Program $program): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'program_type' => ['required', 'in:school,courses,islamic_madrasa'],
-            'description' => ['required', 'string'],
-            'schedule' => ['required', 'string', 'max:255'],
-            'fees' => ['required', 'numeric', 'min:0'],
-            'age_recommendation' => ['required', 'string', 'max:255'],
-            'classroom_number' => ['nullable', 'string', 'max:100'],
-            'available_for_enroll' => ['nullable', 'boolean'],
-            'display_order' => ['nullable', 'integer', 'min:0'],
-        ]);
+        $request->validate($this->rules());
+
+        $payload = $this->normalizedPayload($request);
+        $defaults = TranslationPayload::defaultAttributes($payload);
 
         $program->update([
-            ...$validated,
-            'available_for_enroll' => ! empty($validated['available_for_enroll']),
-            'display_order' => $validated['display_order'] ?? 0,
+            ...$this->configAttributes($request),
+            'name' => $defaults['name'] ?? $program->name,
+            'description' => $defaults['description'] ?? $program->description,
+            'schedule' => $defaults['schedule'] ?? $program->schedule,
+            'age_recommendation' => $defaults['age_recommendation'] ?? $program->age_recommendation,
+            'classroom_number' => $defaults['classroom_number'] ?? null,
         ]);
 
-        $program->syncDefaultTranslation();
+        TranslationPayload::apply($program->translations(), $payload);
 
         return redirect()
             ->route('dashboard.programs.index')
             ->with('success', 'Program updated successfully.');
     }
-}
 
+    /**
+     * Extract the submitted translations and guarantee every language row carries
+     * the NOT NULL name/description columns (empty strings fall back to the
+     * default language at read time, since empty values are treated as unset).
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    private function normalizedPayload(Request $request): array
+    {
+        $payload = TranslationPayload::extract($request, self::TRANSLATED);
+
+        foreach ($payload as $code => $fields) {
+            $payload[$code]['name'] ??= '';
+            $payload[$code]['description'] ??= '';
+        }
+
+        return $payload;
+    }
+
+    /**
+     * Language-agnostic columns stored directly on the parent row.
+     *
+     * @return array<string, mixed>
+     */
+    private function configAttributes(Request $request): array
+    {
+        return [
+            'program_type' => $request->input('program_type'),
+            'fees' => $request->input('fees'),
+            'available_for_enroll' => ! empty($request->input('available_for_enroll')),
+            'display_order' => $request->input('display_order', 0),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function rules(): array
+    {
+        return array_merge([
+            'program_type' => ['required', 'in:school,courses,islamic_madrasa'],
+            'fees' => ['required', 'numeric', 'min:0'],
+            'available_for_enroll' => ['nullable', 'boolean'],
+            'display_order' => ['nullable', 'integer', 'min:0'],
+        ], TranslationPayload::rules(self::TRANSLATED, [
+            'name' => ['string', 'max:255'],
+            'description' => ['string'],
+            'schedule' => ['string', 'max:255'],
+            'age_recommendation' => ['string', 'max:255'],
+            'classroom_number' => ['string', 'max:100'],
+        ], ['name', 'description', 'schedule', 'age_recommendation']));
+    }
+
+    /**
+     * Existing per-language content keyed by language code for the editor. The
+     * default-language tab is seeded from the parent columns so a value authored
+     * before per-language editing was available still shows as the source.
+     *
+     * @return array<string, array<string, string>>
+     */
+    private function existingTranslations(Program $program): array
+    {
+        $existing = $program->translations
+            ->filter(fn ($translation) => $translation->language)
+            ->mapWithKeys(fn ($translation): array => [
+                $translation->language->code => [
+                    'name' => (string) $translation->name,
+                    'description' => (string) $translation->description,
+                    'schedule' => (string) $translation->schedule,
+                    'age_recommendation' => (string) $translation->age_recommendation,
+                    'classroom_number' => (string) $translation->classroom_number,
+                ],
+            ])
+            ->all();
+
+        $defaultCode = Language::defaultCode();
+
+        foreach (self::TRANSLATED as $field) {
+            if (empty($existing[$defaultCode][$field])) {
+                $existing[$defaultCode][$field] = (string) $program->{$field};
+            }
+        }
+
+        return $existing;
+    }
+}
