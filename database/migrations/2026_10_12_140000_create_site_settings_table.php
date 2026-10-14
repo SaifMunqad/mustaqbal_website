@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('brand_short_name');
             $table->string('tagline')->nullable();
             $table->string('logo_url')->nullable();
+            // Browser tab icon uploaded from Site Settings (falls back to /favicon.ico).
+            $table->string('favicon_url')->nullable();
 
             // Home / hero section
             $table->string('home_title')->nullable();
@@ -23,12 +25,22 @@ return new class extends Migration
             $table->string('home_cta_primary')->nullable();
             $table->string('home_cta_secondary')->nullable();
             $table->string('home_hero_image')->nullable();
+            // Admin-editable home lists stored as JSON arrays on the single row:
+            // the quick-stats bar and the "why choose us" feature grid.
+            $table->json('home_stats')->nullable();
+            $table->json('home_features')->nullable();
 
             // Contact details
             $table->string('contact_email')->nullable();
             $table->string('contact_phone_primary')->nullable();
             $table->string('contact_phone_secondary')->nullable();
             $table->string('address')->nullable();
+            // Explicit coordinates so an admin can drop a Google Maps pin and have
+            // the location persisted as data (latitude/longitude/zoom) rather than
+            // only as a hand-pasted embed URL. The embed URL is derived from these.
+            $table->decimal('map_latitude', 10, 7)->nullable();
+            $table->decimal('map_longitude', 10, 7)->nullable();
+            $table->unsignedTinyInteger('map_zoom')->nullable()->default(15);
             $table->text('map_embed_url')->nullable();
 
             // Social links

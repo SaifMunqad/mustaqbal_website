@@ -12,6 +12,10 @@ return new class extends Migration
             $table->id();
             $table->string('code', 10)->unique();
             $table->string('name');
+            $table->string('dir', 3)->default('ltr');
+            $table->boolean('is_active')->default(true);
+            $table->boolean('is_default')->default(false);
+            $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();
         });
 

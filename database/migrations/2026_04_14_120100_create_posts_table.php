@@ -16,10 +16,14 @@ return new class extends Migration
             $table->string('visibility')->default('community');
             $table->string('title');
             $table->text('content');
+            $table->json('images')->nullable();
             $table->timestamp('scheduled_at')->nullable();
             $table->timestamp('starts_at')->nullable();
             $table->timestamp('ends_at')->nullable();
             $table->string('job_apply_url')->nullable();
+            $table->boolean('featured')->default(false);
+            $table->timestamp('featured_from')->nullable();
+            $table->timestamp('featured_until')->nullable();
             $table->timestamps();
 
             $table->index(['type', 'visibility']);

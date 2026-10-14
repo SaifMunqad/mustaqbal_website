@@ -14,9 +14,11 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->string('department')->nullable();
+            $table->string('category')->nullable();
             $table->text('description');
             $table->text('requirements')->nullable();
             $table->enum('employment_type', ['full_time', 'part_time', 'contract'])->default('full_time');
+            $table->string('working_hours')->nullable();
             $table->string('application_email')->nullable();
             $table->string('application_url')->nullable();
             $table->date('deadline')->nullable();

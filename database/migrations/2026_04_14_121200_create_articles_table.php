@@ -11,11 +11,14 @@ return new class extends Migration
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('writer_name')->nullable();
+            $table->string('language', 10)->nullable();
             $table->string('title');
             $table->string('slug')->unique();
             $table->text('excerpt')->nullable();
             $table->longText('body');
             $table->string('cover_image')->nullable();
+            $table->json('images')->nullable();
             $table->timestamp('published_at')->nullable();
             $table->boolean('is_published')->default(true);
             $table->timestamps();
