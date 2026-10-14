@@ -41,5 +41,10 @@ enum UserRole: string
             self::Admin => 'Admin',
         };
     }
+
+    public function labelKey(): string
+    {
+        return "enums.userRole.{$this->value}";
+    }
 }
 

@@ -137,7 +137,7 @@ class DashboardEventController extends Controller
     }
 
     /**
-     * @return list<array{value: string, label: string}>
+     * @return list<array{value: string, label: string, labelKey: string}>
      */
     private function audienceOptions(): array
     {
@@ -145,6 +145,7 @@ class DashboardEventController extends Controller
             static fn (EventAudience $audience): array => [
                 'value' => $audience->value,
                 'label' => $audience->label(),
+                'labelKey' => $audience->labelKey(),
             ],
             EventAudience::cases(),
         );

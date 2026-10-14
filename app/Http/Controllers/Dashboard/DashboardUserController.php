@@ -39,10 +39,12 @@ class DashboardUserController extends Controller
             'roleOptions' => array_map(static fn (UserRole $role): array => [
                 'value' => $role->value,
                 'label' => $role->label(),
+                'labelKey' => $role->labelKey(),
             ], UserRole::cases()),
             'statusOptions' => array_map(static fn (UserStatus $status): array => [
                 'value' => $status->value,
                 'label' => $status->label(),
+                'labelKey' => $status->labelKey(),
             ], UserStatus::cases()),
             'filters' => [
                 'search' => $request->string('search')->toString(),
@@ -108,7 +110,7 @@ class DashboardUserController extends Controller
 
         // Keep the account's current role selectable even if the actor cannot grant it.
         if (! in_array($user->role->value, array_column($roleOptions, 'value'), true)) {
-            $roleOptions[] = ['value' => $user->role->value, 'label' => $user->role->label()];
+            $roleOptions[] = ['value' => $user->role->value, 'label' => $user->role->label(), 'labelKey' => $user->role->labelKey()];
         }
 
         return Inertia::render('dashboard/users/edit', [
@@ -118,6 +120,7 @@ class DashboardUserController extends Controller
             'statusOptions' => array_map(static fn (UserStatus $status): array => [
                 'value' => $status->value,
                 'label' => $status->label(),
+                'labelKey' => $status->labelKey(),
             ], UserStatus::cases()),
         ]);
     }
@@ -193,7 +196,7 @@ class DashboardUserController extends Controller
     private function roleOptions(User $actor): array
     {
         return array_map(
-            static fn (UserRole $role): array => ['value' => $role->value, 'label' => $role->label()],
+            static fn (UserRole $role): array => ['value' => $role->value, 'label' => $role->label(), 'labelKey' => $role->labelKey()],
             (new UserPolicy)->assignableRoles($actor),
         );
     }

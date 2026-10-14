@@ -21,4 +21,9 @@ enum EventAudience: string
             self::Teachers => 'Teachers',
         };
     }
+
+    public function labelKey(): string
+    {
+        return "enums.eventAudience.{$this->value}";
+    }
 }

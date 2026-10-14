@@ -88,7 +88,10 @@ class HomeSections
             'id' => $section->id,
             'type' => $type->value,
             'variant' => $type->variant(),
-            'title' => $section->title ?: $type->label(),
+            'title' => $section->title ?: '',
+            // Fallback heading key so an untitled section still shows a localized
+            // label; the admin's own title (when set) always wins.
+            'titleKey' => $type->labelKey(),
             'items' => $cards,
         ];
     }

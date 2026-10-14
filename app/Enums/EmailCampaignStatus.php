@@ -19,4 +19,9 @@ enum EmailCampaignStatus: string
             self::Completed => 'Completed',
         };
     }
+
+    public function labelKey(): string
+    {
+        return "enums.emailCampaignStatus.{$this->value}";
+    }
 }

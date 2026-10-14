@@ -67,12 +67,25 @@ enum PostType: string
     }
 
     /**
-     * @return list<array{value: string, label: string}>
+     * Stable frontend i18n key; the UI translates this so labels follow the
+     * active locale. English label() remains as the fallback.
+     */
+    public function labelKey(): string
+    {
+        return "enums.postType.{$this->value}";
+    }
+
+    /**
+     * @return list<array{value: string, label: string, labelKey: string}>
      */
     public static function options(): array
     {
         return array_map(
-            static fn (self $type): array => ['value' => $type->value, 'label' => $type->label()],
+            static fn (self $type): array => [
+                'value' => $type->value,
+                'label' => $type->label(),
+                'labelKey' => $type->labelKey(),
+            ],
             self::cases(),
         );
     }

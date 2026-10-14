@@ -21,4 +21,9 @@ enum EmailDeliveryStatus: string
             self::Failed => 'Failed',
         };
     }
+
+    public function labelKey(): string
+    {
+        return "enums.emailDeliveryStatus.{$this->value}";
+    }
 }

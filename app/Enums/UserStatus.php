@@ -21,4 +21,9 @@ enum UserStatus: string
             self::Suspended => 'Suspended',
         };
     }
+
+    public function labelKey(): string
+    {
+        return "enums.userStatus.{$this->value}";
+    }
 }

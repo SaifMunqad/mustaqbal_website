@@ -31,6 +31,15 @@ enum HomeSectionType: string
     }
 
     /**
+     * Stable frontend i18n key; the UI translates this so labels follow the
+     * active locale. English label() remains as the fallback.
+     */
+    public function labelKey(): string
+    {
+        return "enums.homeSectionType.{$this->value}";
+    }
+
+    /**
      * Curated sections reference existing content and render it at read time.
      */
     public function isCurated(): bool
@@ -67,7 +76,7 @@ enum HomeSectionType: string
     }
 
     /**
-     * @return list<array{value: string, label: string, kind: string}>
+     * @return list<array{value: string, label: string, labelKey: string, kind: string}>
      */
     public static function options(): array
     {
@@ -75,6 +84,7 @@ enum HomeSectionType: string
             static fn (self $type): array => [
                 'value' => $type->value,
                 'label' => $type->label(),
+                'labelKey' => $type->labelKey(),
                 'kind' => $type->isCurated() ? 'curated' : 'authored',
             ],
             self::cases(),

@@ -23,4 +23,9 @@ enum EventStatus: string
             self::Cancelled => 'Cancelled',
         };
     }
+
+    public function labelKey(): string
+    {
+        return "enums.eventStatus.{$this->value}";
+    }
 }

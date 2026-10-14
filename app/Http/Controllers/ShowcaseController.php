@@ -49,6 +49,7 @@ class ShowcaseController extends Controller
                 return [
                     'type' => $type->value,
                     'label' => $type->label(),
+                    'labelKey' => $type->labelKey(),
                     'posts' => $posts->map(fn (Post $post): array => [
                         'id' => $post->id,
                         'title' => $post->title,
