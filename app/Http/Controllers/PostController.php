@@ -8,6 +8,7 @@ use App\Http\Requests\StorePostRequest;
 use App\Models\Post;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class PostController extends Controller
 {
@@ -20,6 +21,7 @@ class PostController extends Controller
                 'highlightedStudent:id,name',
                 'comments.author:id,name',
                 'likes.user:id,name',
+                'translations.language',
             ])
             ->withCount(['comments', 'likes'])
             ->latest()
@@ -37,6 +39,7 @@ class PostController extends Controller
             'highlightedStudent:id,name',
             'comments.author:id,name,role',
             'likes.user:id,name',
+            'translations.language',
         ])->loadCount(['comments', 'likes']);
 
         return response()->json($post);
@@ -56,13 +59,20 @@ class PostController extends Controller
         $images = array_values(array_filter($validated['images'] ?? [], static fn ($image) => filled($image)));
 
         $post = Post::query()->create([
-            ...$validated,
+            ...Arr::except($validated, ['title', 'content']),
             'user_id' => $request->user()->id,
             'visibility' => $request->input('visibility', $defaultVisibility),
             'images' => $images,
         ]);
 
-        $post->load(['author:id,name,role', 'highlightedStudent:id,name'])
+        // Community posts are authored in a single language; store the submitted
+        // title/content as the default-language translation row.
+        $post->syncDefaultTranslation([
+            'title' => $validated['title'],
+            'content' => $validated['content'],
+        ]);
+
+        $post->load(['author:id,name,role', 'highlightedStudent:id,name', 'translations.language'])
             ->loadCount(['comments', 'likes']);
 
         return response()->json($post, 201);

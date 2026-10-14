@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Job;
+use App\Support\Translation\TranslationPayload;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -13,14 +15,16 @@ use Inertia\Response;
 
 class DashboardJobController extends Controller
 {
+    /**
+     * @var list<string>
+     */
+    private const TRANSLATED = ['title', 'department', 'description', 'requirements'];
+
     public function index(Request $request): Response
     {
         $jobs = Job::query()
-            ->with('author:id,name')
-            ->when($request->string('search')->toString(), function ($query, string $search): void {
-                $query->where('title', 'like', "%{$search}%")
-                    ->orWhere('department', 'like', "%{$search}%");
-            })
+            ->with(['author:id,name', 'translations.language'])
+            ->search($request->string('search')->toString())
             ->orderByDesc('created_at')
             ->paginate(15)
             ->through(fn (Job $job): array => [
@@ -53,14 +57,19 @@ class DashboardJobController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $validated = $this->validateJob($request);
+        $request->validate($this->rules());
 
-        Job::query()->create([
-            ...$validated,
-            'slug' => Str::slug($validated['title']) . '-' . Str::lower(Str::random(4)),
+        $payload = TranslationPayload::extract($request, self::TRANSLATED);
+        $defaultTitle = TranslationPayload::defaultAttributes($payload)['title'] ?? '';
+
+        $job = Job::query()->create([
+            ...Arr::only($request->only($this->parentFields()), $this->parentFields()),
+            'slug' => Str::slug($defaultTitle).'-'.Str::lower(Str::random(4)),
             'user_id' => $request->user()->id,
-            'is_active' => (bool) ($validated['is_active'] ?? true),
+            'is_active' => (bool) $request->input('is_active', true),
         ]);
+
+        TranslationPayload::apply($job->translations(), $payload);
 
         return redirect()
             ->route('dashboard.jobs.index')
@@ -69,8 +78,11 @@ class DashboardJobController extends Controller
 
     public function edit(Job $job): Response
     {
+        $job->load(['translations.language']);
+
         return Inertia::render('dashboard/jobs/edit', [
             'job' => $job,
+            'translations' => $this->existingTranslations($job),
             'employmentTypes' => $this->employmentTypeOptions(),
             'categories' => $this->categoryOptions(),
         ]);
@@ -78,12 +90,14 @@ class DashboardJobController extends Controller
 
     public function update(Request $request, Job $job): RedirectResponse
     {
-        $validated = $this->validateJob($request);
+        $request->validate($this->rules());
 
         $job->update([
-            ...$validated,
-            'is_active' => (bool) ($validated['is_active'] ?? false),
+            ...Arr::only($request->only($this->parentFields()), $this->parentFields()),
+            'is_active' => (bool) $request->input('is_active'),
         ]);
+
+        TranslationPayload::apply($job->translations(), TranslationPayload::extract($request, self::TRANSLATED));
 
         return redirect()
             ->route('dashboard.jobs.index')
@@ -99,21 +113,41 @@ class DashboardJobController extends Controller
             ->with('success', 'Job deleted.');
     }
 
-    private function validateJob(Request $request): array
+    /**
+     * @return list<string>
+     */
+    private function parentFields(): array
     {
-        return $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'department' => ['nullable', 'string', 'max:255'],
+        return [
+            'category',
+            'employment_type',
+            'working_hours',
+            'application_email',
+            'application_url',
+            'deadline',
+            'is_active',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function rules(): array
+    {
+        return array_merge([
             'category' => ['nullable', Rule::in(['school', 'course', 'islamic_madrasa'])],
-            'description' => ['required', 'string'],
-            'requirements' => ['nullable', 'string'],
             'employment_type' => ['required', Rule::in(['full_time', 'part_time', 'contract'])],
             'working_hours' => ['nullable', 'string', 'max:255'],
             'application_email' => ['nullable', 'email', 'max:255'],
             'application_url' => ['nullable', 'url', 'max:500'],
             'deadline' => ['nullable', 'date'],
             'is_active' => ['nullable', 'boolean'],
-        ]);
+        ], TranslationPayload::rules(self::TRANSLATED, [
+            'title' => ['string', 'max:255'],
+            'department' => ['string', 'max:255'],
+            'description' => ['string'],
+            'requirements' => ['string'],
+        ], ['title', 'description']));
     }
 
     private function employmentTypeOptions(): array
@@ -137,5 +171,23 @@ class DashboardJobController extends Controller
             ['value' => 'course', 'label' => 'Course'],
             ['value' => 'islamic_madrasa', 'label' => 'Islamic Madrasa'],
         ];
+    }
+
+    /**
+     * @return array<string, array<string, string>>
+     */
+    private function existingTranslations(Job $job): array
+    {
+        return $job->translations
+            ->filter(fn ($translation) => $translation->language)
+            ->mapWithKeys(fn ($translation): array => [
+                $translation->language->code => [
+                    'title' => (string) $translation->title,
+                    'department' => (string) $translation->department,
+                    'description' => (string) $translation->description,
+                    'requirements' => (string) $translation->requirements,
+                ],
+            ])
+            ->all();
     }
 }

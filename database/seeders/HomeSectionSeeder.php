@@ -85,17 +85,20 @@ class HomeSectionSeeder extends Seeder
         // 3) Latest articles (curated).
         HomeSection::factory()
             ->articles($articleIds, 3)
-            ->create(['title' => 'Latest Articles', 'sort_order' => 2]);
+            ->create(['sort_order' => 2])
+            ->syncDefaultTranslation(['title' => 'Latest Articles']);
 
         // 4) Upcoming events (curated).
         HomeSection::factory()
             ->events($eventIds, 3)
-            ->create(['title' => 'Upcoming Events', 'sort_order' => 3]);
+            ->create(['sort_order' => 3])
+            ->syncDefaultTranslation(['title' => 'Upcoming Events']);
 
         // 5) Recognition highlights (curated) — reuses the existing showcase.
         HomeSection::factory()
             ->recognition($recognitionIds, 3)
-            ->create(['title' => 'Recognition Highlights', 'sort_order' => 4]);
+            ->create(['sort_order' => 4])
+            ->syncDefaultTranslation(['title' => 'Recognition Highlights']);
 
         $this->command?->info('Seeded 5 home page sections.');
     }

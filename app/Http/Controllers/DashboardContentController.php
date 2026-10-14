@@ -8,6 +8,7 @@ use App\Models\SitePage;
 use App\Support\Rules\ImageLocation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class DashboardContentController extends Controller
@@ -74,15 +75,21 @@ class DashboardContentController extends Controller
             $content = is_array($decoded) ? $decoded : [];
         }
 
-        SitePage::query()->updateOrCreate(
+        // Title and the rich-text body are localized; the remaining structured
+        // keys stay shared on the parent content column.
+        $page = SitePage::query()->updateOrCreate(
             ['slug' => $validated['slug']],
             [
-                'title' => $validated['title'],
                 'hero_image' => $validated['hero_image'] ?? null,
-                'content' => $content,
+                'content' => Arr::except($content, ['body']),
                 'is_published' => ! empty($validated['is_published']),
             ],
         );
+
+        $page->syncDefaultTranslation([
+            'title' => $validated['title'],
+            'body' => $content['body'] ?? '',
+        ]);
 
         return back()->with('success', 'Page saved successfully.');
     }

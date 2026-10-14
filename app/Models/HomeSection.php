@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\HomeSectionType;
+use App\Support\Translation\HasTranslations;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,10 +24,10 @@ use Illuminate\Database\Eloquent\Model;
 class HomeSection extends Model
 {
     use HasFactory;
+    use HasTranslations;
 
     protected $fillable = [
         'section_type',
-        'title',
         'config',
         'limit',
         'sort_order',
@@ -42,6 +43,19 @@ class HomeSection extends Model
             'sort_order' => 'integer',
             'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * Localized text now lives in `home_section_translations`: the section title
+     * plus, for authored blocks, the heading / body / call-to-action label. The
+     * shared, non-text settings (item_ids, image_url, cta_url, tone) stay in the
+     * parent `config` JSON.
+     *
+     * @return list<string>
+     */
+    public function translatedAttributes(): array
+    {
+        return ['title', 'heading', 'body', 'cta_label'];
     }
 
     /**

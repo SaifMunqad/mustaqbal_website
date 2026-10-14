@@ -4,11 +4,17 @@ import {
     EnvelopeIcon,
 } from '@heroicons/react/24/outline';
 import { Form, router } from '@inertiajs/react';
-import { CheckboxField, SelectField, TextAreaField, TextField } from '@/components/form-fields';
+import { CheckboxField, SelectField, TextField } from '@/components/form-fields';
 import ConfirmDialog from '@/components/form/confirm-dialog';
 import FormSection from '@/components/form/form-section';
 import StickyFormFooter from '@/components/form/sticky-form-footer';
+import LanguageTabsEditor, {
+    type TranslatableField,
+    type TranslationValues,
+} from '@/components/language-tabs-editor';
 import { Button } from '@/components/ui/button';
+
+export type { TranslationValues } from '@/components/language-tabs-editor';
 
 export interface JobOption {
     value: string;
@@ -40,9 +46,32 @@ interface JobFormProps {
     toastOnError: (errors: Record<string, string>) => void;
     // Present on edit; absent on create so fields render empty.
     job?: JobDetail;
+    // Existing per-language content, seeded into the localized editor on edit.
+    translations?: TranslationValues;
     // When set (edit), a destructive delete action is shown in the footer.
     deleteUrl?: string;
 }
+
+// Localized inputs rendered once per active language (default language required).
+const translatableFields: TranslatableField[] = [
+    { name: 'title', label: 'Job title', type: 'text', placeholder: 'e.g. Mathematics Teacher', maxLength: 255 },
+    { name: 'department', label: 'Department', type: 'text', placeholder: 'e.g. Academic, Administration', required: false },
+    {
+        name: 'description',
+        label: 'Description',
+        type: 'textarea',
+        placeholder: 'Describe the role, responsibilities, and work environment...',
+        rows: 6,
+    },
+    {
+        name: 'requirements',
+        label: 'Requirements',
+        type: 'textarea',
+        placeholder: 'Qualifications, experience, skills needed...',
+        rows: 4,
+        required: false,
+    },
+];
 
 /**
  * Shared create/edit form for job postings. Renders identical markup for both
@@ -58,6 +87,7 @@ export default function JobForm({
     categories,
     toastOnError,
     job,
+    translations,
     deleteUrl,
 }: JobFormProps) {
     const removeJob = () => {
@@ -77,30 +107,10 @@ export default function JobForm({
                         <div className="space-y-4">
                             <FormSection
                                 title="Job details"
-                                description={
-                                    job
-                                        ? 'Update the title, department and description.'
-                                        : 'Add a title, department and a detailed description for the position.'
-                                }
-                                icon={<DocumentTextIcon className="size-5" />}
+                                description="Set the program category, employment type and working hours (shared across languages)."
+                                icon={<BriefcaseIcon className="size-5" />}
                                 columns={2}
                             >
-                                <TextField
-                                    label="Job title"
-                                    name="title"
-                                    required
-                                    defaultValue={job?.title ?? ''}
-                                    placeholder="e.g. Mathematics Teacher"
-                                    className="text-base md:col-span-2"
-                                    error={errors.title}
-                                />
-                                <TextField
-                                    label="Department"
-                                    name="department"
-                                    defaultValue={job?.department ?? ''}
-                                    placeholder="e.g. Academic, Administration"
-                                    error={errors.department}
-                                />
                                 <SelectField
                                     label="Program category"
                                     name="category"
@@ -126,24 +136,16 @@ export default function JobForm({
                                     hint="Displayed on the card for part-time roles"
                                     error={errors.working_hours}
                                 />
-                                <TextAreaField
-                                    label="Description"
-                                    name="description"
-                                    required
-                                    defaultValue={job?.description ?? ''}
-                                    placeholder="Describe the role, responsibilities, and work environment..."
-                                    rows={6}
-                                    className="md:col-span-2"
-                                    error={errors.description}
-                                />
-                                <TextAreaField
-                                    label="Requirements"
-                                    name="requirements"
-                                    defaultValue={job?.requirements ?? ''}
-                                    placeholder="Qualifications, experience, skills needed..."
-                                    rows={4}
-                                    className="md:col-span-2"
-                                    error={errors.requirements}
+                            </FormSection>
+
+                            <FormSection
+                                title="Localized content"
+                                description="Add the title, department, description and requirements for each language. The starred language is required and used as the fallback."
+                                icon={<DocumentTextIcon className="size-5" />}
+                            >
+                                <LanguageTabsEditor
+                                    fields={translatableFields}
+                                    translations={translations}
                                 />
                             </FormSection>
                         </div>

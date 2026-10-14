@@ -7,12 +7,16 @@ import {
 } from '@heroicons/react/24/outline';
 import { Form, Link } from '@inertiajs/react';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import RichTextEditor from '@/components/editor/rich-text-editor';
 import { CheckboxField, TextAreaField, TextField } from '@/components/form-fields';
 import FormSection from '@/components/form/form-section';
 import { ImageUploadField } from '@/components/form/image-upload-field';
 import StickyFormFooter from '@/components/form/sticky-form-footer';
+import LanguageTabsEditor, {
+    type TranslatableField,
+    type TranslationValues,
+} from '@/components/language-tabs-editor';
+
+export type { TranslationValues } from '@/components/language-tabs-editor';
 
 export interface SitePage {
     id: number;
@@ -30,10 +34,22 @@ interface SitePageFormProps {
     toastOnError: (errors: Record<string, string>) => void;
     // Present on edit; absent on create so fields render empty.
     page?: SitePage;
-    // Body and embed are provided separately on edit.
-    initialBody?: string;
+    // Existing per-language title/body, seeded into the localized editor on edit.
+    translations?: TranslationValues;
+    // Embed code / video URL is shared across languages (not localized).
     initialVideoEmbed?: string;
 }
+
+// Localized inputs rendered once per active language (default language required).
+const translatableFields: TranslatableField[] = [
+    { name: 'title', label: 'Title', type: 'text', placeholder: 'Page title', maxLength: 255 },
+    {
+        name: 'body',
+        label: 'Page body',
+        type: 'richtext',
+        placeholder: 'Write this page here, or import a Word (.docx) document / paste from Word...',
+    },
+];
 
 /**
  * Shared create/edit form for editable site pages. The publishing label/helper
@@ -45,14 +61,11 @@ export default function SitePageForm({
     cancelHref,
     toastOnError,
     page,
-    initialBody,
+    translations,
     initialVideoEmbed,
 }: SitePageFormProps) {
     const isEdit = Boolean(page);
-    const [body, setBody] = useState(initialBody ?? '');
     const [heroImage, setHeroImage] = useState(page?.hero_image ?? '');
-    const { i18n } = useTranslation();
-    const editorDir = i18n.dir() === 'rtl' ? 'rtl' : 'ltr';
 
     return (
         <Form {...formProps} onError={toastOnError}>
@@ -64,7 +77,6 @@ export default function SitePageForm({
                                 title="Page details"
                                 description="The slug becomes the public URL (e.g. about → /about)."
                                 icon={<DocumentTextIcon className="size-5" />}
-                                columns={2}
                             >
                                 <TextField
                                     label="Slug"
@@ -72,27 +84,20 @@ export default function SitePageForm({
                                     required
                                     defaultValue={page?.slug ?? ''}
                                     placeholder="about"
-                                    className="text-base md:col-span-2"
                                     error={errors.slug}
-                                />
-                                <TextField
-                                    label="Title"
-                                    name="title"
-                                    required
-                                    defaultValue={page?.title ?? ''}
-                                    placeholder="Page title"
-                                    className="md:col-span-2"
-                                    error={errors.title}
                                 />
                             </FormSection>
 
-                            <RichTextEditor
-                                name="body"
-                                value={body}
-                                onChange={setBody}
-                                dir={editorDir}
-                                placeholder="Write this page here, or import a Word (.docx) document / paste from Word..."
-                            />
+                            <FormSection
+                                title="Localized content"
+                                description="Add the title and rich-text body for each language. The starred language is required and used as the fallback."
+                                icon={<DocumentTextIcon className="size-5" />}
+                            >
+                                <LanguageTabsEditor
+                                    fields={translatableFields}
+                                    translations={translations}
+                                />
+                            </FormSection>
 
                             <FormSection
                                 title="Hero image"

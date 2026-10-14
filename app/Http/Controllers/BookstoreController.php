@@ -24,7 +24,7 @@ class BookstoreController extends Controller
         $category = $request->string('category')->toString();
 
         $books = Book::query()
-            ->with('category:id,name,slug')
+            ->with(['category:id,name,slug', 'category.translations.language', 'translations.language'])
             ->search($search)
             ->when($category !== '', fn ($query) => $query->whereHas(
                 'category',
@@ -38,6 +38,7 @@ class BookstoreController extends Controller
         return Inertia::render('school/store/index', [
             'books' => $books,
             'categories' => BookCategory::query()
+                ->with('translations.language')
                 ->orderBy('name')
                 ->get()
                 ->map(fn (BookCategory $categoryModel): array => [
@@ -53,9 +54,10 @@ class BookstoreController extends Controller
 
     public function show(Request $request, Book $book): Response
     {
-        $book->load('category:id,name,slug');
+        $book->load(['category:id,name,slug', 'category.translations.language', 'translations.language']);
 
         $related = Book::query()
+            ->with(['translations.language', 'category.translations.language'])
             ->whereKeyNot($book->id)
             ->when($book->book_category_id, fn ($q) => $q->where('book_category_id', $book->book_category_id))
             ->limit(4)

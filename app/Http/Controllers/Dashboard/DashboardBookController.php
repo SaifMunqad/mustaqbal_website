@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Book;
 use App\Models\BookCategory;
 use App\Support\Rules\ImageLocation;
+use App\Support\Translation\TranslationPayload;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -17,10 +19,15 @@ class DashboardBookController extends Controller
 {
     private const DISK = 'public';
 
+    /**
+     * @var list<string>
+     */
+    private const TRANSLATED = ['title', 'publisher', 'description'];
+
     public function index(Request $request): Response
     {
         $books = Book::query()
-            ->with('category:id,name')
+            ->with(['category:id,name', 'translations.language'])
             ->search($request->string('search')->toString())
             ->orderByDesc('created_at')
             ->paginate(15)
@@ -51,13 +58,18 @@ class DashboardBookController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $validated = $this->validateBook($request);
+        $request->validate($this->rules());
 
-        Book::query()->create([
-            ...$validated,
-            'slug' => $this->uniqueSlug($validated['title']),
+        $payload = TranslationPayload::extract($request, self::TRANSLATED);
+        $defaultTitle = TranslationPayload::defaultAttributes($payload)['title'] ?? '';
+
+        $book = Book::query()->create([
+            ...Arr::only($request->only($this->parentFields()), $this->parentFields()),
+            'slug' => $this->uniqueSlug($defaultTitle),
             'images' => $this->cleanImages($request->input('images', [])),
         ]);
+
+        TranslationPayload::apply($book->translations(), $payload);
 
         return redirect()
             ->route('dashboard.books.index')
@@ -66,6 +78,8 @@ class DashboardBookController extends Controller
 
     public function edit(Book $book): Response
     {
+        $book->load(['translations.language']);
+
         return Inertia::render('dashboard/books/edit', [
             'book' => [
                 'id' => $book->id,
@@ -73,9 +87,7 @@ class DashboardBookController extends Controller
                 'slug' => $book->slug,
                 'author' => $book->author,
                 'published_year' => $book->published_year,
-                'publisher' => $book->publisher,
                 'isbn' => $book->isbn,
-                'description' => $book->description,
                 'images' => $book->images ?? [],
                 'thumbnail_path' => $book->thumbnail_path,
                 'thumbnail' => $this->displayImage($book),
@@ -83,23 +95,26 @@ class DashboardBookController extends Controller
                 'file_url' => $book->file_path ? Storage::disk(self::DISK)->url($book->file_path) : null,
                 'book_category_id' => $book->book_category_id,
             ],
+            'translations' => $this->existingTranslations($book),
             'categories' => $this->categoryOptions(),
         ]);
     }
 
     public function update(Request $request, Book $book): RedirectResponse
     {
-        $validated = $this->validateBook($request);
+        $request->validate($this->rules());
 
         $previousFile = $book->file_path;
         $previousThumb = $book->thumbnail_path;
 
         $book->fill([
-            ...$validated,
+            ...Arr::only($request->only($this->parentFields()), $this->parentFields()),
             'images' => $this->cleanImages($request->input('images', [])),
         ]);
 
         $book->save();
+
+        TranslationPayload::apply($book->translations(), TranslationPayload::extract($request, self::TRANSLATED));
 
         // When the PDF is replaced, drop the orphaned file and thumbnail.
         if ($previousFile && $previousFile !== $book->file_path) {
@@ -149,28 +164,44 @@ class DashboardBookController extends Controller
         return null;
     }
 
-    private function validateBook(Request $request): array
+    /**
+     * Language-neutral parent columns written directly on the book row.
+     *
+     * @return list<string>
+     */
+    private function parentFields(): array
     {
-        return $request->validate([
-            'title' => ['required', 'string', 'max:255'],
+        return ['author', 'published_year', 'isbn', 'book_category_id', 'file_path', 'thumbnail_path'];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function rules(): array
+    {
+        return array_merge([
             'author' => ['nullable', 'string', 'max:255'],
             'published_year' => ['nullable', 'integer', 'min:1000', 'max:2100'],
-            'publisher' => ['nullable', 'string', 'max:255'],
             'isbn' => ['nullable', 'string', 'max:64'],
-            'description' => ['nullable', 'string', 'max:5000'],
             'images' => ['nullable', 'array'],
             'images.*' => ['nullable', new ImageLocation, 'max:2048'],
             'book_category_id' => ['nullable', 'exists:book_categories,id'],
             // Populated by the PDF uploader; stored as disk-relative paths.
             'file_path' => ['nullable', 'string', 'max:2048'],
             'thumbnail_path' => ['nullable', 'string', 'max:2048'],
-        ]);
+        ], TranslationPayload::rules(self::TRANSLATED, [
+            'title' => ['string', 'max:255'],
+            'publisher' => ['string', 'max:255'],
+            'description' => ['string', 'max:5000'],
+        ], ['title']));
     }
 
     private function uniqueSlug(string $title): string
     {
+        $base = Str::slug($title) ?: 'book';
+
         do {
-            $slug = Str::slug($title).'-'.Str::lower(Str::random(4));
+            $slug = $base.'-'.Str::lower(Str::random(4));
         } while (Book::query()->where('slug', $slug)->exists());
 
         return $slug;
@@ -187,6 +218,23 @@ class DashboardBookController extends Controller
             ->map(fn (BookCategory $category): array => [
                 'id' => $category->id,
                 'name' => $category->name,
+            ])
+            ->all();
+    }
+
+    /**
+     * @return array<string, array<string, string>>
+     */
+    private function existingTranslations(Book $book): array
+    {
+        return $book->translations
+            ->filter(fn ($translation) => $translation->language)
+            ->mapWithKeys(fn ($translation): array => [
+                $translation->language->code => [
+                    'title' => (string) $translation->title,
+                    'publisher' => (string) $translation->publisher,
+                    'description' => (string) $translation->description,
+                ],
             ])
             ->all();
     }

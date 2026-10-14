@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PostType;
 use App\Enums\PostVisibility;
+use App\Support\Translation\HasTranslations;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,14 +14,22 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Post extends Model
 {
     use HasFactory;
+    use HasTranslations;
+
+    /**
+     * `title` and `content` are no longer columns: they are resolved from the
+     * active locale's translation row (falling back through the shared chain),
+     * then appended so serialized posts keep the same shape the frontend expects.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = ['title', 'content'];
 
     protected $fillable = [
         'user_id',
         'highlighted_student_id',
         'type',
         'visibility',
-        'title',
-        'content',
         'images',
         'scheduled_at',
         'starts_at',
@@ -44,6 +53,24 @@ class Post extends Model
             'featured_from' => 'datetime',
             'featured_until' => 'datetime',
         ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatedAttributes(): array
+    {
+        return ['title', 'content'];
+    }
+
+    public function getTitleAttribute(): ?string
+    {
+        return $this->translated('title');
+    }
+
+    public function getContentAttribute(): ?string
+    {
+        return $this->translated('content');
     }
 
     public function author(): BelongsTo

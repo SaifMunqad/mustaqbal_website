@@ -69,13 +69,12 @@ class SearchController extends Controller
      */
     private function events(Request $request, string $term, bool $isSearch): Collection
     {
-        $query = Event::query()->visibleTo($request->user());
+        $query = Event::query()
+            ->with('translations.language')
+            ->visibleTo($request->user());
 
         if ($isSearch) {
-            $query->where(fn ($q) => $q
-                ->where('title', 'like', "%{$term}%")
-                ->orWhere('excerpt', 'like', "%{$term}%")
-                ->orWhere('body', 'like', "%{$term}%"));
+            $query->search($term);
         }
 
         return $query
@@ -97,7 +96,7 @@ class SearchController extends Controller
      */
     private function books(Request $request, string $term, bool $isSearch): Collection
     {
-        $query = Book::query()->with('category:id,name');
+        $query = Book::query()->with(['category:id,name', 'category.translations.language', 'translations.language']);
 
         if ($isSearch) {
             $query->search($term);

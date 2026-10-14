@@ -129,26 +129,32 @@ class EventSeeder extends Seeder
             $title = self::TITLES[$this->index % count(self::TITLES)];
             $audience = $audiences[$this->index % count($audiences)];
 
-            Event::factory()
+            $event = Event::factory()
                 ->onDay($date)
                 ->withTitle($title)
                 ->create([
                     'user_id' => $author->id,
                     'audience' => $audience,
-                    'excerpt' => fake()->sentence(10),
-                    'body' => implode("\n\n", fake()->paragraphs(random_int(2, 3))),
                     'cover_image' => 'https://picsum.photos/seed/mustaqbal-event-'.($this->index + 1).'/1200/675',
-                    'location' => fake()->randomElement([
-                        'Main Hall, Kabul',
-                        'School Courtyard, Kabul',
-                        'Classroom Block A, Kabul',
-                        'Auditorium, Kabul',
-                        'Sports Ground, Kabul',
-                    ]),
                     // A few cancelled / draft events for status variety.
                     'is_cancelled' => $this->index % 17 === 5,
                     'is_published' => $this->index % 19 !== 7,
                 ]);
+
+            // Localized text lives in event_translations; overwrite the factory
+            // default row with this curated, deterministic content.
+            $event->syncDefaultTranslation([
+                'title' => $title,
+                'excerpt' => fake()->sentence(10),
+                'body' => implode("\n\n", fake()->paragraphs(random_int(2, 3))),
+                'location' => fake()->randomElement([
+                    'Main Hall, Kabul',
+                    'School Courtyard, Kabul',
+                    'Classroom Block A, Kabul',
+                    'Auditorium, Kabul',
+                    'Sports Ground, Kabul',
+                ]),
+            ]);
 
             $this->index++;
         }

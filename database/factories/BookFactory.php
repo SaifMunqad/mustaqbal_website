@@ -22,18 +22,30 @@ class BookFactory extends Factory
         $slug = Str::slug($title).'-'.Str::lower(Str::random(5));
 
         return [
-            'title' => $title,
             'slug' => $slug,
             'author' => fake()->name(),
             'published_year' => fake()->numberBetween(1985, 2025),
-            'publisher' => fake()->company(),
             'isbn' => '978'.fake()->numerify('##########'),
-            'description' => fake()->sentences(3, true),
             'images' => $this->galleryImages($slug),
             'file_path' => null,
             'thumbnail_path' => null,
             'book_category_id' => null,
         ];
+    }
+
+    /**
+     * Localized text lives in `book_translations`. Give every factory-created
+     * book a default-language row (no-op when no default language exists).
+     */
+    public function configure(): static
+    {
+        return $this->afterCreating(function (Book $book): void {
+            $book->syncDefaultTranslation([
+                'title' => Str::title(trim(fake()->words(random_int(2, 5), true))),
+                'publisher' => fake()->company(),
+                'description' => fake()->sentences(3, true),
+            ]);
+        });
     }
 
     /**

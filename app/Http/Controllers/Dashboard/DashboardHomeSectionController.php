@@ -7,8 +7,10 @@ use App\Http\Controllers\Controller;
 use App\Models\HomeSection;
 use App\Support\Home\HomeSections;
 use App\Support\Rules\ImageLocation;
+use App\Support\Translation\TranslationPayload;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -19,9 +21,17 @@ use Inertia\Response;
  */
 class DashboardHomeSectionController extends Controller
 {
+    /**
+     * Localized text (section title + authored heading/body/cta label).
+     *
+     * @var list<string>
+     */
+    private const TRANSLATED = ['title', 'heading', 'body', 'cta_label'];
+
     public function index(): Response
     {
         $sections = HomeSection::query()
+            ->with('translations.language')
             ->ordered()
             ->get()
             ->map(fn (HomeSection $section): array => [
@@ -29,11 +39,11 @@ class DashboardHomeSectionController extends Controller
                 'section_type' => $section->section_type->value,
                 'type_label' => $section->section_type->label(),
                 'kind' => $section->section_type->isCurated() ? 'curated' : 'authored',
-                'title' => $section->title,
+                'title' => $section->translated('title'),
                 'is_active' => $section->is_active,
                 'item_count' => count($section->itemIds()),
                 'heading' => $section->section_type->isAuthored()
-                    ? ($section->config['heading'] ?? null)
+                    ? $section->translated('heading')
                     : null,
             ]);
 
@@ -52,12 +62,14 @@ class DashboardHomeSectionController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $validated = $this->validateSection($request);
+        $request->validate($this->rules());
 
-        HomeSection::query()->create([
-            ...$this->prepare($validated),
+        $section = HomeSection::query()->create([
+            ...$this->prepare($request),
             'sort_order' => HomeSection::nextSortOrder(),
         ]);
+
+        TranslationPayload::apply($section->translations(), $this->cleanedPayload($request));
 
         return redirect()
             ->route('dashboard.home-sections.index')
@@ -66,15 +78,17 @@ class DashboardHomeSectionController extends Controller
 
     public function edit(HomeSection $homeSection): Response
     {
+        $homeSection->load(['translations.language']);
+
         return Inertia::render('dashboard/home-sections/edit', [
             'section' => [
                 'id' => $homeSection->id,
                 'section_type' => $homeSection->section_type->value,
-                'title' => $homeSection->title,
                 'limit' => $homeSection->limit,
                 'is_active' => $homeSection->is_active,
                 'config' => $homeSection->config ?? [],
             ],
+            'translations' => $this->existingTranslations($homeSection),
             'typeOptions' => HomeSectionType::options(),
             'availableItems' => $this->allAvailableItems(),
         ]);
@@ -82,9 +96,11 @@ class DashboardHomeSectionController extends Controller
 
     public function update(Request $request, HomeSection $homeSection): RedirectResponse
     {
-        $validated = $this->validateSection($request);
+        $request->validate($this->rules());
 
-        $homeSection->update($this->prepare($validated));
+        $homeSection->update($this->prepare($request));
+
+        TranslationPayload::apply($homeSection->translations(), $this->cleanedPayload($request));
 
         return redirect()
             ->route('dashboard.home-sections.index')
@@ -136,35 +152,35 @@ class DashboardHomeSectionController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function validateSection(Request $request): array
+    private function rules(): array
     {
-        return $request->validate([
+        return array_merge([
             'section_type' => ['required', Rule::in(HomeSectionType::values())],
-            'title' => ['nullable', 'string', 'max:255'],
             'limit' => ['nullable', 'integer', 'min:1', 'max:12'],
             'is_active' => ['nullable', 'boolean'],
             'config' => ['nullable', 'array'],
             'config.item_ids' => ['nullable', 'array'],
             'config.item_ids.*' => ['integer'],
-            'config.heading' => ['nullable', 'string', 'max:255'],
-            'config.body' => ['nullable', 'string', 'max:5000'],
             'config.image_url' => ['nullable', new ImageLocation, 'max:2048'],
-            'config.cta_label' => ['nullable', 'string', 'max:120'],
             'config.cta_url' => ['nullable', 'string', 'max:2048'],
             'config.tone' => ['nullable', Rule::in(['default', 'blue', 'green', 'amber', 'red'])],
-        ]);
+        ], TranslationPayload::rules(self::TRANSLATED, [
+            'title' => ['string', 'max:255'],
+            'heading' => ['string', 'max:255'],
+            'body' => ['string', 'max:5000'],
+            'cta_label' => ['string', 'max:120'],
+        ], []));
     }
 
     /**
-     * Normalise validation output for storage: coerce booleans, prune empty
-     * item ids and drop null config keys so the JSON stays tidy.
+     * Normalise the parent (non-localized) attributes for storage: coerce the
+     * boolean, prune empty item ids and keep only the shared config keys.
      *
-     * @param  array<string, mixed>  $validated
      * @return array<string, mixed>
      */
-    private function prepare(array $validated): array
+    private function prepare(Request $request): array
     {
-        $config = $validated['config'] ?? [];
+        $config = Arr::only((array) $request->input('config', []), ['item_ids', 'image_url', 'cta_url', 'tone']);
 
         if (isset($config['item_ids'])) {
             $config['item_ids'] = array_values(array_filter(
@@ -176,11 +192,53 @@ class DashboardHomeSectionController extends Controller
         $config = array_filter($config, static fn ($value): bool => $value !== null && $value !== '' && $value !== []);
 
         return [
-            'section_type' => $validated['section_type'],
-            'title' => $validated['title'] ?? null,
-            'limit' => $validated['limit'] ?? null,
-            'is_active' => (bool) ($validated['is_active'] ?? false),
+            'section_type' => $request->input('section_type'),
+            'limit' => $request->input('limit') ?: null,
+            'is_active' => (bool) $request->input('is_active'),
             'config' => $config,
         ];
+    }
+
+    /**
+     * The extracted translation payload, pruning empty strings so optional
+     * localized fields left blank simply fall back to the default language.
+     *
+     * @return array<string, array<string, string>>
+     */
+    private function cleanedPayload(Request $request): array
+    {
+        $payload = TranslationPayload::extract($request, self::TRANSLATED);
+
+        foreach ($payload as $code => $fields) {
+            foreach ($fields as $field => $value) {
+                if ($value === '' || $value === null) {
+                    unset($payload[$code][$field]);
+                }
+            }
+
+            if ($payload[$code] === []) {
+                unset($payload[$code]);
+            }
+        }
+
+        return $payload;
+    }
+
+    /**
+     * @return array<string, array<string, string>>
+     */
+    private function existingTranslations(HomeSection $section): array
+    {
+        return $section->translations
+            ->filter(fn ($translation) => $translation->language)
+            ->mapWithKeys(fn ($translation): array => [
+                $translation->language->code => [
+                    'title' => (string) $translation->title,
+                    'heading' => (string) $translation->heading,
+                    'body' => (string) $translation->body,
+                    'cta_label' => (string) $translation->cta_label,
+                ],
+            ])
+            ->all();
     }
 }

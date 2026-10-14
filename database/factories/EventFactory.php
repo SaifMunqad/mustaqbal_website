@@ -30,19 +30,32 @@ class EventFactory extends Factory
 
         return [
             'user_id' => User::factory(),
-            'title' => $title,
             'slug' => Str::slug($title).'-'.Str::lower(Str::random(6)),
-            'excerpt' => fake()->sentence(10),
-            'body' => implode("\n\n", fake()->paragraphs(random_int(2, 4))),
             'cover_image' => 'https://picsum.photos/seed/'.Str::lower(Str::random(8)).'/1200/675',
             'images' => [],
-            'location' => fake()->city().', Afghanistan',
             'start_at' => $startAt,
             'end_at' => $endAt,
             'audience' => fake()->randomElement(EventAudience::values()),
             'is_cancelled' => false,
             'is_published' => true,
         ];
+    }
+
+    /**
+     * Localized text lives in `event_translations`. Give every factory-created
+     * event a default-language row (no-op when no default language exists, so
+     * bare test runs without seeded languages stay green).
+     */
+    public function configure(): static
+    {
+        return $this->afterCreating(function (Event $event): void {
+            $event->syncDefaultTranslation([
+                'title' => Str::title(trim(fake()->words(random_int(2, 5), true))),
+                'excerpt' => fake()->sentence(10),
+                'body' => implode("\n\n", fake()->paragraphs(random_int(2, 4))),
+                'location' => fake()->city().', Afghanistan',
+            ]);
+        });
     }
 
     /**
@@ -90,12 +103,13 @@ class EventFactory extends Factory
     }
 
     /**
-     * Use a realistic, fixed event title instead of random words.
+     * Use a realistic, fixed event title (and matching slug) instead of random
+     * words. The localized title is written to the default-language translation
+     * by the caller/seeder; here we only derive the stable parent slug.
      */
     public function withTitle(string $title): static
     {
         return $this->state(fn (array $attributes) => [
-            'title' => $title,
             'slug' => Str::slug($title).'-'.Str::lower(Str::random(6)),
         ]);
     }

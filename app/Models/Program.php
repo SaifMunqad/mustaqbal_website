@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Translation\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 class Program extends Model
 {
     use HasFactory;
+    use HasTranslations;
 
     protected $fillable = [
         'name',
@@ -30,9 +32,12 @@ class Program extends Model
         ];
     }
 
-    public function translations(): HasMany
+    /**
+     * @return list<string>
+     */
+    public function translatedAttributes(): array
     {
-        return $this->hasMany(ProgramTranslation::class);
+        return ['name', 'description'];
     }
 
     public function typeTranslations(): HasMany
@@ -42,12 +47,12 @@ class Program extends Model
 
     public function translatedName(?string $languageCode = null): string
     {
-        return $this->resolveTranslation($languageCode)?->name ?? $this->name;
+        return (string) $this->translated('name', $languageCode, $this->name);
     }
 
     public function translatedDescription(?string $languageCode = null): string
     {
-        return $this->resolveTranslation($languageCode)?->description ?? $this->description;
+        return (string) $this->translated('description', $languageCode, $this->description);
     }
 
     public function translatedProgramType(?string $languageCode = null): string
@@ -55,39 +60,6 @@ class Program extends Model
         $translation = $this->resolveTypeTranslation($languageCode);
 
         return $translation?->label ?? $this->program_type;
-    }
-
-    public function syncDefaultTranslation(string $languageCode = 'en'): void
-    {
-        $language = Language::query()->where('code', $languageCode)->first();
-
-        if (! $language) {
-            return;
-        }
-
-        $this->translations()->updateOrCreate(
-            ['language_id' => $language->id],
-            [
-                'name' => $this->name,
-                'description' => $this->description,
-            ],
-        );
-    }
-
-    private function resolveTranslation(?string $languageCode = null): ?ProgramTranslation
-    {
-        $translations = $this->relationLoaded('translations')
-            ? $this->translations
-            : $this->translations()->with('language')->get();
-
-        foreach (Language::fallbackCodes($languageCode ?? app()->getLocale()) as $code) {
-            $match = $translations->firstWhere('language.code', $code);
-            if ($match) {
-                return $match;
-            }
-        }
-
-        return $translations->first();
     }
 
     private function resolveTypeTranslation(?string $languageCode = null): ?ProgramTypeTranslation
@@ -106,4 +78,3 @@ class Program extends Model
         return $translations->first();
     }
 }
-

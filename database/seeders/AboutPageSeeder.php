@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\SitePage;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Arr;
 
 /**
  * Seeds the public "About" site page with a rich, structured content payload.
@@ -24,15 +25,23 @@ class AboutPageSeeder extends Seeder
 {
     public function run(): void
     {
-        SitePage::query()->updateOrCreate(
+        $content = $this->content();
+
+        $page = SitePage::query()->updateOrCreate(
             ['slug' => 'about'],
             [
-                'title' => 'About Mustaqbal School',
                 'hero_image' => 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1600&q=80',
                 'is_published' => true,
-                'content' => $this->content(),
+                // The localized title/body live in translations; the shared
+                // structured sections stay on the parent content column.
+                'content' => Arr::except($content, ['body']),
             ],
         );
+
+        $page->syncDefaultTranslation([
+            'title' => 'About Mustaqbal School',
+            'body' => $content['body'] ?? '',
+        ]);
     }
 
     /**

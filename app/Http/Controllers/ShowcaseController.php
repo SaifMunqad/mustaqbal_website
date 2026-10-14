@@ -31,7 +31,7 @@ class ShowcaseController extends Controller
                     ->featuredCurrently()
                     ->where('visibility', PostVisibility::Public->value)
                     ->where('type', $type->value)
-                    ->with(['author:id,name', 'highlightedStudent:id,name'])
+                    ->with(['author:id,name', 'highlightedStudent:id,name', 'translations.language'])
                     ->latest('featured_from')
                     ->limit($limitPerGroup)
                     ->get();
@@ -41,7 +41,7 @@ class ShowcaseController extends Controller
                     : Post::query()
                         ->where('visibility', PostVisibility::Public->value)
                         ->where('type', $type->value)
-                        ->with(['author:id,name', 'highlightedStudent:id,name'])
+                        ->with(['author:id,name', 'highlightedStudent:id,name', 'translations.language'])
                         ->latest()
                         ->limit($limitPerGroup)
                         ->get();
@@ -121,6 +121,7 @@ class ShowcaseController extends Controller
     {
         try {
             return Job::query()
+                ->with('translations.language')
                 ->active()
                 ->reorder()
                 ->inRandomOrder()

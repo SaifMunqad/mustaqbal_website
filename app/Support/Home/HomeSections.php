@@ -34,7 +34,7 @@ class HomeSections
     public static function render(): array
     {
         try {
-            $sections = HomeSection::query()->activeOrdered()->get();
+            $sections = HomeSection::query()->with('translations.language')->activeOrdered()->get();
         } catch (\Throwable) {
             // home_sections table doesn't exist yet (migrations not run) — degrade.
             return [];
@@ -56,9 +56,11 @@ class HomeSections
 
         if ($type->isAuthored()) {
             $config = $section->config ?? [];
+            $heading = $section->translated('heading');
+            $body = $section->translated('body');
 
             // Don't render an empty authored block.
-            if (blank($config['heading'] ?? null) && blank($config['body'] ?? null)) {
+            if (blank($heading) && blank($body)) {
                 return null;
             }
 
@@ -66,12 +68,12 @@ class HomeSections
                 'id' => $section->id,
                 'type' => $type->value,
                 'variant' => $type->variant(),
-                'title' => $section->title,
+                'title' => $section->translated('title'),
                 'config' => [
-                    'heading' => $config['heading'] ?? null,
-                    'body' => $config['body'] ?? null,
+                    'heading' => $heading,
+                    'body' => $body,
                     'image_url' => $config['image_url'] ?? null,
-                    'cta_label' => $config['cta_label'] ?? null,
+                    'cta_label' => $section->translated('cta_label'),
                     'cta_url' => $config['cta_url'] ?? null,
                     'tone' => $config['tone'] ?? 'default',
                 ],
@@ -88,7 +90,7 @@ class HomeSections
             'id' => $section->id,
             'type' => $type->value,
             'variant' => $type->variant(),
-            'title' => $section->title ?: '',
+            'title' => $section->translated('title') ?: '',
             // Fallback heading key so an untitled section still shows a localized
             // label; the admin's own title (when set) always wins.
             'titleKey' => $type->labelKey(),
@@ -162,7 +164,7 @@ class HomeSections
         $limit = $section->limit ?? 3;
 
         // Guests see only public, published events — reuses the model's rule.
-        $base = Event::query()->visibleTo(null);
+        $base = Event::query()->with('translations.language')->visibleTo(null);
 
         $events = $ids !== []
             ? self::pickInOrder((clone $base)->whereKey($ids)->get(), $ids)
@@ -204,7 +206,7 @@ class HomeSections
         );
 
         $base = Post::query()
-            ->with(['author:id,name', 'highlightedStudent:id,name'])
+            ->with(['author:id,name', 'highlightedStudent:id,name', 'translations.language'])
             ->where('visibility', PostVisibility::Public->value)
             ->whereIn('type', $recognitionTypes);
 
@@ -270,6 +272,7 @@ class HomeSections
                     ->map(fn (Article $a): array => ['id' => $a->id, 'label' => $a->title])
                     ->all(),
                 HomeSectionType::Events => Event::query()
+                    ->with('translations.language')
                     ->visibleTo(null)
                     ->orderBy('start_at')
                     ->limit(100)
@@ -277,6 +280,7 @@ class HomeSections
                     ->map(fn (Event $e): array => ['id' => $e->id, 'label' => $e->title])
                     ->all(),
                 HomeSectionType::Recognition => Post::query()
+                    ->with('translations.language')
                     ->where('visibility', PostVisibility::Public->value)
                     ->whereIn('type', array_map(
                         static fn (PostType $t): string => $t->value,

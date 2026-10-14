@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Book;
 use App\Models\BookCategory;
 use App\Services\PdfThumbnailService;
+use App\Support\Translation\TranslationPayload;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
 
@@ -76,16 +77,21 @@ class BookLibrarySeeder extends Seeder
         return collect(self::GENRES)->map(function (array $genre): BookCategory {
             $slug = \Illuminate\Support\Str::slug($genre['name']);
 
-            return BookCategory::query()->updateOrCreate(
+            $category = BookCategory::query()->updateOrCreate(
                 ['slug' => $slug],
                 [
+                    // The parent `name` is the default-language source of truth.
                     'name' => $genre['name'],
-                    'name_translations' => [
-                        'ps' => $genre['ps'],
-                        'fa_AF' => $genre['fa_AF'],
-                    ],
                 ],
             );
+
+            // Localized labels live in book_category_translations.
+            TranslationPayload::apply($category->translations(), [
+                'ps' => ['name' => $genre['ps']],
+                'fa_AF' => ['name' => $genre['fa_AF']],
+            ]);
+
+            return $category;
         });
     }
 

@@ -1,9 +1,15 @@
 import { Form, router } from '@inertiajs/react';
 import { useState } from 'react';
-import { SelectField, TextAreaField, TextField } from '@/components/form-fields';
+import { SelectField, TextField } from '@/components/form-fields';
 import { BookMediaField } from '@/components/form/book-media-field';
 import { GalleryUploadField } from '@/components/form/image-upload-field';
+import LanguageTabsEditor, {
+    type TranslatableField,
+    type TranslationValues,
+} from '@/components/language-tabs-editor';
 import { Button } from '@/components/ui/button';
+
+export type { TranslationValues } from '@/components/language-tabs-editor';
 
 export interface BookCategoryOption {
     id: number;
@@ -12,12 +18,10 @@ export interface BookCategoryOption {
 
 export interface BookDetail {
     id: number;
-    title: string;
+    title?: string;
     author?: string | null;
     published_year?: number | null;
-    publisher?: string | null;
     isbn?: string | null;
-    description?: string | null;
     images?: string[] | null;
     thumbnail_path?: string | null;
     thumbnail?: string | null;
@@ -25,6 +29,26 @@ export interface BookDetail {
     file_url?: string | null;
     book_category_id?: number | null;
 }
+
+// Localized inputs rendered once per active language (default language required).
+const translatableFields: TranslatableField[] = [
+    { name: 'title', label: 'Title', type: 'text', placeholder: 'Title', maxLength: 255 },
+    {
+        name: 'publisher',
+        label: 'Publisher / Production company',
+        type: 'text',
+        placeholder: 'Company that published the book',
+        required: false,
+    },
+    {
+        name: 'description',
+        label: 'Description',
+        type: 'textarea',
+        placeholder: 'Description',
+        rows: 5,
+        required: false,
+    },
+];
 
 interface BookFormProps {
     action: string;
@@ -34,6 +58,8 @@ interface BookFormProps {
     toastOnError: (errors: Record<string, string>) => void;
     // Present on edit; absent on create so fields render empty.
     book?: BookDetail;
+    // Existing per-language content, seeded into the localized editor on edit.
+    translations?: TranslationValues;
     // When set (edit), a destructive delete action is shown next to submit.
     deleteUrl?: string;
 }
@@ -50,6 +76,7 @@ export default function BookForm({
     categories,
     toastOnError,
     book,
+    translations,
     deleteUrl,
 }: BookFormProps) {
     const [images, setImages] = useState<string[]>(
@@ -73,10 +100,8 @@ export default function BookForm({
             {({ errors }) => (
                 <div className="space-y-4 rounded-2xl border border-border bg-background p-4">
                     <div className="grid gap-4 md:grid-cols-2">
-                        <TextField label="Title" name="title" required defaultValue={book?.title ?? ''} placeholder="Title" className="md:col-span-2" error={errors.title} />
                         <TextField label="Author" name="author" defaultValue={book?.author ?? ''} placeholder="Author" error={errors.author} />
                         <TextField label="Publish year" name="published_year" type="number" min="1000" max="2100" defaultValue={book?.published_year ?? ''} placeholder="e.g. 2023" error={errors.published_year} />
-                        <TextField label="Publisher / Production company" name="publisher" defaultValue={book?.publisher ?? ''} placeholder="Company that published the book" error={errors.publisher} />
                         <TextField label="ISBN" name="isbn" defaultValue={book?.isbn ?? ''} placeholder="ISBN" error={errors.isbn} />
                         <SelectField
                             label="Category"
@@ -114,7 +139,12 @@ export default function BookForm({
                         error={errors.images ? String(errors.images) : undefined}
                     />
 
-                    <TextAreaField label="Description" name="description" rows={5} defaultValue={book?.description ?? ''} placeholder="Description" error={errors.description} />
+                    <div className="grid gap-4">
+                        <LanguageTabsEditor
+                            fields={translatableFields}
+                            translations={translations}
+                        />
+                    </div>
 
                     <div className="flex flex-wrap items-center gap-3">
                         <Button type="submit">{submitLabel}</Button>

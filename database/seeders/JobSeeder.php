@@ -222,38 +222,46 @@ class JobSeeder extends Seeder
         $author = $this->resolveAuthor();
 
         foreach (self::ACTIVE_JOBS as $index => $job) {
-            Job::factory()
+            $jobModel = Job::factory()
                 ->withTitle($job['title'])
-                ->withDepartment($job['department'])
                 ->withCategory($job['category'])
                 ->create([
                     'user_id' => $author->id,
                     'employment_type' => $job['employment_type'],
                     'working_hours' => $job['working_hours'] ?? null,
-                    'description' => $job['description'],
-                    'requirements' => $this->generateRequirements($index),
                     'application_email' => 'careers@mustaqbal.af',
                     'application_url' => $index % 5 === 0 ? 'https://forms.example.com/apply-' . ($index + 1) : null,
                     'deadline' => now()->addDays(random_int(14, 90))->toDateString(),
                     'is_active' => true,
                 ]);
+
+            $jobModel->syncDefaultTranslation([
+                'title' => $job['title'],
+                'department' => $job['department'],
+                'description' => $job['description'],
+                'requirements' => $this->generateRequirements($index),
+            ]);
         }
 
         foreach (self::CLOSED_JOBS as $index => $job) {
-            Job::factory()
+            $jobModel = Job::factory()
                 ->inactive()
                 ->withTitle($job['title'])
-                ->withDepartment($job['department'])
                 ->withCategory($job['category'])
                 ->create([
                     'user_id' => $author->id,
                     'employment_type' => $job['employment_type'],
                     'working_hours' => $job['working_hours'] ?? null,
-                    'description' => $job['description'],
-                    'requirements' => $this->generateRequirements($index),
                     'application_email' => 'careers@mustaqbal.af',
                     'application_url' => null,
                 ]);
+
+            $jobModel->syncDefaultTranslation([
+                'title' => $job['title'],
+                'department' => $job['department'],
+                'description' => $job['description'],
+                'requirements' => $this->generateRequirements($index),
+            ]);
         }
     }
 

@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\HomeSectionType;
 use App\Models\HomeSection;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 /**
@@ -24,7 +25,6 @@ class HomeSectionFactory extends Factory
     {
         return [
             'section_type' => HomeSectionType::Banner->value,
-            'title' => null,
             'config' => [
                 'heading' => Str::title(trim(fake()->words(3, true))),
                 'body' => fake()->sentence(12),
@@ -37,6 +37,29 @@ class HomeSectionFactory extends Factory
             'sort_order' => fake()->numberBetween(0, 10),
             'is_active' => true,
         ];
+    }
+
+    /**
+     * The authored heading/body/cta_label are authored inside `config` by
+     * convenience, but are stored as translations. Move them out on create and
+     * keep only the shared settings on the parent config.
+     */
+    public function configure(): static
+    {
+        return $this->afterCreating(function (HomeSection $section): void {
+            $config = $section->config ?? [];
+            $localized = Arr::only($config, ['heading', 'body', 'cta_label']);
+
+            if ($localized === []) {
+                return;
+            }
+
+            $section->forceFill([
+                'config' => Arr::except($config, ['heading', 'body', 'cta_label']),
+            ])->save();
+
+            $section->syncDefaultTranslation($localized);
+        });
     }
 
     /**

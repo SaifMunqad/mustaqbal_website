@@ -23,26 +23,8 @@ class JobFactory extends Factory
 
         return [
             'user_id' => User::factory(),
-            'title' => $title,
             'slug' => Str::slug($title) . '-' . Str::lower(Str::random(6)),
-            'department' => fake()->randomElement([
-                'Academic',
-                'Administration',
-                'IT & Technology',
-                'Finance',
-                'Human Resources',
-                'Facilities',
-                'Library',
-                'Counseling',
-            ]),
             'category' => fake()->randomElement(['school', 'course', 'islamic_madrasa']),
-            'description' => implode("\n\n", fake()->paragraphs(random_int(2, 3))),
-            'requirements' => implode("\n", [
-                '- ' . fake()->sentence(6),
-                '- ' . fake()->sentence(5),
-                '- ' . fake()->sentence(7),
-                '- ' . fake()->sentence(4),
-            ]),
             'employment_type' => fake()->randomElement(['full_time', 'part_time', 'contract']),
             'working_hours' => fake()->randomElement([
                 '8:00 AM - 12:00 PM',
@@ -57,6 +39,32 @@ class JobFactory extends Factory
         ];
     }
 
+    /**
+     * Localized text lives in `job_translations`. Give every factory-created job
+     * a default-language row (no-op when no default language exists).
+     */
+    public function configure(): static
+    {
+        return $this->afterCreating(function (Job $job): void {
+            $job->syncDefaultTranslation([
+                'title' => Str::title(trim(fake()->words(random_int(2, 4), true))),
+                'department' => fake()->randomElement([
+                    'Academic',
+                    'Administration',
+                    'IT & Technology',
+                    'Finance',
+                    'Human Resources',
+                ]),
+                'description' => implode("\n\n", fake()->paragraphs(random_int(2, 3))),
+                'requirements' => implode("\n", [
+                    '- ' . fake()->sentence(6),
+                    '- ' . fake()->sentence(5),
+                    '- ' . fake()->sentence(7),
+                ]),
+            ]);
+        });
+    }
+
     public function inactive(): static
     {
         return $this->state(fn (array $attributes) => [
@@ -65,18 +73,14 @@ class JobFactory extends Factory
         ]);
     }
 
+    /**
+     * Fix the slug to a realistic title (the localized title itself is written
+     * to the default-language translation by the caller/seeder).
+     */
     public function withTitle(string $title): static
     {
         return $this->state(fn (array $attributes) => [
-            'title' => $title,
             'slug' => Str::slug($title) . '-' . Str::lower(Str::random(6)),
-        ]);
-    }
-
-    public function withDepartment(string $department): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'department' => $department,
         ]);
     }
 

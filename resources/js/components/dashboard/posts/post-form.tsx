@@ -7,11 +7,16 @@ import {
 } from '@heroicons/react/24/outline';
 import { Form } from '@inertiajs/react';
 import { useState } from 'react';
-import DocumentFrame from '@/components/editor/document-frame';
 import { CheckboxField, SelectField, TextField } from '@/components/form-fields';
 import FormSection from '@/components/form/form-section';
 import { GalleryUploadField } from '@/components/form/image-upload-field';
 import StickyFormFooter from '@/components/form/sticky-form-footer';
+import LanguageTabsEditor, {
+    type TranslatableField,
+    type TranslationValues,
+} from '@/components/language-tabs-editor';
+
+export type { TranslationValues } from '@/components/language-tabs-editor';
 
 export interface PostUserOption {
     id: number;
@@ -61,7 +66,26 @@ interface PostFormProps {
     toastOnError: (errors: Record<string, string>) => void;
     // Present on edit; absent on create so fields render empty and defaults apply.
     post?: Post;
+    // Existing per-language content, seeded into the localized editor on edit.
+    translations?: TranslationValues;
 }
+
+// Localized inputs rendered once per active language (default language required).
+const translatableFields: TranslatableField[] = [
+    {
+        name: 'title',
+        label: 'Title',
+        type: 'text',
+        placeholder: 'Post title',
+        maxLength: 255,
+    },
+    {
+        name: 'content',
+        label: 'Post content',
+        type: 'richtext',
+        placeholder: 'Write your post here...',
+    },
+];
 
 /**
  * Shared create/edit form for community posts. Type-driven conditional fields
@@ -76,9 +100,9 @@ export default function PostForm({
     postTypes,
     toastOnError,
     post,
+    translations,
 }: PostFormProps) {
     const isEdit = Boolean(post);
-    const [content, setContent] = useState(post?.content ?? '');
     const [images, setImages] = useState<string[]>(
         (post?.images ?? []).filter(Boolean),
     );
@@ -119,25 +143,18 @@ export default function PostForm({
                                     options={visibilityOptions}
                                     error={errors.visibility}
                                 />
-                                <TextField
-                                    label="Title"
-                                    name="title"
-                                    required
-                                    defaultValue={post?.title ?? ''}
-                                    placeholder="Post title"
-                                    className="text-base md:col-span-2"
-                                    error={errors.title}
-                                />
                             </FormSection>
 
-                            <DocumentFrame
-                                title="Post content"
-                                description={isEdit ? 'Make changes while previewing the final layout.' : 'Draft the post and preview the final layout.'}
-                                body={content}
-                                onBodyChange={setContent}
-                                bodyName="content"
-                                bodyLabel="Post content"
-                            />
+                            <FormSection
+                                title="Content"
+                                description="Add the title and body for each language. The starred language is required and used as the fallback."
+                                icon={<DocumentTextIcon className="size-5" />}
+                            >
+                                <LanguageTabsEditor
+                                    fields={translatableFields}
+                                    translations={translations}
+                                />
+                            </FormSection>
 
                             <FormSection
                                 title="Images"

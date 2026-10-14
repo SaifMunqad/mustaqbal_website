@@ -2,18 +2,20 @@ import DashboardPage from '@/components/dashboard/dashboard-page';
 import BookForm, {
     type BookCategoryOption,
     type BookDetail,
+    type TranslationValues,
 } from '@/components/dashboard/books/book-form';
 import { useFormToast } from '@/components/use-form-toast';
 import { usePage } from '@inertiajs/react';
 
 interface BookEditProps {
     book: BookDetail;
+    translations: TranslationValues;
     categories: BookCategoryOption[];
     [key: string]: unknown;
 }
 
 export default function DashboardBooksEdit() {
-    const { book, categories } = usePage<BookEditProps>().props;
+    const { book, translations, categories } = usePage<BookEditProps>().props;
     const { onError } = useFormToast('Book updated successfully.');
 
     return (
@@ -24,6 +26,7 @@ export default function DashboardBooksEdit() {
                 submitLabel="Update book"
                 categories={categories}
                 book={book}
+                translations={translations}
                 deleteUrl={`/dashboard/books/${book.id}`}
                 toastOnError={onError}
             />

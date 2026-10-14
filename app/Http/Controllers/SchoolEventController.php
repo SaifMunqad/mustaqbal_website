@@ -13,14 +13,14 @@ class SchoolEventController extends Controller
     {
         $events = Event::query()
             ->visibleTo($request->user())
-            ->with('author:id,name')
+            ->with(['author:id,name', 'translations.language'])
             ->orderBy('start_at')
             ->paginate(12);
 
         $upcoming = Event::query()
             ->visibleTo($request->user())
             ->upcoming()
-            ->with('author:id,name')
+            ->with(['author:id,name', 'translations.language'])
             ->limit(5)
             ->get();
 
@@ -37,12 +37,13 @@ class SchoolEventController extends Controller
             404
         );
 
-        $event->load('author:id,name');
+        $event->load(['author:id,name', 'translations.language']);
 
         $related = Event::query()
             ->visibleTo($request->user())
             ->whereKeyNot($event->id)
             ->upcoming()
+            ->with('translations.language')
             ->limit(3)
             ->get();
 

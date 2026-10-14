@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\EventAudience;
 use App\Enums\EventStatus;
 use App\Enums\UserRole;
+use App\Support\Translation\HasTranslations;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,22 +14,56 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Event extends Model
 {
     use HasFactory;
+    use HasTranslations;
+
+    /**
+     * Localized text now lives in `event_translations`; these accessors resolve
+     * it for the active locale (falling back through the shared chain) and are
+     * appended so serialized events keep the same shape the frontend expects.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = ['title', 'excerpt', 'body', 'location'];
 
     protected $fillable = [
         'user_id',
-        'title',
         'slug',
-        'excerpt',
-        'body',
         'cover_image',
         'images',
-        'location',
         'start_at',
         'end_at',
         'audience',
         'is_cancelled',
         'is_published',
     ];
+
+    /**
+     * @return list<string>
+     */
+    public function translatedAttributes(): array
+    {
+        return ['title', 'excerpt', 'body', 'location'];
+    }
+
+    public function getTitleAttribute(): ?string
+    {
+        return $this->translated('title');
+    }
+
+    public function getExcerptAttribute(): ?string
+    {
+        return $this->translated('excerpt');
+    }
+
+    public function getBodyAttribute(): ?string
+    {
+        return $this->translated('body');
+    }
+
+    public function getLocationAttribute(): ?string
+    {
+        return $this->translated('location');
+    }
 
     protected function casts(): array
     {
@@ -105,5 +140,28 @@ class Event extends Model
                 ->whereNull('end_at')
                 ->orWhere('end_at', '>=', now()))
             ->orderBy('start_at');
+    }
+
+    /**
+     * Localized text search over the reader's-language translation rows.
+     */
+    public function scopeSearch(Builder $query, ?string $term, ?string $locale = null): Builder
+    {
+        $term = trim((string) $term);
+
+        if ($term === '') {
+            return $query;
+        }
+
+        $locale = $locale ?? app()->getLocale();
+
+        return $query->whereHas('translations', function (Builder $translation) use ($term, $locale): void {
+            $translation
+                ->whereHas('language', fn (Builder $language): Builder => $language->where('code', $locale))
+                ->where(fn (Builder $inner): Builder => $inner
+                    ->where('title', 'like', "%{$term}%")
+                    ->orWhere('excerpt', 'like', "%{$term}%")
+                    ->orWhere('body', 'like', "%{$term}%"));
+        });
     }
 }

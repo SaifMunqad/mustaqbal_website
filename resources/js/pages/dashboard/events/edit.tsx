@@ -2,12 +2,14 @@ import DashboardPage from '@/components/dashboard/dashboard-page';
 import EventForm, {
     type EventDetail,
     type EventOption,
+    type TranslationValues,
 } from '@/components/dashboard/events/event-form';
 import { useFormToast } from '@/components/use-form-toast';
 import { usePage } from '@inertiajs/react';
 
 interface EventEditProps {
     event: EventDetail;
+    translations: TranslationValues;
     audienceOptions: EventOption[];
     canPublish: boolean;
     canDelete: boolean;
@@ -15,7 +17,7 @@ interface EventEditProps {
 }
 
 export default function DashboardEventsEdit() {
-    const { event, audienceOptions, canPublish, canDelete } =
+    const { event, translations, audienceOptions, canPublish, canDelete } =
         usePage<EventEditProps>().props;
     const { onError } = useFormToast('Event updated successfully.');
 
@@ -29,6 +31,7 @@ export default function DashboardEventsEdit() {
                 audienceOptions={audienceOptions}
                 canPublish={canPublish}
                 event={event}
+                translations={translations}
                 canDelete={canDelete}
                 deleteUrl={`/dashboard/events/${event.id}`}
                 toastOnError={onError}

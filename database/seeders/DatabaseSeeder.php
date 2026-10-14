@@ -81,21 +81,20 @@ class DatabaseSeeder extends Seeder
         // dedicated seeder so it is easy to extend.
         $this->call(AboutPageSeeder::class);
 
-        SitePage::updateOrCreate(
+        $programsPage = SitePage::updateOrCreate(
             ['slug' => 'programs'],
             [
-                'title' => 'Programs at Mustaqbal School',
                 'content' => [
                     'intro' => 'We offer school, courses, and Islamic Madrasa programs for different age groups.',
                 ],
                 'is_published' => true,
             ],
         );
+        $programsPage->syncDefaultTranslation(['title' => 'Programs at Mustaqbal School']);
 
-        SitePage::updateOrCreate(
+        $contactPage = SitePage::updateOrCreate(
             ['slug' => 'contact'],
             [
-                'title' => 'Contact Mustaqbal School',
                 'content' => [
                     'phone_numbers' => ['+93 700 000 001', '+93 799 000 001'],
                     'email' => 'info@mustaqbal.af',
@@ -105,6 +104,7 @@ class DatabaseSeeder extends Seeder
                 'is_published' => true,
             ],
         );
+        $contactPage->syncDefaultTranslation(['title' => 'Contact Mustaqbal School']);
 
         $programs = [
             [

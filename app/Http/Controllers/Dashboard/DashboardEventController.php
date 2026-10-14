@@ -6,8 +6,10 @@ use App\Enums\EventAudience;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Support\Rules\ImageLocation;
+use App\Support\Translation\TranslationPayload;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -15,13 +17,16 @@ use Inertia\Response;
 
 class DashboardEventController extends Controller
 {
+    /**
+     * @var list<string>
+     */
+    private const TRANSLATED = ['title', 'excerpt', 'body', 'location'];
+
     public function index(Request $request): Response
     {
         $events = Event::query()
-            ->with('author:id,name')
-            ->when($request->string('search')->toString(), function ($query, string $search): void {
-                $query->where('title', 'like', "%{$search}%");
-            })
+            ->with(['author:id,name', 'translations.language'])
+            ->search($request->string('search')->toString())
             ->orderByDesc('start_at')
             ->paginate(15)
             ->through(fn (Event $event): array => [
@@ -53,19 +58,24 @@ class DashboardEventController extends Controller
     {
         $this->authorize('create', Event::class);
 
-        $validated = $this->validateEvent($request);
+        $request->validate($this->rules());
+
+        $payload = TranslationPayload::extract($request, self::TRANSLATED);
+        $defaultTitle = TranslationPayload::defaultAttributes($payload)['title'] ?? '';
 
         $canPublish = $request->user()->can('publish', Event::class);
-        $isPublished = $canPublish && ! empty($validated['is_published']);
+        $isPublished = $canPublish && ! empty($request->input('is_published'));
 
-        Event::query()->create([
-            ...$validated,
-            'images' => $this->cleanImages($validated['images'] ?? []),
-            'slug' => Str::slug($validated['title']).'-'.Str::lower(Str::random(4)),
+        $event = Event::query()->create([
+            ...Arr::only($request->only($this->parentFields()), $this->parentFields()),
+            'images' => $this->cleanImages((array) $request->input('images', [])),
+            'slug' => Str::slug($defaultTitle).'-'.Str::lower(Str::random(4)),
             'user_id' => $request->user()->id,
             'is_published' => $isPublished,
-            'is_cancelled' => (bool) ($validated['is_cancelled'] ?? false),
+            'is_cancelled' => (bool) $request->input('is_cancelled'),
         ]);
+
+        TranslationPayload::apply($event->translations(), $payload);
 
         return redirect()
             ->route('dashboard.events.index')
@@ -76,8 +86,11 @@ class DashboardEventController extends Controller
     {
         $this->authorize('update', $event);
 
+        $event->load(['translations.language']);
+
         return Inertia::render('dashboard/events/edit', [
             'event' => $event,
+            'translations' => $this->existingTranslations($event),
             'audienceOptions' => $this->audienceOptions(),
             'canPublish' => $request->user()->can('publish', Event::class),
             'canDelete' => $request->user()->can('delete', $event),
@@ -88,16 +101,18 @@ class DashboardEventController extends Controller
     {
         $this->authorize('update', $event);
 
-        $validated = $this->validateEvent($request);
+        $request->validate($this->rules());
 
         $canPublish = $request->user()->can('publish', Event::class);
 
         $event->update([
-            ...$validated,
-            'images' => $this->cleanImages($validated['images'] ?? []),
-            'is_published' => $canPublish ? ! empty($validated['is_published']) : $event->is_published,
-            'is_cancelled' => (bool) ($validated['is_cancelled'] ?? false),
+            ...Arr::only($request->only($this->parentFields()), $this->parentFields()),
+            'images' => $this->cleanImages((array) $request->input('images', [])),
+            'is_published' => $canPublish ? ! empty($request->input('is_published')) : $event->is_published,
+            'is_cancelled' => (bool) $request->input('is_cancelled'),
         ]);
+
+        TranslationPayload::apply($event->translations(), TranslationPayload::extract($request, self::TRANSLATED));
 
         return redirect()
             ->route('dashboard.events.index')
@@ -116,24 +131,37 @@ class DashboardEventController extends Controller
     }
 
     /**
+     * Non-translatable parent columns submitted by the form.
+     *
+     * @return list<string>
+     */
+    private function parentFields(): array
+    {
+        return ['cover_image', 'images', 'start_at', 'end_at', 'audience', 'is_cancelled', 'is_published'];
+    }
+
+    /**
+     * Parent-field rules combined with every active language's localized fields.
+     *
      * @return array<string, mixed>
      */
-    private function validateEvent(Request $request): array
+    private function rules(): array
     {
-        return $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'excerpt' => ['nullable', 'string', 'max:1000'],
-            'body' => ['nullable', 'string'],
+        return array_merge([
             'cover_image' => ['nullable', new ImageLocation, 'max:2048'],
             'images' => ['nullable', 'array'],
             'images.*' => ['nullable', new ImageLocation, 'max:2048'],
-            'location' => ['nullable', 'string', 'max:255'],
             'start_at' => ['required', 'date'],
             'end_at' => ['nullable', 'date', 'after_or_equal:start_at'],
             'audience' => ['required', Rule::in(EventAudience::values())],
             'is_cancelled' => ['nullable', 'boolean'],
             'is_published' => ['nullable', 'boolean'],
-        ]);
+        ], TranslationPayload::rules(self::TRANSLATED, [
+            'title' => ['string', 'max:255'],
+            'excerpt' => ['string', 'max:1000'],
+            'body' => ['string'],
+            'location' => ['string', 'max:255'],
+        ], ['title']));
     }
 
     /**
@@ -158,5 +186,23 @@ class DashboardEventController extends Controller
     private function cleanImages(array $images): array
     {
         return array_values(array_filter($images, static fn ($image) => filled($image)));
+    }
+
+    /**
+     * @return array<string, array<string, string>>
+     */
+    private function existingTranslations(Event $event): array
+    {
+        return $event->translations
+            ->filter(fn ($translation) => $translation->language)
+            ->mapWithKeys(fn ($translation): array => [
+                $translation->language->code => [
+                    'title' => (string) $translation->title,
+                    'excerpt' => (string) $translation->excerpt,
+                    'body' => (string) $translation->body,
+                    'location' => (string) $translation->location,
+                ],
+            ])
+            ->all();
     }
 }

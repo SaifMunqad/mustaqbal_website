@@ -11,7 +11,11 @@ class SchoolPageController extends Controller
 {
     public function about(): Response
     {
-        $page = SitePage::query()->where('slug', 'about')->where('is_published', true)->first();
+        $page = SitePage::query()
+            ->with('translations.language')
+            ->where('slug', 'about')
+            ->where('is_published', true)
+            ->first();
 
         return Inertia::render('school/about/index', [
             'page' => $page,
@@ -22,7 +26,11 @@ class SchoolPageController extends Controller
     {
         $locale = app()->getLocale();
 
-        $page = SitePage::query()->where('slug', 'programs')->where('is_published', true)->first();
+        $page = SitePage::query()
+            ->with('translations.language')
+            ->where('slug', 'programs')
+            ->where('is_published', true)
+            ->first();
 
         $programs = Program::query()
             ->with(['translations.language', 'typeTranslations.language'])
@@ -50,7 +58,11 @@ class SchoolPageController extends Controller
 
     public function contact(): Response
     {
-        $page = SitePage::query()->where('slug', 'contact')->where('is_published', true)->first();
+        $page = SitePage::query()
+            ->with('translations.language')
+            ->where('slug', 'contact')
+            ->where('is_published', true)
+            ->first();
 
         return Inertia::render('school/contact/index', [
             'page' => $page,

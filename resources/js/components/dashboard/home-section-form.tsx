@@ -1,19 +1,18 @@
 import FormSection from '@/components/form/form-section';
 import StickyFormFooter from '@/components/form/sticky-form-footer';
-import {
-    CheckboxField,
-    SelectField,
-    TextAreaField,
-    TextField,
-} from '@/components/form-fields';
+import { CheckboxField, SelectField, TextField } from '@/components/form-fields';
 import { ImageUploadField } from '@/components/form/image-upload-field';
+import LanguageTabsEditor, {
+    type TranslatableField,
+    type TranslationValues,
+} from '@/components/language-tabs-editor';
 import { Button } from '@/components/ui/button';
 import { router, useForm } from '@inertiajs/react';
 import {
     CircleStackIcon,
+    DocumentTextIcon,
     PhotoIcon,
     RectangleStackIcon,
-    SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
 
@@ -28,20 +27,39 @@ export interface AvailableItem {
     label: string;
 }
 
+// The localized fields rendered per language. Curated sections only carry a
+// section title; authored blocks also have heading / body / button label.
+const titleField: TranslatableField = {
+    name: 'title',
+    label: 'Section heading (optional)',
+    type: 'text',
+    hint: 'Shown above this block on the home page.',
+    required: false,
+};
+
+const authoredFields: TranslatableField[] = [
+    titleField,
+    { name: 'heading', label: 'Heading', type: 'text', required: false },
+    { name: 'body', label: 'Body', type: 'textarea', rows: 4, required: false },
+    { name: 'cta_label', label: 'Button label', type: 'text', required: false },
+];
+
+const curatedFields: TranslatableField[] = [titleField];
+
+// Parent (non-localized) config shape persisted on the row.
+interface HomeSectionParentConfig {
+    item_ids: number[];
+    image_url: string;
+    cta_url: string;
+    tone: string;
+}
+
 export interface HomeSectionFormData {
     section_type: string;
-    title: string;
     limit: string;
     is_active: boolean;
-    config: {
-        item_ids: number[];
-        heading: string;
-        body: string;
-        image_url: string;
-        cta_label: string;
-        cta_url: string;
-        tone: string;
-    };
+    config: HomeSectionParentConfig;
+    translations: TranslationValues;
 }
 
 interface HomeSectionFormProps {
@@ -51,17 +69,17 @@ interface HomeSectionFormProps {
     cancelHref: string;
     typeOptions: TypeOption[];
     availableItems: Record<string, AvailableItem[]>;
-    initial: Partial<HomeSectionFormData> & { config?: Partial<HomeSectionFormData['config']> };
+    initial: Partial<HomeSectionFormData>;
     deleteUrl?: string;
     toastOnError?: (errors: Record<string, unknown>) => void;
 }
 
-const toneOptions: TypeOption[] = [
-    { value: 'default', label: 'Default', kind: 'authored' },
-    { value: 'blue', label: 'Blue', kind: 'authored' },
-    { value: 'green', label: 'Green', kind: 'authored' },
-    { value: 'amber', label: 'Amber', kind: 'authored' },
-    { value: 'red', label: 'Red', kind: 'authored' },
+const toneOptions = [
+    { value: 'default', label: 'Default' },
+    { value: 'blue', label: 'Blue' },
+    { value: 'green', label: 'Green' },
+    { value: 'amber', label: 'Amber' },
+    { value: 'red', label: 'Red' },
 ];
 
 function mergeInitial(
@@ -69,18 +87,15 @@ function mergeInitial(
 ): HomeSectionFormData {
     return {
         section_type: initial.section_type ?? 'articles',
-        title: initial.title ?? '',
         limit: initial.limit != null ? String(initial.limit) : '',
         is_active: initial.is_active ?? true,
         config: {
             item_ids: initial.config?.item_ids ?? [],
-            heading: initial.config?.heading ?? '',
-            body: initial.config?.body ?? '',
             image_url: initial.config?.image_url ?? '',
-            cta_label: initial.config?.cta_label ?? '',
             cta_url: initial.config?.cta_url ?? '',
             tone: initial.config?.tone ?? 'default',
         },
+        translations: initial.translations ?? {},
     };
 }
 
@@ -106,6 +121,10 @@ export default function HomeSectionForm({
     const handleTypeChange = (value: string) => {
         setSelectedType(value);
         form.setData((data) => ({ ...data, section_type: value }));
+    };
+
+    const setConfig = (patch: Partial<HomeSectionParentConfig>) => {
+        form.setData((data) => ({ ...data, config: { ...data.config, ...patch } }));
     };
 
     const toggleItem = (id: number) => {
@@ -149,15 +168,6 @@ export default function HomeSectionForm({
                                     ? 'Curated: references live content and stays in sync with its source.'
                                     : 'Home-only: create content that appears only on the home page.'
                             }
-                        />
-
-                        <TextField
-                            label="Section heading (optional)"
-                            name="title"
-                            value={form.data.title}
-                            onChange={(event) => form.setData('title', event.target.value)}
-                            error={form.errors.title}
-                            hint="Shown above this block on the home page."
                         />
                     </FormSection>
 
@@ -203,86 +213,45 @@ export default function HomeSectionForm({
                             )}
                         </FormSection>
                     ) : (
-                        <>
-                            <FormSection
-                                title="Content"
-                                icon={<SparklesIcon className="size-5" />}
-                            >
-                                <TextField
-                                    label="Heading"
-                                    name="config.heading"
-                                    value={form.data.config.heading}
-                                    onChange={(event) =>
-                                        form.setData((data) => ({
-                                            ...data,
-                                            config: { ...data.config, heading: event.target.value },
-                                        }))
-                                    }
-                                    error={form.errors['config.heading']}
+                        <FormSection
+                            title="Media & call to action"
+                            description="Shared across all languages. Translate the button label in the content section below."
+                            icon={<PhotoIcon className="size-5" />}
+                            columns={2}
+                        >
+                            <div className="md:col-span-2">
+                                <ImageUploadField
+                                    label="Image"
+                                    name="image_url"
+                                    value={form.data.config.image_url}
+                                    onChange={(value) => setConfig({ image_url: value })}
+                                    error={form.errors['config.image_url']}
                                 />
-                                <TextAreaField
-                                    label="Body"
-                                    name="config.body"
-                                    className="h-28"
-                                    value={form.data.config.body}
-                                    onChange={(event) =>
-                                        form.setData((data) => ({
-                                            ...data,
-                                            config: { ...data.config, body: event.target.value },
-                                        }))
-                                    }
-                                    error={form.errors['config.body']}
-                                />
-                            </FormSection>
-
-                            <FormSection
-                                title="Media & call to action"
-                                icon={<PhotoIcon className="size-5" />}
-                                columns={2}
-                            >
-                                <div className="md:col-span-2">
-                                    <ImageUploadField
-                                        label="Image"
-                                        name="config.image_url"
-                                        value={form.data.config.image_url}
-                                        onChange={(value) =>
-                                            form.setData((data) => ({
-                                                ...data,
-                                                config: { ...data.config, image_url: value },
-                                            }))
-                                        }
-                                        error={form.errors['config.image_url']}
-                                    />
-                                </div>
-                                <TextField
-                                    label="Button label"
-                                    name="config.cta_label"
-                                    value={form.data.config.cta_label}
-                                    onChange={(event) =>
-                                        form.setData((data) => ({
-                                            ...data,
-                                            config: { ...data.config, cta_label: event.target.value },
-                                        }))
-                                    }
-                                    error={form.errors['config.cta_label']}
-                                />
-                                <TextField
-                                    label="Button link"
-                                    name="config.cta_url"
-                                    placeholder="/school/programs"
-                                    value={form.data.config.cta_url}
-                                    onChange={(event) =>
-                                        form.setData((data) => ({
-                                            ...data,
-                                            config: { ...data.config, cta_url: event.target.value },
-                                        }))
-                                    }
-                                    error={form.errors['config.cta_url']}
-                                    hint="Relative path or full URL."
-                                />
-                            </FormSection>
-                        </>
+                            </div>
+                            <TextField
+                                label="Button link"
+                                name="cta_url"
+                                placeholder="/school/programs"
+                                value={form.data.config.cta_url}
+                                onChange={(event) => setConfig({ cta_url: event.target.value })}
+                                error={form.errors['config.cta_url']}
+                                hint="Relative path or full URL."
+                            />
+                        </FormSection>
                     )}
+
+                    <FormSection
+                        title="Localized content"
+                        description="Add this block's text for each language. The starred language is the fallback."
+                        icon={<DocumentTextIcon className="size-5" />}
+                    >
+                        <LanguageTabsEditor
+                            key={isCurated ? 'curated' : 'authored'}
+                            fields={isCurated ? curatedFields : authoredFields}
+                            translations={form.data.translations}
+                            onChange={(next) => form.setData('translations', next)}
+                        />
+                    </FormSection>
                 </div>
 
                 <aside className="space-y-4">
@@ -292,13 +261,8 @@ export default function HomeSectionForm({
                                 label="Tone"
                                 name="tone"
                                 defaultValue={form.data.config.tone}
-                                options={toneOptions.map(({ value, label }) => ({ value, label }))}
-                                onChange={(value) =>
-                                    form.setData((data) => ({
-                                        ...data,
-                                        config: { ...data.config, tone: value },
-                                    }))
-                                }
+                                options={toneOptions}
+                                onChange={(value) => setConfig({ tone: value })}
                                 error={form.errors['config.tone']}
                             />
                         ) : null}

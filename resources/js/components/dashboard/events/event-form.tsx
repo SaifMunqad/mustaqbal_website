@@ -1,13 +1,11 @@
 import {
     CalendarIcon,
     DocumentTextIcon,
-    MapPinIcon,
     PhotoIcon,
     RocketLaunchIcon,
 } from '@heroicons/react/24/outline';
 import { Form, router } from '@inertiajs/react';
 import { useState } from 'react';
-import DocumentFrame from '@/components/editor/document-frame';
 import { CheckboxField, SelectField, TextField } from '@/components/form-fields';
 import ConfirmDialog from '@/components/form/confirm-dialog';
 import FormSection from '@/components/form/form-section';
@@ -16,7 +14,13 @@ import {
     ImageUploadField,
 } from '@/components/form/image-upload-field';
 import StickyFormFooter from '@/components/form/sticky-form-footer';
+import LanguageTabsEditor, {
+    type TranslatableField,
+    type TranslationValues,
+} from '@/components/language-tabs-editor';
 import { Button } from '@/components/ui/button';
+
+export type { TranslationValues } from '@/components/language-tabs-editor';
 
 export interface EventOption {
     value: string;
@@ -52,10 +56,32 @@ interface EventFormProps {
     toastOnError: (errors: Record<string, string>) => void;
     // Present on edit; absent on create so fields render empty and defaults apply.
     event?: EventDetail;
+    // Existing per-language content, seeded into the localized editor on edit.
+    translations?: TranslationValues;
     // Edit-only: when true a destructive delete action is shown in the footer.
     canDelete?: boolean;
     deleteUrl?: string;
 }
+
+// Localized inputs rendered once per active language (default language required).
+const translatableFields: TranslatableField[] = [
+    { name: 'title', label: 'Event title', type: 'text', placeholder: 'Event title', maxLength: 255 },
+    {
+        name: 'excerpt',
+        label: 'Short summary',
+        type: 'text',
+        placeholder: 'Shown in event cards',
+        hint: 'Max 1000 characters',
+        maxLength: 1000,
+    },
+    { name: 'location', label: 'Location', type: 'text', placeholder: 'Location' },
+    {
+        name: 'body',
+        label: 'Event details',
+        type: 'richtext',
+        placeholder: 'Describe the event...',
+    },
+];
 
 /**
  * Shared create/edit form for events. The publishing block and a couple of
@@ -71,11 +97,11 @@ export default function EventForm({
     canPublish,
     toastOnError,
     event,
+    translations,
     canDelete,
     deleteUrl,
 }: EventFormProps) {
     const isEdit = Boolean(event);
-    const [body, setBody] = useState(event?.body ?? '');
     const [coverImage, setCoverImage] = useState(event?.cover_image ?? '');
     const [images, setImages] = useState<string[]>(
         (event?.images ?? []).filter(Boolean),
@@ -97,39 +123,15 @@ export default function EventForm({
                     <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
                         <div className="space-y-4">
                             <FormSection
-                                title="Event details"
-                                description={isEdit ? 'Update the title and short summary.' : 'Add a title and a short summary for listings.'}
+                                title="Localized content"
+                                description="Add the title, summary, location and details for each language. The starred language is required and used as the fallback."
                                 icon={<DocumentTextIcon className="size-5" />}
-                                columns={2}
                             >
-                                <TextField
-                                    label="Event title"
-                                    name="title"
-                                    required
-                                    defaultValue={event?.title ?? ''}
-                                    placeholder="Event title"
-                                    className="text-base md:col-span-2"
-                                    error={errors.title}
-                                />
-                                <TextField
-                                    label="Short summary"
-                                    name="excerpt"
-                                    defaultValue={event?.excerpt ?? ''}
-                                    placeholder="Shown in event cards"
-                                    className="md:col-span-2"
-                                    hint="Max 1000 characters"
-                                    maxLength={1000}
-                                    error={errors.excerpt}
+                                <LanguageTabsEditor
+                                    fields={translatableFields}
+                                    translations={translations}
                                 />
                             </FormSection>
-
-                            <DocumentFrame
-                                title="Event description"
-                                description={isEdit ? 'Update the details and preview how it reads.' : 'Describe the event and preview how it reads.'}
-                                body={body}
-                                onBodyChange={setBody}
-                                bodyLabel="Event details"
-                            />
 
                             <FormSection
                                 title="Media"
@@ -181,17 +183,6 @@ export default function EventForm({
                                     options={audienceOptions}
                                     error={errors.audience}
                                 />
-                                <div className="flex items-start gap-2">
-                                    <MapPinIcon className="mt-2 size-4 text-muted-foreground" aria-hidden="true" />
-                                    <TextField
-                                        label="Location"
-                                        name="location"
-                                        defaultValue={event?.location ?? ''}
-                                        placeholder="Location"
-                                        className="flex-1"
-                                        error={errors.location}
-                                    />
-                                </div>
                             </FormSection>
 
                             <FormSection

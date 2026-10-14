@@ -11,6 +11,7 @@ class SchoolJobController extends Controller
     public function index(): Response
     {
         $jobs = Job::query()
+            ->with('translations.language')
             ->active()
             ->get()
             ->map(fn (Job $job): array => $job->toCard());

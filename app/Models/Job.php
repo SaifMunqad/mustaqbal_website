@@ -6,21 +6,28 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Support\Translation\HasTranslations;
 
 class Job extends Model
 {
     use HasFactory;
+    use HasTranslations;
 
     protected $table = 'job_postings';
 
+    /**
+     * Localized text now lives in `job_translations`; these accessors resolve it
+     * for the active locale and are appended so serialized jobs keep the same
+     * shape the frontend expects.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = ['title', 'department', 'description', 'requirements'];
+
     protected $fillable = [
         'user_id',
-        'title',
         'slug',
-        'department',
         'category',
-        'description',
-        'requirements',
         'employment_type',
         'working_hours',
         'application_email',
@@ -35,6 +42,34 @@ class Job extends Model
             'deadline' => 'date',
             'is_active' => 'boolean',
         ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatedAttributes(): array
+    {
+        return ['title', 'department', 'description', 'requirements'];
+    }
+
+    public function getTitleAttribute(): ?string
+    {
+        return $this->translated('title');
+    }
+
+    public function getDepartmentAttribute(): ?string
+    {
+        return $this->translated('department');
+    }
+
+    public function getDescriptionAttribute(): ?string
+    {
+        return $this->translated('description');
+    }
+
+    public function getRequirementsAttribute(): ?string
+    {
+        return $this->translated('requirements');
     }
 
     public function author(): BelongsTo
@@ -90,5 +125,28 @@ class Job extends Model
                 ->whereNull('deadline')
                 ->orWhere('deadline', '>=', now()->toDateString()))
             ->orderByDesc('created_at');
+    }
+
+    /**
+     * Localized text search over the reader's-language translation rows.
+     */
+    public function scopeSearch(Builder $query, ?string $term, ?string $locale = null): Builder
+    {
+        $term = trim((string) $term);
+
+        if ($term === '') {
+            return $query;
+        }
+
+        $locale = $locale ?? app()->getLocale();
+
+        return $query->whereHas('translations', function (Builder $translation) use ($term, $locale): void {
+            $translation
+                ->whereHas('language', fn (Builder $language): Builder => $language->where('code', $locale))
+                ->where(fn (Builder $inner): Builder => $inner
+                    ->where('title', 'like', "%{$term}%")
+                    ->orWhere('department', 'like', "%{$term}%")
+                    ->orWhere('description', 'like', "%{$term}%"));
+        });
     }
 }

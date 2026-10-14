@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\BookCategory;
+use App\Support\Translation\TranslationPayload;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -20,12 +21,13 @@ class DashboardBookCategoryController extends Controller
     public function index(): Response
     {
         $categories = BookCategory::query()
+            ->with('translations.language')
             ->withCount('books')
             ->orderBy('name')
             ->paginate(20)
             ->through(fn (BookCategory $category): array => [
                 'id' => $category->id,
-                'name' => $category->name,
+                'name' => $category->translatedName(),
                 'slug' => $category->slug,
                 'books_count' => $category->books_count,
             ]);
@@ -47,11 +49,12 @@ class DashboardBookCategoryController extends Controller
     {
         $validated = $this->validateCategory($request);
 
-        BookCategory::query()->create([
+        $category = BookCategory::query()->create([
             'name' => $validated['name'],
             'slug' => $this->uniqueSlug($validated['name']),
-            'name_translations' => $this->buildTranslations($request),
         ]);
+
+        $this->syncTranslations($category, $request);
 
         return redirect()
             ->route('dashboard.categories.index')
@@ -60,8 +63,22 @@ class DashboardBookCategoryController extends Controller
 
     public function edit(BookCategory $category): Response
     {
+        $category->load(['translations.language']);
+
         return Inertia::render('dashboard/categories/edit', [
-            'category' => $category,
+            // `name_translations` is presented to the flat-field editor as the
+            // existing per-locale map, sourced from the translation rows.
+            'category' => [
+                'id' => $category->id,
+                'name' => $category->name,
+                'slug' => $category->slug,
+                'name_translations' => $category->translations
+                    ->mapWithKeys(fn ($translation): array => [
+                        $translation->language?->code => (string) $translation->name,
+                    ])
+                    ->filter(fn ($value, $code): bool => filled($code))
+                    ->all(),
+            ],
             'translationLocales' => $this->translationLocales,
         ]);
     }
@@ -70,10 +87,9 @@ class DashboardBookCategoryController extends Controller
     {
         $validated = $this->validateCategory($request);
 
-        $category->update([
-            'name' => $validated['name'],
-            'name_translations' => $this->buildTranslations($request),
-        ]);
+        $category->update(['name' => $validated['name']]);
+
+        $this->syncTranslations($category, $request);
 
         return redirect()
             ->route('dashboard.categories.index')
@@ -97,21 +113,22 @@ class DashboardBookCategoryController extends Controller
     }
 
     /**
-     * @return array<string, string>
+     * Persist the flat `name_{locale}` inputs into translation rows (the parent
+     * `name` stays the default-language source of truth).
      */
-    private function buildTranslations(Request $request): array
+    private function syncTranslations(BookCategory $category, Request $request): void
     {
-        $translations = [];
+        $payload = [];
 
         foreach ($this->translationLocales as $locale) {
             $value = $request->input("name_$locale");
 
             if (filled($value)) {
-                $translations[$locale] = trim((string) $value);
+                $payload[$locale] = ['name' => trim((string) $value)];
             }
         }
 
-        return $translations;
+        TranslationPayload::apply($category->translations(), $payload);
     }
 
     private function uniqueSlug(string $name): string
