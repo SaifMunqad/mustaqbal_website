@@ -22,6 +22,18 @@ interface RevealProps {
     defaultInView?: boolean;
     /** Distance in px the element travels for up/down directions. */
     distance?: number;
+    /**
+     * Fraction of the element visible before it reveals (0–1). Defaults to 0
+     * so timing is set by `rootMargin` and stays consistent for both small
+     * cards and tall sections.
+     */
+    threshold?: number;
+    /**
+     * IntersectionObserver root margin. The negative bottom value controls
+     * how far above the viewport bottom the element must rise to reveal, e.g.
+     * '0px 0px -10% 0px' ≈ reveal when ~10% has entered.
+     */
+    rootMargin?: string;
     className?: string;
     children?: ReactNode;
 }
@@ -53,12 +65,16 @@ export function Reveal({
     once = true,
     defaultInView = false,
     distance = 24,
+    threshold = 0,
+    rootMargin = '0px 0px -5% 0px',
     className,
     children,
 }: RevealProps) {
     const { ref, inView } = useInView<HTMLElement>({
         once,
         initial: defaultInView,
+        threshold,
+        rootMargin,
     });
 
     const visible = defaultInView || inView;

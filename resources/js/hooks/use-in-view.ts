@@ -1,9 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 
 interface UseInViewOptions {
-    /** Fraction of the element that must be visible before triggering (0–1). */
+    /**
+     * Fraction of the element that must be visible before triggering (0–1).
+     * Defaults to 0 so the trigger is driven purely by `rootMargin`: this
+     * keeps the reveal timing consistent regardless of how tall the wrapped
+     * element is. A fractional threshold compounds with `rootMargin` and
+     * delays tall sections until ~half of them scroll in.
+     */
     threshold?: number;
-    /** Offset around the root bounds, e.g. '0px 0px -10% 0px'. */
+    /**
+     * Offset around the root bounds. A negative bottom margin (e.g.
+     * '0px 0px -10% 0px') reveals only once the element has risen ~10% above
+     * the bottom edge; tune the percentage to reveal earlier/later.
+     */
     rootMargin?: string;
     /** Stop observing once the element has been revealed. */
     once?: boolean;
@@ -33,7 +43,7 @@ function canAnimate(): boolean {
  * setting change is picked up on the next mount.
  */
 export function useInView<T extends HTMLElement = HTMLDivElement>({
-    threshold = 0.1,
+    threshold = 0,
     rootMargin = '0px 0px -10% 0px',
     once = true,
     initial = false,
