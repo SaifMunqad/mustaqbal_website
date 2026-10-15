@@ -10,7 +10,7 @@ interface FooterLinkSectionProps {
 
 type ContactField = NonNullable<FooterSection['links'][number]['contact']>;
 
-const FOOTER_LINK_CLASS = 'hover:text-gray-900 hover:underline dark:hover:text-white';
+const FOOTER_LINK_CLASS = 'hover:text-gray-900 dark:hover:text-white';
 
 // Build a usable href from a contact value pulled out of the shared settings.
 function contactHref(field: ContactField, value: string): string {
@@ -44,7 +44,7 @@ export default function FooterLinkSection({ section }: FooterLinkSectionProps) {
                         return (
                             <li key={link.key}>
                                 <SmartLink href={contactHref(link.contact, value)} className={FOOTER_LINK_CLASS}>
-                                    {`${t(link.labelKey)}: ${value}`}
+                                    <span dir="ltr">{value}</span>
                                 </SmartLink>
                             </li>
                         );
