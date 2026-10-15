@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react';
 
+import AppearanceLanguage from '@/components/appearance-language';
 import AppearanceTabs from '@/components/appearance-tabs';
 import HeadingSmall from '@/components/heading-small';
 import { type BreadcrumbItem } from '@/types';
@@ -27,6 +28,14 @@ export default function Appearance() {
                         description="Update your account's appearance settings"
                     />
                     <AppearanceTabs />
+
+                    <div className="space-y-3">
+                        <HeadingSmall
+                            title="Language"
+                            description="Choose the language used across the site. Your selection is saved on this device."
+                        />
+                        <AppearanceLanguage />
+                    </div>
                 </div>
             </SettingsLayout>
         </AppLayout>
