@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Book;
+use App\Support\Translation\LocalizedContent;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -35,7 +36,8 @@ class BookFactory extends Factory
 
     /**
      * Localized text lives in `book_translations`. Give every factory-created
-     * book a default-language row (no-op when no default language exists).
+     * book a default-language row plus deterministic Dari/Pashto rows (no-op
+     * when a language is not seeded), so translated tables are never half-filled.
      */
     public function configure(): static
     {
@@ -45,6 +47,8 @@ class BookFactory extends Factory
                 'publisher' => fake()->company(),
                 'description' => fake()->sentences(3, true),
             ]);
+
+            LocalizedContent::apply($book->translations(), LocalizedContent::bookSecondary((int) $book->id));
         });
     }
 

@@ -11,6 +11,7 @@ use App\Models\ProgramTypeTranslation;
 use App\Models\SitePage;
 use App\Models\SiteSetting;
 use App\Models\User;
+use App\Support\Translation\LocalizedContent;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -48,6 +49,15 @@ class DatabaseSeeder extends Seeder
 
             return [$language['code'] => $model];
         });
+
+        // Localize the global site settings for the secondary languages so the
+        // public home page renders translated hero/stats/features on a fresh
+        // seed. Guarded to only run once so reseeding never overwrites
+        // admin-edited translations. Languages must already exist (above).
+        $siteSettings = SiteSetting::current();
+        if ($siteSettings->exists && $siteSettings->translations()->count() === 0) {
+            LocalizedContent::apply($siteSettings->translations(), LocalizedContent::siteSettingDefaults());
+        }
 
         $user = User::firstOrCreate(
             ['email' => 'test@example.com'],
@@ -91,6 +101,7 @@ class DatabaseSeeder extends Seeder
             ],
         );
         $programsPage->syncDefaultTranslation(['title' => 'Programs at Mustaqbal School']);
+        LocalizedContent::apply($programsPage->translations(), LocalizedContent::sitePageSecondary('Programs at Mustaqbal School'));
 
         $contactPage = SitePage::updateOrCreate(
             ['slug' => 'contact'],
@@ -105,6 +116,7 @@ class DatabaseSeeder extends Seeder
             ],
         );
         $contactPage->syncDefaultTranslation(['title' => 'Contact Mustaqbal School']);
+        LocalizedContent::apply($contactPage->translations(), LocalizedContent::sitePageSecondary('Contact Mustaqbal School'));
 
         $programs = [
             [

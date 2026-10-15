@@ -6,6 +6,7 @@ use App\Enums\EventAudience;
 use App\Enums\UserRole;
 use App\Models\Event;
 use App\Models\User;
+use App\Support\Translation\LocalizedContent;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
@@ -143,18 +144,23 @@ class EventSeeder extends Seeder
 
             // Localized text lives in event_translations; overwrite the factory
             // default row with this curated, deterministic content.
+            $location = fake()->randomElement([
+                'Main Hall, Kabul',
+                'School Courtyard, Kabul',
+                'Classroom Block A, Kabul',
+                'Auditorium, Kabul',
+                'Sports Ground, Kabul',
+            ]);
+
             $event->syncDefaultTranslation([
                 'title' => $title,
                 'excerpt' => fake()->sentence(10),
                 'body' => implode("\n\n", fake()->paragraphs(random_int(2, 3))),
-                'location' => fake()->randomElement([
-                    'Main Hall, Kabul',
-                    'School Courtyard, Kabul',
-                    'Classroom Block A, Kabul',
-                    'Auditorium, Kabul',
-                    'Sports Ground, Kabul',
-                ]),
+                'location' => $location,
             ]);
+
+            // Dari/Pashto rows: glossary title + location, localized prose pools.
+            LocalizedContent::apply($event->translations(), LocalizedContent::eventSecondary($title, $location, $this->index));
 
             $this->index++;
         }

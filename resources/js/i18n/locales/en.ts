@@ -26,6 +26,7 @@ const en = {
         jobs: 'Active Jobs',
         contact: 'Contact',
         login: 'Login',
+        dashboard: 'Dashboard',
         toggleMenu: 'Toggle menu',
     },
     navigationDescriptions: {

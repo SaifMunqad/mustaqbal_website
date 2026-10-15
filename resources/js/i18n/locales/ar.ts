@@ -25,6 +25,7 @@ const ar = {
         enroll: 'التسجيل',
         jobs: 'الوظائف',
         contact: 'اتصل بنا',
+        dashboard: 'لوحة التحكم',
     },
     navigationDescriptions: {
         about: 'تعرف على رسالتنا وقيمنا',

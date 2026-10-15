@@ -5,8 +5,8 @@ namespace Database\Seeders;
 use App\Enums\UserRole;
 use App\Models\Job;
 use App\Models\User;
+use App\Support\Translation\LocalizedContent;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 /**
  * Seeds 20 active job postings and 5 closed/inactive ones for the
@@ -230,7 +230,7 @@ class JobSeeder extends Seeder
                     'employment_type' => $job['employment_type'],
                     'working_hours' => $job['working_hours'] ?? null,
                     'application_email' => 'careers@mustaqbal.af',
-                    'application_url' => $index % 5 === 0 ? 'https://forms.example.com/apply-' . ($index + 1) : null,
+                    'application_url' => $index % 5 === 0 ? 'https://forms.example.com/apply-'.($index + 1) : null,
                     'deadline' => now()->addDays(random_int(14, 90))->toDateString(),
                     'is_active' => true,
                 ]);
@@ -241,6 +241,10 @@ class JobSeeder extends Seeder
                 'description' => $job['description'],
                 'requirements' => $this->generateRequirements($index),
             ]);
+
+            // Dari/Pashto rows from the curated job glossary, overwriting the
+            // factory's generic placeholder secondary rows.
+            LocalizedContent::apply($jobModel->translations(), LocalizedContent::jobSecondary($job['title']));
         }
 
         foreach (self::CLOSED_JOBS as $index => $job) {
@@ -262,6 +266,10 @@ class JobSeeder extends Seeder
                 'description' => $job['description'],
                 'requirements' => $this->generateRequirements($index),
             ]);
+
+            // Dari/Pashto rows from the curated job glossary, overwriting the
+            // factory's generic placeholder secondary rows.
+            LocalizedContent::apply($jobModel->translations(), LocalizedContent::jobSecondary($job['title']));
         }
     }
 

@@ -8,6 +8,7 @@ use App\Models\Article;
 use App\Models\Event;
 use App\Models\HomeSection;
 use App\Models\Post;
+use App\Support\Translation\LocalizedContent;
 use Illuminate\Database\Seeder;
 
 /**
@@ -60,7 +61,7 @@ class HomeSectionSeeder extends Seeder
 
         // 1) Hero-style banner (authored) — always visible, guarantees a
         //    populated home page even before other content exists.
-        HomeSection::factory()
+        $banner = HomeSection::factory()
             ->banner([
                 'heading' => 'A Bright Future Starts Here',
                 'body' => 'Discover our programs, upcoming events and the students we are proud of at Mustaqbal School.',
@@ -72,7 +73,7 @@ class HomeSectionSeeder extends Seeder
             ->create(['sort_order' => 0]);
 
         // 2) Admissions announcement (authored).
-        HomeSection::factory()
+        $announcement = HomeSection::factory()
             ->announcement([
                 'heading' => 'Admissions are now open',
                 'body' => 'Limited seats for the new term — enroll your child today.',
@@ -83,23 +84,63 @@ class HomeSectionSeeder extends Seeder
             ->create(['sort_order' => 1]);
 
         // 3) Latest articles (curated).
-        HomeSection::factory()
+        $articles = HomeSection::factory()
             ->articles($articleIds, 3)
-            ->create(['sort_order' => 2])
-            ->syncDefaultTranslation(['title' => 'Latest Articles']);
+            ->create(['sort_order' => 2]);
+        $articles->syncDefaultTranslation(['title' => 'Latest Articles']);
 
         // 4) Upcoming events (curated).
-        HomeSection::factory()
+        $events = HomeSection::factory()
             ->events($eventIds, 3)
-            ->create(['sort_order' => 3])
-            ->syncDefaultTranslation(['title' => 'Upcoming Events']);
+            ->create(['sort_order' => 3]);
+        $events->syncDefaultTranslation(['title' => 'Upcoming Events']);
 
         // 5) Recognition highlights (curated) — reuses the existing showcase.
-        HomeSection::factory()
+        $recognition = HomeSection::factory()
             ->recognition($recognitionIds, 3)
-            ->create(['sort_order' => 4])
-            ->syncDefaultTranslation(['title' => 'Recognition Highlights']);
+            ->create(['sort_order' => 4]);
+        $recognition->syncDefaultTranslation(['title' => 'Recognition Highlights']);
+
+        $this->seedSecondaryTranslations(compact('banner', 'announcement', 'articles', 'events', 'recognition'));
 
         $this->command?->info('Seeded 5 home page sections.');
+    }
+
+    /**
+     * Write the Dari/Pashto rows for the seeded home sections so the localized
+     * tables are complete, matching the default-language content the factory
+     * and curated titles above produced. Glossary keys are the exact English
+     * strings authored above.
+     *
+     * @param  array<string, HomeSection>  $sections
+     */
+    private function seedSecondaryTranslations(array $sections): void
+    {
+        $authored = LocalizedContent::homeSectionAuthored();
+        $titles = LocalizedContent::homeSectionTitles();
+
+        foreach (['banner' => 'A Bright Future Starts Here', 'announcement' => 'Admissions are now open'] as $key => $heading) {
+            if (! isset($authored[$heading])) {
+                continue;
+            }
+
+            LocalizedContent::apply($sections[$key]->translations(), collect($authored[$heading])
+                ->mapWithKeys(static fn (array $row, string $code): array => [$code => [
+                    'heading' => $row['heading'],
+                    'body' => $row['body'],
+                    'cta_label' => $row['cta_label'],
+                ]])
+                ->all());
+        }
+
+        foreach (['articles' => 'Latest Articles', 'events' => 'Upcoming Events', 'recognition' => 'Recognition Highlights'] as $key => $title) {
+            if (! isset($titles[$title])) {
+                continue;
+            }
+
+            LocalizedContent::apply($sections[$key]->translations(), collect($titles[$title])
+                ->mapWithKeys(static fn (string $localized, string $code): array => [$code => ['title' => $localized]])
+                ->all());
+        }
     }
 }

@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Enums\EventAudience;
 use App\Models\Event;
 use App\Models\User;
+use App\Support\Translation\LocalizedContent;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -43,18 +44,24 @@ class EventFactory extends Factory
 
     /**
      * Localized text lives in `event_translations`. Give every factory-created
-     * event a default-language row (no-op when no default language exists, so
-     * bare test runs without seeded languages stay green).
+     * event a default-language row plus deterministic Dari/Pashto rows, so a
+     * translated table is never half-filled (all writes no-op when a language
+     * is not seeded, keeping bare test runs green).
      */
     public function configure(): static
     {
         return $this->afterCreating(function (Event $event): void {
+            $title = Str::title(trim(fake()->words(random_int(2, 5), true)));
+            $location = fake()->city().', Afghanistan';
+
             $event->syncDefaultTranslation([
-                'title' => Str::title(trim(fake()->words(random_int(2, 5), true))),
+                'title' => $title,
                 'excerpt' => fake()->sentence(10),
                 'body' => implode("\n\n", fake()->paragraphs(random_int(2, 4))),
-                'location' => fake()->city().', Afghanistan',
+                'location' => $location,
             ]);
+
+            LocalizedContent::apply($event->translations(), LocalizedContent::eventSecondary($title, $location, (int) $event->id));
         });
     }
 

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Job;
 use App\Models\User;
+use App\Support\Translation\LocalizedContent;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -23,7 +24,7 @@ class JobFactory extends Factory
 
         return [
             'user_id' => User::factory(),
-            'slug' => Str::slug($title) . '-' . Str::lower(Str::random(6)),
+            'slug' => Str::slug($title).'-'.Str::lower(Str::random(6)),
             'category' => fake()->randomElement(['school', 'course', 'islamic_madrasa']),
             'employment_type' => fake()->randomElement(['full_time', 'part_time', 'contract']),
             'working_hours' => fake()->randomElement([
@@ -41,7 +42,8 @@ class JobFactory extends Factory
 
     /**
      * Localized text lives in `job_translations`. Give every factory-created job
-     * a default-language row (no-op when no default language exists).
+     * a default-language row plus deterministic Dari/Pashto rows (no-op when a
+     * language is not seeded), so translated tables are never half-filled.
      */
     public function configure(): static
     {
@@ -57,11 +59,13 @@ class JobFactory extends Factory
                 ]),
                 'description' => implode("\n\n", fake()->paragraphs(random_int(2, 3))),
                 'requirements' => implode("\n", [
-                    '- ' . fake()->sentence(6),
-                    '- ' . fake()->sentence(5),
-                    '- ' . fake()->sentence(7),
+                    '- '.fake()->sentence(6),
+                    '- '.fake()->sentence(5),
+                    '- '.fake()->sentence(7),
                 ]),
             ]);
+
+            LocalizedContent::apply($job->translations(), LocalizedContent::genericJobSecondary((int) $job->id));
         });
     }
 
@@ -80,7 +84,7 @@ class JobFactory extends Factory
     public function withTitle(string $title): static
     {
         return $this->state(fn (array $attributes) => [
-            'slug' => Str::slug($title) . '-' . Str::lower(Str::random(6)),
+            'slug' => Str::slug($title).'-'.Str::lower(Str::random(6)),
         ]);
     }
 
