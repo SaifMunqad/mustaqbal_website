@@ -170,6 +170,8 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
 
     Route::prefix('home-sections')->name('dashboard.home-sections.')->middleware('role:management')->group(function () {
         Route::get('/', [DashboardHomeSectionController::class, 'index'])->name('index');
+        Route::get('/visual', [DashboardHomeSectionController::class, 'visual'])->name('visual');
+        Route::put('/visual', [DashboardHomeSectionController::class, 'saveLayout'])->name('visual.save');
         Route::get('/create', [DashboardHomeSectionController::class, 'create'])->name('create');
         Route::post('/', [DashboardHomeSectionController::class, 'store'])->name('store');
         Route::put('/reorder', [DashboardHomeSectionController::class, 'reorder'])->name('reorder');

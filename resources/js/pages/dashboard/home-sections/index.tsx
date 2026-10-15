@@ -1,6 +1,7 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { Button } from '@/components/ui/button';
 import ConfirmDialog from '@/components/form/confirm-dialog';
+import { EyeIcon } from '@heroicons/react/24/outline';
 import { Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -164,6 +165,28 @@ export default function DashboardHomeSectionIndex({ sections }: HomeSectionsInde
             createHref="/dashboard/home-sections/create"
             createLabelKey="dashboard.homeSections.add"
         >
+            <Link
+                href="/dashboard/home-sections/visual"
+                className="flex items-center justify-between gap-4 rounded-2xl border border-blue-200 bg-blue-50/70 p-4 transition hover:bg-blue-50 dark:border-blue-900 dark:bg-blue-950/30 dark:hover:bg-blue-950/50"
+            >
+                <span className="flex items-center gap-3">
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white">
+                        <EyeIcon className="size-5" />
+                    </span>
+                    <span className="min-w-0">
+                        <span className="block text-sm font-semibold text-slate-900 dark:text-white">
+                            Visual editor
+                        </span>
+                        <span className="block text-sm text-muted-foreground">
+                            Edit the home page while previewing it, per language.
+                        </span>
+                    </span>
+                </span>
+                <Button type="button" size="sm" className="shrink-0">
+                    Open
+                </Button>
+            </Link>
+
             <p className="text-sm text-muted-foreground">
                 Arrange the blocks shown on the public home page. Curated blocks pull
                 live content; home-only blocks are authored here. With no active blocks,
