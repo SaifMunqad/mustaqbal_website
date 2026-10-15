@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\SitePage;
+use App\Support\Translation\LocalizedContent;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
 
@@ -41,6 +42,15 @@ class AboutPageSeeder extends Seeder
         $page->syncDefaultTranslation([
             'title' => 'About Mustaqbal School',
             'body' => $content['body'] ?? '',
+        ]);
+
+        // Localized title + rich-text body for the secondary (Dari/Pashto) languages.
+        $titles = LocalizedContent::sitePageTitles()['About Mustaqbal School'];
+        $bodies = LocalizedContent::aboutPageBody();
+
+        LocalizedContent::apply($page->translations(), [
+            'ps' => ['title' => $titles['ps'], 'body' => $bodies['ps']],
+            'fa_AF' => ['title' => $titles['fa_AF'], 'body' => $bodies['fa_AF']],
         ]);
     }
 

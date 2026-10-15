@@ -15,7 +15,15 @@ class SitePageTranslation extends Model
         'language_id',
         'title',
         'body',
+        'content',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'content' => 'array',
+        ];
+    }
 
     public function sitePage(): BelongsTo
     {

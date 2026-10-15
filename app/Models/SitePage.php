@@ -43,6 +43,32 @@ class SitePage extends Model
         return ['title', 'body'];
     }
 
+    /**
+     * Localized structured content sections stored per language in the
+     * translation row's `content` JSON (the About page's editable blocks).
+     *
+     * @var list<string>
+     */
+    public const SECTION_KEYS = [
+        'intro',
+        'mission',
+        'vision',
+        'stats',
+        'values',
+        'highlights',
+        'goals',
+        'main_points',
+        'message',
+        'faq',
+    ];
+
+    /**
+     * Shared, non-localized content keys kept on the parent column.
+     *
+     * @var list<string>
+     */
+    public const SHARED_KEYS = ['video_embed'];
+
     public function getTitleAttribute(): ?string
     {
         return $this->translated('title');
@@ -65,16 +91,34 @@ class SitePage extends Model
     }
 
     /**
-     * Content merged with the localized body for the active locale.
+     * The structured sections for the reader's language, read from the active
+     * translation row's `content` JSON. Fallback-free at the row level: when no
+     * matching translation row exists this is empty, so the shared parent value
+     * (and then the built-in defaults in the view) win.
+     *
+     * @return array<string, mixed>
+     */
+    public function localizedContent(?string $languageCode = null): array
+    {
+        $row = $this->resolveTranslationRow($languageCode);
+        $content = $row?->content;
+
+        return is_array($content) ? $content : [];
+    }
+
+    /**
+     * Content merged for the active locale: shared parent keys, overlaid with the
+     * language's localized sections, plus the localized rich-text body.
      *
      * @return array<string, mixed>
      */
     public function getContentAttribute(): array
     {
         $shared = $this->sharedContent();
+        $localized = $this->localizedContent();
         $body = $this->translated('body');
 
-        return array_merge($shared, [
+        return array_merge($shared, $localized, [
             'body' => $body ?? ($shared['body'] ?? ''),
         ]);
     }
