@@ -269,9 +269,16 @@ export default function SitePageForm({
                         <div className="rounded-2xl border border-border bg-card">
                             <div className="flex items-center justify-between border-b border-border px-4 py-2">
                                 <span className="text-sm font-semibold">Live preview</span>
-                                <Link href="/school/about" target="_blank" className="text-xs font-medium text-blue-600 underline">
-                                    Open public page
-                                </Link>
+                                <div className="flex items-center gap-3">
+                                    {page ? (
+                                        <Link href={`/dashboard/site-pages/${page.id}/visual`} className="text-xs font-medium text-blue-600 underline">
+                                            Visual editor
+                                        </Link>
+                                    ) : null}
+                                    <Link href="/school/about" target="_blank" className="text-xs font-medium text-blue-600 underline">
+                                        Open public page
+                                    </Link>
+                                </div>
                             </div>
                             <div className="max-h-[70vh] overflow-y-auto p-3">
                                 <AboutPreview title={entry.title} content={previewContent} heroImage={form.data.hero_image} />

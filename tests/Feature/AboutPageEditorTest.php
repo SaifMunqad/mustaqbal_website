@@ -110,6 +110,29 @@ class AboutPageEditorTest extends TestCase
         $this->assertSame('EN vision', $page->getContentAttribute()['vision']);
     }
 
+    public function test_visual_editor_renders_for_management(): void
+    {
+        $page = $this->aboutPage();
+
+        $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
+            ->get(route('dashboard.site-pages.visual', $page))
+            ->assertOk()
+            ->assertInertia(fn (\Inertia\Testing\AssertableInertia $p) => $p
+                ->component('dashboard/site-pages/visual')
+                ->where('page.id', $page->id)
+                ->has('contents')
+            );
+    }
+
+    public function test_visual_editor_is_management_only(): void
+    {
+        $page = $this->aboutPage();
+
+        $this->actingAs(User::factory()->create(['role' => UserRole::Family->value]))
+            ->get(route('dashboard.site-pages.visual', $page))
+            ->assertForbidden();
+    }
+
     private function aboutPage(): SitePage
     {
         $page = SitePage::query()->create([

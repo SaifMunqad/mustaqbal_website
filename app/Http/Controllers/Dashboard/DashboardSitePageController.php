@@ -79,6 +79,24 @@ class DashboardSitePageController extends Controller
         ]);
     }
 
+    /**
+     * Visual (WYSIWYG) editor for a site page. Renders the real page as a live
+     * canvas and lets an admin edit each block, in any language, then commit
+     * through the same update() path. Currently meaningful for structured pages
+     * like About; simple pages still get the title/body preview.
+     */
+    public function visual(SitePage $sitePage): Response
+    {
+        $sitePage->load(['translations.language']);
+
+        return Inertia::render('dashboard/site-pages/visual', [
+            'page' => $sitePage,
+            'translations' => $this->existingTranslations($sitePage),
+            'contents' => $this->localizedContents($sitePage),
+            'videoEmbed' => $sitePage->sharedContent()['video_embed'] ?? '',
+        ]);
+    }
+
     public function update(Request $request, SitePage $sitePage): RedirectResponse
     {
         $request->validate($this->rules($sitePage));

@@ -141,6 +141,7 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
         Route::get('/', [DashboardSitePageController::class, 'index'])->name('index');
         Route::get('/help', [DashboardSitePageController::class, 'help'])->name('help');
         Route::get('/create', [DashboardSitePageController::class, 'create'])->name('create');
+        Route::get('/{sitePage}/visual', [DashboardSitePageController::class, 'visual'])->middleware('role:management')->name('visual');
         Route::get('/{sitePage}/edit', [DashboardSitePageController::class, 'edit'])->name('edit');
         Route::post('/', [DashboardSitePageController::class, 'store'])
             ->middleware('role:management')

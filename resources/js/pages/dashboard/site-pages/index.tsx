@@ -27,7 +27,12 @@ export default function DashboardSitePagesIndex() {
             key: 'actions',
             header: 'Actions',
             cell: (page) => (
-                <Link href={`/dashboard/site-pages/${page.id}/edit`} className="text-blue-600 underline">Edit</Link>
+                <div className="flex items-center gap-3">
+                    {page.slug === 'about' ? (
+                        <Link href={`/dashboard/site-pages/${page.id}/visual`} className="text-blue-600 underline">Visual</Link>
+                    ) : null}
+                    <Link href={`/dashboard/site-pages/${page.id}/edit`} className="text-blue-600 underline">Edit</Link>
+                </div>
             ),
         },
     ];
