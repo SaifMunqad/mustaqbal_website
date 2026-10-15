@@ -1,7 +1,3 @@
-import { Bars3Icon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { Link, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '@/components/general/header/language-switcher';
 import NavIconButton from '@/components/general/header/nav-icon-button';
 import NavbarBrand from '@/components/general/header/navbar-brand';
@@ -10,6 +6,17 @@ import NavbarMobile from '@/components/general/header/navbar-mobile';
 import { navTextButtonClass } from '@/components/general/header/navbar-styles';
 import { navigationItems } from '@/lib/navigation';
 import type { SharedData } from '@/types';
+import {
+    Bars3Icon,
+    MagnifyingGlassIcon,
+    XMarkIcon,
+} from '@heroicons/react/24/outline';
+import { Link, usePage } from '@inertiajs/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+/** Snappy, symmetric curve so neither the open nor close feels sluggish. */
+const MENU_EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
 
 export default function Navbar() {
     const { t } = useTranslation();
@@ -22,6 +29,49 @@ export default function Navbar() {
     const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(
         null,
     );
+    // The nav wraps both the mobile toggle button and the panel, so using it
+    // as the click-outside container avoids the race where tapping the toggle
+    // reads as an outside click (close) and then re-opens on its own click.
+    const navRef = useRef<HTMLElement>(null);
+
+    const closeMobileMenu = useCallback(() => {
+        setMobileMenuOpen(false);
+        setOpenMobileDropdown(null);
+    }, []);
+
+    const toggleMobileMenu = useCallback(() => {
+        setMobileMenuOpen((open) => !open);
+    }, []);
+
+    // Dismiss the open mobile nav when the user taps/clicks anywhere outside it.
+    useEffect(() => {
+        if (!mobileMenuOpen) return;
+
+        const handlePointerDown = (event: PointerEvent) => {
+            const nav = navRef.current;
+            if (nav && !nav.contains(event.target as Node)) {
+                closeMobileMenu();
+            }
+        };
+
+        document.addEventListener('pointerdown', handlePointerDown);
+        return () =>
+            document.removeEventListener('pointerdown', handlePointerDown);
+    }, [mobileMenuOpen, closeMobileMenu]);
+
+    // While the menu is open, freeze the page behind it. The panel can grow
+    // taller than the viewport, so it scrolls internally instead of pushing
+    // the whole document. Restores the prior overflow on close/unmount.
+    useEffect(() => {
+        if (!mobileMenuOpen) return;
+
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        return () => {
+            document.body.style.overflow = previousOverflow;
+        };
+    }, [mobileMenuOpen]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -34,51 +84,84 @@ export default function Navbar() {
 
     useEffect(() => {
         const timeoutId = window.setTimeout(() => {
-            setMobileMenuOpen(false);
-            setOpenMobileDropdown(null);
+            closeMobileMenu();
         }, 0);
 
         return () => window.clearTimeout(timeoutId);
-    }, [url]);
+    }, [url, closeMobileMenu]);
 
     return (
-        <nav className="fixed top-0 inset-x-0 z-50 w-full rounded-none border-b border-gray-200/40 bg-white/90 px-3 py-1 shadow-sm backdrop-blur-md backdrop-saturate-150 transition-all duration-300 dark:border-gray-800/40 dark:bg-[#121212]/90">
+        <nav
+            ref={navRef}
+            className="fixed inset-x-0 top-0 z-50 w-full rounded-none border-b border-gray-200/40 bg-white/90 px-3 py-1 shadow-sm backdrop-blur-md backdrop-saturate-150 transition-all duration-300 dark:border-gray-800/40 dark:bg-[#121212]/90"
+        >
             <div className="container mx-auto flex flex-wrap items-center justify-between">
                 <NavbarBrand />
 
-                <NavbarDesktop
-                    items={navigationItems}
-                    currentUrl={url}
-                />
+                <NavbarDesktop items={navigationItems} currentUrl={url} />
 
                 <div className="ms-auto hidden lg:block">
                     <div className="flex items-center gap-2">
-                        <NavIconButton href="/school/search" label={t('navigation.search')}>
+                        <NavIconButton
+                            href="/school/search"
+                            label={t('navigation.search')}
+                        >
                             <MagnifyingGlassIcon className="h-5 w-5" />
                         </NavIconButton>
                         {isGuest ? (
-                            <Link
-                                href="/login"
-                                className={navTextButtonClass}
-                            >
+                            <Link href="/login" className={navTextButtonClass}>
                                 {t('navigation.login')}
                             </Link>
-                        ) : null}
+                        ) : (
+                            <Link
+                                href="/dashboard"
+                                className={navTextButtonClass}
+                            >
+                                {t('navigation.dashboard')}
+                            </Link>
+                        )}
                         <LanguageSwitcher />
                     </div>
                 </div>
 
                 <div className="flex items-center gap-2 lg:hidden">
-                    <NavIconButton href="/school/search" label={t('navigation.search')}>
+                    <NavIconButton
+                        href="/school/search"
+                        label={t('navigation.search')}
+                    >
                         <MagnifyingGlassIcon className="h-5 w-5" />
                     </NavIconButton>
                     <LanguageSwitcher />
-                    <NavIconButton
-                        label={t('navigation.toggleMenu')}
-                        onClick={() => setMobileMenuOpen((value) => !value)}
+                    <button
+                        type="button"
+                        aria-label={t('navigation.toggleMenu')}
+                        aria-expanded={mobileMenuOpen}
+                        onClick={toggleMobileMenu}
+                        className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-transparent text-gray-700 transition-colors duration-200 hover:bg-gray-100 hover:text-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400"
                     >
-                        <Bars3Icon className="h-5 w-5" />
-                    </NavIconButton>
+                        <Bars3Icon
+                            aria-hidden="true"
+                            className="absolute h-5 w-5 transition-all duration-300 ease-out"
+                            style={{
+                                opacity: mobileMenuOpen ? 0 : 1,
+                                transform: mobileMenuOpen
+                                    ? 'rotate(-90deg) scale(0.6)'
+                                    : 'rotate-0 scale-1',
+                                transitionTimingFunction: MENU_EASE,
+                            }}
+                        />
+                        <XMarkIcon
+                            aria-hidden="true"
+                            className="absolute h-5 w-5 transition-all duration-300 ease-out"
+                            style={{
+                                opacity: mobileMenuOpen ? 1 : 0,
+                                transform: mobileMenuOpen
+                                    ? 'rotate-0 scale-1'
+                                    : 'rotate(90deg) scale(0.6)',
+                                transitionTimingFunction: MENU_EASE,
+                            }}
+                        />
+                    </button>
                 </div>
 
                 <NavbarMobile
@@ -89,7 +172,7 @@ export default function Navbar() {
                     setMenuOpen={setMobileMenuOpen}
                     openDropdown={openMobileDropdown}
                     setOpenDropdown={setOpenMobileDropdown}
-                    showLoginButton={isGuest}
+                    isAuthenticated={!isGuest}
                 />
             </div>
         </nav>
