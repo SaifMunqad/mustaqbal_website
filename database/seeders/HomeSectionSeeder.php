@@ -64,7 +64,7 @@ class HomeSectionSeeder extends Seeder
         $banner = HomeSection::factory()
             ->banner([
                 'heading' => 'A Bright Future Starts Here',
-                'body' => 'Discover our programs, upcoming events and the students we are proud of at Mustaqbal School.',
+                'body' => 'Discover our programs, upcoming events and the students we are proud of at My School.',
                 'image_url' => 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1400&q=80',
                 'cta_label' => 'Explore Programs',
                 'cta_url' => '/school/programs',

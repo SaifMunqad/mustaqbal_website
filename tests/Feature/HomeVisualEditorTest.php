@@ -191,7 +191,7 @@ class HomeVisualEditorTest extends TestCase
                 ->has('site.translations.ps')
                 // Default language reads its parent source; the un-authored
                 // Pashto slice shows blank, never the English fallback.
-                ->where('site.translations.en.home_title', 'Welcome to Mustaqbal School')
+                ->where('site.translations.en.home_title', 'Welcome to My School')
                 ->where('site.translations.ps.home_title', '')
                 ->has('preview.programs')
                 ->has('preview.jobs')

@@ -31,7 +31,7 @@ export interface FlashProps {
 
 // Browser-cached record of notification ids already shown, so reloads and
 // re-renders never replay a toast. Kept small and rolling.
-const SEEN_KEY = 'mustaqbal.toast.seen';
+const SEEN_KEY = 'school.toast.seen';
 const MAX_SEEN = 50;
 
 const readSeenIds = (): string[] => {

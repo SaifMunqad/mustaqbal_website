@@ -229,7 +229,7 @@ class JobSeeder extends Seeder
                     'user_id' => $author->id,
                     'employment_type' => $job['employment_type'],
                     'working_hours' => $job['working_hours'] ?? null,
-                    'application_email' => 'careers@mustaqbal.af',
+                    'application_email' => 'careers@myschool.example',
                     'application_url' => $index % 5 === 0 ? 'https://forms.example.com/apply-'.($index + 1) : null,
                     'deadline' => now()->addDays(random_int(14, 90))->toDateString(),
                     'is_active' => true,
@@ -256,7 +256,7 @@ class JobSeeder extends Seeder
                     'user_id' => $author->id,
                     'employment_type' => $job['employment_type'],
                     'working_hours' => $job['working_hours'] ?? null,
-                    'application_email' => 'careers@mustaqbal.af',
+                    'application_email' => 'careers@myschool.example',
                     'application_url' => null,
                 ]);
 
@@ -296,7 +296,7 @@ class JobSeeder extends Seeder
     private function resolveAuthor(): User
     {
         return User::query()->firstOrCreate(
-            ['email' => 'careers@mustaqbal.af'],
+            ['email' => 'careers@myschool.example'],
             [
                 'name' => 'HR Department',
                 'role' => UserRole::Management->value,

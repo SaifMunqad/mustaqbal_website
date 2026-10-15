@@ -87,10 +87,10 @@ class SiteSetting extends Model
     public static function defaults(): array
     {
         return [
-            'brand_name' => 'Mustaqbal School',
-            'brand_short_name' => 'Mustaqbal',
+            'brand_name' => 'My School',
+            'brand_short_name' => 'My School',
             'tagline' => 'Building tomorrow with quality education',
-            'home_title' => 'Welcome to Mustaqbal School',
+            'home_title' => 'Welcome to My School',
             'home_subtitle' => 'A modern Afghan school where students grow with confidence, knowledge, and character.',
             'home_cta_primary' => 'Explore Programs',
             'home_cta_secondary' => 'Contact Us',
@@ -106,7 +106,7 @@ class SiteSetting extends Model
                 ['icon' => 'facilities', 'title' => 'Modern Facilities', 'description' => 'Bright classrooms, a library and spaces designed for focused learning.'],
                 ['icon' => 'classes', 'title' => 'Small Classes', 'description' => 'Low student-to-teacher ratios so no one gets left behind.'],
             ],
-            'contact_email' => 'info@mustaqbal.af',
+            'contact_email' => 'info@myschool.example',
             'contact_phone_primary' => '+93 700 000 001',
             'contact_phone_secondary' => '+93 799 000 001',
             'address' => 'Kart-e-Char, Kabul, Afghanistan',

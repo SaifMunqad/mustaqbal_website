@@ -1,7 +1,7 @@
 const en = {
     brand: {
-        name: 'Mustaqbal School',
-        shortName: 'Mustaqbal',
+        name: 'My School',
+        shortName: 'My School',
         tagline: 'Building tomorrow with quality education',
     },
     language: {
@@ -99,12 +99,12 @@ const en = {
         },
     },
     home: {
-        title: 'Welcome to Mustaqbal School',
+        title: 'Welcome to My School',
         subtitle:
             'A modern Afghan school where students grow with confidence, knowledge, and character.',
         ctaPrimary: 'Explore Programs',
         ctaSecondary: 'Contact Us',
-        featuresTitle: 'Why families choose Mustaqbal',
+        featuresTitle: 'Why families choose My School',
         featuresSubtitle:
             'A caring environment, a strong curriculum, and teachers who know every student by name.',
         programsTitle: 'Our programs',
@@ -119,14 +119,14 @@ const en = {
         viewAllJobs: 'See all jobs',
         admissionsTitle: 'Ready to join our community?',
         admissionsSubtitle:
-            'Admissions are open. Give your child a confident future at Mustaqbal School.',
+            'Admissions are open. Give your child a confident future at My School.',
         admissionsCta: 'Apply for admission',
         admissionsSecondary: 'Talk to us',
     },
     about: {
-        title: 'About Mustaqbal',
+        title: 'About My School',
         paragraph:
-            'Mustaqbal School supports students with balanced academics, leadership skills, and values-based learning.',
+            'My School supports students with balanced academics, leadership skills, and values-based learning.',
         vision: 'Vision',
         managerMessage: 'Manager Message',
         goals: 'Goals',
@@ -280,7 +280,7 @@ const en = {
     events: {
         title: 'School Events',
         subtitle:
-            'Discover upcoming events, activities and celebrations at Mustaqbal School.',
+            'Discover upcoming events, activities and celebrations at My School.',
         upcoming: 'Upcoming',
         none: 'No upcoming events yet.',
         back: 'Back to events',
@@ -293,7 +293,7 @@ const en = {
     articles: {
         title: 'Articles',
         readArticle: 'Read article',
-        defaultAuthor: 'Mustaqbal Team',
+        defaultAuthor: 'My School Team',
         empty: 'No articles published yet.',
         back: 'Back to articles',
         by: 'By {{name}}',

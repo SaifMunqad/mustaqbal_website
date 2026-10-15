@@ -37,7 +37,7 @@ const containerStyle = { width: '100%', height: '320px' };
  */
 function PickerInner({ apiKey, latitude, longitude, zoom, onChange }: GoogleLocationPickerProps) {
     const { isLoaded, loadError } = useJsApiLoader({
-        id: 'mustaqbal-location-picker',
+        id: 'school-location-picker',
         googleMapsApiKey: apiKey,
         libraries: ['places'] as unknown as never,
     });

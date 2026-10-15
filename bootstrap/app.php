@@ -17,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->encryptCookies(except: ['appearance', 'sidebar_state', 'mustaqbal_locale']);
+        $middleware->encryptCookies(except: ['appearance', 'sidebar_state', 'school_locale']);
 
         $middleware->alias([
             'role' => EnsureUserHasRole::class,

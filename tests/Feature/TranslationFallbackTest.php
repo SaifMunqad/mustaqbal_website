@@ -39,7 +39,7 @@ class TranslationFallbackTest extends TestCase
         // since the default language is mirrored onto the parent, not stored as a row.
         $setting->translations()->create([
             'language_id' => $ps->id,
-            'brand_name' => 'مستقبل ښوونځی',
+            'brand_name' => 'زما ښوونځی',
             'home_stats' => [['value' => '۱۲۰۰+', 'label' => 'زده‌کوونکي']],
         ]);
 
@@ -47,12 +47,12 @@ class TranslationFallbackTest extends TestCase
 
         // English (default) visitor resolves from the parent, NOT the Pashto row.
         app()->setLocale('en');
-        $this->assertSame('Mustaqbal School', $setting->translated('brand_name'));
+        $this->assertSame('My School', $setting->translated('brand_name'));
         $this->assertSame('Students', $setting->translated('home_stats')[0]['label']);
 
         // Pashto visitor still gets the Pashto row.
         app()->setLocale('ps');
-        $this->assertSame('مستقبل ښوونځی', $setting->translated('brand_name'));
+        $this->assertSame('زما ښوونځی', $setting->translated('brand_name'));
     }
 
     public function test_shared_settings_do_not_bleed_for_the_default_locale(): void
@@ -65,7 +65,7 @@ class TranslationFallbackTest extends TestCase
 
         app()->setLocale('en');
 
-        $this->assertSame('Mustaqbal School', $setting->toShared()['brand_name']);
+        $this->assertSame('My School', $setting->toShared()['brand_name']);
     }
 
     private function language(string $code, bool $isDefault): Language

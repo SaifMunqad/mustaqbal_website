@@ -37,7 +37,7 @@ class ArticleSeeder extends Seeder
             'key' => 'welcome-new-academic-year',
             'lang' => 'en',
             'title' => 'Welcome to a New Academic Year',
-            'excerpt' => 'Our doors are open again. Here is what families can expect from Mustaqbal School this year.',
+            'excerpt' => 'Our doors are open again. Here is what families can expect from My School this year.',
             'body' => "A new academic year is a fresh start for every learner. Teachers have prepared activity-based lesson plans, and our classrooms, library, and laboratories are ready for students.\n\n"
                 ."We hope every student builds confidence, curiosity, and good character this year. Families are always welcome to reach out to us with questions and suggestions.",
         ],
@@ -45,8 +45,8 @@ class ArticleSeeder extends Seeder
             'key' => 'rah-e-aghaz-e-sal-e-darasi',
             'lang' => 'fa_AF',
             'title' => 'آغاز سال جديد تحصيلي',
-            'excerpt' => 'درهای مکتب دوباره باز شده است؛ آنچه خانواده‌ها از مکتب مستقبال در این سال انتظار دارند.',
-            'body' => "سال جديد تحصيلي فرصتي دوباره براي هر شاګرد است. مکتب مستقبال با برنامه‌ريزي دقيق، آمادګي صنفونه، کتاب‌خانه و لابراتوار را براي شاګردان فراهم کرده است.\n\n"
+            'excerpt' => 'درهای مکتب دوباره باز شده است؛ آنچه خانواده‌ها از مکتب من در این سال انتظار دارند.',
+            'body' => "سال جديد تحصيلي فرصتي دوباره براي هر شاګرد است. مکتب من با برنامه‌ريزي دقيق، آمادګي صنفونه، کتاب‌خانه و لابراتوار را براي شاګردان فراهم کرده است.\n\n"
                 ."اميدوار يو که هر شاګرد در این سال اعتمادبه‌نفس، کنجکاوي و شخصيت نيكو پيدا کند؛ خانواده‌ها مي‌توانند هر پرسش خود را با ما در ميان بگذارند.",
         ],
         [

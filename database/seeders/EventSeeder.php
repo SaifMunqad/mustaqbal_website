@@ -136,7 +136,7 @@ class EventSeeder extends Seeder
                 ->create([
                     'user_id' => $author->id,
                     'audience' => $audience,
-                    'cover_image' => 'https://picsum.photos/seed/mustaqbal-event-'.($this->index + 1).'/1200/675',
+                    'cover_image' => 'https://picsum.photos/seed/school-event-'.($this->index + 1).'/1200/675',
                     // A few cancelled / draft events for status variety.
                     'is_cancelled' => $this->index % 17 === 5,
                     'is_published' => $this->index % 19 !== 7,

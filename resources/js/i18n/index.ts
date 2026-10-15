@@ -5,8 +5,8 @@ import en from '@/i18n/locales/en';
 import faAF from '@/i18n/locales/fa_AF';
 import ps from '@/i18n/locales/ps';
 
-const STORAGE_KEY = 'mustaqbal.language';
-const LOCALE_COOKIE = 'mustaqbal_locale';
+const STORAGE_KEY = 'school.language';
+const LOCALE_COOKIE = 'school_locale';
 
 // Static bundles that ship with the app provide the UI-chrome strings. Codes
 // without a bundle fall back to `defaultLanguage` for chrome while still being

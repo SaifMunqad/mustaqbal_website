@@ -100,23 +100,23 @@ class DatabaseSeeder extends Seeder
                 'is_published' => true,
             ],
         );
-        $programsPage->syncDefaultTranslation(['title' => 'Programs at Mustaqbal School']);
-        LocalizedContent::apply($programsPage->translations(), LocalizedContent::sitePageSecondary('Programs at Mustaqbal School'));
+        $programsPage->syncDefaultTranslation(['title' => 'Programs at My School']);
+        LocalizedContent::apply($programsPage->translations(), LocalizedContent::sitePageSecondary('Programs at My School'));
 
         $contactPage = SitePage::updateOrCreate(
             ['slug' => 'contact'],
             [
                 'content' => [
                     'phone_numbers' => ['+93 700 000 001', '+93 799 000 001'],
-                    'email' => 'info@mustaqbal.af',
+                    'email' => 'info@myschool.example',
                     'address' => 'Kart-e-Char, Kabul, Afghanistan',
                     'map_embed_url' => 'https://maps.google.com/maps?q=Kabul%20Afghanistan&t=&z=13&ie=UTF8&iwloc=&output=embed',
                 ],
                 'is_published' => true,
             ],
         );
-        $contactPage->syncDefaultTranslation(['title' => 'Contact Mustaqbal School']);
-        LocalizedContent::apply($contactPage->translations(), LocalizedContent::sitePageSecondary('Contact Mustaqbal School'));
+        $contactPage->syncDefaultTranslation(['title' => 'Contact My School']);
+        LocalizedContent::apply($contactPage->translations(), LocalizedContent::sitePageSecondary('Contact My School'));
 
         $programs = [
             [
@@ -223,13 +223,13 @@ class DatabaseSeeder extends Seeder
         $this->call(ProgramSeeder::class);
 
         Article::updateOrCreate(
-            ['slug' => 'welcome-to-mustaqbal'],
+            ['slug' => 'welcome-to-my-school'],
             [
                 'user_id' => $user->id,
-                'title' => 'Welcome to Mustaqbal School',
-                'slug' => 'welcome-to-mustaqbal',
+                'title' => 'Welcome to My School',
+                'slug' => 'welcome-to-my-school',
                 'excerpt' => 'Our mission, values, and commitment to student success.',
-                'body' => 'Mustaqbal School welcomes all students and families. We are dedicated to quality education and positive growth.',
+                'body' => 'My School welcomes all students and families. We are dedicated to quality education and positive growth.',
                 'cover_image' => 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80',
                 'published_at' => now(),
                 'is_published' => true,

@@ -40,12 +40,12 @@ class AboutPageSeeder extends Seeder
         );
 
         $page->syncDefaultTranslation([
-            'title' => 'About Mustaqbal School',
+            'title' => 'About My School',
             'body' => $content['body'] ?? '',
         ]);
 
         // Localized title + rich-text body for the secondary (Dari/Pashto) languages.
-        $titles = LocalizedContent::sitePageTitles()['About Mustaqbal School'];
+        $titles = LocalizedContent::sitePageTitles()['About My School'];
         $bodies = LocalizedContent::aboutPageBody();
 
         LocalizedContent::apply($page->translations(), [
@@ -63,11 +63,11 @@ class AboutPageSeeder extends Seeder
     private function content(): array
     {
         return [
-            'intro' => 'Mustaqbal School is a community learning centre in Kabul helping students grow with strong academics, real skills, and grounded values — from early grades through enrichment courses and madrasa.',
+            'intro' => 'My School is a community learning centre helping students grow with strong academics, real skills, and grounded values — from early grades through enrichment courses and madrasa.',
 
             // Authored, editable rich-text story rendered as the main narrative.
             'body' => <<<'HTML'
-                <p>Mustaqbal — meaning "the future" — was founded on a simple belief: every child deserves an education that is both excellent and principled. We combine a rigorous core curriculum with character building, so students don't just memorise, they learn to think, lead, and serve.</p>
+                <p>Our school was founded on a simple belief: every child deserves an education that is both excellent and principled. We combine a rigorous core curriculum with character building, so students don't just memorise, they learn to think, lead, and serve.</p>
                 <p>Today we run full schooling alongside after-school courses and a weekend madrasa. Our small classrooms, dedicated teachers, and modern facilities create a safe, inspiring environment where every learner is known by name.</p>
                 <p>We measure success not only by grades, but by confident young people who carry their values into their families and communities.</p>
                 HTML,
@@ -125,7 +125,7 @@ class AboutPageSeeder extends Seeder
 
             'message' => [
                 'text' => 'We welcome every learner into a safe, modern, and inspiring environment. Education is a partnership between school and family, and we are committed to walking alongside each student — nurturing their talents, strengthening their character, and preparing them to lead confident, purposeful lives.',
-                'author_name' => 'Mustaqbal School Administration',
+                'author_name' => 'School Administration',
                 'author_role' => 'Principal & Management Team',
                 'author_image' => 'https://images.unsplash.com/photo-1544717305-ed52b4c28155?auto=format&fit=crop&w=200&q=80',
             ],

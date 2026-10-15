@@ -40,7 +40,7 @@ class SiteSettingTranslationTest extends TestCase
         $shared = SiteSetting::current()->toShared();
 
         // No Dari rows yet: the reader still gets the English source of truth.
-        $this->assertSame('Welcome to Mustaqbal School', $shared['home']['title']);
+        $this->assertSame('Welcome to My School', $shared['home']['title']);
     }
 
     public function test_to_shared_returns_the_active_language_copy(): void
@@ -50,7 +50,7 @@ class SiteSettingTranslationTest extends TestCase
 
         $setting->translations()->create([
             'language_id' => $ps->id,
-            'home_title' => 'د مستقبل ښوونځي ته ښه راغلاست',
+            'home_title' => 'د زما ښوونځي ته ښه راغلاست',
             'home_stats' => [['value' => '1,200+', 'label' => 'زده‌کوونکي']],
         ]);
 
@@ -58,7 +58,7 @@ class SiteSettingTranslationTest extends TestCase
 
         $shared = $setting->fresh(['translations.language'])->toShared();
 
-        $this->assertSame('د مستقبل ښوونځي ته ښه راغلاست', $shared['home']['title']);
+        $this->assertSame('د زما ښوونځي ته ښه راغلاست', $shared['home']['title']);
         $this->assertSame('زده‌کوونکي', $shared['stats'][0]['label']);
     }
 
@@ -69,16 +69,16 @@ class SiteSettingTranslationTest extends TestCase
         $response = $this->put('/dashboard/site-settings', [
             'translations' => [
                 'en' => [
-                    'brand_name' => 'Mustaqbal School',
-                    'brand_short_name' => 'Mustaqbal',
-                    'home_title' => 'Welcome to Mustaqbal',
+                    'brand_name' => 'My School',
+                    'brand_short_name' => 'My School',
+                    'home_title' => 'Welcome to My School',
                     'tagline' => 'Building tomorrow',
                     'home_stats' => [
                         ['value' => '900', 'label' => 'Students'],
                     ],
                 ],
                 'ps' => [
-                    'brand_name' => 'د مستقبل ښوونځی',
+                    'brand_name' => 'د زما ښوونځی',
                     'home_title' => 'ښه راغلاست',
                     'home_stats' => [
                         ['value' => '900', 'label' => 'زده‌کوونکي'],
@@ -99,9 +99,9 @@ class SiteSettingTranslationTest extends TestCase
         $setting = SiteSetting::current();
 
         // Default language mirrored onto the parent row.
-        $this->assertSame('Mustaqbal School', $setting->brand_name);
-        $this->assertSame('Mustaqbal', $setting->brand_short_name);
-        $this->assertSame('Welcome to Mustaqbal', $setting->home_title);
+        $this->assertSame('My School', $setting->brand_name);
+        $this->assertSame('My School', $setting->brand_short_name);
+        $this->assertSame('Welcome to My School', $setting->home_title);
         $this->assertSame('Building tomorrow', $setting->tagline);
         $this->assertSame('Students', $setting->home_stats[0]['label']);
 
@@ -109,7 +109,7 @@ class SiteSettingTranslationTest extends TestCase
         $byCode = $setting->translations()->with('language')->get()
             ->keyBy(fn ($t) => $t->language->code);
 
-        $this->assertSame('د مستقبل ښوونځی', $byCode['ps']->brand_name);
+        $this->assertSame('د زما ښوونځی', $byCode['ps']->brand_name);
         $this->assertSame('ښه راغلاست', $byCode['ps']->home_title);
         $this->assertSame('زده‌کوونکي', $byCode['ps']->home_stats[0]['label']);
         $this->assertSame('خوش آمدید', $byCode['fa_AF']->home_title);
@@ -125,8 +125,8 @@ class SiteSettingTranslationTest extends TestCase
         $this->put('/dashboard/site-settings', [
             'translations' => [
                 'en' => [
-                    'brand_name' => 'Mustaqbal School',
-                    'brand_short_name' => 'Mustaqbal',
+                    'brand_name' => 'My School',
+                    'brand_short_name' => 'My School',
                     'home_title' => 'Welcome',
                     'home_stats' => [
                         ['value' => '900', 'label' => 'Students'],

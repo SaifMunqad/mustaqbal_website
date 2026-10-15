@@ -12,7 +12,7 @@ class SetLocale
     /**
      * Cookie used to remember the language a visitor picked in the switcher.
      */
-    public const COOKIE = 'mustaqbal_locale';
+    public const COOKIE = 'school_locale';
 
     /**
      * Remember the visitor's language for a year.

@@ -1,4 +1,4 @@
-# Mustaqbal Website - Community Module
+# My School Website - Community Module
 
 This project now includes:
 

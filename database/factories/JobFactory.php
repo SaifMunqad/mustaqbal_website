@@ -33,7 +33,7 @@ class JobFactory extends Factory
                 '2:00 PM - 6:00 PM',
                 '4:00 PM - 8:00 PM',
             ]),
-            'application_email' => 'careers@mustaqbal.af',
+            'application_email' => 'careers@myschool.example',
             'application_url' => null,
             'deadline' => fake()->boolean(60) ? fake()->dateTimeBetween('+1 week', '+3 months')->format('Y-m-d') : null,
             'is_active' => true,
