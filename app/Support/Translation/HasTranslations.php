@@ -47,8 +47,15 @@ trait HasTranslations
 
     /**
      * The translation row matching the requested (or current) locale, walking the
-     * shared fallback chain. Falls back to the first available row so a record is
-     * never rendered without content when any translation exists.
+     * shared fallback chain (current → default → app fallback → en).
+     *
+     * Returns null when no language in that chain has a row — it deliberately
+     * does NOT return an arbitrary other-language row. Doing so previously bled a
+     * secondary language (e.g. Pashto) into a default-language visitor whenever
+     * the model stored only non-default rows (SiteSetting keeps its default text
+     * on the parent columns, not as a translation row). A null here lets
+     * {@see translated()} fall through to the parent column and then the caller's
+     * default, which is the correct, language-safe resolution order.
      */
     public function resolveTranslationRow(?string $languageCode = null): ?Model
     {
@@ -65,7 +72,7 @@ trait HasTranslations
             }
         }
 
-        return $translations->first();
+        return null;
     }
 
     /**

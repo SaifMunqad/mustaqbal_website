@@ -92,6 +92,8 @@ class Program extends Model
             }
         }
 
-        return $translations->first();
+        // Never return an unrelated language's label: callers fall back to the
+        // language-neutral `program_type` key instead of bleeding another locale.
+        return null;
     }
 }
