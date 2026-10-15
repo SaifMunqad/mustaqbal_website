@@ -1,8 +1,5 @@
 import { cn } from '@/lib/utils';
-import { enroll } from '@/routes/school';
-import { Link } from '@inertiajs/react';
 import {
-    ArrowLeftRight,
     BookOpen,
     CalendarDays,
     GraduationCap,
@@ -31,8 +28,6 @@ export interface Program {
 
 interface TypeAccent {
     icon: LucideIcon;
-    /** Left-to-right gradient used for the card's top band. */
-    gradient: string;
     /** Tinted tile that frames the leading icon. */
     tile: string;
     /** Soft ring/border highlight used on hover. */
@@ -47,19 +42,16 @@ interface TypeAccent {
 export const PROGRAM_ACCENTS: Record<ProgramType, TypeAccent> = {
     school: {
         icon: GraduationCap,
-        gradient: 'from-blue-500 to-blue-600',
         tile: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300',
         ring: 'hover:border-blue-300 dark:hover:border-blue-500/50',
     },
     courses: {
         icon: BookOpen,
-        gradient: 'from-blue-500 to-blue-600',
         tile: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300',
         ring: 'hover:border-blue-300 dark:hover:border-blue-500/50',
     },
     islamic_madrasa: {
         icon: MoonStar,
-        gradient: 'from-blue-500 to-blue-600',
         tile: 'bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
         ring: 'hover:border-blue-300 dark:hover:border-blue-500/50',
     },
@@ -92,9 +84,9 @@ function MetaRow({
 }
 
 /**
- * Redesigned program card: a category-colored top band, a leading icon tile,
- * a type badge, icon-led metadata rows, an enrollment status pill and an
- * enroll call-to-action. Flex column + mt-auto footer keeps cards aligned.
+ * Redesigned program card: a leading icon tile, a type badge, icon-led
+ * metadata rows and an enrollment status pill. Flex column + mt-auto footer
+ * keeps cards aligned.
  */
 export default function ProgramCard({ program }: { program: Program }) {
     const { t } = useTranslation();
@@ -109,10 +101,6 @@ export default function ProgramCard({ program }: { program: Program }) {
                 accent.ring,
             )}
         >
-            <div
-                className={cn('h-1.5 w-full bg-gradient-to-r', accent.gradient)}
-            />
-
             <div className="flex flex-1 flex-col gap-4 p-5">
                 <header className="flex items-start gap-3">
                     <div
@@ -168,7 +156,7 @@ export default function ProgramCard({ program }: { program: Program }) {
                     />
                 </div>
 
-                <footer className="flex items-center justify-between gap-2">
+                <footer className="flex items-center justify-end gap-2">
                     <span
                         className={cn(
                             'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold',
@@ -189,16 +177,6 @@ export default function ProgramCard({ program }: { program: Program }) {
                             ? t('programs.enrollmentOpen')
                             : t('programs.enrollmentClosed')}
                     </span>
-
-                    {program.available_for_enroll ? (
-                        <Link
-                            href={enroll.url()}
-                            className="inline-flex items-center gap-1 rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-slate-700 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
-                        >
-                            {t('navigation.enroll')}
-                            <ArrowLeftRight className="size-4" aria-hidden />
-                        </Link>
-                    ) : null}
                 </footer>
             </div>
         </article>

@@ -117,46 +117,50 @@ export default function JobCard({ job }: { job: Job }) {
                 </div>
             ) : null}
 
-            {job.application_email || job.application_url ? (
-                <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-                    {job.application_email ? (
-                        showEmail ? (
+            {job.application_email || job.application_url || job.deadline ? (
+                <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex flex-wrap items-center gap-3">
+                        {job.application_email ? (
+                            showEmail ? (
+                                <a
+                                    href={`mailto:${job.application_email}`}
+                                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+                                >
+                                    <EnvelopeIcon className="size-4" />
+                                    {job.application_email}
+                                </a>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => setShowEmail(true)}
+                                    className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700 transition hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/30 dark:text-blue-300 dark:hover:bg-blue-950/50"
+                                >
+                                    <EnvelopeIcon className="size-4" />
+                                    {t('jobs.showEmail')}
+                                </button>
+                            )
+                        ) : null}
+
+                        {job.application_url ? (
                             <a
-                                href={`mailto:${job.application_email}`}
-                                className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+                                href={job.application_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700"
                             >
-                                <EnvelopeIcon className="size-4" />
-                                {job.application_email}
+                                {t('jobs.applyOnline')}
                             </a>
-                        ) : (
-                            <button
-                                type="button"
-                                onClick={() => setShowEmail(true)}
-                                className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700 transition hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/30 dark:text-blue-300 dark:hover:bg-blue-950/50"
-                            >
-                                <EnvelopeIcon className="size-4" />
-                                {t('jobs.showEmail')}
-                            </button>
-                        )
-                    ) : null}
+                        ) : null}
+                    </div>
 
-                    {job.application_url ? (
-                        <a
-                            href={job.application_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700"
-                        >
-                            {t('jobs.applyOnline')}
-                        </a>
+                    {job.deadline ? (
+                        <span className="ms-auto inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+                            <CalendarDaysIcon className="size-4" />
+                            <span>
+                                {t('jobs.deadline')}: {job.deadline}
+                            </span>
+                        </span>
                     ) : null}
-                </div>
-            ) : null}
-
-            {job.deadline ? (
-                <div className="mt-4 flex items-center justify-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
-                    <CalendarDaysIcon className="size-4" />
-                    <span>{t('jobs.deadline')}: {job.deadline}</span>
                 </div>
             ) : null}
         </article>
