@@ -13,12 +13,13 @@ import { initializeTheme } from './hooks/use-appearance';
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 /**
- * Keep the browser tab icon in sync with the admin-managed site favicon.
+ * Keep the browser tab icon in sync with the site favicon, which is generated
+ * automatically from the admin-uploaded logo (see {@see \App\Services\FaviconService}).
  *
  * The favicon lives in the server-rendered <head>, which Inertia does not
- * re-render on partial navigations. Without this, a favicon saved from the
- * dashboard would only appear after a hard reload. The stored value is made
- * relative to sidestep host/port mismatches with APP_URL.
+ * re-render on partial navigations. Without this, an updated icon would only
+ * appear after a hard reload. The stored value is made relative to sidestep
+ * host/port mismatches with APP_URL.
  */
 function toRelativeUrl(url: string): string {
     try {

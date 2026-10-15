@@ -2,25 +2,32 @@
 
 namespace App\Models;
 
+use App\Support\Translation\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Single-row store for global, DB-driven site content (branding, home hero,
  * contact details and social links). Shared with the frontend on every request
  * so names, descriptions and images come from the database instead of being
  * hard-coded in the UI.
+ *
+ * The brand name/short name, hero copy, tagline, footer text and the home
+ * stats/features lists are localized via `site_setting_translations` (see
+ * {@see HasTranslations}); the parent row keeps the default-language values as
+ * the fallback source of truth.
  */
 class SiteSetting extends Model
 {
     use HasFactory;
+    use HasTranslations;
 
     protected $fillable = [
         'brand_name',
         'brand_short_name',
         'tagline',
         'logo_url',
-        'favicon_url',
         'home_title',
         'home_subtitle',
         'home_cta_primary',
@@ -49,6 +56,25 @@ class SiteSetting extends Model
         return [
             'home_stats' => 'array',
             'home_features' => 'array',
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function translatedAttributes(): array
+    {
+        return [
+            'brand_name',
+            'brand_short_name',
+            'tagline',
+            'home_title',
+            'home_subtitle',
+            'home_cta_primary',
+            'home_cta_secondary',
+            'footer_text',
+            'home_stats',
+            'home_features',
         ];
     }
 
@@ -114,21 +140,23 @@ class SiteSetting extends Model
      */
     public function toShared(): array
     {
+        $icons = $this->iconAssets();
+
         return [
-            'brand_name' => $this->brand_name,
-            'brand_short_name' => $this->brand_short_name,
-            'tagline' => $this->tagline,
+            'brand_name' => $this->translated('brand_name'),
+            'brand_short_name' => $this->translated('brand_short_name'),
+            'tagline' => $this->translated('tagline'),
             'logo_url' => $this->logo_url,
-            'favicon_url' => $this->favicon_url,
+            'favicon_url' => $icons['ico'] ?? $icons['favicon_32'] ?? null,
             'home' => [
-                'title' => $this->home_title,
-                'subtitle' => $this->home_subtitle,
-                'cta_primary' => $this->home_cta_primary,
-                'cta_secondary' => $this->home_cta_secondary,
+                'title' => $this->translated('home_title'),
+                'subtitle' => $this->translated('home_subtitle'),
+                'cta_primary' => $this->translated('home_cta_primary'),
+                'cta_secondary' => $this->translated('home_cta_secondary'),
                 'hero_image' => $this->home_hero_image,
             ],
-            'stats' => $this->home_stats ?? [],
-            'features' => $this->home_features ?? [],
+            'stats' => $this->translated('home_stats') ?? [],
+            'features' => $this->translated('home_features') ?? [],
             'contact' => [
                 'email' => $this->contact_email,
                 'phone_primary' => $this->contact_phone_primary,
@@ -146,7 +174,38 @@ class SiteSetting extends Model
                 'youtube' => $this->social_youtube,
                 'whatsapp' => $this->social_whatsapp,
             ],
-            'footer_text' => $this->footer_text,
+            'footer_text' => $this->translated('footer_text'),
         ];
+    }
+
+    /**
+     * Publicly reachable URLs for the icon assets generated from the logo (see
+     * {@see \App\Services\FaviconService}). Only existing files are returned, each
+     * with a content-versioned query string so the browser tab icon refreshes the
+     * moment the logo changes. Keys: favicon_16/32/48/192, apple_touch, ico.
+     *
+     * @return array<string, string>
+     */
+    public function iconAssets(): array
+    {
+        $disk = Storage::disk('public');
+
+        $files = [
+            'favicon_16' => 'branding/favicon-16.png',
+            'favicon_32' => 'branding/favicon-32.png',
+            'favicon_48' => 'branding/favicon-48.png',
+            'favicon_192' => 'branding/favicon-192.png',
+            'apple_touch' => 'branding/apple-touch-icon.png',
+            'ico' => 'branding/favicon.ico',
+        ];
+
+        $urls = [];
+        foreach ($files as $key => $path) {
+            if ($disk->exists($path)) {
+                $urls[$key] = '/storage/'.$path.'?v='.$disk->lastModified($path);
+            }
+        }
+
+        return $urls;
     }
 }

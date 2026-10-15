@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,7 +27,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Icon generation runs on the GD driver (always available here); bound as
+        // a stateless manager so FaviconService can resolve it via the container.
+        $this->app->singleton(ImageManager::class, fn (): ImageManager => new ImageManager(new Driver()));
     }
 
     /**

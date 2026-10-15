@@ -3,7 +3,8 @@
     use App\Models\SiteSetting;$locale = app()->getLocale();
     $dir = \App\Models\Language::dirFor($locale);
     $isRtlLocale = $dir === 'rtl';
-    $favicon = SiteSetting::current()->favicon_url;
+    $icons = SiteSetting::current()->iconAssets();
+    $favicon = $icons['ico'] ?? $icons['favicon_32'] ?? null;
 @endphp
 <html lang="{{ str_replace('_', '-', $locale) }}" dir="{{ $dir }}"
       data-app-font="{{ $isRtlLocale ? 'rubik' : 'tajawal' }}" @class(['dark' => ($appearance ?? 'system') == 'dark'])>
@@ -39,11 +40,18 @@
 
     <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
-    <link rel="icon" href="{{ $favicon ?? '/favicon.ico' }}" sizes="any">
-    @if (!$favicon)
+    @if ($favicon)
+        {{-- Icons generated from the logo: a real .ico plus sized PNGs. --}}
+        <link rel="icon" href="{{ $favicon }}" sizes="any">
+        @isset ($icons['favicon_16'])<link rel="icon" type="image/png" sizes="16x16" href="{{ $icons['favicon_16'] }}">@endisset
+        @isset ($icons['favicon_32'])<link rel="icon" type="image/png" sizes="32x32" href="{{ $icons['favicon_32'] }}">@endisset
+        @isset ($icons['favicon_48'])<link rel="icon" type="image/png" sizes="48x48" href="{{ $icons['favicon_48'] }}">@endisset
+        @isset ($icons['favicon_192'])<link rel="icon" type="image/png" sizes="192x192" href="{{ $icons['favicon_192'] }}">@endisset
+    @else
+        <link rel="icon" href="/favicon.ico" sizes="any">
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     @endif
-    <link rel="apple-touch-icon" href="{{ $favicon ?? '/apple-touch-icon.png' }}">
+    <link rel="apple-touch-icon" href="{{ $icons['apple_touch'] ?? '/apple-touch-icon.png' }}">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />

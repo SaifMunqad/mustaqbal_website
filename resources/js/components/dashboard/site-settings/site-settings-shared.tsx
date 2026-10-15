@@ -5,8 +5,10 @@ import type { HomeFeature, HomeStat } from '@/types';
 // consistent with the plain TextField look used elsewhere on this page.
 export const rowInputClass =
     'w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-gray-900 dark:text-slate-100';
-export const rowButtonClass =
-    'shrink-0 rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-gray-800';
+// Danger-tinted inline row button, used for destructive actions
+// (e.g. removing a quick stat or feature) so it reads as a delete control.
+export const rowRemoveButtonClass =
+    'shrink-0 rounded-md border border-red-300 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40';
 
 // Feature icon keys offered to the admin; must match ICON_MAP in
 // components/home/feature-grid.tsx so the chosen icon actually renders.
@@ -23,7 +25,6 @@ export interface SiteSettingRecord {
     brand_short_name: string;
     tagline?: string | null;
     logo_url?: string | null;
-    favicon_url?: string | null;
     home_title?: string | null;
     home_subtitle?: string | null;
     home_cta_primary?: string | null;
