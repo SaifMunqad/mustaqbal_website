@@ -11,6 +11,7 @@ use App\Models\ProgramTypeTranslation;
 use App\Models\SitePage;
 use App\Models\SiteSetting;
 use App\Models\User;
+use App\Support\Admin\EnsureAdminAccount;
 use App\Support\Translation\LocalizedContent;
 use Illuminate\Database\Seeder;
 
@@ -27,28 +28,31 @@ class DatabaseSeeder extends Seeder
             SiteSetting::query()->create(SiteSetting::defaults());
         }
 
-        $languages = collect([
-            ['code' => 'en', 'name' => 'English', 'dir' => 'ltr', 'is_default' => true, 'sort_order' => 1],
-            ['code' => 'ps', 'name' => 'Pashto', 'dir' => 'rtl', 'is_default' => false, 'sort_order' => 2],
-            ['code' => 'fa_AF', 'name' => 'Dari', 'dir' => 'rtl', 'is_default' => false, 'sort_order' => 3],
-        ])->mapWithKeys(function (array $language): array {
-            $model = Language::query()->updateOrCreate(
+        // Secondary languages are added here. Dari (fa_AF) is already created by
+        // the languages migration as the default (is_default=true), so seeding
+        // never re-creates it or flips the default away from Dari.
+        collect([
+            ['code' => 'en', 'name' => 'English', 'dir' => 'ltr', 'sort_order' => 2],
+            ['code' => 'ps', 'name' => 'Pashto', 'dir' => 'rtl', 'sort_order' => 3],
+        ])->each(function (array $language): void {
+            Language::query()->updateOrCreate(
                 ['code' => $language['code']],
                 [
                     'name' => $language['name'],
                     'dir' => $language['dir'],
                     'is_active' => true,
-                    'is_default' => $language['is_default'],
+                    'is_default' => false,
                     'sort_order' => $language['sort_order'],
                 ],
             );
-
-            if ($language['is_default']) {
-                $model->makeDefault();
-            }
-
-            return [$language['code'] => $model];
         });
+
+        // Read all three languages (including the migration-created Dari) so the
+        // translation loops below can key rows by language id.
+        $languages = Language::query()
+            ->whereIn('code', ['en', 'ps', 'fa_AF'])
+            ->get()
+            ->keyBy('code');
 
         // Localize the global site settings for the secondary languages so the
         // public home page renders translated hero/stats/features on a fresh
@@ -69,22 +73,12 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Default admin account, created only when seeded from the environment so
-        // credentials never live in the repository.
-        $adminEmail = env('SEED_ADMIN_EMAIL');
-        $adminPassword = env('SEED_ADMIN_PASSWORD');
-
-        if (filled($adminEmail) && filled($adminPassword)) {
-            User::firstOrCreate(
-                ['email' => $adminEmail],
-                [
-                    'name' => 'Site Admin',
-                    'role' => UserRole::Admin->value,
-                    'password' => $adminPassword,
-                    'email_verified_at' => now(),
-                ]
-            );
-        }
+        // Default admin account, created only when configured from the
+        // environment so credentials never live in the repository. Shares the
+        // same safe firstOrCreate logic the app runs on boot (no seeder needed
+        // there); force bypasses the once-per-process guard so seeding always
+        // ensures the account.
+        EnsureAdminAccount::handle(force: true);
 
         // Rich, sectioned About page (story, stats, mission & vision, values,
         // highlights, goals, leadership message, FAQ). Idempotent and kept in a
@@ -250,6 +244,11 @@ class DatabaseSeeder extends Seeder
 
         // Job postings: 20 active positions and 5 closed ones for the careers portal.
         $this->call(JobSeeder::class);
+
+        // Recognition showcase: top students, teachers and an employee of the
+        // month. Runs before the home layout so the curated recognition section
+        // resolves to real honors instead of an empty group.
+        $this->call(RecognitionSeeder::class);
 
         // Home page layout: authored banner/announcement blocks plus curated
         // sections wired to the articles/events/recognition seeded above, so the

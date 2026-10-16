@@ -233,6 +233,11 @@ const faAF = {
             'هر هفته و هر ماه از درخشان‌ترين اعضای جامعه مکتب قدردانی می‌کنیم.',
         viewAll: 'ديدن همه',
         empty: 'بخش ستايش به زودي اینجا نمایش داده می‌شود.',
+        categories: {
+            students: 'شاگردان',
+            teachers: 'معلمین',
+            employees: 'کارکنان',
+        },
     },
     events: {
         title: 'پېښه های مکتب',
@@ -300,6 +305,11 @@ const faAF = {
         quickActions: 'اقدامات سريع',
         sidebar: {
             platform: 'پلتفرم',
+            overview: 'نمای کلی',
+            content: 'محتوا',
+            community: 'ټولنه',
+            bulkMessages: 'پیغامونو گروهي',
+            administration: 'مدیریت',
         },
         tabs: {
             homePage: 'صفحه اصلی',
@@ -310,9 +320,12 @@ const faAF = {
             contacts: 'تماس ها',
             messages: 'پيام ها',
             emailCampaigns: 'ايميل گروهي',
+            whatsappCampaigns: 'واټساپ گروهي',
+            whatsappSettings: 'واټساپ API',
             programs: 'برنامه ها',
             jobs: 'دنده ها',
             pages: 'صفحه ها',
+            about: 'درباره ما',
             users: 'کاربرها',
             books: 'کتاب ها',
             categories: 'بخش ها',
@@ -381,6 +394,15 @@ const faAF = {
             showTitle: 'جزئیات کمپين',
             new: 'کمپين جديد',
         },
+        whatsappCampaigns: {
+            title: 'واټساپ گروهي',
+            createTitle: 'کمپين جديد',
+            showTitle: 'جزئیات کمپين',
+            new: 'کمپين جديد',
+        },
+        whatsappSettings: {
+            title: 'تنظیمات واټساپ API',
+        },
         programs: {
             title: 'برنامه ها',
             createTitle: 'ايجاد برنامه',
@@ -391,6 +413,9 @@ const faAF = {
             createTitle: 'ايجاد صفحه',
             editTitle: 'ويرايش صفحه',
             helpTitle: 'رهنماي نگارش',
+        },
+        about: {
+            title: 'صفحه درباره ما',
         },
         users: {
             title: 'حساب ها',

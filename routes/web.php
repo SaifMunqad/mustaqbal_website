@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Dashboard\DashboardAboutController;
 use App\Http\Controllers\Dashboard\DashboardArticleController;
 use App\Http\Controllers\Dashboard\DashboardBookCategoryController;
 use App\Http\Controllers\Dashboard\DashboardBookController;
@@ -11,11 +12,12 @@ use App\Http\Controllers\Dashboard\DashboardLanguageController;
 use App\Http\Controllers\Dashboard\DashboardMessageController;
 use App\Http\Controllers\Dashboard\DashboardPostController;
 use App\Http\Controllers\Dashboard\DashboardProgramController;
-use App\Http\Controllers\Dashboard\DashboardSitePageController;
 use App\Http\Controllers\Dashboard\DashboardSiteSettingController;
 use App\Http\Controllers\Dashboard\DashboardUserController;
 use App\Http\Controllers\Dashboard\EmailCampaignController;
 use App\Http\Controllers\Dashboard\UploadController;
+use App\Http\Controllers\Dashboard\WhatsAppCampaignController;
+use App\Http\Controllers\Dashboard\WhatsAppSettingController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -117,6 +119,20 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
         Route::post('/{email_campaign}/retry', [EmailCampaignController::class, 'retry'])->name('retry');
     });
 
+    Route::prefix('whatsapp-campaigns')->name('dashboard.whatsapp-campaigns.')->middleware('role:admin')->group(function () {
+        Route::get('/', [WhatsAppCampaignController::class, 'index'])->name('index');
+        Route::get('/create', [WhatsAppCampaignController::class, 'create'])->name('create');
+        Route::post('/', [WhatsAppCampaignController::class, 'store'])->name('store');
+        Route::get('/{whatsapp_campaign}', [WhatsAppCampaignController::class, 'show'])->name('show');
+        Route::post('/{whatsapp_campaign}/retry', [WhatsAppCampaignController::class, 'retry'])->name('retry');
+    });
+
+    Route::prefix('whatsapp-settings')->name('dashboard.whatsapp-settings.')->middleware('role:admin')->group(function () {
+        Route::get('/', [WhatsAppSettingController::class, 'edit'])->name('edit');
+        Route::put('/', [WhatsAppSettingController::class, 'update'])->name('update');
+        Route::post('/test', [WhatsAppSettingController::class, 'test'])->name('test');
+    });
+
     Route::prefix('programs')->name('dashboard.programs.')->group(function () {
         Route::get('/', [DashboardProgramController::class, 'index'])->name('index');
         Route::get('/create', [DashboardProgramController::class, 'create'])->name('create');
@@ -137,18 +153,10 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
         Route::delete('/{language}', [DashboardLanguageController::class, 'destroy'])->name('destroy');
     });
 
-    Route::prefix('site-pages')->name('dashboard.site-pages.')->group(function () {
-        Route::get('/', [DashboardSitePageController::class, 'index'])->name('index');
-        Route::get('/help', [DashboardSitePageController::class, 'help'])->name('help');
-        Route::get('/create', [DashboardSitePageController::class, 'create'])->name('create');
-        Route::get('/{sitePage}/visual', [DashboardSitePageController::class, 'visual'])->middleware('role:management')->name('visual');
-        Route::get('/{sitePage}/edit', [DashboardSitePageController::class, 'edit'])->name('edit');
-        Route::post('/', [DashboardSitePageController::class, 'store'])
-            ->middleware('role:management')
-            ->name('store');
-        Route::put('/{sitePage}', [DashboardSitePageController::class, 'update'])
-            ->middleware('role:management')
-            ->name('update');
+    Route::prefix('about')->name('dashboard.about.')->middleware('role:management')->group(function () {
+        Route::get('/', [DashboardAboutController::class, 'edit'])->name('edit');
+        Route::get('/visual', [DashboardAboutController::class, 'visual'])->name('visual');
+        Route::put('/', [DashboardAboutController::class, 'update'])->name('update');
     });
 
     Route::prefix('site-settings')->name('dashboard.site-settings.')->group(function () {

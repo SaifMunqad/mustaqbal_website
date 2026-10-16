@@ -233,6 +233,11 @@ const ps = {
         subtitle: 'هره اونۍ او هره میاشت د زده کړې ټولنې ستاينه کوو.',
         viewAll: 'ټول وګورئ',
         empty: 'د ستايي برخه به دا ځای ښکاره شي.',
+        categories: {
+            students: 'زده کوونکي',
+            teachers: 'ښوونکي',
+            employees: 'کارکوونکي',
+        },
     },
     events: {
         title: 'د ښوونځي پېښې',
@@ -299,6 +304,11 @@ const ps = {
         quickActions: 'چټک کارونه',
         sidebar: {
             platform: 'پلېټفارم',
+            overview: 'لتنه',
+            content: 'منځپانګه',
+            community: 'ټولنه',
+            bulkMessages: 'ټولیز پیغامونه',
+            administration: 'مدیریت',
         },
         tabs: {
             homePage: 'کورنۍ پاڼه',
@@ -309,9 +319,12 @@ const ps = {
             contacts: 'اړيکې',
             messages: 'پيغامونه',
             emailCampaigns: 'ټوليز ايميل',
+            whatsappCampaigns: 'ټوليز واټساپ',
+            whatsappSettings: 'واټساپ API',
             programs: 'پروګرامونه',
             jobs: 'دندې',
             pages: 'پاڼې',
+            about: 'زموږ په اړه',
             users: 'کاروونکي',
             books: 'کتابونه',
             categories: 'ډولونه',
@@ -380,6 +393,15 @@ const ps = {
             showTitle: 'د کمپاین جزئیات',
             new: 'نوی کمپاین',
         },
+        whatsappCampaigns: {
+            title: 'ټوليز واټساپ',
+            createTitle: 'نوی کمپاین',
+            showTitle: 'د کمپاین جزئیات',
+            new: 'نوی کمپاین',
+        },
+        whatsappSettings: {
+            title: 'د واټساپ API تنظیمات',
+        },
         programs: {
             title: 'پروګرامونه',
             createTitle: 'پروګرام جوړول',
@@ -390,6 +412,9 @@ const ps = {
             createTitle: 'پاڼه جوړول',
             editTitle: 'پاڼه سمول',
             helpTitle: 'د لیکلو لارښود',
+        },
+        about: {
+            title: 'د زموږ په اړه پاڼه',
         },
         users: {
             title: 'حسابونه',

@@ -276,6 +276,11 @@ const en = {
             'Celebrating the excellence of our school community every week and every month.',
         viewAll: 'View all',
         empty: 'Recognition highlights will appear here soon.',
+        categories: {
+            students: 'Students',
+            teachers: 'Teachers',
+            employees: 'Employees',
+        },
     },
     events: {
         title: 'School Events',
@@ -378,6 +383,15 @@ const en = {
             sent: 'Sent',
             failed: 'Failed',
         },
+        whatsappCampaignStatus: {
+            queued: 'Queued',
+            completed: 'Completed',
+        },
+        whatsappDeliveryStatus: {
+            pending: 'Pending',
+            sent: 'Sent',
+            failed: 'Failed',
+        },
     },
     jobs: {
         employmentType: {
@@ -414,6 +428,11 @@ const en = {
         quickActions: 'Quick Actions',
         sidebar: {
             platform: 'Platform',
+            overview: 'Overview',
+            content: 'Content',
+            community: 'Community',
+            bulkMessages: 'Bulk Messages',
+            administration: 'Administration',
         },
         tabs: {
             overview: 'Overview',
@@ -424,9 +443,12 @@ const en = {
             contacts: 'Contacts',
             messages: 'Messages',
             emailCampaigns: 'Bulk Email',
+            whatsappCampaigns: 'Bulk WhatsApp',
+            whatsappSettings: 'WhatsApp API',
             programs: 'Programs',
             jobs: 'Jobs',
             pages: 'Pages',
+            about: 'About',
             users: 'Users',
             books: 'Books',
             categories: 'Categories',
@@ -498,6 +520,15 @@ const en = {
             showTitle: 'Campaign Details',
             new: 'New Campaign',
         },
+        whatsappCampaigns: {
+            title: 'Bulk WhatsApp',
+            createTitle: 'New Campaign',
+            showTitle: 'Campaign Details',
+            new: 'New Campaign',
+        },
+        whatsappSettings: {
+            title: 'WhatsApp API Settings',
+        },
         programs: {
             title: 'Programs',
             createTitle: 'Create Program',
@@ -508,6 +539,9 @@ const en = {
             createTitle: 'Create Page',
             editTitle: 'Edit Page',
             helpTitle: 'Writing Guide',
+        },
+        about: {
+            title: 'About Page',
         },
         users: {
             title: 'Accounts',

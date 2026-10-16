@@ -57,8 +57,7 @@ const ar = {
         jobsTitle: 'أحدث الوظائف الشاغرة',
         viewAllJobs: 'مشاهدة كل الوظائف',
         admissionsTitle: 'جاهز للانضمام الى مجتمعنا؟',
-        admissionsSubtitle:
-            'التسجيل مفتوح. امنح طفلك مستقبلا واثقا في مدرستي.',
+        admissionsSubtitle: 'التسجيل مفتوح. امنح طفلك مستقبلا واثقا في مدرستي.',
         admissionsCta: 'طلب التحاق',
         admissionsSecondary: 'تحدث الينا',
     },
@@ -169,11 +168,15 @@ const ar = {
         subtitle: 'نحتفي بتميز مجتمعنا المدرسي كل أسبوع وكل شهر.',
         viewAll: 'عرض الكل',
         empty: 'ستظهر هنا ابرز التكريمات قريبا.',
+        categories: {
+            students: 'الطلاب',
+            teachers: 'المعلمون',
+            employees: 'الموظفون',
+        },
     },
     events: {
         title: 'فعاليات المدرسة',
-        subtitle:
-            'اكتشف الفعاليات والانشطة والاحتفالات القادمة في مدرستي.',
+        subtitle: 'اكتشف الفعاليات والانشطة والاحتفالات القادمة في مدرستي.',
         upcoming: 'القادمة',
         none: 'لا توجد فعاليات قادمة بعد.',
         back: 'العودة الى الفعاليات',
@@ -235,6 +238,11 @@ const ar = {
         quickActions: 'إجراءات سريعة',
         sidebar: {
             platform: 'المنصة',
+            overview: 'نظرة عامة',
+            content: 'المحتوى',
+            community: 'المجتمع',
+            bulkMessages: 'الرسائل الجماعية',
+            administration: 'الإدارة',
         },
         tabs: {
             homePage: 'الصفحة الرئيسية',
@@ -245,9 +253,12 @@ const ar = {
             contacts: 'جهات الاتصال',
             messages: 'الرسائل',
             emailCampaigns: 'البريد الجماعي',
+            whatsappCampaigns: 'الواتساب الجماعي',
+            whatsappSettings: 'واتساب API',
             programs: 'البرامج',
             jobs: 'الوظائف',
             pages: 'الصفحات',
+            about: 'من نحن',
             users: 'المستخدمون',
             books: 'الكتب',
             categories: 'التصنيفات',
@@ -316,6 +327,15 @@ const ar = {
             showTitle: 'تفاصيل الحملة',
             new: 'حملة جديدة',
         },
+        whatsappCampaigns: {
+            title: 'الواتساب الجماعي',
+            createTitle: 'حملة جديدة',
+            showTitle: 'تفاصيل الحملة',
+            new: 'حملة جديدة',
+        },
+        whatsappSettings: {
+            title: 'إعدادات واتساب API',
+        },
         programs: {
             title: 'البرامج',
             createTitle: 'إنشاء برنامج',
@@ -326,6 +346,9 @@ const ar = {
             createTitle: 'إنشاء صفحة',
             editTitle: 'تعديل صفحة',
             helpTitle: 'دليل الكتابة',
+        },
+        about: {
+            title: 'صفحة من نحن',
         },
         users: {
             title: 'الحسابات',
