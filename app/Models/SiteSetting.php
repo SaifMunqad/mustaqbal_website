@@ -94,18 +94,11 @@ class SiteSetting extends Model
             'home_subtitle' => 'A modern Afghan school where students grow with confidence, knowledge, and character.',
             'home_cta_primary' => 'Explore Programs',
             'home_cta_secondary' => 'Contact Us',
-            'home_stats' => [
-                ['value' => '1,200+', 'label' => 'Students'],
-                ['value' => '80+', 'label' => 'Teachers'],
-                ['value' => '25+', 'label' => 'Years'],
-                ['value' => '40+', 'label' => 'Subjects'],
-            ],
-            'home_features' => [
-                ['icon' => 'faculty', 'title' => 'Qualified Faculty', 'description' => 'Experienced, dedicated teachers who put every student first.'],
-                ['icon' => 'values', 'title' => 'Values-Based Learning', 'description' => 'Character, confidence and community woven into the curriculum.'],
-                ['icon' => 'facilities', 'title' => 'Modern Facilities', 'description' => 'Bright classrooms, a library and spaces designed for focused learning.'],
-                ['icon' => 'classes', 'title' => 'Small Classes', 'description' => 'Low student-to-teacher ratios so no one gets left behind.'],
-            ],
+            // Stats and "why families choose" features are curated, real content.
+            // Ship them empty so the home page hides those sections until an admin
+            // enters genuine data, rather than presenting fabricated demo figures.
+            'home_stats' => [],
+            'home_features' => [],
             'contact_email' => 'info@myschool.example',
             'contact_phone_primary' => '+93 700 000 001',
             'contact_phone_secondary' => '+93 799 000 001',

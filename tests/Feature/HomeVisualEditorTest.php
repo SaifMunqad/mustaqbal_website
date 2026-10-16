@@ -28,6 +28,11 @@ class HomeVisualEditorTest extends TestCase
         // don't depend on a compiled manifest for the new page chunk.
         $this->withoutVite();
 
+        // Build a controlled en(default)+ps fixture: clear the language the
+        // languages migration seeds by default so it is not an unexpected extra
+        // active language that would shift the resolved default off English.
+        Language::query()->delete();
+
         Language::flushCache();
 
         $this->language('en', true);

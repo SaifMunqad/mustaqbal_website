@@ -610,9 +610,24 @@ class DashboardHomeSectionController extends Controller
                 continue;
             }
 
+            $language = $languages->get($code);
+
             if ($code === $default) {
+                // The default language is the source of truth on the parent
+                // columns. But a stale default-language translation row — the
+                // seeder writes one for the default — shadows those columns on
+                // the public read, because toShared()/translated() resolve a
+                // translation row before falling back to the parent. Left as-is
+                // the admin's saved home blocks never surface on the live page.
+                // Mirror the write onto the default row so the parent (what the
+                // editor shows) and the row (what the visitor reads) stay in
+                // sync and edits appear immediately.
                 $setting->update($clean);
-            } elseif ($language = $languages->get($code)) {
+
+                if ($language) {
+                    $setting->translations()->updateOrCreate(['language_id' => $language->id], $clean);
+                }
+            } elseif ($language) {
                 $setting->translations()->updateOrCreate(['language_id' => $language->id], $clean);
             }
         }
