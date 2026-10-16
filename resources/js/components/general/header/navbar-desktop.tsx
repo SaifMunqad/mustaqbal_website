@@ -66,7 +66,7 @@ function DesktopNavItem({
                 </div>
             ) : (
                 <Link href={item.href} className={sharedClassName}>
-                    <div className={iconWrapperClassName}>
+                    <div className={`${iconWrapperClassName} gap-x-1`}>
                         <Icon className="size-4" />
                     </div>
                     <span>{t(item.nameKey)}</span>

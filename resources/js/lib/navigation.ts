@@ -4,12 +4,11 @@ import {
     BriefcaseIcon,
     BuildingLibraryIcon,
     CalendarDaysIcon,
-    EnvelopeIcon,
     HomeIcon,
     PhoneIcon,
-    ShoppingBagIcon,
     TrophyIcon,
 } from '@heroicons/react/24/outline';
+import { Library } from 'lucide-react';
 import { ComponentType } from 'react';
 
 export type LanguageCode = string;
@@ -29,6 +28,9 @@ export interface NavigationItem {
     nameKey: string;
     href: string;
     icon: ComponentType<{ className?: string }>;
+    // Optional icon rendered alongside the primary one (e.g. the Contact link
+    // pairs an envelope with a phone so both ways to reach us are visible).
+    secondaryIcon?: ComponentType<{ className?: string }>;
     dropdown?: NavigationChildItem[];
 }
 
@@ -109,14 +111,6 @@ export const navigationItems: NavigationItem[] = [
                 href: '/school/jobs',
                 icon: BriefcaseIcon,
             },
-            {
-                key: 'contact',
-                name: 'Contact',
-                nameKey: 'navigation.contact',
-                descriptionKey: 'navigationDescriptions.contact',
-                href: '/school/contact',
-                icon: PhoneIcon,
-            },
         ],
     },
     {
@@ -124,14 +118,14 @@ export const navigationItems: NavigationItem[] = [
         name: 'Bookstore',
         nameKey: 'navigation.store',
         href: '/store',
-        icon: ShoppingBagIcon,
+        icon: Library,
     },
     {
         key: 'contact',
         name: 'Contact',
         nameKey: 'navigation.contact',
         href: '/school/contact',
-        icon: EnvelopeIcon,
+        icon: PhoneIcon,
     },
 ];
 

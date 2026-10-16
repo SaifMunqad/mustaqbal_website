@@ -255,7 +255,7 @@ export default function NavbarMobile({
                                                 }`}
                                             >
                                                 <div
-                                                    className={`rounded-lg p-1.5 ${
+                                                    className={`flex items-center gap-x-1 rounded-lg p-1.5 ${
                                                         isActive
                                                             ? 'bg-white/40 dark:bg-gray-800/40'
                                                             : 'bg-white/20 dark:bg-gray-800/20'
