@@ -39,4 +39,22 @@ return [
         'maps_key' => env('GOOGLE_MAPS_API_KEY'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | WhatsApp Business (Meta Cloud API)
+    |--------------------------------------------------------------------------
+    |
+    | These .env values are only the fallback. When an admin saves credentials
+    | on the dashboard's WhatsApp settings screen they are stored (encrypted) in
+    | the whatsapp_settings table and take precedence over everything here.
+    |
+    */
+
+    'whatsapp' => [
+        'token' => env('WHATSAPP_API_KEY'),
+        'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
+        'business_account_id' => env('WHATSAPP_BUSINESS_ACCOUNT_ID'),
+        'version' => env('WHATSAPP_GRAPH_VERSION', 'v23.0'),
+    ],
+
 ];

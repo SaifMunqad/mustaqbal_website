@@ -1,0 +1,75 @@
+<?php
+
+namespace App\Http\Controllers\Dashboard;
+
+use App\Http\Controllers\Controller;
+use App\Models\WhatsAppSetting;
+use App\Services\WhatsAppService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
+
+/**
+ * Admin-facing configuration for the WhatsApp Business Cloud API. Credentials are
+ * stored encrypted in the database (see {@see WhatsAppSetting}); the token is
+ * write-only from the UI — saving a blank field leaves the existing token intact.
+ */
+class WhatsAppSettingController extends Controller
+{
+    public function edit(WhatsAppService $whatsapp): Response
+    {
+        $setting = WhatsAppSetting::current();
+
+        return Inertia::render('dashboard/whatsapp-settings/edit', [
+            'setting' => $setting->toDashboard(),
+            'configured' => $whatsapp->isConfigured(),
+            'source' => $whatsapp->source(),
+        ]);
+    }
+
+    public function update(Request $request, WhatsAppService $whatsapp): RedirectResponse
+    {
+        $validated = $request->validate([
+            'access_token' => ['nullable', 'string', 'max:2048'],
+            'phone_number_id' => ['nullable', 'string', 'max:64'],
+            'business_account_id' => ['nullable', 'string', 'max:64'],
+            'graph_version' => ['nullable', 'string', 'max:16'],
+            'is_active' => ['boolean'],
+        ]);
+
+        $setting = WhatsAppSetting::resolved();
+
+        // A blank token means "keep the currently stored one" — the field is never
+        // pre-filled, so an edit that touches other fields must not wipe the secret.
+        if (filled($validated['access_token'] ?? null)) {
+            $setting->access_token = $validated['access_token'];
+        }
+
+        $setting->fill([
+            'phone_number_id' => $validated['phone_number_id'] ?? null,
+            'business_account_id' => $validated['business_account_id'] ?? null,
+            'graph_version' => $validated['graph_version'] ?: 'v23.0',
+            'is_active' => $request->boolean('is_active', true),
+        ])->save();
+
+        $message = $whatsapp->isConfigured()
+            ? 'WhatsApp settings saved and ready to send.'
+            : 'WhatsApp settings saved, but a token and phone number id are both required before sending.';
+
+        return back()->with('success', $message);
+    }
+
+    public function test(WhatsAppService $whatsapp): RedirectResponse
+    {
+        $result = $whatsapp->testConnection();
+
+        if ($result['ok']) {
+            $number = $result['display_phone_number'] ?? '';
+
+            return back()->with('success', 'Connection test passed'.($number ? " for {$number}." : '.'));
+        }
+
+        return back()->with('error', 'Connection test failed: '.$result['message']);
+    }
+}
