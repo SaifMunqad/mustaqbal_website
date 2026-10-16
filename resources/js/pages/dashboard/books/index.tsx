@@ -5,6 +5,8 @@ import ConfirmDialog from '@/components/form/confirm-dialog';
 import { Button } from '@/components/ui/button';
 import { Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Folder } from 'lucide-react';
 
 interface BookRow {
     id: number;
@@ -24,6 +26,7 @@ interface BooksIndexProps {
 
 export default function DashboardBooksIndex() {
     const { books, filters } = usePage<BooksIndexProps>().props;
+    const { t } = useTranslation();
     const [search, setSearch] = useState(filters.search);
 
     const applyFilters = () =>
@@ -69,7 +72,19 @@ export default function DashboardBooksIndex() {
     ];
 
     return (
-        <DashboardPage titleKey="dashboard.books.title" createHref="/dashboard/books/create" createLabelKey="dashboard.actions.newBook">
+        <DashboardPage
+            titleKey="dashboard.books.title"
+            createHref="/dashboard/books/create"
+            createLabelKey="dashboard.actions.newBook"
+            actions={
+                <Button asChild size="sm" variant="outline">
+                    <Link href="/dashboard/categories">
+                        <Folder className="size-4" />
+                        {t('dashboard.tabs.categories')}
+                    </Link>
+                </Button>
+            }
+        >
             <ResourceFilterBar
                 search={search}
                 onSearchChange={setSearch}

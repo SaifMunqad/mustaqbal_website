@@ -10,6 +10,9 @@ interface DashboardPageProps {
     breadcrumbs?: BreadcrumbItem[];
     createHref?: string;
     createLabelKey?: string;
+    // Optional extra header controls (e.g. a link to a related management page)
+    // rendered next to the primary create button.
+    actions?: ReactNode;
     children: ReactNode;
 }
 
@@ -18,6 +21,7 @@ export default function DashboardPage({
     breadcrumbs = [{ title: 'Dashboard', href: '/dashboard' }],
     createHref,
     createLabelKey,
+    actions,
     children,
 }: DashboardPageProps) {
     const { t, i18n } = useTranslation();
@@ -33,11 +37,14 @@ export default function DashboardPage({
             >
                 <div className={`flex items-center gap-2 ${isRtl ? 'justify-between flex-row-reverse' : 'justify-between'}`}>
                     <h1 className="text-2xl font-bold">{t(titleKey)}</h1>
-                    {createHref && createLabelKey ? (
-                        <Button asChild size="sm">
-                            <Link href={createHref}>{t(createLabelKey)}</Link>
-                        </Button>
-                    ) : null}
+                    <div className={`flex items-center gap-2 ${isRtl ? 'flex-row-reverse' : ''}`}>
+                        {actions}
+                        {createHref && createLabelKey ? (
+                            <Button asChild size="sm">
+                                <Link href={createHref}>{t(createLabelKey)}</Link>
+                            </Button>
+                        ) : null}
+                    </div>
                 </div>
 
 
