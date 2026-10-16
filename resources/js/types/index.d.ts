@@ -11,7 +11,8 @@ export interface BreadcrumbItem {
 }
 
 export interface NavGroup {
-    title: string;
+    /** i18n key for the group's label; the label is hidden in icon-collapsed mode. */
+    titleKey: string;
     items: NavItem[];
 }
 

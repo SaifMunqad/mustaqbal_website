@@ -9,21 +9,21 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { type NavItem, type SharedData } from '@/types';
+import { type NavGroup, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {
-    BookOpen,
     Briefcase,
     CalendarDays,
     FileText,
-    Folder,
     Globe,
     Home,
+    Info,
     LayoutGrid,
     Library,
     Mail,
     MessageSquare,
     Newspaper,
+    Phone,
     School,
     Send,
     Settings,
@@ -38,111 +38,138 @@ export function AppSidebar() {
     const canManageUsers = ['admin', 'management'].includes(auth.user?.role ?? '');
     const isAdmin = auth.user?.role === 'admin';
 
-    const mainNavItems: NavItem[] = [
+    // Navigation is grouped into labelled categories. Role-restricted items are
+    // only added to their group when the current user qualifies; empty groups are
+    // dropped by NavMain. The WhatsApp API settings screen is intentionally not a
+    // top-level item — it lives inside the "Bulk WhatsApp" area.
+    const groups: NavGroup[] = [
         {
-            title: t('dashboard.tabs.overview'),
-            href: '/dashboard',
-            icon: LayoutGrid,
-        },
-        ...(canManageUsers
-            ? [
-                  {
-                      title: t('dashboard.tabs.homePage'),
-                      href: '/dashboard/home-sections',
-                      icon: Home,
-                  },
-              ]
-            : []),
-        {
-            title: t('dashboard.tabs.articles'),
-            href: '/dashboard/articles',
-            icon: Newspaper,
+            titleKey: 'dashboard.sidebar.overview',
+            items: [
+                {
+                    title: t('dashboard.tabs.overview'),
+                    href: '/dashboard',
+                    icon: LayoutGrid,
+                },
+            ],
         },
         {
-            title: t('dashboard.tabs.posts'),
-            href: '/dashboard/posts',
-            icon: FileText,
+            titleKey: 'dashboard.sidebar.content',
+            items: [
+                ...(canManageUsers
+                    ? [
+                          {
+                              title: t('dashboard.tabs.homePage'),
+                              href: '/dashboard/home-sections',
+                              icon: Home,
+                          },
+                      ]
+                    : []),
+                {
+                    title: t('dashboard.tabs.articles'),
+                    href: '/dashboard/articles',
+                    icon: Newspaper,
+                },
+                {
+                    title: t('dashboard.tabs.posts'),
+                    href: '/dashboard/posts',
+                    icon: FileText,
+                },
+                {
+                    title: t('dashboard.tabs.events'),
+                    href: '/dashboard/events',
+                    icon: CalendarDays,
+                },
+                {
+                    title: t('dashboard.tabs.programs'),
+                    href: '/dashboard/programs',
+                    icon: School,
+                },
+                ...(canManageUsers
+                    ? [
+                          {
+                              title: t('dashboard.tabs.about'),
+                              href: '/dashboard/about',
+                              icon: Info,
+                          },
+                      ]
+                    : []),
+                ...(canManageUsers
+                    ? [
+                          {
+                              title: t('dashboard.tabs.books'),
+                              href: '/dashboard/books',
+                              icon: Library,
+                          },
+                          {
+                              title: t('dashboard.tabs.jobs'),
+                              href: '/dashboard/jobs',
+                              icon: Briefcase,
+                          },
+                      ]
+                    : []),
+            ],
         },
         {
-            title: t('dashboard.tabs.events'),
-            href: '/dashboard/events',
-            icon: CalendarDays,
+            titleKey: 'dashboard.sidebar.community',
+            items: [
+                {
+                    title: t('dashboard.tabs.contacts'),
+                    href: '/dashboard/contacts',
+                    icon: Mail,
+                },
+                {
+                    title: t('dashboard.tabs.messages'),
+                    href: '/dashboard/messages',
+                    icon: MessageSquare,
+                },
+            ],
         },
         {
-            title: t('dashboard.tabs.contacts'),
-            href: '/dashboard/contacts',
-            icon: Mail,
+            titleKey: 'dashboard.sidebar.bulkMessages',
+            items: isAdmin
+                ? [
+                      {
+                          title: t('dashboard.tabs.emailCampaigns'),
+                          href: '/dashboard/email-campaigns',
+                          icon: Send,
+                      },
+                      {
+                          title: t('dashboard.tabs.whatsappCampaigns'),
+                          href: '/dashboard/whatsapp-campaigns',
+                          icon: Phone,
+                      },
+                  ]
+                : [],
         },
         {
-            title: t('dashboard.tabs.messages'),
-            href: '/dashboard/messages',
-            icon: MessageSquare,
+            titleKey: 'dashboard.sidebar.administration',
+            items: [
+                ...(canManageUsers
+                    ? [
+                          {
+                              title: t('dashboard.tabs.settings'),
+                              href: '/dashboard/site-settings',
+                              icon: Settings,
+                          },
+                          {
+                              title: t('dashboard.tabs.users'),
+                              href: '/dashboard/users',
+                              icon: Users,
+                          },
+                      ]
+                    : []),
+                ...(isAdmin
+                    ? [
+                          {
+                              title: t('dashboard.tabs.languages'),
+                              href: '/dashboard/languages',
+                              icon: Globe,
+                          },
+                      ]
+                    : []),
+            ],
         },
-        ...(isAdmin
-            ? [
-                  {
-                      title: t('dashboard.tabs.emailCampaigns'),
-                      href: '/dashboard/email-campaigns',
-                      icon: Send,
-                  },
-              ]
-            : []),
-        {
-            title: t('dashboard.tabs.programs'),
-            href: '/dashboard/programs',
-            icon: School,
-        },
-        ...(canManageUsers
-            ? [
-                  {
-                      title: t('dashboard.tabs.jobs'),
-                      href: '/dashboard/jobs',
-                      icon: Briefcase,
-                  },
-              ]
-            : []),
-        {
-            title: t('dashboard.tabs.pages'),
-            href: '/dashboard/site-pages',
-            icon: BookOpen,
-        },
-        ...(canManageUsers
-            ? [
-                  {
-                      title: t('dashboard.tabs.settings'),
-                      href: '/dashboard/site-settings',
-                      icon: Settings,
-                  },
-              ]
-            : []),
-        ...(canManageUsers
-            ? [
-                  {
-                      title: t('dashboard.tabs.books'),
-                      href: '/dashboard/books',
-                      icon: Library,
-                  },
-                  {
-                      title: t('dashboard.tabs.categories'),
-                      href: '/dashboard/categories',
-                      icon: Folder,
-                  },
-                  {
-                      title: t('dashboard.tabs.users'),
-                      href: '/dashboard/users',
-                      icon: Users,
-                  },
-              ]
-            : []),
-        ...(isAdmin
-            ? [
-                  {
-                      title: t('dashboard.tabs.languages'),
-                      href: '/dashboard/languages',
-                      icon: Globe,
-                  },
-              ]
-            : []),
     ];
 
     return (
@@ -164,7 +191,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain groups={groups} />
             </SidebarContent>
 
             <SidebarFooter>
