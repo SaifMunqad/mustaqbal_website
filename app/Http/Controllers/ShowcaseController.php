@@ -67,8 +67,11 @@ class ShowcaseController extends Controller
 
     public function index(): Response
     {
+        // Generous per-category limit so the full recognition roster (e.g. all
+        // seeded students/teachers) shows on the dedicated showcase page, with the
+        // category tabs keeping it navigable.
         return Inertia::render('school/showcase/index', [
-            'groups' => $this->groups(8),
+            'groups' => $this->groups(24),
         ]);
     }
 

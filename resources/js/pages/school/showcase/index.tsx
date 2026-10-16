@@ -28,7 +28,11 @@ function SchoolShowcase() {
                 </Reveal>
 
                 <Reveal>
-                    <ShowcaseSection groups={groups} withHeading={false} />
+                    <ShowcaseSection
+                        groups={groups}
+                        withHeading={false}
+                        filterable
+                    />
                 </Reveal>
             </div>
         </>
