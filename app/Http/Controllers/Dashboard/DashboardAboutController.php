@@ -13,117 +13,111 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Stevebauman\Purify\Facades\Purify;
 
-class DashboardSitePageController extends Controller
+/**
+ * Dedicated editor for the public About page.
+ *
+ * The page is a single `SitePage` keyed on the `about` slug and is edited from
+ * two screens that share one `update()` path:
+ *  - `edit()`   → the standard title/body editor (localized rich text only).
+ *  - `visual()` → the block editor for the structured About sections.
+ *
+ * The standard editor intentionally omits `contents` so it never rewrites the
+ * structured sections stored on the parent; only the visual editor does.
+ */
+class DashboardAboutController extends Controller
 {
     /**
      * Localized fields edited per language. Everything else in `content`
-     * (video embed + legacy structured sections) stays shared on the parent.
+     * (video embed + structured sections) stays shared on the parent.
      *
      * @var list<string>
      */
     private const TRANSLATED = ['title', 'body'];
 
-    public function index(): Response
-    {
-        $pages = SitePage::query()
-            ->with('translations.language')
-            ->orderBy('slug')
-            ->paginate(20);
+    private const ABOUT_SLUG = 'about';
 
-        return Inertia::render('dashboard/site-pages/index', [
-            'pages' => $pages,
+    /**
+     * Standard editor: localized title + rich-text body only, with a link into
+     * the visual (section) editor.
+     */
+    public function edit(): Response
+    {
+        $page = $this->page();
+        $page->load(['translations.language']);
+
+        return Inertia::render('dashboard/about/index', [
+            'page' => [
+                'id' => $page->id,
+                'slug' => $page->slug,
+                'title' => $page->title,
+                'is_published' => $page->is_published,
+            ],
+            'translations' => $this->existingTranslations($page),
         ]);
-    }
-
-    public function create(): Response
-    {
-        return Inertia::render('dashboard/site-pages/create');
     }
 
     /**
-     * Static in-dashboard guide explaining how editors author site pages
-     * (rich text + Word import), linked from the pages list.
+     * Visual (WYSIWYG) editor: renders the real About page as a live canvas and
+     * lets an admin edit each structured block, in any language.
      */
-    public function help(): Response
+    public function visual(): Response
     {
-        return Inertia::render('dashboard/site-pages/help');
+        $page = $this->page();
+        $page->load(['translations.language']);
+
+        return Inertia::render('dashboard/about/visual', [
+            'page' => $page,
+            'translations' => $this->existingTranslations($page),
+            'contents' => $this->localizedContents($page),
+            'videoEmbed' => $page->sharedContent()['video_embed'] ?? '',
+        ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        $request->validate($this->rules());
+        $page = $this->page();
 
-        $page = SitePage::query()->create([
-            'slug' => $request->string('slug')->toString(),
-            'hero_image' => $request->input('hero_image'),
-            'content' => ['video_embed' => $request->input('video_embed', '')],
-            'is_published' => ! empty($request->input('is_published')),
-        ]);
+        $request->validate($this->rules($page));
 
+        // Localized title + rich-text body per language (both editors submit these).
         TranslationPayload::apply($page->translations(), $this->cleanedPayload($request));
 
-        return redirect()
-            ->route('dashboard.site-pages.index')
-            ->with('success', 'Page created successfully.');
-    }
-
-    public function edit(SitePage $sitePage): Response
-    {
-        $sitePage->load(['translations.language']);
-
-        return Inertia::render('dashboard/site-pages/edit', [
-            'page' => $sitePage,
-            'translations' => $this->existingTranslations($sitePage),
-            'contents' => $this->localizedContents($sitePage),
-            'videoEmbed' => $sitePage->sharedContent()['video_embed'] ?? '',
-        ]);
-    }
-
-    /**
-     * Visual (WYSIWYG) editor for a site page. Renders the real page as a live
-     * canvas and lets an admin edit each block, in any language, then commit
-     * through the same update() path. Currently meaningful for structured pages
-     * like About; simple pages still get the title/body preview.
-     */
-    public function visual(SitePage $sitePage): Response
-    {
-        $sitePage->load(['translations.language']);
-
-        return Inertia::render('dashboard/site-pages/visual', [
-            'page' => $sitePage,
-            'translations' => $this->existingTranslations($sitePage),
-            'contents' => $this->localizedContents($sitePage),
-            'videoEmbed' => $sitePage->sharedContent()['video_embed'] ?? '',
-        ]);
-    }
-
-    public function update(Request $request, SitePage $sitePage): RedirectResponse
-    {
-        $request->validate($this->rules($sitePage));
-
-        // The parent keeps only the shared, non-localized keys plus the default
-        // language's structured sections, which act as the universal fallback for
-        // any language that has not been translated yet.
-        $default = Language::defaultCode();
-        $sections = (array) $request->input('contents', []);
-        $parentContent = [
-            'video_embed' => $request->input('video_embed', ''),
-            ...$this->sanitizeSections($sections[$default] ?? []),
-        ];
-
-        $sitePage->update([
-            'slug' => $request->string('slug')->toString(),
-            'hero_image' => $request->input('hero_image'),
-            'content' => $parentContent,
+        $page->update([
             'is_published' => ! empty($request->input('is_published')),
         ]);
 
-        // Localized title + rich-text body per language.
-        TranslationPayload::apply($sitePage->translations(), $this->cleanedPayload($request));
+        $sections = (array) $request->input('contents', []);
 
-        // Structured sections for every non-default language become overrides on
-        // that language's translation row. Empty sections store null so the site
-        // falls back to the default parent copy rather than rendering nothing.
+        // Structured sections, hero image and video embed are owned by the visual
+        // editor. The standard editor omits `contents`, so an empty payload here
+        // leaves the existing sections untouched instead of wiping them.
+        if ($sections !== []) {
+            $this->applySections($page, $request, $sections);
+        }
+
+        return redirect()
+            ->route('dashboard.about.edit')
+            ->with('success', 'About page updated successfully.');
+    }
+
+    /**
+     * Persist the default language's structured content on the parent (universal
+     * fallback) and every other language's copy as an override on its row.
+     *
+     * @param  array<string, mixed>  $sections
+     */
+    private function applySections(SitePage $page, Request $request, array $sections): void
+    {
+        $default = Language::defaultCode();
+
+        $page->update([
+            'hero_image' => $request->input('hero_image'),
+            'content' => [
+                'video_embed' => $request->input('video_embed', ''),
+                ...$this->sanitizeSections($sections[$default] ?? []),
+            ],
+        ]);
+
         $languages = Language::query()
             ->whereIn('code', array_keys($sections))
             ->get()
@@ -142,7 +136,7 @@ class DashboardSitePageController extends Controller
 
             $clean = $this->sanitizeSections($obj);
 
-            $row = $sitePage->translations()->where('language_id', $language->id)->first();
+            $row = $page->translations()->where('language_id', $language->id)->first();
 
             // Blank sections must NOT create a content-less row; just clear an
             // existing override so the site falls back to the default copy.
@@ -157,14 +151,25 @@ class DashboardSitePageController extends Controller
 
             // Create with an empty title default so the NOT NULL column is
             // satisfied; title/body remain owned by the translations payload.
-            $row ??= $sitePage->translations()->create(['language_id' => $language->id, 'title' => '']);
+            $row ??= $page->translations()->create(['language_id' => $language->id, 'title' => '']);
             $row->content = $clean;
             $row->save();
         }
+    }
 
-        return redirect()
-            ->route('dashboard.site-pages.index')
-            ->with('success', 'Page updated successfully.');
+    /**
+     * Resolve the About page, creating a blank published row when the seed has
+     * not run yet so the dashboard editor is always available.
+     */
+    private function page(): SitePage
+    {
+        return SitePage::query()->firstOrCreate(
+            ['slug' => self::ABOUT_SLUG],
+            [
+                'is_published' => true,
+                'content' => ['video_embed' => ''],
+            ],
+        );
     }
 
     /**
@@ -279,15 +284,10 @@ class DashboardSitePageController extends Controller
     /**
      * @return array<string, mixed>
      */
-    private function rules(?SitePage $page = null): array
+    private function rules(SitePage $page): array
     {
-        $slugRule = ['required', 'string', 'max:100'];
-        $slugRule[] = $page
-            ? 'unique:site_pages,slug,'.$page->id
-            : 'unique:site_pages,slug';
-
         $rules = [
-            'slug' => $slugRule,
+            'slug' => ['required', 'string', 'max:100', 'unique:site_pages,slug,'.$page->id],
             'hero_image' => ['nullable', new ImageLocation, 'max:2048'],
             'video_embed' => ['nullable', 'string', 'max:5000'],
             'is_published' => ['nullable', 'boolean'],

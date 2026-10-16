@@ -1,4 +1,4 @@
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import type { FormDataConvertible } from '@inertiajs/core';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -87,7 +87,7 @@ const BLOCK_SECTION_KEYS: Partial<Record<BlockKey, AboutSectionKey[]>> = {
     faq: ['faq'],
 };
 
-export default function SitePageVisual() {
+export default function AboutVisual() {
     const { page, translations, contents, videoEmbed } = usePage<VisualProps>().props;
     const { languages } = usePage<SharedData>().props;
     const { t } = useTranslation();
@@ -135,7 +135,7 @@ export default function SitePageVisual() {
 
     const save = () => {
         router.put(
-            `/dashboard/site-pages/${page.id}`,
+            '/dashboard/about',
             {
                 slug: page.slug,
                 hero_image: heroImage,
@@ -172,11 +172,11 @@ export default function SitePageVisual() {
         <AppLayout
             breadcrumbs={[
                 { title: 'Dashboard', href: '/dashboard' },
-                { title: 'Pages', href: '/dashboard/site-pages' },
-                { title: 'Visual editor', href: `/dashboard/site-pages/${page.id}/visual` },
+                { title: 'About', href: '/dashboard/about' },
+                { title: 'Visual editor', href: '/dashboard/about/visual' },
             ]}
         >
-            <Head title="Page visual editor" />
+            <Head title="About visual editor" />
 
             <div className="sticky top-0 z-40 -mx-4 mb-4 border-b border-border bg-background/95 px-4 py-3 backdrop-blur">
                 <div className="flex flex-wrap items-center gap-3">
@@ -197,6 +197,9 @@ export default function SitePageVisual() {
                         </Select>
                     </div>
                     <div className="ms-auto flex items-center gap-2">
+                        <Button asChild size="sm" variant="ghost">
+                            <Link href="/dashboard/about">Standard editor</Link>
+                        </Button>
                         <Button size="sm" variant="outline" type="button" onClick={() => setBlock('settings')}>
                             ⚙ Media & publishing
                         </Button>

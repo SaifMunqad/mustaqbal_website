@@ -25,6 +25,11 @@ class AboutPageEditorTest extends TestCase
 
         $this->withoutVite();
 
+        // Build a controlled en(default)+ps fixture: clear the language the
+        // languages migration seeds by default so it is not an unexpected extra
+        // active language (which would make the editor require its translations).
+        Language::query()->delete();
+
         Language::flushCache();
 
         $this->language('en', true);
@@ -36,7 +41,7 @@ class AboutPageEditorTest extends TestCase
         $page = $this->aboutPage();
 
         $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
-            ->put(route('dashboard.site-pages.update', $page), [
+            ->put(route('dashboard.about.update'), [
                 'slug' => 'about',
                 'is_published' => true,
                 'video_embed' => '<iframe src="x"></iframe>',
@@ -87,7 +92,7 @@ class AboutPageEditorTest extends TestCase
         $page = $this->aboutPage();
 
         $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
-            ->put(route('dashboard.site-pages.update', $page), [
+            ->put(route('dashboard.about.update'), [
                 'slug' => 'about',
                 'is_published' => true,
                 'translations' => ['en' => ['title' => 'About', 'body' => '<p>story</p>']],
@@ -115,10 +120,10 @@ class AboutPageEditorTest extends TestCase
         $page = $this->aboutPage();
 
         $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
-            ->get(route('dashboard.site-pages.visual', $page))
+            ->get(route('dashboard.about.visual'))
             ->assertOk()
             ->assertInertia(fn (\Inertia\Testing\AssertableInertia $p) => $p
-                ->component('dashboard/site-pages/visual')
+                ->component('dashboard/about/visual')
                 ->where('page.id', $page->id)
                 ->has('contents')
             );
@@ -129,7 +134,7 @@ class AboutPageEditorTest extends TestCase
         $page = $this->aboutPage();
 
         $this->actingAs(User::factory()->create(['role' => UserRole::Family->value]))
-            ->get(route('dashboard.site-pages.visual', $page))
+            ->get(route('dashboard.about.visual'))
             ->assertForbidden();
     }
 
