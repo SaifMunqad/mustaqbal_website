@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -18,6 +19,21 @@ return new class extends Migration
             $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();
         });
+
+        // Dari is the system's default language: created here (not in a seeder)
+        // so a freshly migrated database always has the default language row even
+        // before any seeding. Secondary languages (English, Pashto) are added by
+        // the seeder. `fa_AF` is the shared code used across the codebase.
+        DB::table('languages')->insert([
+            'code' => 'fa_AF',
+            'name' => 'Dari',
+            'dir' => 'rtl',
+            'is_active' => true,
+            'is_default' => true,
+            'sort_order' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         Schema::create('program_translations', function (Blueprint $table) {
             $table->id();

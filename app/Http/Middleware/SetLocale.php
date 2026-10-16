@@ -25,13 +25,20 @@ class SetLocale
 
         $cookieLocale = $request->cookie(self::COOKIE);
 
+        error_log('SETLOCALE_DEBUG cookie=' . var_export($cookieLocale, true) . ' active=' . json_encode($active));
+
         // A first-time visitor (or one whose saved language was disabled/removed)
-        // gets the highest-priority active language, which we then cache on their
-        // browser so the choice sticks across future visits.
+        // gets the site's default language — the row flagged `is_default` — which we
+        // then cache on their browser so the choice sticks across future visits. If
+        // the default language is not itself active, we fall back to the
+        // highest-priority active language.
         $isNewVisitor = ! $cookieLocale || ! in_array($cookieLocale, $active, true);
 
+        $default = Language::defaultCode();
+        $fallback = in_array($default, $active, true) ? $default : Language::firstActiveCode();
+
         $locale = $isNewVisitor
-            ? Language::firstActiveCode()
+            ? $fallback
             : $cookieLocale;
 
         app()->setLocale($locale);

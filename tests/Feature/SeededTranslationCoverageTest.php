@@ -32,9 +32,13 @@ class SeededTranslationCoverageTest extends TestCase
     {
         parent::setUp();
 
-        Language::query()->create(['code' => 'en', 'name' => 'English', 'dir' => 'ltr', 'is_active' => true, 'is_default' => true, 'sort_order' => 1]);
-        Language::query()->create(['code' => 'ps', 'name' => 'Pashto', 'dir' => 'rtl', 'is_active' => true, 'is_default' => false, 'sort_order' => 2]);
-        Language::query()->create(['code' => 'fa_AF', 'name' => 'Dari', 'dir' => 'rtl', 'is_active' => true, 'is_default' => false, 'sort_order' => 3]);
+        // updateOrCreate: Dari (fa_AF) already exists from its migration insert,
+        // so seeding fixtures here must be idempotent rather than a raw create.
+        Language::query()->updateOrCreate(['code' => 'en'], ['name' => 'English', 'dir' => 'ltr', 'is_active' => true, 'is_default' => true, 'sort_order' => 1]);
+        Language::query()->updateOrCreate(['code' => 'ps'], ['name' => 'Pashto', 'dir' => 'rtl', 'is_active' => true, 'is_default' => false, 'sort_order' => 2]);
+        Language::query()->updateOrCreate(['code' => 'fa_AF'], ['name' => 'Dari', 'dir' => 'rtl', 'is_active' => true, 'is_default' => false, 'sort_order' => 3]);
+
+        Language::query()->where('code', 'en')->firstOrFail()->makeDefault();
 
         Language::flushCache();
     }

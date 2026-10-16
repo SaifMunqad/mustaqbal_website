@@ -127,10 +127,15 @@ export const bootstrapLanguage = (
     const activeCodes = languages.available.map(({ code }) => code);
     const stored = window.localStorage.getItem(STORAGE_KEY);
 
-    // Reuse a valid cached choice; otherwise adopt the server's current locale
-    // (the first-priority language for new visitors) and cache it.
+    // Reuse a valid cached choice; otherwise adopt the site's default language
+    // (falling back to the server-resolved current, then the first active) and
+    // cache it in both localStorage and the cookie so SSR and the client agree.
     if (!stored || !activeCodes.includes(stored)) {
-        const initial = activeCodes.includes(languages.current) ? languages.current : activeCodes[0];
+        const initial = activeCodes.includes(languages.default)
+            ? languages.default
+            : activeCodes.includes(languages.current)
+              ? languages.current
+              : activeCodes[0];
 
         rememberLanguage(initial);
 

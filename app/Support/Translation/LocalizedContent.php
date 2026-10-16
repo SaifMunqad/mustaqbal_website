@@ -475,6 +475,70 @@ class LocalizedContent
     }
 
     // ---------------------------------------------------------------------
+    // Recognition (student / teacher / employee of the month)
+    // ---------------------------------------------------------------------
+
+    /**
+     * Localized recognition type labels, keyed by the exact English label from
+     * {@see \App\Enums\PostType::label()}.
+     *
+     * @return array<string, array<string, string>>
+     */
+    public static function recognitionLabels(): array
+    {
+        return [
+            'Student of the Month' => ['ps' => 'د میاشتې زده‌کوونکی', 'fa_AF' => 'دانش‌آموز برتر ماه'],
+            'Teacher of the Month' => ['ps' => 'د میاشتې ښوونکی', 'fa_AF' => 'معلم برتر ماه'],
+            'Employee of the Month' => ['ps' => 'د میاشتې کارکوونکی', 'fa_AF' => 'کارمند برتر ماه'],
+        ];
+    }
+
+    /**
+     * A deterministic, in-language recognition caption naming the honoree.
+     */
+    public static function recognitionCaption(int $index, string $code, string $name): string
+    {
+        $pool = match ($code) {
+            'ps' => [
+                "{$name} د همت، نظم او بریالیتوب له امله د دې میاشتې لپاره ویاړل شول.",
+                "زموږ ټوله ټلنې {$name} ته د هغه دې زحماتو ستاينه کوي.",
+                "{$name} د خپلې ژمنتیا او سختې هڅې په ذریعه ټول ته نمونه شوه.",
+            ],
+            'fa_AF' => [
+                "«{$name}» به دلیل پشتکار، نظم و موفقیت برای این ماه انتخاب شد.",
+                "«{$name}» تمام جامعه ما را برای تلاش‌هایش به افتخار می‌آورد.",
+                "«{$name}» با تعهد و کوشش پیوسته‌اش الگویی برای همه شد.",
+            ],
+            default => ["{$name} was recognized for outstanding effort this month."],
+        };
+
+        return $pool[$index % count($pool)];
+    }
+
+    /**
+     * Secondary-language (title, content) for a recognition post, keyed by the
+     * English type label and the honoree name. Returns [] when the label has no
+     * glossary entry (so callers never write a half-filled translation row).
+     *
+     * @return array<string, array<string, string>>
+     */
+    public static function recognitionSecondary(string $englishLabel, string $name, int $index): array
+    {
+        $label = self::recognitionLabels()[$englishLabel] ?? null;
+
+        if ($label === null) {
+            return [];
+        }
+
+        return collect(self::secondaryCodes())->mapWithKeys(
+            static fn (string $code): array => [$code => [
+                'title' => $label[$code],
+                'content' => self::recognitionCaption($index, $code, $name),
+            ]],
+        )->all();
+    }
+
+    // ---------------------------------------------------------------------
     // Home sections
     // ---------------------------------------------------------------------
 

@@ -32,8 +32,11 @@ class TranslationFallbackTest extends TestCase
     {
         $ps = Language::where('code', 'ps')->first();
 
-        // A persisted row seeded with the English defaults on the parent columns.
+        // A persisted row. Seed an explicit English home_stats value on the
+        // parent columns so the assertion below checks the fallback chain
+        // itself, not any demo defaults (Site Setting ships these lists empty).
         $setting = SiteSetting::resolved();
+        $setting->update(['home_stats' => [['value' => '1,200+', 'label' => 'Students']]]);
 
         // Only a Pashto row exists — exactly what the dashboard update produces,
         // since the default language is mirrored onto the parent, not stored as a row.

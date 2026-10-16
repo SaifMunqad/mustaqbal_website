@@ -16,6 +16,11 @@ class HasTranslationsTest extends TestCase
     {
         parent::setUp();
 
+        // These tests build their own controlled language fixtures (a single
+        // default + one secondary), so clear the language the languages
+        // migration seeds by default first to keep the default unambiguous.
+        Language::query()->delete();
+
         Language::flushCache();
     }
 

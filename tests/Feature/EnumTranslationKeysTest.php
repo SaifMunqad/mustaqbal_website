@@ -10,6 +10,8 @@ use App\Enums\HomeSectionType;
 use App\Enums\PostType;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
+use App\Enums\WhatsAppCampaignStatus;
+use App\Enums\WhatsAppDeliveryStatus;
 use Tests\TestCase;
 
 /**
@@ -35,6 +37,8 @@ class EnumTranslationKeysTest extends TestCase
             UserStatus::class,
             EmailCampaignStatus::class,
             EmailDeliveryStatus::class,
+            WhatsAppCampaignStatus::class,
+            WhatsAppDeliveryStatus::class,
         ];
     }
 
