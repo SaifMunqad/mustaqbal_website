@@ -589,6 +589,40 @@ const en = {
             createTitle: 'Add Home Section',
             editTitle: 'Edit Home Section',
             add: 'Add section',
+            visual: {
+                editLanguage: 'Editing language',
+                fallbackNote:
+                    'Editing {{lang}} · the live site falls back to {{def}}',
+                languageHint:
+                    'Pick a language to edit this block. Un-authored languages fall back to the default (*) on the live site.',
+                revert: 'Revert',
+                save: 'Save',
+                useListEditor: 'Use the list editor',
+                noBlocks:
+                    'No custom blocks yet. Use “+ Add section” to add banners, announcements or curated content.',
+                edit: 'Edit',
+                done: 'Done',
+                blocks: {
+                    hero: 'Home hero',
+                    programs: 'Programs',
+                    features: 'Why families choose us',
+                    stats: 'Quick stats',
+                    jobs: 'Latest jobs',
+                    programsNote: 'Automatic · managed in Programs',
+                    jobsNote: 'Automatic · managed in Jobs',
+                },
+                fields: {
+                    heroImage: 'Hero image',
+                    sharedAcrossLanguages: 'Shared across all languages.',
+                    tagline: 'Tagline badge',
+                    title: 'Title',
+                    subtitle: 'Subtitle',
+                    primaryButton: 'Primary button',
+                    secondaryButton: 'Secondary button',
+                    buttonLinksNote:
+                        'Button links are fixed (Programs / Contact). Blank text falls back to the built-in wording on the live site.',
+                },
+            },
         },
     },
 };

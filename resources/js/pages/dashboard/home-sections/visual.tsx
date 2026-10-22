@@ -1,33 +1,18 @@
 import AppLayout from '@/layouts/app-layout';
-import { Head, Link, router, usePage } from '@inertiajs/react';
 import type { FormDataConvertible } from '@inertiajs/core';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import HomeSections, {
-    type HomeSection,
-    type HomeSectionEditApi,
-} from '@/components/home/home-sections';
-import HomeHero from '@/components/home/home-hero';
-import ProgramsHighlight from '@/components/home/programs-highlight';
-import FeatureGrid from '@/components/home/feature-grid';
-import StatsBar from '@/components/home/stats-bar';
-import LatestJobs from '@/components/home/latest-jobs';
-import type { Job } from '@/components/school/job-card';
-import type { Program } from '@/pages/school/programs/program-card';
-import { Button } from '@/components/ui/button';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import type {
+    AvailableItem,
+    TypeOption,
+} from '@/components/dashboard/home-section-form';
 import AddSectionMenu from '@/components/dashboard/home-visual/add-section-menu';
-import SectionConfigSheet from '@/components/dashboard/home-visual/section-config-sheet';
-import TextEditDialog from '@/components/dashboard/home-visual/text-edit-dialog';
 import HomeBlockFrame from '@/components/dashboard/home-visual/home-block-frame';
+import SectionConfigSheet from '@/components/dashboard/home-visual/section-config-sheet';
 import SiteBlockPanel from '@/components/dashboard/home-visual/site-block-panel';
+import TextEditDialog from '@/components/dashboard/home-visual/text-edit-dialog';
 import {
     EMPTY_SITE_ENTRY,
     FIELD_LABELS,
@@ -42,7 +27,25 @@ import {
     type SiteEntry,
     type TextFieldKey,
 } from '@/components/dashboard/home-visual/types';
-import type { AvailableItem, TypeOption } from '@/components/dashboard/home-section-form';
+import FeatureGrid from '@/components/home/feature-grid';
+import HomeHero from '@/components/home/home-hero';
+import HomeSections, {
+    type HomeSection,
+    type HomeSectionEditApi,
+} from '@/components/home/home-sections';
+import LatestJobs from '@/components/home/latest-jobs';
+import ProgramsHighlight from '@/components/home/programs-highlight';
+import StatsBar from '@/components/home/stats-bar';
+import type { Job } from '@/components/school/job-card';
+import { Button } from '@/components/ui/button';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import type { Program } from '@/pages/school/programs/program-card';
 import type { LanguageOption, SharedData } from '@/types';
 
 interface VisualProps {
@@ -115,7 +118,9 @@ export default function DashboardHomeSectionVisual() {
 
     const move = (editorId: number, direction: -1 | 1) => {
         setDrafts((prev) => {
-            const index = prev.findIndex((draft) => draft.editorId === editorId);
+            const index = prev.findIndex(
+                (draft) => draft.editorId === editorId,
+            );
             const target = index + direction;
             if (index < 0 || target < 0 || target >= prev.length) {
                 return prev;
@@ -128,7 +133,9 @@ export default function DashboardHomeSectionVisual() {
     };
 
     const remove = (editorId: number) => {
-        setDrafts((prev) => prev.filter((draft) => draft.editorId !== editorId));
+        setDrafts((prev) =>
+            prev.filter((draft) => draft.editorId !== editorId),
+        );
         setDirty(true);
     };
 
@@ -216,7 +223,12 @@ export default function DashboardHomeSectionVisual() {
         };
 
         if (draft.kind === 'curated') {
-            return { ...base, title: text.title ?? '', titleKey: draft.label_key, items: draft.preview_items };
+            return {
+                ...base,
+                title: text.title ?? '',
+                titleKey: draft.label_key,
+                items: draft.preview_items,
+            };
         }
 
         return {
@@ -244,12 +256,15 @@ export default function DashboardHomeSectionVisual() {
         hero_image: siteDraft.hero_image,
     };
 
-    const configDraft = configEditorId == null
-        ? null
-        : drafts.find((draft) => draft.editorId === configEditorId) ?? null;
+    const configDraft =
+        configEditorId == null
+            ? null
+            : (drafts.find((draft) => draft.editorId === configEditorId) ??
+              null);
 
     const targetDraft = textTarget
-        ? drafts.find((draft) => draft.editorId === textTarget.editorId) ?? null
+        ? (drafts.find((draft) => draft.editorId === textTarget.editorId) ??
+          null)
         : null;
 
     const save = () => {
@@ -288,12 +303,20 @@ export default function DashboardHomeSectionVisual() {
     const currentDir = languageDir(editingLang);
     const isDefaultLang = editingLang === defaultCode;
 
+    // Localized labels for the built-in canvas blocks and their Edit button.
+    const blockLabel = (key: string) =>
+        t(`dashboard.homeSections.visual.blocks.${key}`);
+    const editLabel = t('dashboard.homeSections.visual.edit');
+
     return (
         <AppLayout
             breadcrumbs={[
                 { title: 'Dashboard', href: '/dashboard' },
                 { title: 'Home page', href: '/dashboard/home-sections' },
-                { title: 'Visual editor', href: '/dashboard/home-sections/visual' },
+                {
+                    title: 'Visual editor',
+                    href: '/dashboard/home-sections/visual',
+                },
             ]}
         >
             <Head title="Home page editor" />
@@ -303,17 +326,25 @@ export default function DashboardHomeSectionVisual() {
                 <div className="flex flex-wrap items-center gap-3">
                     <div className="flex items-center gap-2">
                         <span className="text-sm font-medium text-muted-foreground">
-                            {t('dashboard.homeSections.editLanguage', 'Editing language')}
+                            {t('dashboard.homeSections.visual.editLanguage')}
                         </span>
-                        <Select value={editingLang} onValueChange={setEditingLang}>
+                        <Select
+                            value={editingLang}
+                            onValueChange={setEditingLang}
+                        >
                             <SelectTrigger className="w-40">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                                 {available.map((option) => (
-                                    <SelectItem key={option.code} value={option.code}>
+                                    <SelectItem
+                                        key={option.code}
+                                        value={option.code}
+                                    >
                                         {option.name}
-                                        {option.code === defaultCode ? ' *' : ''}
+                                        {option.code === defaultCode
+                                            ? ' *'
+                                            : ''}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -322,18 +353,34 @@ export default function DashboardHomeSectionVisual() {
 
                     {!isDefaultLang ? (
                         <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900 dark:text-amber-200">
-                            Editing {languageName(editingLang)} · live site falls back to{' '}
-                            {languageName(defaultCode)}
+                            {t('dashboard.homeSections.visual.fallbackNote', {
+                                lang: languageName(editingLang),
+                                def: languageName(defaultCode),
+                            })}
                         </span>
                     ) : null}
 
                     <div className="ms-auto flex items-center gap-2">
-                        <AddSectionMenu typeOptions={typeOptions} onAdd={addDraft} />
-                        <Button size="sm" variant="ghost" type="button" onClick={revert} disabled={!dirty}>
-                            {t('common.revert', 'Revert')}
+                        <AddSectionMenu
+                            typeOptions={typeOptions}
+                            onAdd={addDraft}
+                        />
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            type="button"
+                            onClick={revert}
+                            disabled={!dirty}
+                        >
+                            {t('dashboard.homeSections.visual.revert')}
                         </Button>
-                        <Button size="sm" type="button" onClick={save} disabled={!dirty}>
-                            {t('common.save', 'Save')}
+                        <Button
+                            size="sm"
+                            type="button"
+                            onClick={save}
+                            disabled={!dirty}
+                        >
+                            {t('dashboard.homeSections.visual.save')}
                             {dirty ? ' •' : ''}
                         </Button>
                     </div>
@@ -341,38 +388,53 @@ export default function DashboardHomeSectionVisual() {
             </div>
 
             <div className="mx-auto max-w-6xl space-y-8 pb-16" dir={currentDir}>
-                <HomeBlockFrame label="Home hero" onEdit={() => setSitePanel('hero')}>
+                <HomeBlockFrame
+                    label={blockLabel('hero')}
+                    editLabel={editLabel}
+                    onEdit={() => setSitePanel('hero')}
+                >
                     <HomeHero home={heroHome} tagline={siteEntry.tagline} />
                 </HomeBlockFrame>
 
                 <HomeBlockFrame
-                    label="Programs"
-                    note="Automatic · managed in Programs"
+                    label={blockLabel('programs')}
+                    note={blockLabel('programsNote')}
                 >
                     <ProgramsHighlight
-                        programs={(preview?.programs ?? []) as unknown as Program[]}
+                        programs={
+                            (preview?.programs ?? []) as unknown as Program[]
+                        }
                     />
                 </HomeBlockFrame>
 
                 <HomeBlockFrame
-                    label="Why families choose us"
+                    label={blockLabel('features')}
+                    editLabel={editLabel}
                     onEdit={() => setSitePanel('features')}
                 >
                     <FeatureGrid features={siteEntry.home_features} />
                 </HomeBlockFrame>
 
-                <HomeBlockFrame label="Quick stats" onEdit={() => setSitePanel('stats')}>
+                <HomeBlockFrame
+                    label={blockLabel('stats')}
+                    editLabel={editLabel}
+                    onEdit={() => setSitePanel('stats')}
+                >
                     <StatsBar stats={siteEntry.home_stats} />
                 </HomeBlockFrame>
 
-                <HomeBlockFrame label="Latest jobs" note="Automatic · managed in Jobs">
-                    <LatestJobs jobs={(preview?.jobs ?? []) as unknown as Job[]} />
+                <HomeBlockFrame
+                    label={blockLabel('jobs')}
+                    note={blockLabel('jobsNote')}
+                >
+                    <LatestJobs
+                        jobs={(preview?.jobs ?? []) as unknown as Job[]}
+                    />
                 </HomeBlockFrame>
 
                 {rendered.length === 0 ? (
                     <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">
-                        No custom blocks yet. Use “+ Add section” to add banners,
-                        announcements or curated content.
+                        {t('dashboard.homeSections.visual.noBlocks')}
                     </div>
                 ) : (
                     <HomeSections sections={rendered} edit={editApi} />
@@ -384,7 +446,9 @@ export default function DashboardHomeSectionVisual() {
                 onOpenChange={(open) => !open && setConfigEditorId(null)}
                 draft={configDraft}
                 candidates={
-                    configDraft ? availableItems[configDraft.section_type] ?? [] : []
+                    configDraft
+                        ? (availableItems[configDraft.section_type] ?? [])
+                        : []
                 }
                 onPatchConfig={(patch) =>
                     configDraft && patchConfig(configDraft.editorId, patch)
@@ -404,18 +468,21 @@ export default function DashboardHomeSectionVisual() {
                 multiline={textTarget?.field === 'body'}
                 value={
                     textTarget && targetDraft
-                        ? targetDraft.translations[editingLang]?.[textTarget.field] ?? ''
+                        ? (targetDraft.translations[editingLang]?.[
+                              textTarget.field
+                          ] ?? '')
                         : ''
                 }
                 untranslatedHint={
                     !isDefaultLang
                         ? `This language has no text yet. Leaving it blank means the live site shows the ${languageName(
-                            defaultCode,
-                        )} version — save to add ${languageName(editingLang)}.`
+                              defaultCode,
+                          )} version — save to add ${languageName(editingLang)}.`
                         : undefined
                 }
                 onSave={(value) =>
-                    textTarget && setText(textTarget.editorId, textTarget.field, value)
+                    textTarget &&
+                    setText(textTarget.editorId, textTarget.field, value)
                 }
             />
 
@@ -424,17 +491,20 @@ export default function DashboardHomeSectionVisual() {
                 open={sitePanel != null}
                 onClose={() => setSitePanel(null)}
                 kind={sitePanel ?? 'hero'}
-                languageName={languageName(editingLang)}
                 dir={currentDir}
                 entry={siteEntry}
                 heroImage={siteDraft.hero_image}
                 onPatch={patchSiteEntry}
                 onHeroImage={patchSiteHeroImage}
+                languages={available}
+                activeLang={editingLang}
+                defaultCode={defaultCode}
+                onLangChange={setEditingLang}
             />
 
             <p className="mt-4 text-center text-xs text-muted-foreground">
                 <Link href="/dashboard/home-sections" className="underline">
-                    {t('dashboard.homeSections.useListEditor', 'Use the list editor')}
+                    {t('dashboard.homeSections.visual.useListEditor')}
                 </Link>
             </p>
         </AppLayout>

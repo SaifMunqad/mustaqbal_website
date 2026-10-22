@@ -7,6 +7,8 @@ interface HomeBlockFrameProps {
     onEdit?: () => void;
     /** Short helper text for preview-only blocks (e.g. where to manage them). */
     note?: string;
+    /** Localized label for the Edit button (defaults to "Edit"). */
+    editLabel?: string;
     children: ReactNode;
 }
 
@@ -20,10 +22,11 @@ export default function HomeBlockFrame({
     label,
     onEdit,
     note,
+    editLabel = 'Edit',
     children,
 }: HomeBlockFrameProps) {
     return (
-        <div className="rounded-xl outline-dashed outline-1 outline-transparent transition hover:outline-blue-300/70">
+        <div className="rounded-xl outline-1 outline-transparent transition outline-dashed hover:outline-blue-300/70">
             <div className="mb-2 flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-blue-300 bg-blue-50/60 px-3 py-1.5 text-xs dark:border-blue-800 dark:bg-blue-950/30">
                 <span className="font-semibold text-blue-700 dark:text-blue-300">
                     {label}
@@ -39,7 +42,7 @@ export default function HomeBlockFrame({
                         className="ms-auto h-7 px-2 text-xs"
                         onClick={onEdit}
                     >
-                        ✎ Edit
+                        ✎ {editLabel}
                     </Button>
                 ) : null}
             </div>
