@@ -7,11 +7,48 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ---------------------------------------------------------------------------
+   Locally hosted Noto Naskh Arabic (served from public/, no CDN).
+   Arabic/Persian/Pashto glyph coverage for the RTL font stack, because
+   Calibri is Windows-only and its open substitute Carlito is Latin-only.
+   --------------------------------------------------------------------------- */
+@font-face {
+    font-family: 'Noto Naskh Arabic';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/cdn/fonts/noto-naskh-arabic/NotoNaskhArabic-Regular.ttf')
+        format('truetype');
+}
+@font-face {
+    font-family: 'Noto Naskh Arabic';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/cdn/fonts/noto-naskh-arabic/NotoNaskhArabic-Medium.ttf')
+        format('truetype');
+}
+@font-face {
+    font-family: 'Noto Naskh Arabic';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('/cdn/fonts/noto-naskh-arabic/NotoNaskhArabic-SemiBold.ttf')
+        format('truetype');
+}
+@font-face {
+    font-family: 'Noto Naskh Arabic';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/cdn/fonts/noto-naskh-arabic/NotoNaskhArabic-Bold.ttf')
+        format('truetype');
+}
+
 @theme {
-    --font-sans:
-        'Tajawal',
-        ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    /* Default (LTR) sans stack. RTL is switched via <html dir> in @layer base.
+       Both fonts are defined in ONE place: --app-font-ltr / --app-font-rtl. */
+    --font-sans: var(--app-font-ltr);
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -62,10 +99,18 @@
 }
 
 :root {
-    --app-font-tajawal: 'Tajawal', 'Noto Naskh Arabic', ui-sans-serif, system-ui,
-        sans-serif;
-    --app-font-rubik: 'Rubik', 'Rubik Arabic', 'Noto Naskh Arabic', 'Tajawal',
-        ui-sans-serif, system-ui, sans-serif;
+    /* ------------------------------------------------------------------
+       App fonts — SINGLE SOURCE OF TRUTH.
+       LTR languages use --app-font-ltr; RTL languages use --app-font-rtl.
+       To change the app font, edit only these two stacks. Direction-based
+       switching is handled automatically via <html dir> in @layer base.
+       ------------------------------------------------------------------ */
+    --app-font-ltr: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+    --app-font-rtl: 'Calibri', 'Carlito', 'Noto Naskh Arabic', ui-sans-serif,
+        system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
 
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
@@ -143,18 +188,14 @@
     }
 
     body {
-        font-family: var(--app-font-tajawal, sans-serif);
+        font-family: var(--font-sans);
         @apply bg-background text-foreground;
     }
 
-    html[data-app-font='tajawal'] body {
-        font-family: var(--app-font-tajawal, sans-serif);
-        --font-sans: var(--app-font-tajawal);
-    }
-
-    html[data-app-font='rubik'] body {
-        font-family: var(--app-font-rubik, sans-serif);
-        --font-sans: var(--app-font-rubik);
+    /* Direction-driven font switching. Both the server render (Blade) and the
+       client i18n layer set <html dir>, so this is the only mechanism needed. */
+    html[dir='rtl'] {
+        --font-sans: var(--app-font-rtl);
     }
 }
 

@@ -72,9 +72,9 @@ const resolveLanguage = (): string => {
     return defaultLanguage;
 };
 
-const resolveFontFamily = (language: string): 'tajawal' | 'rubik' =>
-    dirByCode[language] === 'rtl' ? 'rubik' : 'tajawal';
-
+// Font family is no longer resolved here: it is driven purely by text direction
+// via `<html dir>` and the --app-font-ltr / --app-font-rtl variables in app.css,
+// which keeps the server render and client switching in a single source of truth.
 const applyDocumentLanguage = (language: string) => {
     if (typeof document === 'undefined') {
         return;
@@ -84,7 +84,6 @@ const applyDocumentLanguage = (language: string) => {
 
     document.documentElement.lang = language;
     document.documentElement.dir = dir;
-    document.documentElement.dataset.appFont = resolveFontFamily(language);
 };
 
 /**

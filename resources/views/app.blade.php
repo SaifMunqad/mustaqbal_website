@@ -2,12 +2,10 @@
 @php
     use App\Models\SiteSetting;$locale = app()->getLocale();
     $dir = \App\Models\Language::dirFor($locale);
-    $isRtlLocale = $dir === 'rtl';
     $icons = SiteSetting::current()->iconAssets();
     $favicon = $icons['ico'] ?? $icons['favicon_32'] ?? null;
 @endphp
-<html lang="{{ str_replace('_', '-', $locale) }}" dir="{{ $dir }}"
-      data-app-font="{{ $isRtlLocale ? 'rubik' : 'tajawal' }}" @class(['dark' => ($appearance ?? 'system') == 'dark'])>
+<html lang="{{ str_replace('_', '-', $locale) }}" dir="{{ $dir }}" @class(['dark' => ($appearance ?? 'system') == 'dark'])>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -55,14 +53,6 @@
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload"
-          href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap"
-          as="style">
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap">
 
     @viteReactRefresh
     @vite(['resources/js/app.tsx', "resources/js/pages/{$page['component']}.tsx"])

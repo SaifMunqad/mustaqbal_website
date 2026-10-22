@@ -1,5 +1,10 @@
 import '../css/app.css';
 
+// Calibri is proprietary (Microsoft-only); Carlito is the metric-compatible,
+// self-hosted substitute used for RTL text. See --app-font-rtl in app.css.
+import '@fontsource/carlito/400.css';
+import '@fontsource/carlito/700.css';
+
 import '@/i18n';
 import { bootstrapLanguage } from '@/i18n';
 import { ToastProvider, type FlashProps } from '@/components/toast';
