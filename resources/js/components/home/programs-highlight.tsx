@@ -43,7 +43,7 @@ export default function ProgramsHighlight({
 
             <div className="grid items-start gap-5 md:grid-cols-2">
                 {programs.map((program, index) => (
-                    <Reveal key={program.id} delay={index * 110}>
+                    <Reveal key={program.id} delay={index * 50}>
                         <ProgramCard program={program} />
                     </Reveal>
                 ))}

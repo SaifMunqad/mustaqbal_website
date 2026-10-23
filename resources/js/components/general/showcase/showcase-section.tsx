@@ -182,7 +182,7 @@ function PostsGrid({ posts }: { posts: ShowcasePost[] }) {
             <Reveal
                 key={post.id}
                 className={RANK_WIDTH[rank]}
-                delay={index * 80}
+                delay={index * 40}
             >
                 <HonoreeCard post={post} rank={rank} />
             </Reveal>

@@ -170,7 +170,7 @@ function SchoolStoreShow() {
                         </Reveal>
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             {related.map((item, index) => (
-                                <Reveal key={item.id} delay={index * 90}>
+                                <Reveal key={item.id} delay={index * 45}>
                                     <BookCard book={item} />
                                 </Reveal>
                             ))}

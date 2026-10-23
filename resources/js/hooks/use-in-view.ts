@@ -10,9 +10,11 @@ interface UseInViewOptions {
      */
     threshold?: number;
     /**
-     * Offset around the root bounds. A negative bottom margin (e.g.
-     * '0px 0px -10% 0px') reveals only once the element has risen ~10% above
-     * the bottom edge; tune the percentage to reveal earlier/later.
+     * Offset around the root bounds. A positive bottom margin (e.g.
+     * '0px 0px 10% 0px') extends the root below the viewport so the element
+     * reveals just before it scrolls into view, keeping the start responsive
+     * while scrolling. A negative bottom does the opposite: the element must
+     * rise into the viewport first, so the reveal lags behind the scroll.
      */
     rootMargin?: string;
     /** Stop observing once the element has been revealed. */
@@ -44,7 +46,7 @@ function canAnimate(): boolean {
  */
 export function useInView<T extends HTMLElement = HTMLDivElement>({
     threshold = 0,
-    rootMargin = '0px 0px -10% 0px',
+    rootMargin = '0px 0px 10% 0px',
     once = true,
     initial = false,
 }: UseInViewOptions = {}) {

@@ -29,9 +29,12 @@ interface RevealProps {
      */
     threshold?: number;
     /**
-     * IntersectionObserver root margin. The negative bottom value controls
-     * how far above the viewport bottom the element must rise to reveal, e.g.
-     * '0px 0px -10% 0px' ≈ reveal when ~10% has entered.
+     * IntersectionObserver root margin. The positive bottom value extends the
+     * root below the viewport so an element reveals just *before* it scrolls
+     * into view, e.g. '0px 0px 10% 0px' starts the animation while the element
+     * is still ~10% below the bottom edge. A negative bottom would make the
+     * reveal chase the scroll (element must rise into the viewport first),
+     * which reads as a slow, laggy start.
      */
     rootMargin?: string;
     className?: string;
@@ -61,12 +64,12 @@ export function Reveal({
     as: Tag = 'div',
     direction = 'up',
     delay = 0,
-    duration = 600,
+    duration = 400,
     once = true,
     defaultInView = false,
-    distance = 24,
+    distance = 12,
     threshold = 0,
-    rootMargin = '0px 0px -5% 0px',
+    rootMargin = '0px 0px 10% 0px',
     className,
     children,
 }: RevealProps) {
@@ -76,6 +79,7 @@ export function Reveal({
         threshold,
         rootMargin,
     });
+
 
     const visible = defaultInView || inView;
 

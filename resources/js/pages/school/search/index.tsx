@@ -144,7 +144,7 @@ function SchoolSearch() {
                     <Reveal>
                         <Section heading={t('search.books')}>
                             {results.books.map((book, index) => (
-                                <Reveal key={book.id} delay={index * 80}>
+                                <Reveal key={book.id} delay={index * 40}>
                                     <BookCard book={book} />
                                 </Reveal>
                             ))}
@@ -156,7 +156,7 @@ function SchoolSearch() {
                     <Reveal>
                         <Section heading={t('search.events')}>
                             {events.map((item, index) => (
-                                <Reveal key={item.id} delay={index * 80}>
+                                <Reveal key={item.id} delay={index * 40}>
                                     <MediaCard item={item} />
                                 </Reveal>
                             ))}
@@ -168,7 +168,7 @@ function SchoolSearch() {
                     <Reveal>
                         <Section heading={t('search.articles')}>
                             {articles.map((item, index) => (
-                                <Reveal key={item.id} delay={index * 80}>
+                                <Reveal key={item.id} delay={index * 40}>
                                     <MediaCard item={item} />
                                 </Reveal>
                             ))}

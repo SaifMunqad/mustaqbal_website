@@ -18,7 +18,7 @@ export default function StatsBar({ stats }: { stats: HomeStat[] }) {
             {items.map((stat, index) => (
                 <Reveal
                     key={`${stat.label}-${index}`}
-                    delay={index * 120}
+                    delay={index * 60}
                     direction="zoom"
                 >
                     <div className="flex flex-col items-center gap-1 text-center">

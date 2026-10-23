@@ -29,7 +29,7 @@ export default function AboutValuesSection({
                         <Reveal
                             key={`${value.title}-${index}`}
                             className="h-full"
-                            delay={index * 100}
+                            delay={index * 50}
                         >
                             <article className="flex h-full flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-800 dark:bg-gray-900">
                                 <div

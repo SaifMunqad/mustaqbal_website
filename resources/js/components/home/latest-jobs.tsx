@@ -38,7 +38,7 @@ export default function LatestJobs({ jobs }: { jobs: Job[] }) {
                 }
             >
                 {jobs.map((job, index) => (
-                    <Reveal key={job.id} delay={index * 110}>
+                    <Reveal key={job.id} delay={index * 50}>
                         <JobCard job={job} />
                     </Reveal>
                 ))}
