@@ -13,8 +13,10 @@ export default function AppSidebarLayout({
         <AppShell variant="sidebar">
             <AppSidebar />
             <AppContent variant="sidebar">
-                <AppSidebarHeader breadcrumbs={breadcrumbs} />
+                {/* Single scroll region so the thin scrollbar runs the full
+                    height from the top; the header inside it is sticky. */}
                 <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto">
+                    <AppSidebarHeader breadcrumbs={breadcrumbs} />
                     {children}
                 </div>
             </AppContent>
