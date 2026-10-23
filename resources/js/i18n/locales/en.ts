@@ -290,10 +290,16 @@ const en = {
         none: 'No upcoming events yet.',
         back: 'Back to events',
         until: 'Ends',
+        detailsStart: 'Event details',
+        detailsEnd: 'Event conclusion',
         moreUpcoming: 'More upcoming events',
         prevMonth: 'Previous month',
         nextMonth: 'Next month',
         more: '+{{count}} more',
+        dateType: 'Date type',
+        dateTypeGregorian: 'Gregorian',
+        dateTypeSolar: 'Solar Hijri',
+        dateTypeLunar: 'Lunar Hijri',
     },
     articles: {
         title: 'Articles',
@@ -333,6 +339,12 @@ const en = {
         articles: 'Articles',
         events: 'Events',
         books: 'Books',
+    },
+    pagination: {
+        loadMore: 'Load more',
+        loading: 'Loading more...',
+        retry: 'Could not load more. Tap to try again.',
+        end: 'You have reached the end of the list.',
     },
     enums: {
         postType: {
