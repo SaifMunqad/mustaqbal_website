@@ -15,7 +15,8 @@ class SchoolEventController extends Controller
             ->visibleTo($request->user())
             ->with(['author:id,name', 'translations.language'])
             ->orderBy('start_at')
-            ->paginate(12);
+            ->paginate(12)
+            ->withQueryString();
 
         $upcoming = Event::query()
             ->visibleTo($request->user())

@@ -36,8 +36,10 @@ class SchoolPageController extends Controller
             ->with(['translations.language', 'typeTranslations.language'])
             ->orderBy('display_order')
             ->orderBy('name')
-            ->get()
-            ->map(fn (Program $program): array => [
+            ->orderBy('id')
+            ->paginate(9)
+            ->withQueryString()
+            ->through(fn (Program $program): array => [
                 'id' => $program->id,
                 'name' => $program->translatedName($locale),
                 'program_type' => $program->program_type,
@@ -50,9 +52,17 @@ class SchoolPageController extends Controller
                 'available_for_enroll' => $program->available_for_enroll,
             ]);
 
+        // Per-category totals stay stable while the listing grows page by page.
+        $programCounts = Program::query()
+            ->selectRaw('program_type, count(*) as aggregate')
+            ->groupBy('program_type')
+            ->pluck('aggregate', 'program_type')
+            ->all();
+
         return Inertia::render('school/programs/index', [
             'page' => $page,
             'programs' => $programs,
+            'programCounts' => $programCounts,
         ]);
     }
 
@@ -79,5 +89,3 @@ class SchoolPageController extends Controller
         return Inertia::render('school/enroll/resend-email');
     }
 }
-
-

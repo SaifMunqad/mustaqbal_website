@@ -13,8 +13,9 @@ class SchoolJobController extends Controller
         $jobs = Job::query()
             ->with('translations.language')
             ->active()
-            ->get()
-            ->map(fn (Job $job): array => $job->toCard());
+            ->paginate(10)
+            ->withQueryString()
+            ->through(fn (Job $job): array => $job->toCard());
 
         return Inertia::render('school/jobs/index', [
             'jobs' => $jobs,

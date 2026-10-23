@@ -16,7 +16,8 @@ class SchoolArticleController extends Controller
             ->where('is_published', true)
             ->whereNotNull('published_at')
             ->latest('published_at')
-            ->paginate(9);
+            ->paginate(9)
+            ->withQueryString();
 
         return Inertia::render('school/articles/index', [
             'articles' => $articles,
@@ -34,4 +35,3 @@ class SchoolArticleController extends Controller
         ]);
     }
 }
-
