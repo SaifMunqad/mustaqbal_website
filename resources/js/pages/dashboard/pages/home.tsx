@@ -24,7 +24,18 @@ import {
     useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Plus, Trash2, Eye, EyeOff } from 'lucide-react';
+import {
+    Eye,
+    EyeOff,
+    GripVertical,
+    Menu,
+    Monitor,
+    Plus,
+    Smartphone,
+    Tablet,
+    Trash2,
+    X,
+} from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -44,7 +55,7 @@ import {
     SheetTitle,
 } from '@/components/ui/sheet';
 import { Textarea } from '@/components/ui/textarea';
-import { HomeBlock, type RenderBlock } from '@/components/home/page-block';
+import { HomeBlock, type RenderBlock, type BlockListRow } from '@/components/home/page-block';
 import type { LanguageOption, SharedData } from '@/types';
 
 // ---------------------------------------------------------------------------
@@ -56,6 +67,9 @@ interface PaletteOption {
     label: string;
     labelKey: string;
     kind: 'curated' | 'authored';
+    component: string;
+    list_group: string | null;
+    category: string;
     maxInstances: number | null;
     addable: boolean;
 }
@@ -90,6 +104,7 @@ interface SectionDraft {
     span_sm: number | null;
     config: Record<string, unknown>;
     stores: string[];
+    list_group: string | null;
     translations: Record<string, Record<string, string>>;
     items: { id: number }[];
     lists: Record<string, Record<string, ListRow[]>>;
@@ -114,6 +129,7 @@ interface RawSection {
     span_sm: number | null;
     config: Record<string, unknown>;
     stores: string[];
+    list_group: string | null;
     translations: Record<string, Record<string, string>>;
     items: { id: number; type: string }[];
     lists: Record<string, Record<string, ListRow[]>>;
@@ -122,6 +138,7 @@ interface RawSection {
 interface BuilderProps {
     sections: RawSection[];
     palette: PaletteOption[];
+    categories: { value: string; label: string; labelKey: string }[];
     availableItems: Record<string, { id: number; label: string }[]>;
     defaultLanguage: string;
     [key: string]: unknown;
@@ -163,6 +180,7 @@ function makeDraft(option: PaletteOption, editorId: number): SectionDraft {
         span_sm: null,
         config: {},
         stores: [],
+        list_group: option.list_group,
         translations: {},
         items: [],
         lists: {},
@@ -181,21 +199,25 @@ function componentFor(type: string): string {
     return 'cards';
 }
 
-const SPAN_OPTIONS = Array.from({ length: 12 }, (_, i) => i + 1);
+// Hard-coded, per-type responsive spans (mirror of SectionType::defaultSpans()).
+// Users can't edit these so the responsive layout can never be broken by hand.
+function defaultSpans(component: string): { lg: number; md: number; sm: number } {
+    if (component === 'quote' || component === 'newsletter' || component === 'countdown') {
+        return { lg: 6, md: 12, sm: 12 };
+    }
+    return { lg: 12, md: 12, sm: 12 };
+}
 
 function spanBucket(device: PreviewDevice): 'sm' | 'md' | 'lg' {
     return device === 'mobile' ? 'sm' : device === 'tablet' ? 'md' : 'lg';
 }
 
 function spanFor(draft: SectionDraft, device: PreviewDevice): number {
-    const bucket = spanBucket(device);
-    const value =
-        bucket === 'sm' ? draft.span_sm : bucket === 'md' ? draft.span_md : draft.span_lg;
-    return value ?? 12;
+    return defaultSpans(draft.component)[spanBucket(device)];
 }
 
 export default function DashboardPageBuilderHome() {
-    const { sections, palette, availableItems, defaultLanguage } =
+    const { sections, palette, categories, availableItems, defaultLanguage } =
         usePage<BuilderProps>().props;
     const { languages } = usePage<SharedData>().props;
     const { t } = useTranslation();
@@ -210,6 +232,7 @@ export default function DashboardPageBuilderHome() {
     const [device, setDevice] = useState<PreviewDevice>('desktop');
     const [activeId, setActiveId] = useState<string | null>(null);
     const [editingEditorId, setEditingEditorId] = useState<number | null>(null);
+    const [paletteOpen, setPaletteOpen] = useState(false);
 
     const tempId = useRef(0);
     const nextTempId = () => --tempId.current;
@@ -257,6 +280,13 @@ export default function DashboardPageBuilderHome() {
         if (draft) patchDraft(editorId, { is_active: !draft.is_active });
     };
 
+    // Tap-to-add from the palette drawer (drag still works from the sidebar).
+    const appendDraft = (option: PaletteOption) => {
+        setDrafts((prev) => [...prev, makeDraft(option, nextTempId())]);
+        setDirty(true);
+        setPaletteOpen(false);
+    };
+
     const onDragStart = (event: DragStartEvent) =>
         setActiveId(String(event.active.id));
 
@@ -294,7 +324,7 @@ export default function DashboardPageBuilderHome() {
 
     const save = () => {
         router.put(
-            '/dashboard/pages/home/save',
+            '/dashboard/pages/home',
             {
                 sections: drafts.map(
                     (d) => ({
@@ -307,9 +337,6 @@ export default function DashboardPageBuilderHome() {
                         image_path: d.image_path || null,
                         cta_url: d.cta_url || null,
                         tone: d.tone,
-                        span_lg: d.span_lg,
-                        span_md: d.span_md,
-                        span_sm: d.span_sm,
                         config: d.config,
                         items: d.items,
                         lists: d.lists,
@@ -371,18 +398,40 @@ export default function DashboardPageBuilderHome() {
                         </div>
 
                         <div className="flex items-center gap-1">
-                            {(['desktop', 'tablet', 'mobile'] as PreviewDevice[]).map((d) => (
-                                <Button
-                                    key={d}
-                                    size="sm"
-                                    variant={device === d ? 'default' : 'ghost'}
-                                    type="button"
-                                    onClick={() => setDevice(d)}
-                                >
-                                    {d}
-                                </Button>
-                            ))}
+                            {(['desktop', 'tablet', 'mobile'] as PreviewDevice[]).map((d) => {
+                                const Icon =
+                                    d === 'desktop'
+                                        ? Monitor
+                                        : d === 'tablet'
+                                          ? Tablet
+                                          : Smartphone;
+                                return (
+                                    <Button
+                                        key={d}
+                                        size="sm"
+                                        variant={device === d ? 'default' : 'ghost'}
+                                        type="button"
+                                        title={d}
+                                        aria-label={d}
+                                        onClick={() => setDevice(d)}
+                                    >
+                                        <Icon className="size-4" />
+                                    </Button>
+                                );
+                            })}
                         </div>
+
+                        {/* Opens the palette as a drawer on small screens. */}
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            type="button"
+                            className="lg:hidden"
+                            onClick={() => setPaletteOpen(true)}
+                        >
+                            <Menu className="size-4" />
+                            {t('dashboard.homeSections.visual.blocksTitle', 'Blocks')}
+                        </Button>
 
                         <div className="ms-auto flex items-center gap-2">
                             <Button
@@ -402,32 +451,79 @@ export default function DashboardPageBuilderHome() {
                     </div>
                 </div>
 
-                <div className="grid gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
-                    {/* Palette: drag a chip onto the canvas. */}
-                    <aside className="lg:sticky lg:top-24 lg:self-start">
-                        <h2 className="mb-2 text-sm font-semibold text-muted-foreground">
-                            {t('dashboard.homeSections.visual.blocksTitle', 'Blocks')}
-                        </h2>
-                        <div className="flex flex-wrap gap-2 lg:flex-col">
-                            {palette.map((option) => {
-                                const capped =
-                                    option.maxInstances !== null &&
-                                    (counts[option.value] ?? 0) >= option.maxInstances;
-                                return (
-                                    <PaletteChip
-                                        key={option.value}
-                                        option={option}
-                                        disabled={capped}
-                                    />
-                                );
-                            })}
+                {paletteOpen ? (
+                    <div
+                        className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+                        onClick={() => setPaletteOpen(false)}
+                    />
+                ) : null}
+
+                {/* dir follows the editing language so the palette mirrors to the
+                    left (and the drawer slides from the left) in RTL. */}
+                <div dir={dir} className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+                    {/* Palette: on lg+ it flows with the page scroll; below lg it's
+                        a slide-in drawer with its own scroll. */}
+                    <aside
+                        className={`fixed inset-y-0 z-50 flex w-80 flex-col overflow-y-auto bg-background p-4 shadow-xl transition-transform ltr:end-0 rtl:start-0 lg:static lg:z-auto lg:order-last lg:h-auto lg:w-auto lg:self-start lg:overflow-visible lg:bg-transparent lg:p-2 lg:shadow-none ${
+                            paletteOpen
+                                ? 'max-lg:visible max-lg:translate-x-0'
+                                : 'max-lg:invisible max-lg:ltr:translate-x-full max-lg:rtl:-translate-x-full'
+                        }`}
+                    >
+                        <div className="mb-3 flex items-center justify-between">
+                            <h2 className="text-sm font-semibold text-muted-foreground">
+                                {t('dashboard.homeSections.visual.blocksTitle', 'Blocks')}
+                            </h2>
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                type="button"
+                                className="lg:hidden"
+                                onClick={() => setPaletteOpen(false)}
+                            >
+                                <X className="size-4" />
+                            </Button>
                         </div>
+                        {(categories.length > 0
+                            ? categories
+                            : [{ value: '', label: 'Blocks', labelKey: '' }]
+                        ).map((cat) => {
+                            const items = palette.filter((o) =>
+                                cat.value ? o.category === cat.value : true,
+                            );
+                            if (items.length === 0) return null;
+                            return (
+                                <div key={cat.value || 'all'} className="mb-5">
+                                    <h3 className="mb-2 text-sm font-semibold text-muted-foreground">
+                                        {cat.labelKey
+                                            ? t(cat.labelKey, cat.label)
+                                            : cat.label}
+                                    </h3>
+                                    <div className="grid grid-cols-2 gap-2 p-2 sm:grid-cols-3 lg:grid-cols-1">
+                                        {items.map((option) => {
+                                            const capped =
+                                                option.maxInstances !== null &&
+                                                (counts[option.value] ?? 0) >=
+                                                    option.maxInstances;
+                                            return (
+                                                <PaletteChip
+                                                    key={option.value}
+                                                    option={option}
+                                                    disabled={capped}
+                                                    onSelect={appendDraft}
+                                                />
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </aside>
 
                     {/* Canvas: single ordered, responsive, non-overlapping flow. */}
                     <div
                         dir={dir}
-                        className="mx-auto w-full transition-all"
+                        className="mx-auto w-full p-2 transition-all lg:order-first"
                         style={{
                             maxWidth:
                                 device === 'mobile'
@@ -444,6 +540,8 @@ export default function DashboardPageBuilderHome() {
                         <SortableBlocks
                             drafts={drafts}
                             device={device}
+                            editingLang={editingLang}
+                            rtl={dir === 'rtl'}
                             editingId={editingEditorId}
                             onEdit={setEditingEditorId}
                             onRemove={removeDraft}
@@ -480,7 +578,15 @@ export default function DashboardPageBuilderHome() {
 // Palette chip (draggable)
 // ---------------------------------------------------------------------------
 
-function PaletteChip({ option, disabled }: { option: PaletteOption; disabled: boolean }) {
+function PaletteChip({
+    option,
+    disabled,
+    onSelect,
+}: {
+    option: PaletteOption;
+    disabled: boolean;
+    onSelect: (option: PaletteOption) => void;
+}) {
     const { t } = useTranslation();
     const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
         id: `palette:${option.value}`,
@@ -497,15 +603,114 @@ function PaletteChip({ option, disabled }: { option: PaletteOption; disabled: bo
             {...listeners}
             {...attributes}
             disabled={disabled}
-            className={`flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-start text-sm transition ${
+            // Drag adds it in the sidebar; a plain tap adds it (needed for the drawer).
+            onClick={() => {
+                if (!disabled) onSelect(option);
+            }}
+            className={`w-full overflow-hidden rounded-lg border text-start transition ${
                 disabled
-                    ? 'cursor-not-allowed border-border/50 text-muted-foreground/50'
+                    ? 'cursor-not-allowed border-border/50 opacity-50'
                     : 'cursor-grab border-border bg-card hover:border-blue-400 hover:shadow-sm'
             } ${isDragging ? 'opacity-40' : ''}`}
         >
-            <span className="font-medium">{label}</span>
-            <span className="text-muted-foreground">{option.kind}</span>
+            <BlockSkeleton component={option.component} />
+            <span className="block px-3 py-1.5 text-xs font-medium">{label}</span>
         </button>
+    );
+}
+
+// A tiny wireframe of each block family so the admin sees the shape they're
+// about to drop, not just its name.
+function BlockSkeleton({ component }: { component: string }) {
+    const bar = 'rounded bg-muted-foreground/20';
+    const box = 'rounded bg-muted-foreground/15';
+    const grid = (n: number, cls: string) =>
+        Array.from({ length: n }).map((_, i) => <div key={i} className={cls} />);
+
+    const body: Record<string, React.ReactNode> = {
+        hero: (
+            <div className="flex gap-1">
+                <div className={`h-8 w-1/2 ${box}`} />
+                <div className="flex flex-1 flex-col justify-center gap-1">
+                    <div className={`h-1.5 w-full ${bar}`} />
+                    <div className={`h-1.5 w-2/3 ${bar}`} />
+                </div>
+            </div>
+        ),
+        cards: (
+            <div className="grid grid-cols-3 gap-1">{grid(3, `h-8 ${box}`)}</div>
+        ),
+        list: <div className="grid grid-cols-2 gap-1">{grid(4, `h-6 ${box}`)}</div>,
+        logos: <div className="flex items-center justify-between">{grid(5, `h-4 w-6 ${bar}`)}</div>,
+        gallery: (
+            <div className="grid grid-cols-3 gap-1">{grid(6, `h-5 ${box}`)}</div>
+        ),
+        faq: (
+            <div className="space-y-1">
+                {grid(3, `h-3 w-full ${bar}`)}
+            </div>
+        ),
+        social: <div className="flex gap-1">{grid(4, `h-4 w-8 ${bar}`)}</div>,
+        contact: (
+            <div className="flex gap-1">
+                <div className="flex flex-1 flex-col gap-1">{grid(3, `h-2 ${bar}`)}</div>
+                <div className={`h-10 w-1/2 ${box}`} />
+            </div>
+        ),
+        stats: <div className="flex justify-between gap-1">{grid(4, `h-6 flex-1 ${box}`)}</div>,
+        stats_cards: (
+            <div className="grid grid-cols-2 gap-1">{grid(4, `h-6 ${box}`)}</div>
+        ),
+        features: (
+            <div className="grid grid-cols-2 gap-1">{grid(4, `h-5 ${box}`)}</div>
+        ),
+        cta: <div className={`h-8 w-full ${box}`} />,
+        announcement: <div className={`h-5 w-full ${bar}`} />,
+        banner: (
+            <div className="space-y-1">
+                <div className={`h-3 w-2/3 ${bar}`} />
+                <div className={`h-6 w-full ${box}`} />
+            </div>
+        ),
+        quote: (
+            <div className="space-y-1 py-1">
+                <div className={`mx-auto h-1.5 w-3/4 ${bar}`} />
+                <div className={`mx-auto h-1.5 w-1/2 ${bar}`} />
+            </div>
+        ),
+        media_text: (
+            <div className="flex gap-1">
+                <div className={`h-8 w-1/2 ${box}`} />
+                <div className="flex flex-1 flex-col justify-center gap-1">
+                    <div className={`h-1.5 w-full ${bar}`} />
+                </div>
+            </div>
+        ),
+        video: (
+            <div className="relative h-10 w-full rounded bg-muted-foreground/15">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 border-y-4 border-l-6 border-y-transparent border-l-white" />
+            </div>
+        ),
+        map: <div className={`h-9 w-full ${box}`} />,
+        newsletter: (
+            <div className="flex gap-1">
+                <div className={`h-4 flex-1 ${bar}`} />
+                <div className={`h-4 w-8 ${box}`} />
+            </div>
+        ),
+        countdown: <div className="flex justify-center gap-1">{grid(4, `h-6 w-6 ${box}`)}</div>,
+        programs: (
+            <div className="grid grid-cols-2 gap-1">{grid(2, `h-8 ${box}`)}</div>
+        ),
+        jobs: (
+            <div className="space-y-1">{grid(3, `h-3 w-full ${bar}`)}</div>
+        ),
+    };
+
+    return (
+        <div className="h-16 w-full border-b border-border bg-muted/40 p-2">
+            {body[component] ?? <div className={`h-full w-full ${box}`} />}
+        </div>
     );
 }
 
@@ -516,6 +721,8 @@ function PaletteChip({ option, disabled }: { option: PaletteOption; disabled: bo
 function SortableBlocks({
     drafts,
     device,
+    editingLang,
+    rtl,
     editingId,
     onEdit,
     onRemove,
@@ -523,6 +730,8 @@ function SortableBlocks({
 }: {
     drafts: SectionDraft[];
     device: PreviewDevice;
+    editingLang: string;
+    rtl: boolean;
     editingId: number | null;
     onEdit: (id: number) => void;
     onRemove: (id: number) => void;
@@ -554,6 +763,8 @@ function SortableBlocks({
                             key={draft.key}
                             draft={draft}
                             device={device}
+                            editingLang={editingLang}
+                            rtl={rtl}
                             isEditing={editingId === draft.editorId}
                             onEdit={onEdit}
                             onRemove={onRemove}
@@ -569,6 +780,8 @@ function SortableBlocks({
 function SortableBlock({
     draft,
     device,
+    editingLang,
+    rtl,
     isEditing,
     onEdit,
     onRemove,
@@ -576,6 +789,8 @@ function SortableBlock({
 }: {
     draft: SectionDraft;
     device: PreviewDevice;
+    editingLang: string;
+    rtl: boolean;
     isEditing: boolean;
     onEdit: (id: number) => void;
     onRemove: (id: number) => void;
@@ -643,59 +858,175 @@ function SortableBlock({
             </div>
 
             <div className={draft.is_active ? '' : 'opacity-40'}>
-                {draft.id === null && draft.items.length === 0 && !hasContent(draft) ? (
-                    <EmptyBlock draft={draft} />
-                ) : (
-                    <HomeBlock block={draftToRenderBlock(draft)} rtl={false} />
-                )}
+                <HomeBlock
+                    block={draftToRenderBlock(
+                        draft,
+                        editingLang,
+                        draft.id === null && !hasContent(draft, editingLang),
+                    )}
+                    rtl={rtl}
+                />
             </div>
         </div>
     );
 }
 
-function hasContent(draft: SectionDraft): boolean {
-    const text = draft.translations.en ?? {};
-    return Boolean(text.title || text.heading || text.body || draft.image_path);
-}
-
-function EmptyBlock({ draft }: { draft: SectionDraft }) {
-    return (
-        <div className="flex min-h-[80px] items-center justify-center rounded-xl border border-dashed border-border bg-muted/30 px-4 py-8 text-sm text-muted-foreground">
-            {draft.type_label}
-        </div>
+function hasContent(draft: SectionDraft, lang: string): boolean {
+    const t = draft.translations[lang] ?? {};
+    const group = draft.list_group;
+    const hasRows = group
+        ? (draft.lists[group]?.[lang] ?? []).some(
+              (r) => r.title || r.value || r.description || r.image_path,
+          )
+        : false;
+    return Boolean(
+        t.title || t.heading || t.body || draft.image_path || hasRows,
     );
 }
 
-// A minimal preview block; the canvas reuses the same component map as the site.
-function draftToRenderBlock(draft: SectionDraft): RenderBlock {
-    const text = draft.translations.en ?? {};
-    return {
+// Preview scaffolding for brand-new, empty blocks: real components rendered with
+// sample text, a neutral default image, and a few placeholder rows so the admin
+// sees the shape immediately and edits over it. Preview-only — never saved.
+const PLACEHOLDER_IMG =
+    'data:image/svg+xml;utf8,' +
+    encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300">'
+        + '<rect width="100%" height="100%" fill="#e2e8f0"/>'
+        + '<text x="50%" y="50%" font-family="sans-serif" font-size="20" fill="#94a3b8"'
+        + ' text-anchor="middle" dominant-baseline="middle">Image</text></svg>',
+    );
+
+const PH = {
+    title: 'Section title',
+    heading: 'Write a heading',
+    body: 'Add a short supporting description.',
+    cta: 'Learn more',
+    url: '#',
+};
+
+function sampleRows(): BlockListRow[] {
+    return ['First item', 'Second item', 'Third item'].map((title) => ({
+        value: 'Value',
+        title,
+        description: 'A short supporting description.',
+        icon: 'star',
+        image: PLACEHOLDER_IMG,
+        url: PH.url,
+    }));
+}
+
+// Preview for the canvas. Mirrors PageSections::genericPayload so the editor
+// shows the same component (and the active language's content) the site renders.
+// When `placeholder` is true, blank fields fall back to sample data.
+function draftToRenderBlock(
+    draft: SectionDraft,
+    lang: string,
+    placeholder = false,
+): RenderBlock {
+    const t = draft.translations[lang] ?? {};
+    const group = draft.list_group;
+    const rawRows = group ? (draft.lists[group]?.[lang] ?? []) : [];
+    let list: BlockListRow[] = rawRows.map((r) => ({
+        value: r.value ?? '',
+        title: r.title ?? '',
+        description: r.description ?? '',
+        icon: r.icon ?? '',
+        image: r.image_path ?? '',
+        url: r.url ?? '',
+    }));
+
+    const fill = (value: string | undefined, sample: string) =>
+        value && value.trim() !== '' ? value : placeholder ? sample : value ?? '';
+
+    const heading = fill(t.heading, PH.heading);
+    const body = fill(t.body, PH.body);
+    const ctaLabel = fill(t.cta_label, PH.cta);
+    const title = fill(t.title, PH.title);
+    const image = placeholder && !draft.image_path ? PLACEHOLDER_IMG : draft.image_path || null;
+    const ctaUrl = draft.cta_url || (placeholder ? PH.url : null);
+
+    if (placeholder && group && list.length === 0) list = sampleRows();
+
+    const base: RenderBlock = {
         id: draft.editorId,
         type: draft.section_type,
         component: draft.component,
-        variant: draft.component === 'cards' ? 'cards' : (draft.component as 'banner' | 'announcement'),
+        variant:
+            draft.component === 'cards'
+                ? 'cards'
+                : (draft.component as 'banner' | 'announcement'),
         kind: draft.kind,
         zone: draft.zone,
         sort_order: 0,
         is_active: draft.is_active,
         type_label: draft.type_label,
-        title: text.title ?? '',
+        title,
         title_key: draft.label_key,
-        spans: {
-            lg: draft.span_lg ?? 12,
-            md: draft.span_md ?? 12,
-            sm: draft.span_sm ?? 12,
-        },
-        items: draft.items.length ? [] : undefined,
+        spans: defaultSpans(draft.component),
+        text: { heading, body, cta_label: ctaLabel },
+        cta_url: ctaUrl,
+        image_path: image,
+        tone: draft.tone,
         config: {
-            heading: text.heading ?? '',
-            body: text.body ?? '',
-            image_url: draft.image_path || null,
-            cta_label: text.cta_label ?? '',
-            cta_url: draft.cta_url || null,
+            heading,
+            body,
+            image_url: image,
+            cta_label: ctaLabel,
+            cta_url: ctaUrl,
             tone: draft.tone,
         },
+        list,
     };
+
+    if (draft.component === 'hero') {
+        return {
+            ...base,
+            hero: {
+                title: heading,
+                subtitle: body,
+                cta_primary: ctaLabel,
+                cta_secondary: String(draft.config.cta_secondary ?? (placeholder ? PH.cta : '')),
+                tagline: String(draft.config.tagline ?? (placeholder ? 'Tagline' : '')),
+                hero_image: image || '',
+            },
+        };
+    }
+
+    if (draft.component === 'features') {
+        return {
+            ...base,
+            features: list.map((r) => ({
+                icon: r.icon,
+                title: r.title,
+                description: r.description,
+            })),
+        };
+    }
+
+    if (draft.component === 'stats') {
+        return { ...base, stats: list.map((r) => ({ value: r.value, label: r.title })) };
+    }
+
+    // Sample cards so curated rails preview with content instead of a bare title.
+    if (placeholder && draft.kind === 'curated') {
+        return {
+            ...base,
+            items: ['Featured story', 'Another story', 'One more story'].map(
+                (cardTitle, i) => ({
+                    id: i + 1,
+                    title: cardTitle,
+                    subtitle: 'Recognized highlight',
+                    excerpt: 'A short preview of this item.',
+                    image: PLACEHOLDER_IMG,
+                    url: PH.url,
+                    date: new Date().toISOString(),
+                    dir: 'ltr',
+                }),
+            ) as never,
+        };
+    }
+
+    return base;
 }
 
 // ---------------------------------------------------------------------------
@@ -725,11 +1056,13 @@ function BlockEditorSheet({
 
     const text = draft.translations[editingLang] ?? {};
     const isCurated = draft.kind === 'curated';
-    const group = draft.component === 'features' ? 'features' : draft.component === 'stats' ? 'stats' : null;
+    const group = draft.list_group;
     const selectedIds = new Set(draft.items.map((i) => i.id));
 
-    const setSpan = (key: 'span_lg' | 'span_md' | 'span_sm', value: string) =>
-        onPatch(draft.editorId, { [key]: Number(value) } as Partial<SectionDraft>);
+    const setConfig = (key: string, value: string) =>
+        onPatch(draft.editorId, {
+            config: { ...draft.config, [key]: value === '' ? undefined : value },
+        });
 
     const toggleItem = (id: number, checked: boolean) => {
         const items = checked
@@ -752,36 +1085,7 @@ function BlockEditorSheet({
                     <SheetTitle>{draft.type_label}</SheetTitle>
                 </SheetHeader>
 
-                <div className="space-y-6 py-4">
-                    {/* Responsive spans */}
-                    <div>
-                        <Label className="mb-2 block">Responsive width (1-12)</Label>
-                        <div className="grid grid-cols-3 gap-2">
-                            {(['span_sm', 'span_md', 'span_lg'] as const).map((key) => (
-                                <div key={key} className="space-y-1">
-                                    <span className="text-xs text-muted-foreground">
-                                        {key === 'span_sm' ? 'Mobile' : key === 'span_md' ? 'Tablet' : 'Desktop'}
-                                    </span>
-                                    <Select
-                                        value={String(draft[key] ?? 12)}
-                                        onValueChange={(v) => setSpan(key, v)}
-                                    >
-                                        <SelectTrigger className="h-9">
-                                            <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {SPAN_OPTIONS.map((n) => (
-                                                <SelectItem key={n} value={String(n)}>
-                                                    {n}/12
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
+                <div className="space-y-6 p-2">
                     {/* Localized text */}
                     <div className="space-y-3">
                         <Label>Text · {editingLang}</Label>
@@ -813,22 +1117,49 @@ function BlockEditorSheet({
                                         <FieldInput
                                             label="Tagline"
                                             value={String(draft.config.tagline ?? '')}
-                                            onChange={(v) =>
-                                                onPatch(draft.editorId, {
-                                                    config: { ...draft.config, tagline: v },
-                                                })
-                                            }
+                                            onChange={(v) => setConfig('tagline', v)}
                                         />
                                         <FieldInput
                                             label="Secondary button"
                                             value={String(draft.config.cta_secondary ?? '')}
-                                            onChange={(v) =>
-                                                onPatch(draft.editorId, {
-                                                    config: { ...draft.config, cta_secondary: v },
-                                                })
-                                            }
+                                            onChange={(v) => setConfig('cta_secondary', v)}
                                         />
                                     </>
+                                ) : null}
+                                {draft.component === 'video' ? (
+                                    <FieldInput
+                                        label="Video embed URL"
+                                        value={String(draft.config.video_url ?? '')}
+                                        onChange={(v) => setConfig('video_url', v)}
+                                    />
+                                ) : null}
+                                {draft.component === 'map' || draft.component === 'contact' ? (
+                                    <>
+                                        <FieldInput
+                                            label="Map embed URL"
+                                            value={String(draft.config.map_embed_url ?? '')}
+                                            onChange={(v) => setConfig('map_embed_url', v)}
+                                        />
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <FieldInput
+                                                label="Latitude"
+                                                value={String(draft.config.map_latitude ?? '')}
+                                                onChange={(v) => setConfig('map_latitude', v)}
+                                            />
+                                            <FieldInput
+                                                label="Longitude"
+                                                value={String(draft.config.map_longitude ?? '')}
+                                                onChange={(v) => setConfig('map_longitude', v)}
+                                            />
+                                        </div>
+                                    </>
+                                ) : null}
+                                {draft.component === 'countdown' ? (
+                                    <FieldInput
+                                        label="End date (e.g. 2026-12-31T00:00:00)"
+                                        value={String(draft.config.end_date ?? '')}
+                                        onChange={(v) => setConfig('end_date', v)}
+                                    />
                                 ) : null}
                                 <FieldInput
                                     label="Image path"
@@ -883,98 +1214,68 @@ function BlockEditorSheet({
                         </div>
                     ) : null}
 
-                    {/* Features / stats list editor */}
+                    {/* Generic list editor for every list-backed block. */}
                     {group ? (
                         <div className="space-y-2">
                             <Label>List · {editingLang}</Label>
-                            {rows.map((row, index) => (
-                                <div
-                                    key={index}
-                                    className="space-y-1 rounded-md border border-border p-2"
-                                >
-                                    {group === 'stats' ? (
-                                        <>
-                                            <Input
-                                                placeholder="Value"
-                                                value={row.value}
-                                                onChange={(e) =>
-                                                    setRows(
-                                                        rows.map((r, i) =>
-                                                            i === index
-                                                                ? { ...r, value: e.target.value }
-                                                                : r,
-                                                        ),
-                                                    )
-                                                }
-                                            />
-                                            <Input
-                                                placeholder="Label"
-                                                value={row.title}
-                                                onChange={(e) =>
-                                                    setRows(
-                                                        rows.map((r, i) =>
-                                                            i === index
-                                                                ? { ...r, title: e.target.value }
-                                                                : r,
-                                                        ),
-                                                    )
-                                                }
-                                            />
-                                        </>
-                                    ) : (
-                                        <>
+                            {rows.map((row, index) => {
+                                const set = (key: keyof ListRow, value: string) =>
+                                    setRows(
+                                        rows.map((r, i) =>
+                                            i === index ? { ...r, [key]: value } : r,
+                                        ),
+                                    );
+                                return (
+                                    <div
+                                        key={index}
+                                        className="space-y-1 rounded-md border border-border p-2"
+                                    >
+                                        <Input
+                                            placeholder="Title"
+                                            value={row.title}
+                                            onChange={(e) => set('title', e.target.value)}
+                                        />
+                                        <Input
+                                            placeholder="Subtitle / value"
+                                            value={row.value}
+                                            onChange={(e) => set('value', e.target.value)}
+                                        />
+                                        <Textarea
+                                            placeholder="Description"
+                                            value={row.description}
+                                            onChange={(e) => set('description', e.target.value)}
+                                        />
+                                        <div className="grid grid-cols-2 gap-1">
                                             <Input
                                                 placeholder="Icon key"
                                                 value={row.icon}
-                                                onChange={(e) =>
-                                                    setRows(
-                                                        rows.map((r, i) =>
-                                                            i === index
-                                                                ? { ...r, icon: e.target.value }
-                                                                : r,
-                                                        ),
-                                                    )
-                                                }
+                                                onChange={(e) => set('icon', e.target.value)}
                                             />
                                             <Input
-                                                placeholder="Title"
-                                                value={row.title}
-                                                onChange={(e) =>
-                                                    setRows(
-                                                        rows.map((r, i) =>
-                                                            i === index
-                                                                ? { ...r, title: e.target.value }
-                                                                : r,
-                                                        ),
-                                                    )
-                                                }
+                                                placeholder="Image URL"
+                                                value={row.image_path}
+                                                onChange={(e) => set('image_path', e.target.value)}
                                             />
-                                            <Textarea
-                                                placeholder="Description"
-                                                value={row.description}
-                                                onChange={(e) =>
-                                                    setRows(
-                                                        rows.map((r, i) =>
-                                                            i === index
-                                                                ? { ...r, description: e.target.value }
-                                                                : r,
-                                                        ),
-                                                    )
-                                                }
-                                            />
-                                        </>
-                                    )}
-                                    <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        type="button"
-                                        className="text-destructive"
-                                        onClick={() => setRows(rows.filter((_, i) => i !== index))}
-                                    >
-                                        Remove row
-                                    </Button>
-                                </div>
-                            ))}
+                                        </div>
+                                        <Input
+                                            placeholder="Link URL"
+                                            value={row.url}
+                                            onChange={(e) => set('url', e.target.value)}
+                                        />
+                                        <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            type="button"
+                                            className="text-destructive"
+                                            onClick={() =>
+                                                setRows(rows.filter((_, i) => i !== index))
+                                            }
+                                        >
+                                            Remove row
+                                        </Button>
+                                    </div>
+                                );
+                            })}
                             <Button
                                 size="sm"
                                 variant="outline"
