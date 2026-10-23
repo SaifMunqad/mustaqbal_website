@@ -33,6 +33,12 @@ class PageBuilderBackfill
         $order = 0;
         $order = self::siteSettings($pageId, $order);
         self::legacySections($pageId, $order);
+
+        // The legacy home always rendered a programs highlight and a latest-jobs
+        // rail (hardcoded components). Seed equivalent builder blocks so the
+        // builder-rendered home keeps parity with the old layout.
+        self::ensureDefaultRail($pageId, 'programs');
+        self::ensureDefaultRail($pageId, 'jobs');
     }
 
     public static function revert(): void
@@ -271,6 +277,26 @@ class PageBuilderBackfill
         }
 
         return [];
+    }
+
+    /**
+     * Append a curated default rail (programs/jobs) when the page doesn't have
+     * one yet, showing the latest two items by default.
+     */
+    private static function ensureDefaultRail(int $pageId, string $type): void
+    {
+        $exists = DB::table('page_sections')
+            ->where('page_id', $pageId)
+            ->where('section_type', $type)
+            ->exists();
+
+        if ($exists) {
+            return;
+        }
+
+        $next = ((int) DB::table('page_sections')->where('page_id', $pageId)->max('sort_order')) + 1;
+
+        self::insertSection($pageId, $type, $next, ['limit' => 2]);
     }
 
     /**

@@ -145,12 +145,11 @@ class ShowcaseController extends Controller
         // feature degrades gracefully if home_sections isn't migrated yet.
         $sections = HomeSections::render();
 
-        // Dual-read: when the normalized page builder is enabled for the home
-        // page and it has content, the frontend renders `blocks` through the
-        // shared responsive grid instead of the legacy fixed-slot stack.
-        $blocks = config('builder.home_enabled')
-            ? PageSections::render('home')
-            : [];
+        // The visual editor writes the normalized builder (page_sections), so the
+        // public home renders that same layout to stay in sync with saved edits.
+        // When the builder has no active blocks the frontend falls back to the
+        // legacy stack above (PageSections degrades to [] if not migrated).
+        $blocks = PageSections::render('home');
 
         return Inertia::render('welcome', [
             'canRegister' => Features::enabled(Features::registration()),
