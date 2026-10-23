@@ -75,6 +75,27 @@ export interface LanguageOption {
     dir: 'ltr' | 'rtl';
 }
 
+/**
+ * Laravel length-aware paginator as serialized into Inertia props. The
+ * infinite-scroll hook appends pages through `next_page_url`, so the other
+ * fields only mirror what the framework sends.
+ */
+export interface Paginated<T> {
+    data: T[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    next_page_url: string | null;
+    prev_page_url: string | null;
+    first_page_url: string;
+    last_page_url: string;
+    path: string;
+    from: number | null;
+    to: number | null;
+    links: Array<{ url: string | null; label: string; active: boolean }>;
+}
+
 export interface SharedData {
     name: string;
     quote: { message: string; author: string };
