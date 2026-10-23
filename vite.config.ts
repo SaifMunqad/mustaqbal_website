@@ -24,4 +24,10 @@ export default defineConfig({
     esbuild: {
         jsx: 'automatic',
     },
+    ssr: {
+        // react-date-object ships CommonJS with a wrapped default export, which
+        // Node's ESM interop turns into `{ default: DateObject }` when the dep is
+        // externalized. Bundle it so SSR gets the constructor instead.
+        noExternal: ['react-date-object'],
+    },
 });
