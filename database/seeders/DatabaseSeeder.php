@@ -254,5 +254,10 @@ class DatabaseSeeder extends Seeder
         // sections wired to the articles/events/recognition seeded above, so the
         // home page is populated on a fresh seed instead of showing nothing.
         $this->call(HomeSectionSeeder::class);
+
+        // Mirror the seeded home layout into the normalized page builder so the
+        // visual editor (which reads the builder) matches the public page. Runs
+        // last, after SiteSettings + HomeSectionSeeder have written their data.
+        $this->call(PageBuilderSeeder::class);
     }
 }
