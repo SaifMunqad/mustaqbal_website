@@ -17,7 +17,6 @@ use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
@@ -151,16 +150,16 @@ class PageBuilderTest extends TestCase
         $this->assertSame('Safe space', PageSections::render('home')[0]['features'][0]['title']);
     }
 
-    public function test_registry_enforces_singleton_but_not_unlimited_types(): void
+    public function test_registry_allows_unlimited_instances_of_every_type(): void
     {
         $this->assertTrue(BlockRegistry::canAddMore(SectionType::Articles, 5));
-        $this->assertTrue(BlockRegistry::canAddMore(SectionType::Hero, 0));
-        $this->assertFalse(BlockRegistry::canAddMore(SectionType::Hero, 1));
+        // Hero is no longer capped: admins can place it as often as they need.
+        $this->assertTrue(BlockRegistry::canAddMore(SectionType::Hero, 3));
 
-        $palette = collect(BlockRegistry::palette([SectionType::Hero->value => 1]))
+        $palette = collect(BlockRegistry::palette([SectionType::Hero->value => 3]))
             ->firstWhere('value', 'hero');
 
-        $this->assertFalse($palette['addable']);
+        $this->assertTrue($palette['addable']);
     }
 
     public function test_empty_curated_block_is_hidden(): void
@@ -220,14 +219,16 @@ class PageBuilderTest extends TestCase
         $this->assertSame('Safe', $blocks[2]['features'][0]['title']);
     }
 
-    public function test_writer_rejects_a_second_singleton_hero(): void
+    public function test_writer_allows_the_same_section_multiple_times(): void
     {
-        $this->expectException(ValidationException::class);
-
         PageLayoutWriter::save('home', [
             ['section_type' => 'hero', 'is_active' => true],
-            ['section_type' => 'hero', 'is_active' => true],
+            ['section_type' => 'articles', 'is_active' => true],
+            ['section_type' => 'articles', 'is_active' => true],
         ]);
+
+        $this->assertSame(1, PageSection::where('section_type', 'hero')->count());
+        $this->assertSame(2, PageSection::where('section_type', 'articles')->count());
     }
 
     public function test_backfill_migrates_legacy_and_site_content_idempotently(): void
@@ -269,6 +270,50 @@ class PageBuilderTest extends TestCase
         $this->assertSame($count, PageSection::count());
     }
 
+    public function test_new_generic_list_block_round_trips(): void
+    {
+        PageLayoutWriter::save('home', [
+            [
+                'id' => null,
+                'section_type' => 'testimonials',
+                'is_active' => true,
+                'span_lg' => 6,
+                'translations' => ['en' => ['heading' => 'What families say']],
+                'lists' => ['testimonials' => ['en' => [
+                    ['title' => 'A Parent', 'value' => 'Mother of two', 'description' => 'Wonderful school.'],
+                ]]],
+            ],
+        ]);
+
+        $this->assertDatabaseHas('page_sections', ['section_type' => 'testimonials', 'span_lg' => 6]);
+        $this->assertDatabaseHas('section_list_items', ['item_group' => 'testimonials', 'title' => 'A Parent']);
+
+        $blocks = PageSections::render('home');
+        $this->assertSame('list', $blocks[0]['component']);
+        $this->assertSame('What families say', $blocks[0]['text']['heading']);
+        $this->assertSame('Wonderful school.', $blocks[0]['list'][0]['description']);
+    }
+
+    public function test_public_home_renders_builder_blocks_when_present(): void
+    {
+        PageLayoutWriter::save('home', [
+            [
+                'section_type' => 'announcement',
+                'is_active' => true,
+                'translations' => ['en' => ['heading' => 'Live notice']],
+            ],
+        ]);
+
+        // Saved builder content must surface on the public home, not just legacy.
+        $this->get('/')
+            ->assertOk()
+            ->assertInertia(fn (Assert $p) => $p
+                ->component('welcome')
+                ->has('blocks', 1)
+                ->where('blocks.0.component', 'announcement')
+            );
+    }
+
     public function test_builder_visual_feed_exposes_palette_and_drafts(): void
     {
         $page = $this->page();
@@ -280,11 +325,24 @@ class PageBuilderTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $p) => $p
                 ->component('dashboard/pages/home')
-                ->has('palette')
+                ->has('palette', 27)
+                ->has('categories', 4)
                 ->where('defaultLanguage', 'en')
                 ->where('sections.0.section_type', 'hero')
                 ->where('sections.0.translations.en.heading', 'Hi')
                 ->where('sections.0.translations.ps.heading', '')
+            );
+    }
+
+    public function test_legacy_visual_url_serves_the_unified_builder(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
+            ->get(route('dashboard.home-sections.visual'))
+            ->assertOk()
+            // Consolidated: the legacy URL now renders the full builder feed.
+            ->assertInertia(fn (Assert $p) => $p
+                ->component('dashboard/pages/home')
+                ->has('palette', 27)
             );
     }
 

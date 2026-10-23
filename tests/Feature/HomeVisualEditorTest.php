@@ -51,33 +51,6 @@ class HomeVisualEditorTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_visual_feed_includes_inactive_sections_with_raw_translations(): void
-    {
-        $en = Language::where('code', 'en')->first();
-        $ps = Language::where('code', 'ps')->first();
-
-        $active = $this->section('banner', true, 0);
-        $active->translations()->create(['language_id' => $en->id, 'heading' => 'Welcome']);
-
-        $hidden = $this->section('announcement', false, 1);
-        $hidden->translations()->create(['language_id' => $ps->id, 'heading' => 'راښه']);
-
-        $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
-            ->get(route('dashboard.home-sections.visual'))
-            ->assertOk()
-            ->assertInertia(fn (Assert $page) => $page
-                ->component('dashboard/home-sections/visual')
-                ->has('sections', 2)
-                ->where('sections.0.is_active', true)
-                ->where('sections.0.translations.en.heading', 'Welcome')
-                // Raw, per-language rows: un-authored fields are empty strings,
-                // NOT the fallback-resolved text of another language.
-                ->where('sections.0.translations.en.title', '')
-                ->where('sections.1.is_active', false)
-                ->where('sections.1.translations.ps.heading', 'راښه')
-            );
-    }
-
     public function test_save_layout_creates_updates_reorders_and_deletes(): void
     {
         $a = $this->section('banner', true, 0);
@@ -182,25 +155,6 @@ class HomeVisualEditorTest extends TestCase
             'English heading',
             $section->fresh(['translations.language'])->translated('heading', 'ps'),
         );
-    }
-
-    public function test_visual_feed_includes_site_draft_and_preview(): void
-    {
-        $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
-            ->get(route('dashboard.home-sections.visual'))
-            ->assertOk()
-            ->assertInertia(fn (Assert $page) => $page
-                ->component('dashboard/home-sections/visual')
-                ->has('site.hero_image')
-                ->has('site.translations.en')
-                ->has('site.translations.ps')
-                // Default language reads its parent source; the un-authored
-                // Pashto slice shows blank, never the English fallback.
-                ->where('site.translations.en.home_title', 'Welcome to My School')
-                ->where('site.translations.ps.home_title', '')
-                ->has('preview.programs')
-                ->has('preview.jobs')
-            );
     }
 
     public function test_save_layout_persists_site_blocks(): void
