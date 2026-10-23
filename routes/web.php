@@ -10,6 +10,7 @@ use App\Http\Controllers\Dashboard\DashboardHomeSectionController;
 use App\Http\Controllers\Dashboard\DashboardJobController;
 use App\Http\Controllers\Dashboard\DashboardLanguageController;
 use App\Http\Controllers\Dashboard\DashboardMessageController;
+use App\Http\Controllers\Dashboard\DashboardPageBuilderController;
 use App\Http\Controllers\Dashboard\DashboardPostController;
 use App\Http\Controllers\Dashboard\DashboardProgramController;
 use App\Http\Controllers\Dashboard\DashboardSiteSettingController;
@@ -187,6 +188,13 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
         Route::get('/{homeSection}/edit', [DashboardHomeSectionController::class, 'edit'])->name('edit');
         Route::put('/{homeSection}', [DashboardHomeSectionController::class, 'update'])->name('update');
         Route::delete('/{homeSection}', [DashboardHomeSectionController::class, 'destroy'])->name('destroy');
+    });
+
+    // Normalized page builder (home first). Runs alongside the legacy
+    // home-sections portal until the builder is cut over.
+    Route::prefix('pages')->name('dashboard.pages.')->middleware('role:management')->group(function () {
+        Route::get('/home', [DashboardPageBuilderController::class, 'visual'])->name('home');
+        Route::put('/home', [DashboardPageBuilderController::class, 'save'])->name('home.save');
     });
 });
 

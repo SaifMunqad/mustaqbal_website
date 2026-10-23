@@ -8,6 +8,7 @@ use App\Models\Job;
 use App\Models\Post;
 use App\Models\Program;
 use App\Support\Home\HomeSections;
+use App\Support\Home\PageSections;
 use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Fortify\Features;
@@ -144,8 +145,16 @@ class ShowcaseController extends Controller
         // feature degrades gracefully if home_sections isn't migrated yet.
         $sections = HomeSections::render();
 
+        // Dual-read: when the normalized page builder is enabled for the home
+        // page and it has content, the frontend renders `blocks` through the
+        // shared responsive grid instead of the legacy fixed-slot stack.
+        $blocks = config('builder.home_enabled')
+            ? PageSections::render('home')
+            : [];
+
         return Inertia::render('welcome', [
             'canRegister' => Features::enabled(Features::registration()),
+            'blocks' => $blocks,
             'sections' => $sections,
             'showcase' => $sections === [] ? $this->groups(3) : [],
             'programs' => $this->featuredPrograms(2),
