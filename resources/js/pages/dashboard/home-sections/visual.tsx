@@ -8,7 +8,7 @@ import type {
     AvailableItem,
     TypeOption,
 } from '@/components/dashboard/home-section-form';
-import AddSectionMenu from '@/components/dashboard/home-visual/add-section-menu';
+import AddSectionSidebar from '@/components/dashboard/home-visual/add-section-sidebar';
 import HomeBlockFrame from '@/components/dashboard/home-visual/home-block-frame';
 import SectionConfigSheet from '@/components/dashboard/home-visual/section-config-sheet';
 import SiteBlockPanel from '@/components/dashboard/home-visual/site-block-panel';
@@ -361,10 +361,6 @@ export default function DashboardHomeSectionVisual() {
                     ) : null}
 
                     <div className="ms-auto flex items-center gap-2">
-                        <AddSectionMenu
-                            typeOptions={typeOptions}
-                            onAdd={addDraft}
-                        />
                         <Button
                             size="sm"
                             variant="ghost"
@@ -387,19 +383,20 @@ export default function DashboardHomeSectionVisual() {
                 </div>
             </div>
 
-            <div
-                className="mx-auto max-w-6xl space-y-8 pb-16"
-                dir={currentDir}
-                // The RTL font stack normally switches on via `html[dir='rtl']`,
-                // which a nested `dir` can't trigger, so apply the matching font
-                // here too. The preview then reads naturally in the edited language.
-                style={{
-                    fontFamily:
-                        currentDir === 'rtl'
-                            ? 'var(--app-font-rtl)'
-                            : 'var(--app-font-ltr)',
-                }}
-            >
+            <div className="grid gap-6 px-1 lg:grid-cols-[minmax(0,1fr)_300px]">
+                <div
+                    className="mx-auto w-full max-w-6xl space-y-8 pb-16 lg:order-first"
+                    dir={currentDir}
+                    // The RTL font stack normally switches on via `html[dir='rtl']`,
+                    // which a nested `dir` can't trigger, so apply the matching font
+                    // here too. The preview then reads naturally in the edited language.
+                    style={{
+                        fontFamily:
+                            currentDir === 'rtl'
+                                ? 'var(--app-font-rtl)'
+                                : 'var(--app-font-ltr)',
+                    }}
+                >
                 <HomeBlockFrame
                     label={blockLabel('hero')}
                     editLabel={editLabel}
@@ -455,6 +452,12 @@ export default function DashboardHomeSectionVisual() {
                 ) : (
                     <HomeSections sections={rendered} edit={editApi} />
                 )}
+                </div>
+
+                <AddSectionSidebar
+                    typeOptions={typeOptions}
+                    onAdd={addDraft}
+                />
             </div>
 
             <SectionConfigSheet
