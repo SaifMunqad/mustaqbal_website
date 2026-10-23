@@ -33,10 +33,20 @@ class PageBuilderBackfill
         $order = 0;
         $order = self::siteSettings($pageId, $order);
         self::legacySections($pageId, $order);
+    }
 
-        // The legacy home always rendered a programs highlight and a latest-jobs
-        // rail (hardcoded components). Seed equivalent builder blocks so the
-        // builder-rendered home keeps parity with the old layout.
+    /**
+     * Ensure the builder home carries the programs/latest-jobs rails the legacy
+     * page always rendered. Called AFTER seeding (not by the content-driven
+     * migration), so a bare `migrate` never injects empty rails into the layout.
+     */
+    public static function addDefaultRails(): void
+    {
+        if (! Schema::hasTable('page_sections') || ! Schema::hasTable('pages')) {
+            return;
+        }
+
+        $pageId = self::ensureHomePage();
         self::ensureDefaultRail($pageId, 'programs');
         self::ensureDefaultRail($pageId, 'jobs');
     }

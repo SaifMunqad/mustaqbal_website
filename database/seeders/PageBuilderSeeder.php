@@ -23,6 +23,7 @@ class PageBuilderSeeder extends Seeder
     public function run(): void
     {
         PageBuilderBackfill::run();
+        PageBuilderBackfill::addDefaultRails();
 
         $this->command?->info('Page builder synced from the seeded home layout.');
     }
