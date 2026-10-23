@@ -1,6 +1,9 @@
+import InfiniteScrollFooter from '@/components/ui/infinite-scroll-footer';
 import Reveal from '@/components/ui/reveal';
+import { useInfinitePagination } from '@/hooks/use-infinite-pagination';
 import MainLayout from '@/layouts/app/main-layout';
 import { cn } from '@/lib/utils';
+import type { Paginated } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { ArrowLeftRight } from 'lucide-react';
 import type { ReactNode } from 'react';
@@ -128,12 +131,15 @@ function PathwaySection() {
 
 function SchoolPrograms() {
     const { t } = useTranslation();
-    const { programs, page } = usePage<{
-        programs: Program[];
+    const { programs, programCounts, page } = usePage<{
+        programs: Paginated<Program>;
+        programCounts: Record<string, number>;
         page?: ProgramsPageData;
     }>().props;
+    const { items, sentinelRef, loading, hasMore, error, loadMore } =
+        useInfinitePagination(programs, { prop: 'programs' });
 
-    const grouped = programs.reduce<Record<ProgramType, Program[]>>(
+    const grouped = items.reduce<Record<ProgramType, Program[]>>(
         (carry, item) => {
             (carry[item.program_type] ??= []).push(item);
             return carry;
@@ -162,33 +168,57 @@ function SchoolPrograms() {
                 </Reveal>
 
                 <div className="mt-10 space-y-12">
-                    {TYPE_ORDER.map((type) => (
-                        <div key={type}>
-                            {grouped[type].length === 0 ? null : (
-                                <CategoryHeader
-                                    type={type}
-                                    count={grouped[type].length}
-                                />
-                            )}
+                    {TYPE_ORDER.map((type) => {
+                        // Totals come from the server so the badge stays stable
+                        // while more pages of that category stream in.
+                        const total =
+                            programCounts[type] ?? grouped[type].length;
 
-                            {grouped[type].length > 0 ? (
-                                <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                                    {grouped[type].map((program, index) => (
-                                        <Reveal
-                                            key={program.id}
-                                            delay={index * 90}
-                                        >
-                                            <ProgramCard program={program} />
-                                        </Reveal>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p className="mt-4 text-sm text-slate-500">
-                                    {t('programs.emptyCategory')}
-                                </p>
-                            )}
-                        </div>
-                    ))}
+                        return (
+                            <div key={type}>
+                                {total === 0 ? (
+                                    <p className="text-sm text-slate-500">
+                                        {t('programs.emptyCategory')}
+                                    </p>
+                                ) : (
+                                    <>
+                                        <CategoryHeader
+                                            type={type}
+                                            count={total}
+                                        />
+
+                                        {grouped[type].length > 0 ? (
+                                            <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                                                {grouped[type].map(
+                                                    (program, index) => (
+                                                        <Reveal
+                                                            key={program.id}
+                                                            delay={index * 45}
+                                                        >
+                                                            <ProgramCard
+                                                                program={
+                                                                    program
+                                                                }
+                                                            />
+                                                        </Reveal>
+                                                    ),
+                                                )}
+                                            </div>
+                                        ) : null}
+                                    </>
+                                )}
+                            </div>
+                        );
+                    })}
+
+                    <InfiniteScrollFooter
+                        sentinelRef={sentinelRef}
+                        loading={loading}
+                        hasMore={hasMore}
+                        error={error}
+                        onLoadMore={loadMore}
+                        showEnd={programs.last_page > 1}
+                    />
 
                     <Reveal>
                         <PathwaySection />

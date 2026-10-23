@@ -1,6 +1,9 @@
 import BookCard from '@/components/store/book-card';
+import InfiniteScrollFooter from '@/components/ui/infinite-scroll-footer';
 import Reveal from '@/components/ui/reveal';
+import { useInfinitePagination } from '@/hooks/use-infinite-pagination';
 import MainLayout from '@/layouts/app/main-layout';
+import type { Paginated } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +27,7 @@ interface Category {
 }
 
 interface SchoolStoreIndexProps {
-    books: { data: Book[] };
+    books: Paginated<Book>;
     categories: Category[];
     filters: { search: string; category: string };
     [key: string]: unknown;
@@ -35,6 +38,12 @@ function SchoolStoreIndex() {
         usePage<SchoolStoreIndexProps>().props;
     const { t } = useTranslation();
     const [search, setSearch] = useState(filters.search);
+    const { items, sentinelRef, loading, hasMore, error, loadMore } =
+        useInfinitePagination(books, {
+            prop: 'books',
+            // A new search/category replaces the whole result set.
+            resetKey: `${filters.search}|${filters.category}`,
+        });
 
     const applyFilters = (category: string) => {
         router.get(
@@ -99,18 +108,29 @@ function SchoolStoreIndex() {
                     </div>
                 </div>
 
-                {books.data.length === 0 ? (
+                {items.length === 0 ? (
                     <p className="py-10 text-center text-slate-500">
                         {t('store.empty')}
                     </p>
                 ) : (
-                    <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                        {books.data.map((book, index) => (
-                            <Reveal key={book.id} delay={index * 80}>
-                                <BookCard book={book} />
-                            </Reveal>
-                        ))}
-                    </section>
+                    <>
+                        <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                            {items.map((book, index) => (
+                                <Reveal key={book.id} delay={index * 40}>
+                                    <BookCard book={book} />
+                                </Reveal>
+                            ))}
+                        </section>
+
+                        <InfiniteScrollFooter
+                            sentinelRef={sentinelRef}
+                            loading={loading}
+                            hasMore={hasMore}
+                            error={error}
+                            onLoadMore={loadMore}
+                            showEnd={books.last_page > 1}
+                        />
+                    </>
                 )}
             </div>
         </>
