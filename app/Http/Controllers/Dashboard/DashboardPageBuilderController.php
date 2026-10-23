@@ -54,6 +54,7 @@ class DashboardPageBuilderController extends Controller
         return Inertia::render('dashboard/pages/home', [
             'sections' => $sections,
             'palette' => BlockRegistry::palette(BlockRegistry::countsFor($page->id)),
+            'categories' => SectionType::categories(),
             'availableItems' => $availableItems,
             'defaultLanguage' => Language::defaultCode(),
         ]);
@@ -161,6 +162,7 @@ class DashboardPageBuilderController extends Controller
             'span_sm' => $section->span_sm,
             'config' => $section->config ?? [],
             'stores' => $type->stores(),
+            'list_group' => $type->listGroup(),
             'translations' => $translations,
             'items' => $items,
             'lists' => $lists,

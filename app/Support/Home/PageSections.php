@@ -116,8 +116,37 @@ class PageSections
             'programs' => self::programsPayload($base, $section, $locale),
             'jobs' => self::jobsPayload($base, $section, $locale),
             'banner', 'announcement' => self::authoredPayload($base, $section, $locale),
-            default => self::curatedPayload($base, $section, $type, $locale),
+            'cards' => self::curatedPayload($base, $section, $type, $locale),
+            default => self::genericPayload($base, $section, $type, $locale),
         };
+    }
+
+    /**
+     * The generic block payload shared by the newer content-rail, conversion and
+     * layout components. It always carries the localized text, the presentation
+     * columns/config, and — when the type owns a list group — its ordered rows,
+     * so a single frontend component map can render every new type.
+     *
+     * @return array<string, mixed>
+     */
+    private static function genericPayload(array $base, PageSection $section, SectionType $type, string $locale): array
+    {
+        $group = $type->listGroup();
+        $config = $section->config ?? [];
+
+        return [
+            ...$base,
+            'text' => [
+                'heading' => $section->translated('heading', $locale) ?: '',
+                'body' => $section->translated('body', $locale) ?: '',
+                'cta_label' => $section->translated('cta_label', $locale) ?: '',
+            ],
+            'cta_url' => $section->cta_url ?: null,
+            'image_path' => $section->image_path ?: null,
+            'tone' => $section->tone ?: 'default',
+            'config' => $config,
+            'list' => $group !== null ? self::localizedRows($section, $group, $locale) : [],
+        ];
     }
 
     /** @return array<string, mixed> */

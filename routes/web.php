@@ -180,7 +180,10 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
 
     Route::prefix('home-sections')->name('dashboard.home-sections.')->middleware('role:management')->group(function () {
         Route::get('/', [DashboardHomeSectionController::class, 'index'])->name('index');
-        Route::get('/visual', [DashboardHomeSectionController::class, 'visual'])->name('visual');
+        // The visual editor now serves the unified page builder (full block
+        // catalog, generic renderers, categorized palette). The legacy
+        // saveLayout/reorder routes below still operate on home_sections.
+        Route::get('/visual', [DashboardPageBuilderController::class, 'visual'])->name('visual');
         Route::put('/visual', [DashboardHomeSectionController::class, 'saveLayout'])->name('visual.save');
         Route::get('/create', [DashboardHomeSectionController::class, 'create'])->name('create');
         Route::post('/', [DashboardHomeSectionController::class, 'store'])->name('store');
