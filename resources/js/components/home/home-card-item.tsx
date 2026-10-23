@@ -25,6 +25,21 @@ export function shapeForIndex(index: number): string {
     return CARD_SHAPES[index % CARD_SHAPES.length];
 }
 
+/**
+ * Pseudo-random shape pick. A positional cycle reads as a repeating rhythm
+ * (1:1 → 3:4 → 4:3 → 1:1 …), so listings that should look shuffled pass a
+ * stable seed instead — normally the card id. The seed keeps the choice
+ * identical between SSR markup and client hydration (Math.random would
+ * mismatch), and the same card keeps its shape on every reload.
+ */
+export function shapeForSeed(seed: number): string {
+    let hash = Math.imul(seed ^ 0x9e3779b9, 0x85ebca6b);
+    hash = Math.imul(hash ^ (hash >>> 13), 0xc2b2ae35);
+    hash ^= hash >>> 16;
+
+    return CARD_SHAPES[(hash >>> 0) % CARD_SHAPES.length];
+}
+
 function useDateFormatter() {
     const { i18n } = useTranslation();
     const locale = i18n.language === 'fa_AF' ? 'fa-AF' : i18n.language;
