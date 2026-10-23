@@ -200,6 +200,35 @@
 }
 
 /* ------------------------------------------------------------------
+   Thin, unobtrusive scrollbar for bounded scroll regions (e.g. the
+   SidebarInset <main>, which now scrolls the page body while the
+   document itself stays fixed). `scrollbar-width`/`scrollbar-color`
+   cover Firefox; `::-webkit-scrollbar` covers Chromium/Safari.
+   ------------------------------------------------------------------ */
+.scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--input) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: var(--input);
+    border-radius: 9999px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: var(--ring);
+}
+
+/* ------------------------------------------------------------------
    Page-builder responsive grid.
    A single 12-column flow shared by the public page and the editor so
    what the admin drops is exactly what visitors see. Each block sets
