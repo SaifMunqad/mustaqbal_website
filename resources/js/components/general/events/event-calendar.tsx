@@ -1,6 +1,15 @@
+import DateTypeSwitcher from '@/components/general/events/date-type-switcher';
+import {
+    dateTypeKey,
+    getDateTypeConfig,
+    intlLocale,
+    toCalendarDate,
+    type DateType,
+} from '@/lib/date-type';
 import { cn } from '@/lib/utils';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import DateObject from 'react-date-object';
 import { useTranslation } from 'react-i18next';
 
 export interface CalendarEvent {
@@ -13,74 +22,152 @@ export interface CalendarEvent {
     audience?: string | null;
 }
 
-const startOfDay = (date: Date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+const startOfDay = (date: Date) =>
+    new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
 const isSameDay = (a: Date, b: Date) =>
-    a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate();
+
+// Sunday-first reference week used to label the weekday header row.
+const REFERENCE_WEEK_START = new Date(2024, 0, 7);
 
 export default function EventCalendar({
     events,
+    dateType,
+    onDateTypeChange,
     onSelectEvent,
 }: {
     events: CalendarEvent[];
+    dateType: DateType;
+    onDateTypeChange?: (value: DateType) => void;
     onSelectEvent?: (event: CalendarEvent) => void;
 }) {
     const { i18n, t } = useTranslation();
-    const locale = i18n.language === 'fa_AF' ? 'fa-AF' : i18n.language;
-    const [cursor, setCursor] = useState(() => startOfDay(new Date()));
+    const { calendar, locale } = getDateTypeConfig(dateType, i18n.language);
 
-    const grid = useMemo(() => {
-        const firstDay = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
-        const startWeekday = firstDay.getDay(); // 0 = Sunday
-        const daysInMonth = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0).getDate();
+    // The cursor tracks the visible month in the selected calendar, so paging
+    // and the month label stay in sync after a date-type switch.
+    const currentMonth = useMemo(() => {
+        const today = toCalendarDate(new Date(), dateType, i18n.language);
 
-        const cells: (Date | null)[] = [];
-        for (let i = 0; i < startWeekday; i += 1) {
-            cells.push(null);
+        return { year: today.year, month: today.month.number };
+    }, [dateType, i18n.language]);
+
+    const [cursor, setCursor] = useState(currentMonth);
+
+    useEffect(() => {
+        setCursor(currentMonth);
+    }, [currentMonth]);
+
+    const { cells, monthLabel } = useMemo(() => {
+        const firstOfMonth = new DateObject({
+            year: cursor.year,
+            month: cursor.month,
+            day: 1,
+            calendar,
+            locale,
+        });
+
+        const next: (DateObject | null)[] = [];
+
+        for (let i = 0; i < firstOfMonth.toDate().getDay(); i += 1) {
+            next.push(null);
         }
-        for (let day = 1; day <= daysInMonth; day += 1) {
-            cells.push(new Date(cursor.getFullYear(), cursor.getMonth(), day));
+
+        for (let day = 1; day <= firstOfMonth.month.length; day += 1) {
+            next.push(
+                new DateObject({
+                    year: cursor.year,
+                    month: cursor.month,
+                    day,
+                    calendar,
+                    locale,
+                }),
+            );
         }
-        while (cells.length % 7 !== 0) {
-            cells.push(null);
+
+        while (next.length % 7 !== 0) {
+            next.push(null);
         }
-        return cells;
-    }, [cursor]);
+
+        // Gregorian keeps the familiar `Intl` labels of the rest of the site;
+        // the Hijri calendars read their month name from their own locale.
+        const monthLabel =
+            dateType === 'gregorian'
+                ? new Intl.DateTimeFormat(intlLocale(i18n.language), {
+                      month: 'long',
+                      year: 'numeric',
+                  }).format(firstOfMonth.toDate())
+                : firstOfMonth.format('MMMM YYYY');
+
+        return { cells: next, monthLabel };
+    }, [cursor, calendar, locale, dateType, i18n.language]);
 
     const eventsByDay = useMemo(() => {
         const map = new Map<string, CalendarEvent[]>();
         events.forEach((event) => {
-            const key = startOfDay(new Date(event.start_at)).toISOString();
+            const key = dateTypeKey(event.start_at, dateType, i18n.language);
             map.set(key, [...(map.get(key) ?? []), event]);
         });
         return map;
-    }, [events]);
+    }, [events, dateType, i18n.language]);
 
-    const weekdayFormat = new Intl.DateTimeFormat(locale, { weekday: 'short' });
-    const monthFormat = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' });
-    const weekdays = useMemo(
-        () =>
-            Array.from({ length: 7 }, (_, index) => {
-                const date = new Date(2024, 0, index); // Sunday-first reference week
-                return weekdayFormat.format(date);
-            }),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [locale],
-    );
+    const weekdays = useMemo(() => {
+        const referenceDay = (index: number) => {
+            const date = new Date(REFERENCE_WEEK_START);
+            date.setDate(date.getDate() + index);
+
+            return date;
+        };
+
+        if (dateType === 'gregorian') {
+            const format = new Intl.DateTimeFormat(intlLocale(i18n.language), {
+                weekday: 'short',
+            });
+
+            return Array.from({ length: 7 }, (_, index) =>
+                format.format(referenceDay(index)),
+            );
+        }
+
+        return Array.from(
+            { length: 7 },
+            (_, index) =>
+                toCalendarDate(referenceDay(index), dateType, i18n.language)
+                    .weekDay.shortName,
+        );
+    }, [dateType, i18n.language]);
 
     const today = startOfDay(new Date());
 
+    const shiftMonth = (offset: number) =>
+        setCursor(({ year, month }) => {
+            const next = month + offset;
+
+            if (next < 1) {
+                return { year: year - 1, month: 12 };
+            }
+
+            if (next > 12) {
+                return { year: year + 1, month: 1 };
+            }
+
+            return { year, month: next };
+        });
+
     return (
-        <div className="rounded-2xl border border-border bg-white p-4 shadow-sm dark:bg-gray-900 md:p-6">
-            <div className="mb-4 flex items-center justify-between">
+        <div className="rounded-2xl border border-border bg-white p-4 shadow-sm md:p-6 dark:bg-gray-900">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                    {monthFormat.format(cursor)}
+                    {monthLabel}
                 </h3>
                 <div className="flex items-center gap-2">
                     <button
                         type="button"
                         aria-label={t('events.prevMonth')}
-                        onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))}
+                        onClick={() => shiftMonth(-1)}
                         className="rounded-lg border border-border p-1.5 transition hover:bg-muted"
                     >
                         <ChevronLeftIcon className="size-4" />
@@ -88,11 +175,17 @@ export default function EventCalendar({
                     <button
                         type="button"
                         aria-label={t('events.nextMonth')}
-                        onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))}
+                        onClick={() => shiftMonth(1)}
                         className="rounded-lg border border-border p-1.5 transition hover:bg-muted"
                     >
                         <ChevronRightIcon className="size-4" />
                     </button>
+                    {onDateTypeChange ? (
+                        <DateTypeSwitcher
+                            value={dateType}
+                            onChange={onDateTypeChange}
+                        />
+                    ) : null}
                 </div>
             </div>
 
@@ -105,26 +198,41 @@ export default function EventCalendar({
             </div>
 
             <div className="mt-1 grid grid-cols-7 gap-1">
-                {grid.map((date, index) => {
-                    if (!date) {
-                        return <div key={`empty-${index}`} className="min-h-16 rounded-lg" />;
+                {cells.map((cell, index) => {
+                    if (!cell) {
+                        return (
+                            <div
+                                key={`empty-${index}`}
+                                className="min-h-16 rounded-lg"
+                            />
+                        );
                     }
 
-                    const dayEvents = eventsByDay.get(startOfDay(date).toISOString()) ?? [];
-                    const isToday = isSameDay(date, today);
+                    const dayKey = cell.format('YYYY-MM-DD');
+                    const dayEvents = eventsByDay.get(dayKey) ?? [];
+                    const cellIsToday = isSameDay(cell.toDate(), today);
 
                     return (
                         <div
-                            key={date.toISOString()}
+                            key={dayKey}
                             className={cn(
                                 'min-h-16 rounded-lg border p-1 text-start align-top',
-                                isToday
+                                cellIsToday
                                     ? 'border-blue-400 bg-blue-50 dark:bg-blue-950'
                                     : 'border-slate-100 dark:border-slate-800',
                             )}
                         >
-                            <span className={cn('text-xs', isToday ? 'font-bold text-blue-700' : 'text-slate-500')}>
-                                {date.getDate()}
+                            <span
+                                className={cn(
+                                    'text-xs',
+                                    cellIsToday
+                                        ? 'font-bold text-blue-700'
+                                        : 'text-slate-500',
+                                )}
+                            >
+                                {dateType === 'gregorian'
+                                    ? cell.day
+                                    : cell.format('D')}
                             </span>
                             <div className="mt-1 space-y-1">
                                 {dayEvents.slice(0, 2).map((event) => (
@@ -139,7 +247,11 @@ export default function EventCalendar({
                                     </button>
                                 ))}
                                 {dayEvents.length > 2 ? (
-                                    <span className="text-[10px] text-slate-400">{t('events.more', { count: dayEvents.length - 2 })}</span>
+                                    <span className="text-[10px] text-slate-400">
+                                        {t('events.more', {
+                                            count: dayEvents.length - 2,
+                                        })}
+                                    </span>
                                 ) : null}
                             </div>
                         </div>

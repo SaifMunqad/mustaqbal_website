@@ -1,8 +1,13 @@
 import EventCalendar, {
     CalendarEvent,
 } from '@/components/general/events/event-calendar';
+import InfiniteScrollFooter from '@/components/ui/infinite-scroll-footer';
 import Reveal from '@/components/ui/reveal';
+import { useDateType } from '@/hooks/use-date-type';
+import { useInfinitePagination } from '@/hooks/use-infinite-pagination';
 import MainLayout from '@/layouts/app/main-layout';
+import { formatDate } from '@/lib/date-type';
+import type { Paginated } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,24 +20,15 @@ interface EventItem extends CalendarEvent {
     author?: { name: string } | null;
 }
 
-function formatDateTime(value: string, locale: string) {
-    try {
-        return new Intl.DateTimeFormat(locale, {
-            dateStyle: 'medium',
-            timeStyle: 'short',
-        }).format(new Date(value));
-    } catch {
-        return value;
-    }
-}
-
 function SchoolEventsIndex() {
     const { events, upcoming } = usePage<{
-        events: { data: EventItem[] };
+        events: Paginated<EventItem>;
         upcoming: EventItem[];
     }>().props;
     const { t, i18n } = useTranslation();
-    const locale = i18n.language === 'fa_AF' ? 'fa-AF' : i18n.language;
+    const { dateType, setDateType } = useDateType();
+    const { items, sentinelRef, loading, hasMore, error, loadMore } =
+        useInfinitePagination(events, { prop: 'events' });
 
     const selectEvent = (event: CalendarEvent) =>
         router.get(`/school/events/${(event as EventItem).slug}`);
@@ -57,7 +53,9 @@ function SchoolEventsIndex() {
                     <div className="grid gap-6 lg:grid-cols-3">
                         <div className="lg:col-span-2">
                             <EventCalendar
-                                events={[...upcoming, ...events.data]}
+                                events={[...upcoming, ...items]}
+                                dateType={dateType}
+                                onDateTypeChange={setDateType}
                                 onSelectEvent={selectEvent}
                             />
                         </div>
@@ -80,9 +78,11 @@ function SchoolEventsIndex() {
                                             {event.title}
                                         </p>
                                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                                            {formatDateTime(
+                                            {formatDate(
                                                 event.start_at,
-                                                locale,
+                                                dateType,
+                                                i18n.language,
+                                                { timeStyle: 'short' },
                                             )}
                                         </p>
                                         {event.location ? (
@@ -98,11 +98,11 @@ function SchoolEventsIndex() {
                 </Reveal>
 
                 <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-                    {events.data.map((event, index) => {
+                    {items.map((event, index) => {
                         const image =
                             event.cover_image ?? event.images?.[0] ?? null;
                         return (
-                            <Reveal key={event.id} delay={index * 90}>
+                            <Reveal key={event.id} delay={index * 45}>
                                 <Link
                                     href={`/school/events/${event.slug}`}
                                     className="block overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-gray-900"
@@ -116,9 +116,10 @@ function SchoolEventsIndex() {
                                     ) : (
                                         <div className="flex h-40 w-full items-center justify-center bg-blue-600 text-white">
                                             <span className="px-4 text-center text-sm font-semibold">
-                                                {formatDateTime(
+                                                {formatDate(
                                                     event.start_at,
-                                                    locale,
+                                                    dateType,
+                                                    i18n.language,
                                                 )}
                                             </span>
                                         </div>
@@ -128,9 +129,11 @@ function SchoolEventsIndex() {
                                             {event.title}
                                         </p>
                                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                                            {formatDateTime(
+                                            {formatDate(
                                                 event.start_at,
-                                                locale,
+                                                dateType,
+                                                i18n.language,
+                                                { timeStyle: 'short' },
                                             )}
                                         </p>
                                         {event.excerpt ? (
@@ -144,6 +147,15 @@ function SchoolEventsIndex() {
                         );
                     })}
                 </section>
+
+                <InfiniteScrollFooter
+                    sentinelRef={sentinelRef}
+                    loading={loading}
+                    hasMore={hasMore}
+                    error={error}
+                    onLoadMore={loadMore}
+                    showEnd={events.last_page > 1}
+                />
             </div>
         </>
     );
