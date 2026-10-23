@@ -7,9 +7,35 @@ import HomeSections, {
 import LatestJobs from '@/components/home/latest-jobs';
 import ProgramsHighlight from '@/components/home/programs-highlight';
 import StatsBar from '@/components/home/stats-bar';
+import {
+    Cta,
+    Contact,
+    CountdownBlock,
+    Faq,
+    Gallery,
+    ListGrid,
+    Logos,
+    MapBlock,
+    MediaText,
+    Newsletter,
+    Quote,
+    SocialLinks,
+    StatsCards,
+    VideoEmbed,
+} from '@/components/home/blocks';
 import type { HomeCard } from '@/components/home/home-card-item';
 import type { HomeFeature, HomeStat } from '@/types';
 import Reveal from '@/components/ui/reveal';
+
+/** One row of a block's ordered, localized list (section_list_items). */
+export interface BlockListRow {
+    value: string;
+    title: string;
+    description: string;
+    icon: string;
+    image: string;
+    url: string;
+}
 
 /**
  * A render-ready block produced by `App\Support\Home\PageSections::render()`.
@@ -37,6 +63,13 @@ export interface RenderBlock {
     config?: HomeSectionConfig;
     features?: HomeFeature[];
     stats?: HomeStat[];
+    // Generic fields shared by the newer content-rail / conversion / layout
+    // blocks (see PageSections::genericPayload).
+    text?: { heading?: string; body?: string; cta_label?: string };
+    cta_url?: string | null;
+    image_path?: string | null;
+    tone?: string;
+    list?: BlockListRow[];
     hero?: {
         title?: string;
         subtitle?: string;
@@ -88,6 +121,36 @@ export function HomeBlock({
 
         case 'jobs':
             return <LatestJobs jobs={(block.jobs ?? []) as never} />;
+
+        // Newer blocks render from the shared generic fields (text / list / config).
+        case 'list':
+            return <ListGrid block={block} />;
+        case 'logos':
+            return <Logos block={block} />;
+        case 'gallery':
+            return <Gallery block={block} />;
+        case 'faq':
+            return <Faq block={block} />;
+        case 'social':
+            return <SocialLinks block={block} />;
+        case 'contact':
+            return <Contact block={block} />;
+        case 'cta':
+            return <Cta block={block} />;
+        case 'quote':
+            return <Quote block={block} />;
+        case 'media_text':
+            return <MediaText block={block} />;
+        case 'video':
+            return <VideoEmbed block={block} />;
+        case 'map':
+            return <MapBlock block={block} />;
+        case 'newsletter':
+            return <Newsletter block={block} />;
+        case 'countdown':
+            return <CountdownBlock block={block} />;
+        case 'stats_cards':
+            return <StatsCards block={block} />;
 
         // banner / announcement / cards all flow through the section renderer.
         default: {
