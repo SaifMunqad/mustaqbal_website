@@ -59,6 +59,11 @@ const toneStyles: Record<string, string> = {
 const editableRing =
     'cursor-pointer rounded-md outline-dashed outline-1 outline-transparent transition hover:outline-blue-400/70 focus:outline-blue-500';
 
+// One shared look for the banner CTA so the visual editor's preview button is
+// pixel-identical to the button visitors actually see on the live home page.
+const bannerCtaClasses =
+    'rounded-xl border-2 border-gray-200 bg-transparent px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-sky-600 hover:border-sky-700 dark:border-sky-400 dark:text-sky-300 dark:hover:bg-sky-500 dark:hover:text-white';
+
 function EditableText({
     as: Tag,
     value,
@@ -127,7 +132,7 @@ function EditableBannerButton({
                 as="span"
                 value={config.cta_label}
                 placeholder="Button label"
-                className="rounded-xl border-2 border-gray-200 bg-transparent px-6 py-2.5 text-sm font-bold text-white"
+                className={bannerCtaClasses}
                 onEdit={onEdit}
             />
             <button
@@ -323,13 +328,9 @@ function BannerSection({
     const config = section.config ?? {};
     const tone = toneStyles[config.tone ?? 'default'] ?? toneStyles.default;
 
-    // In the editor the admin's chosen image is shown; the public view keeps its
-    // existing (placeholder) behaviour untouched.
-    const imageSrc = edit
-        ? config.image_url ?? null
-        : config.image_url
-          ? 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80'
-          : null;
+    // Both the editor and the live page show the admin's chosen image; there is
+    // no hard-coded placeholder any more, so a saved banner image always shows.
+    const imageSrc = config.image_url ?? null;
 
     return (
         <section
@@ -386,7 +387,7 @@ function BannerSection({
                             <div className="mt-6">
                                 <Link
                                     href={config.cta_url}
-                                    className="rounded-xl border-2 border-gray-200 bg-transparent px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-sky-600 hover:border-sky-700 dark:border-sky-400 dark:text-sky-300 dark:hover:bg-sky-500 dark:hover:text-white"
+                                    className={bannerCtaClasses}
                                 >
                                     {config.cta_label}
                                 </Link>

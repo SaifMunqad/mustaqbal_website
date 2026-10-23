@@ -5,11 +5,14 @@ import { useTranslation } from 'react-i18next';
 interface HomeHeroProps {
     home: SiteSettings['home'];
     tagline?: string | null;
+    /** Override the RTL layout (used by the visual editor so the preview follows
+     *  the language being edited rather than the admin UI language). */
+    rtl?: boolean;
 }
 
-export default function HomeHero({ home, tagline }: HomeHeroProps) {
+export default function HomeHero({ home, tagline, rtl }: HomeHeroProps) {
     const { t, i18n } = useTranslation();
-    const isRtl = i18n.dir() === 'rtl' || i18n.language === 'ar';
+    const isRtl = rtl ?? (i18n.dir() === 'rtl' || i18n.language === 'ar');
 
     const title = home.title || t('home.title');
     const subtitle = home.subtitle || t('home.subtitle');

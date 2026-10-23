@@ -387,13 +387,29 @@ export default function DashboardHomeSectionVisual() {
                 </div>
             </div>
 
-            <div className="mx-auto max-w-6xl space-y-8 pb-16" dir={currentDir}>
+            <div
+                className="mx-auto max-w-6xl space-y-8 pb-16"
+                dir={currentDir}
+                // The RTL font stack normally switches on via `html[dir='rtl']`,
+                // which a nested `dir` can't trigger, so apply the matching font
+                // here too. The preview then reads naturally in the edited language.
+                style={{
+                    fontFamily:
+                        currentDir === 'rtl'
+                            ? 'var(--app-font-rtl)'
+                            : 'var(--app-font-ltr)',
+                }}
+            >
                 <HomeBlockFrame
                     label={blockLabel('hero')}
                     editLabel={editLabel}
                     onEdit={() => setSitePanel('hero')}
                 >
-                    <HomeHero home={heroHome} tagline={siteEntry.tagline} />
+                    <HomeHero
+                        home={heroHome}
+                        tagline={siteEntry.tagline}
+                        rtl={currentDir === 'rtl'}
+                    />
                 </HomeBlockFrame>
 
                 <HomeBlockFrame
