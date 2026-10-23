@@ -199,6 +199,38 @@
     }
 }
 
+/* ------------------------------------------------------------------
+   Page-builder responsive grid.
+   A single 12-column flow shared by the public page and the editor so
+   what the admin drops is exactly what visitors see. Each block sets
+   --lg/--md/--sm (1-12) from its stored `span_*` columns, so a block is
+   self-adaptive at every breakpoint. Order is the array order: items
+   reflow into the next free slot and can never overlap or squeeze
+   between one another (no absolute positioning).
+   ------------------------------------------------------------------ */
+.page-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 2rem;
+}
+
+.page-grid > .page-grid-item {
+    grid-column: span var(--sm, 12);
+    min-width: 0;
+}
+
+@media (min-width: 768px) {
+    .page-grid > .page-grid-item {
+        grid-column: span var(--md, 12);
+    }
+}
+
+@media (min-width: 1024px) {
+    .page-grid > .page-grid-item {
+        grid-column: span var(--lg, 12);
+    }
+}
+
 /* ------------------------------------------------------------------ */
 /* Tiptap rich-text editor + rendered article body                    */
 /* ------------------------------------------------------------------ */

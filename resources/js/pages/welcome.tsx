@@ -9,6 +9,7 @@ import HomeSections, {
 } from '@/components/home/home-sections';
 import LatestJobs from '@/components/home/latest-jobs';
 import ProgramsHighlight from '@/components/home/programs-highlight';
+import PageGrid, { type RenderBlock } from '@/components/home/page-block';
 import StatsBar from '@/components/home/stats-bar';
 import type { Job } from '@/components/school/job-card';
 import Reveal from '@/components/ui/reveal';
@@ -22,13 +23,14 @@ import { useTranslation } from 'react-i18next';
 interface WelcomeProps extends SharedData {
     showcase?: ShowcaseGroup[];
     sections?: HomeSection[];
+    blocks?: RenderBlock[];
     programs?: Program[];
     jobs?: Job[];
 }
 
 function Welcome() {
-    const { t } = useTranslation();
-    const { showcase, sections, programs, jobs, site } =
+    const { t, i18n } = useTranslation();
+    const { showcase, sections, blocks, programs, jobs, site } =
         usePage<WelcomeProps>().props;
 
     const home = site?.home ?? {};
@@ -48,6 +50,21 @@ function Welcome() {
     );
     const legacyShowcase = showcase ?? [];
     const hasCurated = curated.length > 0;
+    const builderBlocks = blocks ?? [];
+
+    // Normalized page builder: when enabled and authored, render the whole
+    // layout from one ordered, responsive, overlap-safe grid (editor == live).
+    if (builderBlocks.length > 0) {
+        return (
+            <div className="mx-auto max-w-6xl px-4">
+                <Head title={t('navigation.home')} />
+                <PageGrid
+                    blocks={builderBlocks}
+                    rtl={i18n.dir() === 'rtl' || i18n.language === 'ar'}
+                />
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-8">
