@@ -40,7 +40,7 @@ class DashboardEventController extends Controller
                 'author' => $event->author?->name,
             ]);
 
-        return Inertia::render('dashboard/events/index', [
+        return Inertia::render('dashboard/events/dashboard-events-index', [
             'events' => $events,
             'filters' => ['search' => $request->string('search')->toString()],
         ]);
@@ -48,7 +48,7 @@ class DashboardEventController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('dashboard/events/create', [
+        return Inertia::render('dashboard/events/dashboard-events-create', [
             'audienceOptions' => $this->audienceOptions(),
             'canPublish' => request()->user()->can('publish', Event::class),
         ]);
@@ -79,7 +79,7 @@ class DashboardEventController extends Controller
 
         return redirect()
             ->route('dashboard.events.index')
-            ->with('success', $canPublish ? 'Event created.' : 'Event saved as a draft for review.');
+            ->with('success', $canPublish ? 'flash.eventCreated' : 'flash.eventDraft');
     }
 
     public function edit(Request $request, Event $event): Response
@@ -88,7 +88,7 @@ class DashboardEventController extends Controller
 
         $event->load(['translations.language']);
 
-        return Inertia::render('dashboard/events/edit', [
+        return Inertia::render('dashboard/events/dashboard-events-edit', [
             'event' => $event,
             'translations' => $this->existingTranslations($event),
             'audienceOptions' => $this->audienceOptions(),
@@ -116,7 +116,7 @@ class DashboardEventController extends Controller
 
         return redirect()
             ->route('dashboard.events.index')
-            ->with('success', 'Event updated.');
+            ->with('success', 'flash.eventUpdated');
     }
 
     public function destroy(Request $request, Event $event): RedirectResponse
@@ -127,7 +127,7 @@ class DashboardEventController extends Controller
 
         return redirect()
             ->route('dashboard.events.index')
-            ->with('success', 'Event deleted.');
+            ->with('success', 'flash.eventDeleted');
     }
 
     /**

@@ -34,7 +34,7 @@ class DashboardUserController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return Inertia::render('dashboard/users/index', [
+        return Inertia::render('dashboard/users/dashboard-users-index', [
             'users' => $users,
             'roleOptions' => array_map(static fn (UserRole $role): array => [
                 'value' => $role->value,
@@ -58,7 +58,7 @@ class DashboardUserController extends Controller
     {
         $this->authorize('create', User::class);
 
-        return Inertia::render('dashboard/users/create', [
+        return Inertia::render('dashboard/users/dashboard-users-create', [
             'roleOptions' => $this->roleOptions($request->user()),
         ]);
     }
@@ -92,14 +92,14 @@ class DashboardUserController extends Controller
 
             return redirect()
                 ->route('dashboard.users.index')
-                ->with('success', 'Account created. A verification email was sent.');
+                ->with('success', 'flash.accountCreatedVerification');
         }
 
         Password::broker()->sendResetLink(['email' => $user->email]);
 
         return redirect()
             ->route('dashboard.users.index')
-            ->with('success', 'Account created. A password setup link was emailed.');
+            ->with('success', 'flash.accountCreatedInvite');
     }
 
     public function edit(Request $request, User $user): Response
@@ -113,7 +113,7 @@ class DashboardUserController extends Controller
             $roleOptions[] = ['value' => $user->role->value, 'label' => $user->role->label(), 'labelKey' => $user->role->labelKey()];
         }
 
-        return Inertia::render('dashboard/users/edit', [
+        return Inertia::render('dashboard/users/dashboard-users-edit', [
             'user' => $user,
             'roleOptions' => $roleOptions,
             'canDelete' => $request->user()->can('delete', $user),
@@ -170,7 +170,7 @@ class DashboardUserController extends Controller
 
         return redirect()
             ->route('dashboard.users.index')
-            ->with('success', 'Account updated successfully.');
+            ->with('success', 'flash.accountUpdated');
     }
 
     public function destroy(Request $request, User $user): RedirectResponse
@@ -187,7 +187,7 @@ class DashboardUserController extends Controller
 
         return redirect()
             ->route('dashboard.users.index')
-            ->with('success', 'Account deleted.');
+            ->with('success', 'flash.accountDeleted');
     }
 
     /**

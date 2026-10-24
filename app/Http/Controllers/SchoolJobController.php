@@ -17,7 +17,7 @@ class SchoolJobController extends Controller
             ->withQueryString()
             ->through(fn (Job $job): array => $job->toCard());
 
-        return Inertia::render('school/jobs/index', [
+        return Inertia::render('school/jobs/school-jobs', [
             'jobs' => $jobs,
         ]);
     }

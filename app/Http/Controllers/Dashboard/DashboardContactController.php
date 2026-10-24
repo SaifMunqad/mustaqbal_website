@@ -15,14 +15,14 @@ class DashboardContactController extends Controller
     {
         $contacts = Contact::query()->latest()->paginate(20);
 
-        return Inertia::render('dashboard/contacts/index', [
+        return Inertia::render('dashboard/contacts/dashboard-contacts-index', [
             'contacts' => $contacts,
         ]);
     }
 
     public function create(): Response
     {
-        return Inertia::render('dashboard/contacts/create');
+        return Inertia::render('dashboard/contacts/dashboard-contacts-create');
     }
 
     public function store(Request $request): RedirectResponse
@@ -39,12 +39,12 @@ class DashboardContactController extends Controller
 
         return redirect()
             ->route('dashboard.contacts.index')
-            ->with('success', 'Contact created successfully.');
+            ->with('success', 'flash.contactCreated');
     }
 
     public function edit(Contact $contact): Response
     {
-        return Inertia::render('dashboard/contacts/edit', [
+        return Inertia::render('dashboard/contacts/dashboard-contacts-edit', [
             'contact' => $contact,
         ]);
     }
@@ -64,7 +64,7 @@ class DashboardContactController extends Controller
 
         return redirect()
             ->route('dashboard.contacts.index')
-            ->with('success', 'Contact updated successfully.');
+            ->with('success', 'flash.contactUpdated');
     }
 }
 

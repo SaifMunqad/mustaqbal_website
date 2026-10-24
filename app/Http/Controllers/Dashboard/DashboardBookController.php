@@ -43,7 +43,7 @@ class DashboardBookController extends Controller
                 'category' => $book->category?->name,
             ]);
 
-        return Inertia::render('dashboard/books/index', [
+        return Inertia::render('dashboard/books/dashboard-books-index', [
             'books' => $books,
             'filters' => ['search' => $request->string('search')->toString()],
         ]);
@@ -51,7 +51,7 @@ class DashboardBookController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('dashboard/books/create', [
+        return Inertia::render('dashboard/books/dashboard-books-create', [
             'categories' => $this->categoryOptions(),
         ]);
     }
@@ -73,14 +73,14 @@ class DashboardBookController extends Controller
 
         return redirect()
             ->route('dashboard.books.index')
-            ->with('success', 'Book created.');
+            ->with('success', 'flash.bookCreated');
     }
 
     public function edit(Book $book): Response
     {
         $book->load(['translations.language']);
 
-        return Inertia::render('dashboard/books/edit', [
+        return Inertia::render('dashboard/books/dashboard-books-edit', [
             'book' => [
                 'id' => $book->id,
                 'title' => $book->title,
@@ -125,7 +125,7 @@ class DashboardBookController extends Controller
 
         return redirect()
             ->route('dashboard.books.index')
-            ->with('success', 'Book updated.');
+            ->with('success', 'flash.bookUpdated');
     }
 
     public function destroy(Book $book): RedirectResponse
@@ -136,7 +136,7 @@ class DashboardBookController extends Controller
 
         return redirect()
             ->route('dashboard.books.index')
-            ->with('success', 'Book deleted.');
+            ->with('success', 'flash.bookDeleted');
     }
 
     /**

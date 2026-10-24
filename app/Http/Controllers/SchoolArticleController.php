@@ -19,7 +19,7 @@ class SchoolArticleController extends Controller
             ->paginate(9)
             ->withQueryString();
 
-        return Inertia::render('school/articles/index', [
+        return Inertia::render('school/articles/school-articles-index', [
             'articles' => $articles,
         ]);
     }
@@ -30,7 +30,7 @@ class SchoolArticleController extends Controller
 
         $article->load('author:id,name');
 
-        return Inertia::render('school/articles/show', [
+        return Inertia::render('school/articles/school-articles-show', [
             'article' => $article,
         ]);
     }

@@ -51,14 +51,14 @@ class DashboardPostController extends Controller
             ->latest()
             ->paginate(20);
 
-        return Inertia::render('dashboard/posts/index', [
+        return Inertia::render('dashboard/posts/dashboard-posts-index', [
             'posts' => $posts,
         ]);
     }
 
     public function create(): Response
     {
-        return Inertia::render('dashboard/posts/create', [
+        return Inertia::render('dashboard/posts/dashboard-posts-create', [
             'users' => User::query()->select('id', 'name', 'role')->orderBy('name')->limit(200)->get(),
             'postTypes' => PostType::options(),
         ]);
@@ -68,7 +68,7 @@ class DashboardPostController extends Controller
     {
         $post->load(['author:id,name,role', 'highlightedStudent:id,name', 'translations.language']);
 
-        return Inertia::render('dashboard/posts/show', [
+        return Inertia::render('dashboard/posts/dashboard-posts-show', [
             'post' => $post,
         ]);
     }
@@ -91,7 +91,7 @@ class DashboardPostController extends Controller
 
         return redirect()
             ->route('dashboard.posts.index')
-            ->with('success', 'Post created successfully.');
+            ->with('success', 'flash.postCreated');
     }
 
     public function edit(Request $request, Post $post): Response
@@ -100,7 +100,7 @@ class DashboardPostController extends Controller
 
         $post->load(['translations.language']);
 
-        return Inertia::render('dashboard/posts/edit', [
+        return Inertia::render('dashboard/posts/dashboard-posts-edit', [
             'post' => $post,
             'translations' => $this->existingTranslations($post),
             'users' => User::query()->select('id', 'name', 'role')->orderBy('name')->limit(200)->get(),
@@ -126,7 +126,7 @@ class DashboardPostController extends Controller
 
         return redirect()
             ->route('dashboard.posts.index')
-            ->with('success', 'Post updated successfully.');
+            ->with('success', 'flash.postUpdated');
     }
 
     /**

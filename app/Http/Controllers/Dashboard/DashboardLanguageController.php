@@ -27,7 +27,7 @@ class DashboardLanguageController extends Controller
                                  'sort_order' => $language->sort_order,
                              ]);
 
-        return Inertia::render('dashboard/languages/index', [
+        return Inertia::render('dashboard/languages/dashboard-languages-index', [
             'languages' => $languages,
         ]);
     }

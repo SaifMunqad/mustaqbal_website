@@ -36,7 +36,7 @@ class DashboardMessageController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        return Inertia::render('dashboard/messages/index', [
+        return Inertia::render('dashboard/messages/dashboard-messages-index', [
             'messages' => $messages,
             'box' => $box,
         ]);
@@ -44,7 +44,7 @@ class DashboardMessageController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('dashboard/messages/create', [
+        return Inertia::render('dashboard/messages/dashboard-messages-create', [
             'conversations' => Conversation::query()->select('id', 'topic')->latest()->limit(200)->get(),
             'users' => User::query()->select('id', 'name', 'role')->orderBy('name')->limit(200)->get(),
         ]);
@@ -63,12 +63,12 @@ class DashboardMessageController extends Controller
 
         return redirect()
             ->route('dashboard.messages.index')
-            ->with('success', 'Message created successfully.');
+            ->with('success', 'flash.messageCreated');
     }
 
     public function edit(Message $message): Response
     {
-        return Inertia::render('dashboard/messages/edit', [
+        return Inertia::render('dashboard/messages/dashboard-messages-edit', [
             'message' => $message,
             'conversations' => Conversation::query()->select('id', 'topic')->latest()->limit(200)->get(),
             'users' => User::query()->select('id', 'name', 'role')->orderBy('name')->limit(200)->get(),
@@ -85,7 +85,7 @@ class DashboardMessageController extends Controller
             'answers' => fn ($query) => $query->latest()->with('author:id,name,role'),
         ]);
 
-        return Inertia::render('dashboard/messages/show', [
+        return Inertia::render('dashboard/messages/dashboard-messages-show', [
             'message' => $message,
         ]);
     }
@@ -113,7 +113,7 @@ class DashboardMessageController extends Controller
 
         return redirect()
             ->route('dashboard.messages.show', $message)
-            ->with('success', 'Answer recorded and emailed to the sender.');
+            ->with('success', 'flash.messageAnswered');
     }
 
     public function update(Request $request, Message $message): RedirectResponse
@@ -129,7 +129,7 @@ class DashboardMessageController extends Controller
 
         return redirect()
             ->route('dashboard.messages.index')
-            ->with('success', 'Message updated successfully.');
+            ->with('success', 'flash.messageUpdated');
     }
 }
 

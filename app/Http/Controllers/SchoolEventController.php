@@ -25,7 +25,7 @@ class SchoolEventController extends Controller
             ->limit(5)
             ->get();
 
-        return Inertia::render('school/events/index', [
+        return Inertia::render('school/events/school-events-index', [
             'events' => $events,
             'upcoming' => $upcoming,
         ]);
@@ -48,7 +48,7 @@ class SchoolEventController extends Controller
             ->limit(3)
             ->get();
 
-        return Inertia::render('school/events/show', [
+        return Inertia::render('school/events/school-events-show', [
             'event' => $event,
             'related' => $related,
         ]);

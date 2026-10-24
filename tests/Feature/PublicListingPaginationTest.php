@@ -27,7 +27,7 @@ class PublicListingPaginationTest extends TestCase
         $this->get('/school/articles')
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
-                ->component('school/articles/index')
+                ->component('school/articles/school-articles-index')
                 ->has('articles.data', 9)
                 ->where('articles.current_page', 1)
                 ->where('articles.last_page', 2)
@@ -42,7 +42,7 @@ class PublicListingPaginationTest extends TestCase
         $this->get('/store')
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
-                ->component('school/store/index')
+                ->component('school/store/school-store-index')
                 ->has('books.data', 12)
                 ->where('books.current_page', 1)
                 ->where('books.last_page', 2)
@@ -57,7 +57,7 @@ class PublicListingPaginationTest extends TestCase
         $this->get('/school/programs')
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
-                ->component('school/programs/index')
+                ->component('school/programs/school-programs')
                 ->has('programs.data', 9)
                 ->where('programs.current_page', 1)
                 ->where('programs.last_page', 2)
@@ -73,7 +73,7 @@ class PublicListingPaginationTest extends TestCase
         $this->get('/school/events')
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
-                ->component('school/events/index')
+                ->component('school/events/school-events-index')
                 ->has('events.data', 12)
                 ->where('events.current_page', 1)
                 ->where('events.last_page', 2)
@@ -88,7 +88,7 @@ class PublicListingPaginationTest extends TestCase
         $this->get('/school/jobs')
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
-                ->component('school/jobs/index')
+                ->component('school/jobs/school-jobs')
                 ->has('jobs.data', 10)
                 ->where('jobs.current_page', 1)
                 ->where('jobs.last_page', 2)

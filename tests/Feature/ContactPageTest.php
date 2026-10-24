@@ -16,7 +16,7 @@ class ContactPageTest extends TestCase
         $this->get(route('school.contact'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
-                ->component('school/contact/index')
+                ->component('school/contact/school-contact')
                 ->has('site.contact')
             );
     }

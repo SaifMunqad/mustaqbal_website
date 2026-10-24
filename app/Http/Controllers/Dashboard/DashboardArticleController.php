@@ -21,21 +21,21 @@ class DashboardArticleController extends Controller
             ->latest()
             ->paginate(15);
 
-        return Inertia::render('dashboard/articles/index', [
+        return Inertia::render('dashboard/articles/dashboard-articles-index', [
             'articles' => $articles,
         ]);
     }
 
     public function create(): Response
     {
-        return Inertia::render('dashboard/articles/create');
+        return Inertia::render('dashboard/articles/dashboard-articles-create');
     }
 
     public function show(Article $article): Response
     {
         $article->load('author:id,name');
 
-        return Inertia::render('dashboard/articles/show', [
+        return Inertia::render('dashboard/articles/dashboard-articles-show', [
             'article' => $article,
         ]);
     }
@@ -75,12 +75,12 @@ class DashboardArticleController extends Controller
 
         return redirect()
             ->route('dashboard.articles.index')
-            ->with('success', 'Article created successfully.');
+            ->with('success', 'flash.articleCreated');
     }
 
     public function edit(Article $article): Response
     {
-        return Inertia::render('dashboard/articles/edit', [
+        return Inertia::render('dashboard/articles/dashboard-articles-edit', [
             'article' => $article,
         ]);
     }
@@ -120,7 +120,7 @@ class DashboardArticleController extends Controller
 
         return redirect()
             ->route('dashboard.articles.index')
-            ->with('success', 'Article updated successfully.');
+            ->with('success', 'flash.articleUpdated');
     }
 }
 

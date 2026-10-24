@@ -41,14 +41,14 @@ class DashboardProgramController extends Controller
                 'available_for_enroll' => $program->available_for_enroll,
             ]);
 
-        return Inertia::render('dashboard/programs/index', [
+        return Inertia::render('dashboard/programs/dashboard-programs-index', [
             'programs' => $programs,
         ]);
     }
 
     public function create(): Response
     {
-        return Inertia::render('dashboard/programs/create');
+        return Inertia::render('dashboard/programs/dashboard-programs-create');
     }
 
     public function store(Request $request): RedirectResponse
@@ -71,14 +71,14 @@ class DashboardProgramController extends Controller
 
         return redirect()
             ->route('dashboard.programs.index')
-            ->with('success', 'Program created successfully.');
+            ->with('success', 'flash.programCreated');
     }
 
     public function edit(Program $program): Response
     {
         $program->load(['translations.language']);
 
-        return Inertia::render('dashboard/programs/edit', [
+        return Inertia::render('dashboard/programs/dashboard-programs-edit', [
             'program' => $program,
             'translations' => $this->existingTranslations($program),
         ]);
@@ -104,7 +104,7 @@ class DashboardProgramController extends Controller
 
         return redirect()
             ->route('dashboard.programs.index')
-            ->with('success', 'Program updated successfully.');
+            ->with('success', 'flash.programUpdated');
     }
 
     /**

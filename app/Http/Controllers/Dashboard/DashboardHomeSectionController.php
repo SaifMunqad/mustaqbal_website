@@ -72,14 +72,14 @@ class DashboardHomeSectionController extends Controller
                     : null,
             ]);
 
-        return Inertia::render('dashboard/home-sections/index', [
+        return Inertia::render('dashboard/home-sections/dashboard-home-section-index', [
             'sections' => $sections,
         ]);
     }
 
     public function create(): Response
     {
-        return Inertia::render('dashboard/home-sections/create', [
+        return Inertia::render('dashboard/home-sections/dashboard-home-section-create', [
             'typeOptions' => HomeSectionType::options(),
             'availableItems' => $this->allAvailableItems(),
         ]);
@@ -98,14 +98,14 @@ class DashboardHomeSectionController extends Controller
 
         return redirect()
             ->route('dashboard.home-sections.index')
-            ->with('success', 'Home section added.');
+            ->with('success', 'flash.homeSectionAdded');
     }
 
     public function edit(HomeSection $homeSection): Response
     {
         $homeSection->load(['translations.language']);
 
-        return Inertia::render('dashboard/home-sections/edit', [
+        return Inertia::render('dashboard/home-sections/dashboard-home-section-edit', [
             'section' => [
                 'id' => $homeSection->id,
                 'section_type' => $homeSection->section_type->value,
@@ -129,7 +129,7 @@ class DashboardHomeSectionController extends Controller
 
         return redirect()
             ->route('dashboard.home-sections.index')
-            ->with('success', 'Home section updated.');
+            ->with('success', 'flash.homeSectionUpdated');
     }
 
     public function destroy(HomeSection $homeSection): RedirectResponse
@@ -138,7 +138,7 @@ class DashboardHomeSectionController extends Controller
 
         return redirect()
             ->route('dashboard.home-sections.index')
-            ->with('success', 'Home section removed.');
+            ->with('success', 'flash.homeSectionRemoved');
     }
 
     /**
@@ -187,7 +187,7 @@ class DashboardHomeSectionController extends Controller
             ->values()
             ->all();
 
-        return Inertia::render('dashboard/home-sections/visual', [
+        return Inertia::render('dashboard/home-sections/dashboard-home-section-visual', [
             'sections' => $drafts,
             'typeOptions' => HomeSectionType::options(),
             'availableItems' => $this->allAvailableItems(),
@@ -252,7 +252,7 @@ class DashboardHomeSectionController extends Controller
             $this->applySiteDraft($site, $allowedCodes);
         });
 
-        return back()->with('success', 'Home page saved.');
+        return back()->with('success', 'flash.homePageSaved');
     }
 
     /**
@@ -269,7 +269,7 @@ class DashboardHomeSectionController extends Controller
             HomeSection::query()->whereKey($id)->update(['sort_order' => $index]);
         }
 
-        return back()->with('success', 'Home page order saved.');
+        return back()->with('success', 'flash.homeOrderSaved');
     }
 
     /**

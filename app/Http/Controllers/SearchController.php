@@ -22,7 +22,7 @@ class SearchController extends Controller
         $term = trim($request->string('q')->toString());
         $isSearch = mb_strlen($term) >= 2;
 
-        return Inertia::render('school/search/index', [
+        return Inertia::render('school/search/school-search', [
             'q' => $term,
             'isSearch' => $isSearch,
             'results' => [

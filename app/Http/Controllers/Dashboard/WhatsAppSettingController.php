@@ -21,7 +21,7 @@ class WhatsAppSettingController extends Controller
     {
         $setting = WhatsAppSetting::current();
 
-        return Inertia::render('dashboard/whatsapp-settings/edit', [
+        return Inertia::render('dashboard/whatsapp-settings/dashboard-whatsapp-settings-edit', [
             'setting' => $setting->toDashboard(),
             'configured' => $whatsapp->isConfigured(),
             'source' => $whatsapp->source(),
@@ -54,8 +54,8 @@ class WhatsAppSettingController extends Controller
         ])->save();
 
         $message = $whatsapp->isConfigured()
-            ? 'WhatsApp settings saved and ready to send.'
-            : 'WhatsApp settings saved, but a token and phone number id are both required before sending.';
+            ? 'flash.whatsappSaved'
+            : 'flash.whatsappSavedIncomplete';
 
         return back()->with('success', $message);
     }
@@ -67,9 +67,17 @@ class WhatsAppSettingController extends Controller
         if ($result['ok']) {
             $number = $result['display_phone_number'] ?? '';
 
-            return back()->with('success', 'Connection test passed'.($number ? " for {$number}." : '.'));
+            return $number
+                ? back()->with('success', [
+                    'title' => 'flash.whatsappConnectionPassed',
+                    'params' => ['number' => $number],
+                ])
+                : back()->with('success', 'flash.whatsappConnectionPassedNoNumber');
         }
 
-        return back()->with('error', 'Connection test failed: '.$result['message']);
+        return back()->with('error', [
+            'title' => 'flash.whatsappConnectionFailed',
+            'params' => ['message' => $result['message']],
+        ]);
     }
 }

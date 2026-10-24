@@ -57,7 +57,7 @@ class DashboardSiteSettingController extends Controller
         $setting = SiteSetting::current();
         $setting->load('translations.language');
 
-        return Inertia::render('dashboard/site-settings/edit', [
+        return Inertia::render('dashboard/site-settings/dashboard-site-settings-edit', [
             'settings' => $setting,
             'translations' => $this->existingTranslations($setting),
             'mapsKey' => config('services.google.maps_key'),
@@ -118,7 +118,7 @@ class DashboardSiteSettingController extends Controller
 
         return redirect()
             ->route('dashboard.site-settings.edit')
-            ->with('success', 'Site settings updated successfully.');
+            ->with('success', 'flash.siteSettingsUpdated');
     }
 
     /**

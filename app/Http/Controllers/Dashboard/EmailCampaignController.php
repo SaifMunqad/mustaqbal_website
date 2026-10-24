@@ -33,14 +33,14 @@ class EmailCampaignController extends Controller
             ->latest()
             ->paginate(20);
 
-        return Inertia::render('dashboard/email-campaigns/index', [
+        return Inertia::render('dashboard/email-campaigns/dashboard-email-campaigns-index', [
             'campaigns' => $campaigns,
         ]);
     }
 
     public function create(Request $request): Response
     {
-        return Inertia::render('dashboard/email-campaigns/create', [
+        return Inertia::render('dashboard/email-campaigns/dashboard-email-campaigns-create', [
             'counts' => [
                 'users' => User::query()
                     ->where('status', UserStatus::Active->value)
@@ -63,7 +63,7 @@ class EmailCampaignController extends Controller
         $recipients = $this->resolveRecipients($validated['recipient_source'], $validated['custom_emails'] ?? null, $request->user()->id);
 
         if ($recipients->isEmpty()) {
-            return back()->with('error', 'No valid recipients were found for the selected source.');
+            return back()->with('error', 'flash.noValidRecipients');
         }
 
         $campaign = DB::transaction(function () use ($request, $validated, $recipients): EmailCampaign {
@@ -93,14 +93,14 @@ class EmailCampaignController extends Controller
 
         return redirect()
             ->route('dashboard.email-campaigns.show', $campaign)
-            ->with('success', "Campaign queued for {$campaign->total_count} recipients.");
+            ->with('success', ['title' => 'flash.emailCampaignQueued', 'params' => ['count' => $campaign->total_count]]);
     }
 
     public function show(EmailCampaign $emailCampaign): Response
     {
         $emailCampaign->load('creator:id,name');
 
-        return Inertia::render('dashboard/email-campaigns/show', [
+        return Inertia::render('dashboard/email-campaigns/dashboard-email-campaigns-show', [
             'campaign' => $emailCampaign,
             'recipients' => $emailCampaign->recipients()
                 ->orderByRaw("case when status = 'failed' then 0 else 1 end")
@@ -117,7 +117,7 @@ class EmailCampaignController extends Controller
             ->get();
 
         if ($failed->isEmpty()) {
-            return back()->with('info', 'There are no failed recipients to retry.');
+            return back()->with('info', 'flash.noFailedRecipients');
         }
 
         DB::transaction(function () use ($emailCampaign, $failed): void {
@@ -134,7 +134,7 @@ class EmailCampaignController extends Controller
 
         $failed->each(fn ($recipient) => SendBulkAnnouncement::dispatch($recipient->id));
 
-        return back()->with('success', 'Re-sent '.$failed->count().' failed recipient(s).');
+        return back()->with('success', ['title' => 'flash.reSentFailed', 'params' => ['count' => $failed->count()]]);
     }
 
     /**

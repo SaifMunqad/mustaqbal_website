@@ -34,7 +34,7 @@ class WhatsAppCampaignController extends Controller
             ->latest()
             ->paginate(20);
 
-        return Inertia::render('dashboard/whatsapp-campaigns/index', [
+        return Inertia::render('dashboard/whatsapp-campaigns/dashboard-whatsapp-campaigns-index', [
             'campaigns' => $campaigns,
             'configured' => $whatsapp->isConfigured(),
         ]);
@@ -42,7 +42,7 @@ class WhatsAppCampaignController extends Controller
 
     public function create(Request $request, WhatsAppService $whatsapp): Response
     {
-        return Inertia::render('dashboard/whatsapp-campaigns/create', [
+        return Inertia::render('dashboard/whatsapp-campaigns/dashboard-whatsapp-campaigns-create', [
             'configured' => $whatsapp->isConfigured(),
             'counts' => [
                 'contacts' => Contact::query()->whereNotNull('phone')->distinct('phone')->count('phone'),
@@ -55,7 +55,7 @@ class WhatsAppCampaignController extends Controller
         if (! $whatsapp->isConfigured()) {
             return redirect()
                 ->route('dashboard.whatsapp-settings.edit')
-                ->with('error', 'WhatsApp is not configured yet. Add your API credentials before sending a campaign.');
+                ->with('error', 'flash.whatsappNotConfigured');
         }
 
         $validated = $request->validate([
@@ -74,7 +74,7 @@ class WhatsAppCampaignController extends Controller
         );
 
         if ($recipients->isEmpty()) {
-            return back()->with('error', 'No valid phone numbers were found for the selected source.');
+            return back()->with('error', 'flash.noValidNumbers');
         }
 
         $campaign = DB::transaction(function () use ($request, $validated, $recipients): WhatsAppCampaign {
@@ -109,14 +109,14 @@ class WhatsAppCampaignController extends Controller
 
         return redirect()
             ->route('dashboard.whatsapp-campaigns.show', $campaign)
-            ->with('success', "WhatsApp campaign queued for {$campaign->total_count} recipients.");
+            ->with('success', ['title' => 'flash.whatsappCampaignQueued', 'params' => ['count' => $campaign->total_count]]);
     }
 
     public function show(WhatsAppCampaign $whatsappCampaign): Response
     {
         $whatsappCampaign->load('creator:id,name');
 
-        return Inertia::render('dashboard/whatsapp-campaigns/show', [
+        return Inertia::render('dashboard/whatsapp-campaigns/dashboard-whatsapp-campaigns-show', [
             'campaign' => $whatsappCampaign,
             'recipients' => $whatsappCampaign->recipients()
                 ->orderByRaw("case when status = 'failed' then 0 else 1 end")
@@ -133,7 +133,7 @@ class WhatsAppCampaignController extends Controller
             ->get();
 
         if ($failed->isEmpty()) {
-            return back()->with('info', 'There are no failed recipients to retry.');
+            return back()->with('info', 'flash.noFailedRecipients');
         }
 
         DB::transaction(function () use ($whatsappCampaign, $failed): void {
@@ -150,7 +150,7 @@ class WhatsAppCampaignController extends Controller
 
         $failed->each(fn ($recipient) => SendWhatsAppMessage::dispatch($recipient->id));
 
-        return back()->with('success', 'Re-sent '.$failed->count().' failed recipient(s).');
+        return back()->with('success', ['title' => 'flash.reSentFailed', 'params' => ['count' => $failed->count()]]);
     }
 
     /**

@@ -32,7 +32,7 @@ class DashboardBookCategoryController extends Controller
                 'books_count' => $category->books_count,
             ]);
 
-        return Inertia::render('dashboard/categories/index', [
+        return Inertia::render('dashboard/categories/dashboard-categories-index', [
             'categories' => $categories,
             'translationLocales' => $this->translationLocales,
         ]);
@@ -40,7 +40,7 @@ class DashboardBookCategoryController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('dashboard/categories/create', [
+        return Inertia::render('dashboard/categories/dashboard-categories-create', [
             'translationLocales' => $this->translationLocales,
         ]);
     }
@@ -58,14 +58,14 @@ class DashboardBookCategoryController extends Controller
 
         return redirect()
             ->route('dashboard.categories.index')
-            ->with('success', 'Category created.');
+            ->with('success', 'flash.categoryCreated');
     }
 
     public function edit(BookCategory $category): Response
     {
         $category->load(['translations.language']);
 
-        return Inertia::render('dashboard/categories/edit', [
+        return Inertia::render('dashboard/categories/dashboard-categories-edit', [
             // `name_translations` is presented to the flat-field editor as the
             // existing per-locale map, sourced from the translation rows.
             'category' => [
@@ -93,7 +93,7 @@ class DashboardBookCategoryController extends Controller
 
         return redirect()
             ->route('dashboard.categories.index')
-            ->with('success', 'Category updated.');
+            ->with('success', 'flash.categoryUpdated');
     }
 
     public function destroy(BookCategory $category): RedirectResponse
@@ -102,7 +102,7 @@ class DashboardBookCategoryController extends Controller
 
         return redirect()
             ->route('dashboard.categories.index')
-            ->with('success', 'Category deleted. Books in it are kept but uncategorized.');
+            ->with('success', 'flash.categoryDeleted');
     }
 
     private function validateCategory(Request $request): array

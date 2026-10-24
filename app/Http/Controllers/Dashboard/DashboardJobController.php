@@ -41,7 +41,7 @@ class DashboardJobController extends Controller
                 'created_at' => $job->created_at->toIso8601String(),
             ]);
 
-        return Inertia::render('dashboard/jobs/index', [
+        return Inertia::render('dashboard/jobs/dashboard-jobs-index', [
             'jobs' => $jobs,
             'filters' => ['search' => $request->string('search')->toString()],
         ]);
@@ -49,7 +49,7 @@ class DashboardJobController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('dashboard/jobs/create', [
+        return Inertia::render('dashboard/jobs/dashboard-jobs-create', [
             'employmentTypes' => $this->employmentTypeOptions(),
             'categories' => $this->categoryOptions(),
         ]);
@@ -73,14 +73,14 @@ class DashboardJobController extends Controller
 
         return redirect()
             ->route('dashboard.jobs.index')
-            ->with('success', 'Job created.');
+            ->with('success', 'flash.jobCreated');
     }
 
     public function edit(Job $job): Response
     {
         $job->load(['translations.language']);
 
-        return Inertia::render('dashboard/jobs/edit', [
+        return Inertia::render('dashboard/jobs/dashboard-jobs-edit', [
             'job' => $job,
             'translations' => $this->existingTranslations($job),
             'employmentTypes' => $this->employmentTypeOptions(),
@@ -101,7 +101,7 @@ class DashboardJobController extends Controller
 
         return redirect()
             ->route('dashboard.jobs.index')
-            ->with('success', 'Job updated.');
+            ->with('success', 'flash.jobUpdated');
     }
 
     public function destroy(Job $job): RedirectResponse
@@ -110,7 +110,7 @@ class DashboardJobController extends Controller
 
         return redirect()
             ->route('dashboard.jobs.index')
-            ->with('success', 'Job deleted.');
+            ->with('success', 'flash.jobDeleted');
     }
 
     /**

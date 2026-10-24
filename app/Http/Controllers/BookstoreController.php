@@ -35,7 +35,7 @@ class BookstoreController extends Controller
             ->withQueryString()
             ->through(fn (Book $book): array => $this->presentCard($book));
 
-        return Inertia::render('school/store/index', [
+        return Inertia::render('school/store/school-store-index', [
             'books' => $books,
             'categories' => BookCategory::query()
                 ->with('translations.language')
@@ -64,7 +64,7 @@ class BookstoreController extends Controller
             ->get()
             ->map(fn (Book $item): array => $this->presentCard($item));
 
-        return Inertia::render('school/store/show', [
+        return Inertia::render('school/store/school-store-show', [
             'book' => [
                 'id' => $book->id,
                 'title' => $book->title,
