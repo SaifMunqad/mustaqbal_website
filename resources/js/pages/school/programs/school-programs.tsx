@@ -56,7 +56,7 @@ function CategoryHeader({ type, count }: { type: ProgramType; count: number }) {
                     <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
                         {t(`programs.categories.${type}.title`)}
                     </h2>
-                    <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                    <span className="inline-flex items-center rounded-full bg-brand-soft px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-300">
                         {t('programs.programCount', { count })}
                     </span>
                 </div>
@@ -91,7 +91,7 @@ function PathwaySection() {
                         <div key={item.type} className="relative flex">
                             <div
                                 className={cn(
-                                    'flex flex-1 flex-col items-center rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm dark:bg-gray-900',
+                                    'flex flex-1 flex-col items-center rounded-2xl border border-brand-border bg-brand-soft p-6 text-center shadow-sm',
                                     accent.ring,
                                 )}
                             >
@@ -151,9 +151,11 @@ function SchoolPrograms() {
         <>
             <Head title={page?.title ?? t('programs.title')} />
 
-            <section className="rounded-3xl bg-white p-6 shadow-sm md:p-10 dark:bg-gray-900">
+            {/* Content sits directly on the frozen page background: an extra
+                tinted panel here would swallow the cards. */}
+            <section className="p-6 md:p-10">
                 <Reveal direction="fade" defaultInView>
-                    <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold tracking-wide text-slate-600 uppercase dark:bg-slate-800 dark:text-slate-300">
+                    <div className="inline-flex items-center gap-2 rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold tracking-wide text-slate-600 uppercase dark:text-slate-300">
                         <span className="size-1.5 rounded-full bg-indigo-500" />
                         {t('programs.badge')}
                     </div>

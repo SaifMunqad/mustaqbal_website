@@ -16,10 +16,10 @@ interface ContactForm {
 function inputClass(invalid?: boolean): string {
     return [
         'w-full rounded-xl border bg-white px-4 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition',
-        'placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500/30',
+        'placeholder:text-slate-400 focus:ring-2 focus:ring-brand/30',
         invalid
             ? 'border-red-400 focus:border-red-500 dark:border-red-500/60'
-            : 'border-slate-300 focus:border-blue-500 dark:border-slate-700',
+            : 'border-brand-border focus:border-brand',
         'dark:bg-gray-900 dark:text-white',
     ].join(' ');
 }
@@ -55,7 +55,11 @@ function FieldError({ message }: { message?: string }) {
     if (!message) {
         return null;
     }
-    return <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{message}</p>;
+    return (
+        <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">
+            {message}
+        </p>
+    );
 }
 
 export default function ContactMessageForm({
@@ -92,7 +96,7 @@ export default function ContactMessageForm({
     }
 
     return (
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8 dark:border-slate-800 dark:bg-gray-900">
+        <section className="rounded-3xl border border-brand-border bg-brand-soft p-6 shadow-sm md:p-8">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">
                 {title || t('contact.formTitle')}
             </h2>
@@ -108,7 +112,9 @@ export default function ContactMessageForm({
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                        <FieldLabel htmlFor="name">{t('contact.fields.name')}</FieldLabel>
+                        <FieldLabel htmlFor="name">
+                            {t('contact.fields.name')}
+                        </FieldLabel>
                         <input
                             id="name"
                             name="name"
@@ -122,7 +128,9 @@ export default function ContactMessageForm({
                         <FieldError message={errors.name} />
                     </div>
                     <div>
-                        <FieldLabel htmlFor="email">{t('contact.fields.email')}</FieldLabel>
+                        <FieldLabel htmlFor="email">
+                            {t('contact.fields.email')}
+                        </FieldLabel>
                         <input
                             id="email"
                             name="email"
@@ -171,7 +179,9 @@ export default function ContactMessageForm({
                 </div>
 
                 <div>
-                    <FieldLabel htmlFor="message">{t('contact.fields.message')}</FieldLabel>
+                    <FieldLabel htmlFor="message">
+                        {t('contact.fields.message')}
+                    </FieldLabel>
                     <textarea
                         id="message"
                         name="message"
@@ -188,7 +198,7 @@ export default function ContactMessageForm({
                 <button
                     type="submit"
                     disabled={processing}
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-5 py-3 text-sm font-semibold text-brand-fg shadow-sm transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
                     {processing ? (
                         <svg

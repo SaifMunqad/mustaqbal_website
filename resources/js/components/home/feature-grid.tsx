@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 // Rotating accent tints so adjacent feature tiles read as varied, not uniform.
 const ACCENTS = [
-    'bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-300',
+    'bg-brand-soft-strong text-brand-ink dark:bg-brand/15',
     'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300',
     'bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
     'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300',
@@ -56,7 +56,7 @@ export default function FeatureGrid({
                             className="h-full"
                             delay={index * 50}
                         >
-                            <article className="flex h-full flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-800 dark:bg-gray-900">
+                            <article className="flex h-full flex-col gap-3 rounded-2xl border border-brand-border bg-brand-soft p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                                 <div
                                     className={`flex size-12 items-center justify-center rounded-xl ${ACCENTS[index % ACCENTS.length]}`}
                                 >

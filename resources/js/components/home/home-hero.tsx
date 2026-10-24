@@ -33,18 +33,18 @@ export default function HomeHero({ home, tagline, rtl }: HomeHeroProps) {
     return (
         <section
             dir={isRtl ? 'rtl' : 'ltr'}
-            className={`relative overflow-hidden rounded-3xl border border-slate-200/80 shadow-md dark:border-slate-800 dark:from-blue-900 dark:via-[#0a192f] dark:to-slate-950 ${
+            className={`relative overflow-hidden rounded-3xl border border-brand-border/80 shadow-md dark:from-brand-deep dark:via-[#0a192f] dark:to-slate-950 ${
                 isRtl
-                    ? 'bg-gradient-to-t from-sky-100 via-blue-100/70 to-blue-700 lg:bg-gradient-to-l'
-                    : 'bg-gradient-to-t from-sky-100 via-blue-100/70 to-blue-700 lg:bg-gradient-to-r'
+                    ? 'bg-gradient-to-t from-brand-soft-strong via-brand-soft-strong/70 to-brand lg:bg-gradient-to-l'
+                    : 'bg-gradient-to-t from-brand-soft-strong via-brand-soft-strong/70 to-brand lg:bg-gradient-to-r'
             }`}
         >
             {/* Ambient glow radiating from top-start */}
             <div
-                className={`pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] via-transparent to-transparent dark:from-sky-400/20 ${
+                className={`pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] via-transparent to-transparent dark:from-brand/20 ${
                     isRtl
-                        ? 'from-blue-300/50 [background-position:top_right]'
-                        : 'from-blue-300/50 [background-position:top_left]'
+                        ? 'from-brand/50 [background-position:top_right]'
+                        : 'from-brand/50 [background-position:top_left]'
                 }`}
             />
 
@@ -77,7 +77,7 @@ export default function HomeHero({ home, tagline, rtl }: HomeHeroProps) {
                 >
                     {/* Top Start: Tagline / Blue Badge */}
                     {tagline ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-md bg-sky-600 px-3.5 py-1.5 text-xs font-bold tracking-wider text-sky-100 uppercase shadow-sm">
+                        <span className="inline-flex items-center gap-1.5 rounded-md bg-brand px-3.5 py-1.5 text-xs font-bold tracking-wider text-brand-fg uppercase shadow-sm">
                             {tagline}
                         </span>
                     ) : null}
@@ -94,14 +94,18 @@ export default function HomeHero({ home, tagline, rtl }: HomeHeroProps) {
 
                         <div className="mt-8 flex flex-wrap items-center gap-3.5">
                             <Link
-                                href={home.cta_primary_url || '/school/programs'}
-                                className="rounded-xl border-2 border-sky-600 bg-transparent px-6 py-2.5 text-sm font-bold text-sky-800 shadow-sm transition-all hover:bg-sky-600 hover:text-white dark:border-sky-400 dark:text-sky-300 dark:hover:bg-sky-500 dark:hover:text-white"
+                                href={
+                                    home.cta_primary_url || '/school/programs'
+                                }
+                                className="rounded-xl border-2 border-brand-border bg-transparent px-6 py-2.5 text-sm font-bold text-brand-ink shadow-sm transition-all hover:bg-brand-hover hover:text-white dark:hover:bg-brand-hover dark:hover:text-white"
                             >
                                 {primaryLabel}
                             </Link>
                             <Link
-                                href={home.cta_secondary_url || '/school/contact'}
-                                className="rounded-xl border border-slate-300/80 bg-white/80 px-6 py-2.5 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:bg-white dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200 dark:hover:bg-slate-800"
+                                href={
+                                    home.cta_secondary_url || '/school/contact'
+                                }
+                                className="rounded-xl border border-brand-border/80 bg-white/80 px-6 py-2.5 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:bg-brand-soft dark:text-slate-200 dark:hover:bg-slate-800"
                             >
                                 {secondaryLabel}
                             </Link>

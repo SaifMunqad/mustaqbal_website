@@ -1,6 +1,6 @@
+import { cn } from '@/lib/utils';
 import { Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import { cn } from '@/lib/utils';
 import HomeCardItem, { shapeForIndex, type HomeCard } from './home-card-item';
 
 export type { HomeCard };
@@ -46,21 +46,22 @@ export interface HomeSectionEditApi {
 }
 
 const toneStyles: Record<string, string> = {
-    default: 'from-blue-100 to-blue-200 dark:from-blue-950 dark:to-blue-900',
-    blue: 'from-blue-100 to-blue-200 dark:from-blue-950 dark:to-blue-900',
-    green: 'from-blue-100 to-blue-200 dark:from-blue-950 dark:to-blue-900',
-    amber: 'from-blue-100 to-blue-200 dark:from-blue-950 dark:to-blue-900',
-    red: 'from-blue-100 to-blue-200 dark:from-blue-950 dark:to-blue-900',
+    default:
+        'from-brand-soft-strong to-brand dark:from-brand-deep dark:to-brand-deep',
+    blue: 'from-brand-soft-strong to-brand dark:from-brand-deep dark:to-brand-deep',
+    green: 'from-brand-soft-strong to-brand dark:from-brand-deep dark:to-brand-deep',
+    amber: 'from-brand-soft-strong to-brand dark:from-brand-deep dark:to-brand-deep',
+    red: 'from-brand-soft-strong to-brand dark:from-brand-deep dark:to-brand-deep',
 };
 
 // Dashed ring shown on hover/focus for any editable text node.
 const editableRing =
-    'cursor-pointer rounded-md outline-dashed outline-1 outline-transparent transition hover:outline-blue-400/70 focus:outline-blue-500';
+    'cursor-pointer rounded-md outline-dashed outline-1 outline-transparent transition hover:outline-brand/70 focus:outline-brand';
 
 // One shared look for the banner CTA so the visual editor's preview button is
 // pixel-identical to the button visitors actually see on the live home page.
 const bannerCtaClasses =
-    'rounded-xl border-2 border-gray-200 bg-transparent px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:bg-sky-600 hover:border-sky-700 dark:border-sky-400 dark:text-sky-300 dark:hover:bg-sky-500 dark:hover:text-white';
+    'rounded-xl border-2 border-brand-border bg-transparent px-6 py-2.5 text-sm font-bold text-brand-ink shadow-sm transition-all hover:border-brand hover:bg-brand-hover hover:text-brand-fg';
 
 function EditableText({
     as: Tag,
@@ -158,7 +159,7 @@ function AnnouncementBannerButton({
             <button
                 type="button"
                 onClick={onConfigure}
-                className="mt-3 inline-block text-sm font-semibold text-blue-600 underline dark:text-blue-300"
+                className="mt-3 inline-block text-sm font-semibold text-brand-ink underline"
             >
                 + Add button link
             </button>
@@ -171,14 +172,14 @@ function AnnouncementBannerButton({
                 as="span"
                 value={config.cta_label}
                 placeholder="Button label"
-                className="text-sm font-semibold text-blue-700 underline dark:text-blue-300"
+                className="text-sm font-semibold text-brand-ink underline"
                 onEdit={onEdit}
             />
             <button
                 type="button"
                 onClick={onConfigure}
                 title="Edit button link"
-                className="rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700 dark:bg-blue-900 dark:text-blue-200"
+                className="rounded-full bg-brand-soft-strong px-2 py-0.5 text-xs text-brand-ink dark:bg-brand-deep"
             >
                 ↗
             </button>
@@ -199,12 +200,15 @@ function SectionToolbar({
         'rounded px-2 py-0.5 text-xs font-medium border border-border bg-card hover:bg-accent disabled:opacity-40';
 
     return (
-        <div className="mb-2 flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-blue-300 bg-blue-50/60 px-3 py-1.5 text-xs dark:border-blue-800 dark:bg-blue-950/30">
-            <span className="font-semibold text-blue-700 dark:text-blue-300">
-                {t(`enums.homeSectionType.${section.type}`, section.type_label ?? section.type)}
+        <div className="mb-2 flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-brand-border bg-brand-soft/60 px-3 py-1.5 text-xs dark:bg-brand-deep/30">
+            <span className="font-semibold text-brand-ink">
+                {t(
+                    `enums.homeSectionType.${section.type}`,
+                    section.type_label ?? section.type,
+                )}
             </span>
             {section.kind === 'curated' ? (
-                <span className="rounded-full bg-white px-2 py-0.5 text-[11px] text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                <span className="rounded-full bg-brand-soft px-2 py-0.5 text-[11px] text-slate-600 dark:text-slate-300">
                     live content
                 </span>
             ) : null}
@@ -215,7 +219,11 @@ function SectionToolbar({
             ) : null}
 
             <div className="ms-auto flex flex-wrap items-center gap-1.5">
-                <button type="button" className={iconBtn} onClick={() => edit.configure(section.id)}>
+                <button
+                    type="button"
+                    className={iconBtn}
+                    onClick={() => edit.configure(section.id)}
+                >
                     ⚙ Settings
                 </button>
                 <button
@@ -293,7 +301,7 @@ function CardsSection({
                     No items yet — pick content in{' '}
                     <button
                         type="button"
-                        className="font-semibold text-blue-600 underline"
+                        className="font-semibold text-brand-ink underline"
                         onClick={() => edit.configure(section.id)}
                     >
                         Settings
@@ -353,7 +361,9 @@ function BannerSection({
                         <div className="mt-6 flex items-center gap-3">
                             <EditableBannerButton
                                 config={config}
-                                onEdit={() => edit.editText(section.id, 'cta_label')}
+                                onEdit={() =>
+                                    edit.editText(section.id, 'cta_label')
+                                }
                                 onConfigure={() => edit.configure(section.id)}
                             />
                         </div>
@@ -388,9 +398,10 @@ function BannerSection({
                 <button
                     type="button"
                     onClick={() => edit.configure(section.id)}
-                    className="absolute top-3 z-20 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700 shadow end-3"
+                    className="absolute end-3 top-3 z-20 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700 shadow"
                 >
-                    🖼 {config.image_url ? 'Change image' : 'Add image'} · link · tone
+                    🖼 {config.image_url ? 'Change image' : 'Add image'} · link
+                    · tone
                 </button>
             ) : null}
         </section>
@@ -408,7 +419,7 @@ function AnnouncementSection({
 
     // Customer-facing announcements use a single blue accent regardless of the
     // stored tone, matching the site's simplified blue palette.
-    const accent = 'border-blue-300 bg-blue-50 dark:bg-blue-950/40';
+    const accent = 'border-brand-border bg-brand-soft dark:bg-brand-deep/40';
 
     return (
         <section className={`rounded-2xl border p-5 ${accent}`}>
@@ -449,7 +460,7 @@ function AnnouncementSection({
                     {config.cta_label && config.cta_url ? (
                         <Link
                             href={config.cta_url}
-                            className="mt-3 inline-block text-sm font-semibold text-blue-700 underline dark:text-blue-300"
+                            className="mt-3 inline-block text-sm font-semibold text-brand-ink underline"
                         >
                             {config.cta_label}
                         </Link>
@@ -472,11 +483,23 @@ export default function HomeSections({
             {sections.map((section) => {
                 const body =
                     section.variant === 'banner' ? (
-                        <BannerSection key={section.id} section={section} edit={edit} />
+                        <BannerSection
+                            key={section.id}
+                            section={section}
+                            edit={edit}
+                        />
                     ) : section.variant === 'announcement' ? (
-                        <AnnouncementSection key={section.id} section={section} edit={edit} />
+                        <AnnouncementSection
+                            key={section.id}
+                            section={section}
+                            edit={edit}
+                        />
                     ) : (
-                        <CardsSection key={section.id} section={section} edit={edit} />
+                        <CardsSection
+                            key={section.id}
+                            section={section}
+                            edit={edit}
+                        />
                     );
 
                 if (!edit) {
@@ -487,7 +510,9 @@ export default function HomeSections({
                     <div
                         key={section.id}
                         className={
-                            section.is_active === false ? 'opacity-60' : undefined
+                            section.is_active === false
+                                ? 'opacity-60'
+                                : undefined
                         }
                     >
                         <SectionToolbar section={section} edit={edit} />

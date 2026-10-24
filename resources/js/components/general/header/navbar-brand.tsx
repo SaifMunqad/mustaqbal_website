@@ -1,6 +1,6 @@
+import type { SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import type { SharedData } from '@/types';
 
 export default function NavbarBrand() {
     const { t } = useTranslation();
@@ -25,7 +25,7 @@ export default function NavbarBrand() {
             href="/"
             className="me-4 block cursor-pointer py-1.5 text-lg font-bold tracking-tight text-slate-800 transition-all duration-300 dark:text-white"
         >
-            <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-brand to-purple-500 bg-clip-text text-transparent">
                 {shortName}
             </span>
         </Link>

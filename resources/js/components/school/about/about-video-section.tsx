@@ -1,5 +1,5 @@
-import { useTranslation } from 'react-i18next';
 import AboutSectionHeading from '@/components/school/about/about-section-heading';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Turn an admin-pasted value into a safe iframe `src`. Accepts either a full
@@ -52,7 +52,10 @@ interface AboutVideoSectionProps {
     title?: string;
 }
 
-export default function AboutVideoSection({ embed, title }: AboutVideoSectionProps) {
+export default function AboutVideoSection({
+    embed,
+    title,
+}: AboutVideoSectionProps) {
     const { t } = useTranslation();
     const src = resolveVideoSrc(embed);
 
@@ -62,12 +65,19 @@ export default function AboutVideoSection({ embed, title }: AboutVideoSectionPro
 
     return (
         <section className="space-y-8">
-            <AboutSectionHeading eyebrow={t('about.videoEyebrow')} title={t('about.videoTitle')} />
-            <div className="mx-auto max-w-4xl overflow-hidden rounded-3xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-gray-900">
+            <AboutSectionHeading
+                eyebrow={t('about.videoEyebrow')}
+                title={t('about.videoTitle')}
+            />
+            <div className="mx-auto max-w-4xl overflow-hidden rounded-3xl border border-brand-border bg-brand-soft p-3 shadow-sm">
                 <div className="relative aspect-video w-full overflow-hidden rounded-2xl">
                     <iframe
                         src={src}
-                        title={title ? `${title} — ${t('about.videoTitle')}` : t('about.videoTitle')}
+                        title={
+                            title
+                                ? `${title} — ${t('about.videoTitle')}`
+                                : t('about.videoTitle')
+                        }
                         className="absolute inset-0 h-full w-full"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                         referrerPolicy="strict-origin-when-cross-origin"

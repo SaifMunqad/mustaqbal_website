@@ -10,7 +10,7 @@ import {
 
 // Rotating accent tints keep adjacent tiles visually varied rather than uniform.
 export const ACCENTS = [
-    'bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-300',
+    'bg-brand-soft-strong text-brand-ink dark:bg-brand/15',
     'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300',
     'bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
     'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300',

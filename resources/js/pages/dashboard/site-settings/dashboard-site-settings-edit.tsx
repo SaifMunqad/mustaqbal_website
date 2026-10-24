@@ -1,4 +1,7 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
+import BrandingColorField from '@/components/dashboard/site-settings/branding-color-field';
+import BrandingPalettePreview from '@/components/dashboard/site-settings/branding-palette-preview';
+import BrandingTintDepthField from '@/components/dashboard/site-settings/branding-tint-depth-field';
 import HomeFeaturesEditor from '@/components/dashboard/site-settings/home-features-editor';
 import HomeStatsEditor from '@/components/dashboard/site-settings/home-stats-editor';
 import {
@@ -6,6 +9,7 @@ import {
     Group,
     type SiteSettingRecord,
 } from '@/components/dashboard/site-settings/site-settings-shared';
+import { useBrandingPreview } from '@/components/dashboard/site-settings/use-branding-preview';
 import { TextField } from '@/components/form-fields';
 import { ImageUploadField } from '@/components/form/image-upload-field';
 import GoogleLocationPicker, {
@@ -23,6 +27,7 @@ import type {
     HomeStat,
     LanguageOption,
     SharedData,
+    TintDepth,
 } from '@/types';
 import { Form, usePage } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
@@ -57,6 +62,10 @@ export default function DashboardSiteSettingsEdit() {
         mapsKey?: string | null;
     }>().props;
     const { languages } = usePage<SharedData>().props;
+    // Initial palette comes from the shared props (site.theme.palette); the hook
+    // refreshes it from the backend while the colors are being edited.
+    const initialPalette =
+        usePage<SharedData>().props.site?.theme?.palette ?? null;
     const { t } = useTranslation();
     const { onError } = useFormToast(t('dashboard.settings.updated'));
 
@@ -123,6 +132,26 @@ export default function DashboardSiteSettingsEdit() {
     // which returns a public URL kept in controlled state so the live preview
     // and the submitted hidden input stay in sync.
     const [logoUrl, setLogoUrl] = useState(settings.logo_url ?? '');
+    const [reverseLogoUrl, setReverseLogoUrl] = useState(
+        settings.reverse_logo_url ?? '',
+    );
+
+    // Branding palette inputs. Only the brand color is required mentally; the
+    // accent falls back to a derived companion and every other token (mid tones,
+    // deep bands, borders, ink, dark-mode twin) is computed by the backend.
+    const [brandColor, setBrandColor] = useState(settings.brand_color ?? '');
+    const [accentColor, setAccentColor] = useState(settings.accent_color ?? '');
+    const [tintDepth, setTintDepth] = useState<TintDepth>(
+        settings.tint_depth ?? 'subtle',
+    );
+    const palette = useBrandingPreview(
+        {
+            brand_color: brandColor,
+            accent_color: accentColor,
+            tint_depth: tintDepth,
+        },
+        initialPalette,
+    );
 
     // Map/location state is controlled so the picker, the derived embed URL and
     // the address box stay in sync before submit.
@@ -220,6 +249,75 @@ export default function DashboardSiteSettingsEdit() {
                                 error={errors.logo_url}
                                 hint={t('dashboard.settings.form.logoHint')}
                             />
+
+                            <ImageUploadField
+                                label={t(
+                                    'dashboard.settings.form.reverseLogoLabel',
+                                )}
+                                name="reverse_logo_url"
+                                value={reverseLogoUrl}
+                                onChange={setReverseLogoUrl}
+                                error={errors.reverse_logo_url}
+                                hint={t(
+                                    'dashboard.settings.form.reverseLogoHint',
+                                )}
+                                previewClassName="h-20 w-auto object-contain"
+                                dropzoneClassName="h-24 w-full"
+                            />
+
+                            {/* Colors: one picker drives the whole public site. */}
+                            <div className="grid gap-3 sm:grid-cols-2">
+                                <BrandingColorField
+                                    label={t(
+                                        'dashboard.settings.form.brandColor',
+                                    )}
+                                    name="brand_color"
+                                    value={brandColor}
+                                    placeholderColor={
+                                        initialPalette?.light['--brand']
+                                    }
+                                    onChange={setBrandColor}
+                                    error={errors.brand_color}
+                                    hint={t(
+                                        'dashboard.settings.form.brandColorHint',
+                                    )}
+                                />
+                                <BrandingColorField
+                                    label={t(
+                                        'dashboard.settings.form.accentColor',
+                                    )}
+                                    name="accent_color"
+                                    value={accentColor}
+                                    placeholderColor={
+                                        palette?.light['--accent']
+                                    }
+                                    onChange={setAccentColor}
+                                    error={errors.accent_color}
+                                    hint={t(
+                                        'dashboard.settings.form.accentColorHint',
+                                    )}
+                                    autoLabel={t(
+                                        'dashboard.settings.form.accentAuto',
+                                    )}
+                                />
+                            </div>
+
+                            <BrandingTintDepthField
+                                label={t('dashboard.settings.form.tintDepth')}
+                                value={tintDepth}
+                                onChange={setTintDepth}
+                                hint={t(
+                                    'dashboard.settings.form.tintDepthHint',
+                                )}
+                            />
+
+                            {palette ? (
+                                <BrandingPalettePreview
+                                    palette={palette}
+                                    brandName={settings.brand_short_name}
+                                    reverseLogoUrl={reverseLogoUrl}
+                                />
+                            ) : null}
                         </Group>
 
                         <Group

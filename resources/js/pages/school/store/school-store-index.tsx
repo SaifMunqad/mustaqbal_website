@@ -59,7 +59,7 @@ function SchoolStoreIndex() {
 
             <div className="space-y-6">
                 <Reveal direction="fade" defaultInView>
-                    <section className="rounded-3xl bg-blue-50 p-6 shadow-md md:p-10 dark:bg-blue-950">
+                    <section className="rounded-3xl bg-brand-soft p-6 shadow-md md:p-10 dark:bg-brand-deep">
                         <h1 className="text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
                             {t('store.title')}
                         </h1>
@@ -78,12 +78,12 @@ function SchoolStoreIndex() {
                             applyFilters(filters.category)
                         }
                         placeholder={t('store.search')}
-                        className="rounded-2xl border border-border bg-white px-3 py-2 text-sm transition outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:bg-gray-900"
+                        className="rounded-2xl border border-border bg-app-bg px-3 py-2 text-sm transition outline-none focus:border-brand-border focus:ring-2 focus:ring-brand/20"
                     />
                     <button
                         type="button"
                         onClick={() => applyFilters(filters.category)}
-                        className="rounded-xl bg-blue-600 px-4 py-2 text-sm text-white transition hover:bg-blue-700"
+                        className="rounded-xl bg-brand px-4 py-2 text-sm text-brand-fg transition hover:bg-brand-hover"
                     >
                         {t('store.searchButton')}
                     </button>
@@ -91,7 +91,7 @@ function SchoolStoreIndex() {
                         <button
                             type="button"
                             onClick={() => applyFilters('')}
-                            className={`rounded-full px-3 py-1 text-xs ${filters.category === '' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200'}`}
+                            className={`rounded-full px-3 py-1 text-xs ${filters.category === '' ? 'bg-brand text-brand-fg' : 'bg-brand-soft text-slate-700 dark:text-slate-200'}`}
                         >
                             {t('store.allCategories')}
                         </button>
@@ -100,7 +100,7 @@ function SchoolStoreIndex() {
                                 key={category.slug}
                                 type="button"
                                 onClick={() => applyFilters(category.slug)}
-                                className={`rounded-full px-3 py-1 text-xs ${filters.category === category.slug ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200'}`}
+                                className={`rounded-full px-3 py-1 text-xs ${filters.category === category.slug ? 'bg-brand text-brand-fg' : 'bg-brand-soft text-slate-700 dark:text-slate-200'}`}
                             >
                                 {category.name}
                             </button>

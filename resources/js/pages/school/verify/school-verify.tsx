@@ -1,5 +1,5 @@
-import MainLayout from '@/layouts/app/main-layout';
 import Reveal from '@/components/ui/reveal';
+import MainLayout from '@/layouts/app/main-layout';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { CheckCircle2, ShieldCheck, XCircle } from 'lucide-react';
 import { FormEvent, ReactNode } from 'react';
@@ -27,11 +27,18 @@ interface SchoolVerifyProps {
 }
 
 const fieldClass =
-    'w-full rounded-2xl border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-900';
+    'w-full rounded-2xl border border-brand-border bg-app-bg px-4 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20';
 
 function SchoolVerify() {
-    const { query, submitted, award, captcha, captchaError, blocked, retryAfterMinutes } =
-        usePage<SchoolVerifyProps>().props;
+    const {
+        query,
+        submitted,
+        award,
+        captcha,
+        captchaError,
+        blocked,
+        retryAfterMinutes,
+    } = usePage<SchoolVerifyProps>().props;
     const { t, i18n } = useTranslation();
 
     // Submitted over POST so the codes never end up in a URL, in browser
@@ -59,9 +66,12 @@ function SchoolVerify() {
         }
 
         try {
-            return new Intl.DateTimeFormat(i18n.language === 'fa_AF' ? 'fa-AF' : i18n.language, {
-                dateStyle: 'long',
-            }).format(new Date(value));
+            return new Intl.DateTimeFormat(
+                i18n.language === 'fa_AF' ? 'fa-AF' : i18n.language,
+                {
+                    dateStyle: 'long',
+                },
+            ).format(new Date(value));
         } catch {
             return value;
         }
@@ -77,7 +87,7 @@ function SchoolVerify() {
             <section className="mx-auto max-w-3xl space-y-6">
                 <Reveal direction="fade" defaultInView>
                     <div className="text-center">
-                        <div className="mx-auto mb-3 flex size-14 items-center justify-center rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                        <div className="mx-auto mb-3 flex size-14 items-center justify-center rounded-full bg-brand-soft-strong text-brand-ink dark:bg-brand-deep">
                             <ShieldCheck className="size-7" />
                         </div>
                         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
@@ -95,20 +105,29 @@ function SchoolVerify() {
                             {t('verify.blockedTitle')}
                         </h2>
                         <p className="mt-1 text-sm text-amber-800 dark:text-amber-200">
-                            {t('verify.blockedBody', { minutes: retryAfterMinutes ?? 15 })}
+                            {t('verify.blockedBody', {
+                                minutes: retryAfterMinutes ?? 15,
+                            })}
                         </p>
                     </div>
                 ) : (
                     <form
                         onSubmit={submit}
-                        className="grid gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm md:grid-cols-2 dark:border-gray-800 dark:bg-gray-900"
+                        className="grid gap-4 rounded-2xl border border-brand-border bg-brand-soft p-5 shadow-sm md:grid-cols-2"
                     >
                         <label className="grid gap-2 text-sm">
-                            <span className="font-medium">{t('verify.personId')}</span>
+                            <span className="font-medium">
+                                {t('verify.personId')}
+                            </span>
                             <input
                                 type="text"
                                 value={form.data.person_id}
-                                onChange={(event) => form.setData('person_id', event.target.value)}
+                                onChange={(event) =>
+                                    form.setData(
+                                        'person_id',
+                                        event.target.value,
+                                    )
+                                }
                                 required
                                 maxLength={64}
                                 placeholder={t('verify.personIdPlaceholder')}
@@ -121,11 +140,15 @@ function SchoolVerify() {
                             ) : null}
                         </label>
                         <label className="grid gap-2 text-sm">
-                            <span className="font-medium">{t('verify.awardId')}</span>
+                            <span className="font-medium">
+                                {t('verify.awardId')}
+                            </span>
                             <input
                                 type="text"
                                 value={form.data.award_id}
-                                onChange={(event) => form.setData('award_id', event.target.value)}
+                                onChange={(event) =>
+                                    form.setData('award_id', event.target.value)
+                                }
                                 required
                                 maxLength={64}
                                 placeholder={t('verify.awardIdPlaceholder')}
@@ -140,15 +163,22 @@ function SchoolVerify() {
 
                         {captcha ? (
                             <label className="grid gap-2 text-sm md:col-span-2">
-                                <span className="font-medium">{t('verify.captchaLabel')}</span>
+                                <span className="font-medium">
+                                    {t('verify.captchaLabel')}
+                                </span>
                                 <span className="text-gray-600 dark:text-gray-400">
-                                    {t('verify.captchaQuestion', { question: captcha.question })}
+                                    {t('verify.captchaQuestion', {
+                                        question: captcha.question,
+                                    })}
                                 </span>
                                 <input
                                     type="text"
                                     value={form.data.captcha_answer}
                                     onChange={(event) =>
-                                        form.setData('captcha_answer', event.target.value)
+                                        form.setData(
+                                            'captcha_answer',
+                                            event.target.value,
+                                        )
                                     }
                                     required
                                     inputMode="numeric"
@@ -168,7 +198,7 @@ function SchoolVerify() {
                             <button
                                 type="submit"
                                 disabled={form.processing}
-                                className="rounded-2xl bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                                className="rounded-2xl bg-brand px-6 py-2.5 text-sm font-medium text-brand-fg transition hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
                             >
                                 {t('verify.submit')}
                             </button>
@@ -196,10 +226,16 @@ function SchoolVerify() {
                         <dl className="mt-5 grid gap-3 sm:grid-cols-2">
                             {[
                                 [t('verify.holder'), award.full_name],
-                                [t('verify.fatherName'), award.father_name || '-'],
+                                [
+                                    t('verify.fatherName'),
+                                    award.father_name || '-',
+                                ],
                                 [t('verify.personId'), award.person_id],
                                 [t('verify.awardId'), award.award_id],
-                                [t('verify.awardedAt'), formatDate(award.awarded_at)],
+                                [
+                                    t('verify.awardedAt'),
+                                    formatDate(award.awarded_at),
+                                ],
                             ].map(([label, value]) => (
                                 <div
                                     key={label}

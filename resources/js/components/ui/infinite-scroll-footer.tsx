@@ -17,7 +17,7 @@ interface InfiniteScrollFooterProps {
 }
 
 const buttonClass =
-    'rounded-full border border-slate-200 bg-white px-5 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-blue-300 hover:text-blue-700 dark:border-slate-700 dark:bg-gray-900 dark:text-slate-200 dark:hover:border-blue-700 dark:hover:text-blue-300';
+    'rounded-full border border-brand-border bg-white px-5 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-brand hover:text-brand-ink dark:text-slate-200 dark:hover:border-brand dark:hover:text-brand-ink';
 
 /**
  * Shared end-of-list row for infinite-scroll listings: it owns the observed

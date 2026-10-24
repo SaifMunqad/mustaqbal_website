@@ -1,9 +1,18 @@
+import i18n from '@/i18n';
 import { cn } from '@/lib/utils';
 import { router } from '@inertiajs/react';
-import i18n from '@/i18n';
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { createPortal } from 'react-dom';
 import { CheckCircle2, CircleAlert, Info } from 'lucide-react';
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+    type ReactNode,
+} from 'react';
+import { createPortal } from 'react-dom';
 
 export type ToastVariant = 'success' | 'error' | 'info';
 
@@ -42,9 +51,13 @@ const readSeenIds = (): string[] => {
     }
 
     try {
-        const parsed = JSON.parse(window.localStorage.getItem(SEEN_KEY) ?? '[]');
+        const parsed = JSON.parse(
+            window.localStorage.getItem(SEEN_KEY) ?? '[]',
+        );
 
-        return Array.isArray(parsed) ? parsed.filter((id) => typeof id === 'string') : [];
+        return Array.isArray(parsed)
+            ? parsed.filter((id) => typeof id === 'string')
+            : [];
     } catch {
         return [];
     }
@@ -56,7 +69,9 @@ const rememberSeenId = (id: string): void => {
     }
 
     try {
-        const next = [...readSeenIds().filter((seen) => seen !== id), id].slice(-MAX_SEEN);
+        const next = [...readSeenIds().filter((seen) => seen !== id), id].slice(
+            -MAX_SEEN,
+        );
         window.localStorage.setItem(SEEN_KEY, JSON.stringify(next));
     } catch {
         // Ignore storage failures (private mode / quota); the toast still shows.
@@ -89,12 +104,16 @@ const DEFAULT_DURATION = 3500;
 const EXIT_DURATION = 300;
 
 const variantStyles: Record<ToastVariant, string> = {
-    success: 'border-emerald-200 bg-emerald-50 text-emerald-950 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-50',
+    success:
+        'border-emerald-200 bg-emerald-50 text-emerald-950 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-50',
     error: 'border-rose-200 bg-rose-50 text-rose-950 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-50',
-    info: 'border-sky-200 bg-sky-50 text-sky-950 dark:border-sky-900 dark:bg-sky-950 dark:text-sky-50',
+    info: 'border-brand-border bg-brand-soft text-brand-ink border-brand-border dark:bg-brand-deep text-brand-ink',
 };
 
-const iconByVariant: Record<ToastVariant, React.ComponentType<{ className?: string }>> = {
+const iconByVariant: Record<
+    ToastVariant,
+    React.ComponentType<{ className?: string }>
+> = {
     success: CheckCircle2,
     error: CircleAlert,
     info: Info,
@@ -125,47 +144,62 @@ export function ToastProvider({
         timers.current.set(id, timer);
     }, []);
 
-    const toast = useCallback((input: ToastInput) => {
-        const id = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`;
-        const record: ToastRecord = {
-            id,
-            title: input.title,
-            description: input.description,
-            variant: input.variant ?? 'info',
-            state: 'entering',
-        };
+    const toast = useCallback(
+        (input: ToastInput) => {
+            const id =
+                globalThis.crypto?.randomUUID?.() ??
+                `${Date.now()}-${Math.random()}`;
+            const record: ToastRecord = {
+                id,
+                title: input.title,
+                description: input.description,
+                variant: input.variant ?? 'info',
+                state: 'entering',
+            };
 
-        setToasts((current) => [...current, record]);
+            setToasts((current) => [...current, record]);
 
-        // Mount off-screen above, then slide down into view on the next paint.
-        requestAnimationFrame(() =>
-            requestAnimationFrame(() => {
-                setToasts((current) =>
-                    current.map((toastItem) =>
-                        toastItem.id === id && toastItem.state === 'entering'
-                            ? { ...toastItem, state: 'visible' }
-                            : toastItem,
-                    ),
-                );
-            }),
-        );
+            // Mount off-screen above, then slide down into view on the next paint.
+            requestAnimationFrame(() =>
+                requestAnimationFrame(() => {
+                    setToasts((current) =>
+                        current.map((toastItem) =>
+                            toastItem.id === id &&
+                            toastItem.state === 'entering'
+                                ? { ...toastItem, state: 'visible' }
+                                : toastItem,
+                        ),
+                    );
+                }),
+            );
 
-        const timer = window.setTimeout(() => dismiss(id), input.duration ?? DEFAULT_DURATION);
-        timers.current.set(id, timer);
+            const timer = window.setTimeout(
+                () => dismiss(id),
+                input.duration ?? DEFAULT_DURATION,
+            );
+            timers.current.set(id, timer);
 
-        return id;
-    }, [dismiss]);
+            return id;
+        },
+        [dismiss],
+    );
 
-    const api = useMemo<ToastContextValue>(() => ({
-        toast,
-        success: (title, description) => toast({ title, description, variant: 'success' }),
-        error: (title, description) => toast({ title, description, variant: 'error' }),
-        info: (title, description) => toast({ title, description, variant: 'info' }),
-    }), [toast]);
+    const api = useMemo<ToastContextValue>(
+        () => ({
+            toast,
+            success: (title, description) =>
+                toast({ title, description, variant: 'success' }),
+            error: (title, description) =>
+                toast({ title, description, variant: 'error' }),
+            info: (title, description) =>
+                toast({ title, description, variant: 'info' }),
+        }),
+        [toast],
+    );
 
     const showNotification = useCallback(
         (notification?: FlashNotification | null) => {
-            if (! notification?.id || typeof window === 'undefined') {
+            if (!notification?.id || typeof window === 'undefined') {
                 return;
             }
 
@@ -203,7 +237,7 @@ export function ToastProvider({
         // Defer the initial flash one tick so we never set state synchronously
         // inside the effect body.
         const initialTimer = window.setTimeout(() => {
-            if (! cancelled) {
+            if (!cancelled) {
                 showNotification(initialFlash?.notification);
             }
         }, 0);
@@ -212,8 +246,12 @@ export function ToastProvider({
         // reloads a create/update triggers — whereas `navigate` is skipped when
         // the visit uses `replace`. Listening to both covers every redirect;
         // the seen-id store keeps the toast from firing twice.
-        const offSuccess = router.on('success', (event) => showFromPage(event.detail.page));
-        const offNavigate = router.on('navigate', (event) => showFromPage(event.detail.page));
+        const offSuccess = router.on('success', (event) =>
+            showFromPage(event.detail.page),
+        );
+        const offNavigate = router.on('navigate', (event) =>
+            showFromPage(event.detail.page),
+        );
 
         return () => {
             cancelled = true;
@@ -256,7 +294,7 @@ export function ToastProvider({
                                       >
                                           <Icon className="mt-0.5 size-5 shrink-0" />
                                           <div className="min-w-0 flex-1">
-                                              <p className="text-sm font-semibold leading-tight">
+                                              <p className="text-sm leading-tight font-semibold">
                                                   {toastItem.title}
                                               </p>
                                               {toastItem.description ? (
@@ -286,7 +324,3 @@ export function useToast() {
 
     return context;
 }
-
-
-
-

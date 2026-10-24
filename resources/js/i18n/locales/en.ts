@@ -75,8 +75,7 @@ const en = {
         imageAlt: '{{title}} image {{number}}',
         imagesCount: '{{count}} image(s)',
         noImages: 'No images attached.',
-        previewImagesEmpty:
-            'The preview will show attached images here.',
+        previewImagesEmpty: 'The preview will show attached images here.',
         write: 'Write',
         preview: 'Preview',
         copy: 'Copy',
@@ -116,8 +115,7 @@ const en = {
         galleryAlt: '{{label}} {{number}}',
     },
     homeBuilder: {
-        empty:
-            'No home page sections yet. Click “Add section” to feature content.',
+        empty: 'No home page sections yet. Click “Add section” to feature content.',
         orderHint: 'Order controls what visitors see first.',
         saveOrder: 'Save order',
         moveUp: 'Move up',
@@ -136,8 +134,7 @@ const en = {
         visualEditorHint:
             'Edit the home page while previewing it, per language.',
         open: 'Open',
-        intro:
-            'Arrange the blocks shown on the public home page. Curated blocks pull live content; home-only blocks are authored here. With no active blocks, the home page falls back to recognition highlights.',
+        intro: 'Arrange the blocks shown on the public home page. Curated blocks pull live content; home-only blocks are authored here. With no active blocks, the home page falls back to recognition highlights.',
         editIn: 'Editing in {{language}}.',
         done: 'Done',
         form: {
@@ -155,8 +152,7 @@ const en = {
             limit: 'Number to show when auto',
             limitHint:
                 'Used only when no specific items are picked. Default 3.',
-            noItems:
-                'No publishable items available for this type yet.',
+            noItems: 'No publishable items available for this type yet.',
             media: 'Media & call to action',
             mediaDescription:
                 'Shared across all languages. Translate the button label in the content section below.',
@@ -170,8 +166,7 @@ const en = {
             appearance: 'Appearance & status',
             tone: 'Tone',
             active: 'Active (shown on home page)',
-            deleteConfirm:
-                'Remove this section from the home page?',
+            deleteConfirm: 'Remove this section from the home page?',
             delete: 'Delete',
             titleLabel: 'Section heading (optional)',
             titleHint: 'Shown above this block on the home page.',
@@ -1259,8 +1254,7 @@ const en = {
                 sendAnswer: 'Send answer',
                 anonymous: 'Anonymous',
                 management: 'Management',
-                answeredToast:
-                    'Answer recorded and emailed to the sender.',
+                answeredToast: 'Answer recorded and emailed to the sender.',
             },
         },
         emailCampaigns: {
@@ -1350,8 +1344,7 @@ const en = {
                 message: 'Message',
                 messagePlaceholder:
                     'Write the announcement exactly as your families should read it…',
-                messageHint:
-                    'Plain WhatsApp text (up to 4096 characters).',
+                messageHint: 'Plain WhatsApp text (up to 4096 characters).',
                 templateName: 'Template name',
                 templateNamePlaceholder: 'order_confirmation',
                 templateNameHint:
@@ -1602,6 +1595,39 @@ const en = {
                 logoLabel: 'Logo (PNG)',
                 logoHint:
                     'Shown in the public nav bar, footer and dashboard sidebar. The browser tab icon (favicon) is generated automatically from this logo.',
+                reverseLogoLabel: 'Reverse logo (optional)',
+                reverseLogoHint:
+                    'Light version of the logo, shown on dark and brand-colored bands.',
+                brandColor: 'Brand color',
+                brandColorHint:
+                    'This one color drives the whole public site: buttons, links, section bands, cards, borders and the dark-mode twin. The page background stays white or dark gray.',
+                accentColor: 'Accent color (optional)',
+                accentColorHint:
+                    'Used for small highlights and badges. Leave it on Auto and a harmonious companion color is generated.',
+                accentAuto: 'Auto',
+                invalidColor: 'Use a 6-digit hex color, for example #2563eb.',
+                tintDepth: 'Section tint strength',
+                tintDepthHint:
+                    'How strongly the brand color washes over section bands and cards.',
+                tintSubtle: 'Subtle',
+                tintMedium: 'Medium',
+                tintBold: 'Bold',
+                previewTitle: 'Live preview',
+                previewLight: 'Light',
+                previewDark: 'Dark',
+                previewBrand: 'Your school',
+                previewNavHome: 'Home',
+                previewNavAbout: 'About',
+                previewBand: 'Section band',
+                previewBody:
+                    'Body text sits on a tinted surface and stays readable.',
+                previewPrimary: 'Primary',
+                previewSecondary: 'Secondary',
+                previewAccent: 'Accent',
+                contrastOnBrand: 'Text on brand: {{ratio}}:1',
+                contrastOnPage: 'Brand text on page: {{ratio}}:1',
+                contrastPass: 'Meets WCAG AA',
+                contrastWarn: 'Low contrast at some sizes',
                 homePageTitle: 'Home page',
                 heroImageUrl: 'Hero image URL',
                 heroImagePlaceholder: 'https://...',

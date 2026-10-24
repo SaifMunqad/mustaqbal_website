@@ -6,7 +6,7 @@ import { footerSections } from '@/lib/navigation';
 export default function Footer() {
     return (
         <div className="">
-            <footer className=" bg-gray-100 px-4 py-2 shadow-md backdrop-blur-lg backdrop-saturate-150 lg:px-8 lg:py-3 dark:bg-gray-800">
+            <footer className="bg-brand-soft px-4 py-2 shadow-md backdrop-blur-lg backdrop-saturate-150 lg:px-8 lg:py-3">
                 <div className="mx-auto w-full max-w-400 p-4 py-6 lg:py-8">
                     <div className="grid grid-cols-1 gap-8 md:grid-cols-4 md:gap-6">
                         <div className="md:col-span-1">
@@ -15,12 +15,15 @@ export default function Footer() {
 
                         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-6 md:col-span-3 md:grid-cols-3">
                             {footerSections.map((section) => (
-                                <FooterLinkSection key={section.key} section={section} />
+                                <FooterLinkSection
+                                    key={section.key}
+                                    section={section}
+                                />
                             ))}
                         </div>
                     </div>
 
-                    <hr className="my-6 border-gray-200 sm:mx-auto lg:my-8 dark:border-gray-700" />
+                    <hr className="my-6 border-brand-border sm:mx-auto lg:my-8" />
                     <FooterBottom />
                 </div>
             </footer>

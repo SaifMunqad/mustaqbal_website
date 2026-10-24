@@ -84,7 +84,7 @@ function MobileDropdown({
                                     <Icon
                                         className={`h-4 w-4 ${
                                             isActive
-                                                ? 'text-blue-600 dark:text-blue-400'
+                                                ? 'text-brand-ink'
                                                 : 'text-gray-700 dark:text-gray-300'
                                         }`}
                                     />
@@ -94,7 +94,7 @@ function MobileDropdown({
                                     <p
                                         className={`text-sm font-medium ${
                                             isActive
-                                                ? 'text-blue-600 dark:text-blue-400'
+                                                ? 'text-brand-ink'
                                                 : 'text-gray-800 dark:text-gray-200'
                                         }`}
                                     >
@@ -159,7 +159,7 @@ export default function NavbarMobile({
                 */}
                 <div
                     style={{ maxHeight: 'calc(100dvh - 5.5rem)' }}
-                    className="mt-4 overflow-y-auto overscroll-contain rounded-2xl border border-gray-200/50 bg-white/95 backdrop-blur-xl dark:border-gray-800/50 dark:bg-gray-900/95"
+                    className="mt-4 overflow-y-auto overscroll-contain rounded-2xl border border-brand-border/50 bg-white/95 backdrop-blur-xl"
                 >
                     <ul className="space-y-1 p-3">
                         {items.map((item) => {
@@ -203,7 +203,7 @@ export default function NavbarMobile({
                                                             <item.icon
                                                                 className={`h-4 w-4 ${
                                                                     isActive
-                                                                        ? 'text-blue-600 dark:text-blue-400'
+                                                                        ? 'text-brand-ink'
                                                                         : 'text-gray-700 dark:text-gray-300'
                                                                 }`}
                                                             />
@@ -211,7 +211,7 @@ export default function NavbarMobile({
                                                         <span
                                                             className={`font-medium ${
                                                                 isActive
-                                                                    ? 'text-blue-600 dark:text-blue-400'
+                                                                    ? 'text-brand-ink'
                                                                     : 'text-gray-800 dark:text-gray-200'
                                                             }`}
                                                         >
@@ -264,7 +264,7 @@ export default function NavbarMobile({
                                                     <item.icon
                                                         className={`h-4 w-4 ${
                                                             isActive
-                                                                ? 'text-blue-600 dark:text-blue-400'
+                                                                ? 'text-brand-ink'
                                                                 : 'text-gray-700 dark:text-gray-300'
                                                         }`}
                                                     />
@@ -272,7 +272,7 @@ export default function NavbarMobile({
                                                 <span
                                                     className={`font-medium ${
                                                         isActive
-                                                            ? 'text-blue-600 dark:text-blue-400'
+                                                            ? 'text-brand-ink'
                                                             : 'text-gray-800 dark:text-gray-200'
                                                     }`}
                                                 >
@@ -289,7 +289,7 @@ export default function NavbarMobile({
                             <Link
                                 href={isAuthenticated ? '/dashboard' : '/login'}
                                 onClick={() => setMenuOpen(false)}
-                                className="block rounded-xl bg-blue-600 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-700"
+                                className="block rounded-xl bg-brand px-4 py-2 text-center text-sm font-medium text-brand-fg hover:bg-brand-hover"
                             >
                                 {t(
                                     isAuthenticated

@@ -1,6 +1,6 @@
+import type { SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import type { SharedData } from '@/types';
 
 export default function FooterBrand() {
     const { t } = useTranslation();
@@ -14,9 +14,13 @@ export default function FooterBrand() {
         <div>
             <Link href="/" className="flex flex-col">
                 {site?.logo_url ? (
-                    <img src={site.logo_url} alt={name} className="w-full pe-4 lg:pe-6 object-contain" />
+                    <img
+                        src={site.logo_url}
+                        alt={name}
+                        className="w-full object-contain pe-4 lg:pe-6"
+                    />
                 ) : (
-                    <span className="w-fit rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 px-2 py-1 text-sm font-bold text-white">
+                    <span className="w-fit rounded-xl bg-gradient-to-r from-brand to-purple-500 px-2 py-1 text-sm font-bold text-white">
                         {initials}
                     </span>
                 )}

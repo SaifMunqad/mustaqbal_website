@@ -37,7 +37,9 @@ function SchoolArticlesIndex() {
         <>
             <Head title={t('articles.title')} />
 
-            <section className="rounded-3xl bg-white p-6 shadow-sm md:p-10 dark:bg-gray-900">
+            {/* Content sits directly on the frozen page background: an extra
+                tinted panel here would swallow the cards. */}
+            <section className="p-6 md:p-10">
                 <Reveal direction="fade" defaultInView>
                     <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
                         {t('articles.title')}

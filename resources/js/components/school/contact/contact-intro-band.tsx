@@ -7,11 +7,14 @@ interface ContactIntroBandProps {
 }
 
 // Page intro band, consistent with the redesigned home hero.
-export default function ContactIntroBand({ title, intro }: ContactIntroBandProps) {
+export default function ContactIntroBand({
+    title,
+    intro,
+}: ContactIntroBandProps) {
     const { t } = useTranslation();
 
     return (
-        <section className="overflow-hidden rounded-3xl border border-slate-200 bg-blue-50 p-6 shadow-sm md:p-10 dark:border-slate-800 dark:bg-blue-950">
+        <section className="overflow-hidden rounded-3xl border border-brand-border bg-brand-soft p-6 shadow-sm md:p-10 dark:bg-brand-deep">
             <h1 className="text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
                 {title}
             </h1>

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Theme\BrandPalette;
 use App\Support\Translation\HasTranslations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +29,10 @@ class SiteSetting extends Model
         'brand_short_name',
         'tagline',
         'logo_url',
+        'brand_color',
+        'accent_color',
+        'tint_depth',
+        'reverse_logo_url',
         'home_title',
         'home_subtitle',
         'home_cta_primary',
@@ -103,6 +108,7 @@ class SiteSetting extends Model
             'contact_phone_primary' => '+93 700 000 001',
             'contact_phone_secondary' => '+93 799 000 001',
             'address' => 'Kart-e-Char, Kabul, Afghanistan',
+            'tint_depth' => 'subtle',
             'map_zoom' => '15',
             'map_embed_url' => 'https://maps.google.com/maps?q=Kabul%20Afghanistan&t=&z=13&ie=UTF8&iwloc=&output=embed',
             'footer_text' => 'All rights reserved.',
@@ -141,6 +147,15 @@ class SiteSetting extends Model
             'tagline' => $this->translated('tagline'),
             'logo_url' => $this->logo_url,
             'favicon_url' => $icons['ico'] ?? $icons['favicon_32'] ?? null,
+            // Branding palette: the admin picks one color (plus an optional
+            // accent) and the derived tokens drive every public surface.
+            'theme' => [
+                'brand_color' => $this->brand_color,
+                'accent_color' => $this->accent_color,
+                'tint_depth' => $this->tint_depth ?? 'subtle',
+                'reverse_logo_url' => $this->reverse_logo_url,
+                'palette' => $this->palette(),
+            ],
             'home' => [
                 'title' => $this->translated('home_title'),
                 'subtitle' => $this->translated('home_subtitle'),
@@ -169,6 +184,17 @@ class SiteSetting extends Model
             ],
             'footer_text' => $this->translated('footer_text'),
         ];
+    }
+
+    /**
+     * The derived branding palette for this row: light and dark CSS custom
+     * property maps plus the measured contrast ratios.
+     *
+     * @return array{light: array<string, string>, dark: array<string, string>, contrast: array<string, float>}
+     */
+    public function palette(): array
+    {
+        return BrandPalette::make($this->brand_color, $this->accent_color, $this->tint_depth ?? 'subtle');
     }
 
     /**

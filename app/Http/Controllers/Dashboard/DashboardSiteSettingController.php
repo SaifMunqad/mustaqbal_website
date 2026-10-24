@@ -7,18 +7,19 @@ use App\Models\Language;
 use App\Models\SiteSetting;
 use App\Services\FaviconService;
 use App\Support\Rules\ImageLocation;
+use App\Support\Theme\BrandPalette;
 use App\Support\Translation\TranslationPayload;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class DashboardSiteSettingController extends Controller
 {
-    public function __construct(private readonly FaviconService $favicons)
-    {
-    }
+    public function __construct(private readonly FaviconService $favicons) {}
 
     /**
      * Localized scalar fields edited per language. The home stats/features lists
@@ -52,6 +53,14 @@ class DashboardSiteSettingController extends Controller
      */
     private const LIST_FIELDS = ['home_stats', 'home_features'];
 
+    /**
+     * Branding colors are free-form hex on purpose (any school color), so they
+     * are validated by shape and then normalized to lowercase.
+     *
+     * @var list<string>
+     */
+    private const COLOR_FIELDS = ['brand_color', 'accent_color'];
+
     public function edit(): Response
     {
         $setting = SiteSetting::current();
@@ -72,7 +81,7 @@ class DashboardSiteSettingController extends Controller
         $previousLogo = $setting->logo_url;
 
         // Non-localized columns live on the parent row only.
-        $setting->update(Arr::except($validated, ['translations']));
+        $setting->update($this->normalized(Arr::except($validated, ['translations'])));
 
         // The logo is the single source of truth for every system icon: rebuild
         // the favicon set whenever it changes (or the assets are missing), and
@@ -169,7 +178,14 @@ class DashboardSiteSettingController extends Controller
             // automatically from the logo (see FaviconService) and no longer
             // uploaded separately.
             'logo_url' => ['nullable', new ImageLocation, 'max:2048'],
+            'reverse_logo_url' => ['nullable', new ImageLocation, 'max:2048'],
             'home_hero_image' => ['nullable', new ImageLocation, 'max:2048'],
+
+            // Branding palette inputs. Everything else (mid tones, deep bands,
+            // dark-mode twins, ink) is derived by BrandPalette.
+            'brand_color' => ['nullable', 'regex:/^#([0-9a-fA-F]{6})$/'],
+            'accent_color' => ['nullable', 'regex:/^#([0-9a-fA-F]{6})$/'],
+            'tint_depth' => ['nullable', Rule::in(['subtle', 'medium', 'bold'])],
 
             // Contact details (shared).
             'contact_email' => ['nullable', 'email', 'max:255'],
@@ -191,6 +207,25 @@ class DashboardSiteSettingController extends Controller
     }
 
     /**
+     * Derive a candidate palette for the live preview in the settings form, so
+     * the OKLab/contrast math lives in exactly one place (PHP).
+     */
+    public function palette(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'brand_color' => ['nullable', 'regex:/^#([0-9a-fA-F]{6})$/'],
+            'accent_color' => ['nullable', 'regex:/^#([0-9a-fA-F]{6})$/'],
+            'tint_depth' => ['nullable', Rule::in(['subtle', 'medium', 'bold'])],
+        ]);
+
+        return response()->json(BrandPalette::preview(
+            $validated['brand_color'] ?? null,
+            $validated['accent_color'] ?? null,
+            $validated['tint_depth'] ?? 'subtle',
+        ));
+    }
+
+    /**
      * Extract the full localized payload (scalars + lists), keyed by language.
      *
      * @return array<string, array<string, mixed>>
@@ -198,6 +233,24 @@ class DashboardSiteSettingController extends Controller
     private function cleanedPayload(Request $request): array
     {
         return TranslationPayload::extract($request, [...self::LOCALIZED, ...self::LIST_FIELDS]);
+    }
+
+    /**
+     * Lowercase the stored hex colors so a palette string is stable regardless
+     * of how it was typed or picked.
+     *
+     * @param  array<string, mixed>  $values
+     * @return array<string, mixed>
+     */
+    private function normalized(array $values): array
+    {
+        foreach (self::COLOR_FIELDS as $field) {
+            if (isset($values[$field]) && is_string($values[$field])) {
+                $values[$field] = strtolower($values[$field]);
+            }
+        }
+
+        return $values;
     }
 
     /**

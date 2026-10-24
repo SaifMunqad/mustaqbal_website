@@ -175,6 +175,10 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
         Route::put('/', [DashboardSiteSettingController::class, 'update'])
             ->middleware('role:management')
             ->name('update');
+        // Candidate palette for the branding live preview (JSON, dashboard only).
+        Route::post('/palette', [DashboardSiteSettingController::class, 'palette'])
+            ->middleware('role:management')
+            ->name('palette');
     });
 
     Route::prefix('jobs')->name('dashboard.jobs.')->middleware('role:management')->group(function () {

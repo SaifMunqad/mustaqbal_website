@@ -1,7 +1,7 @@
-import { Link, usePage } from '@inertiajs/react';
-import { useTranslation } from 'react-i18next';
-import { RefObject, useEffect, useRef } from 'react';
 import type { NavigationChildItem } from '@/lib/navigation';
+import { Link, usePage } from '@inertiajs/react';
+import { RefObject, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function NavDropdown({
     items,
@@ -44,7 +44,7 @@ export default function NavDropdown({
     return (
         <div
             ref={dropdownRef}
-            className="absolute start-0 z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-gray-200/50 bg-white/95 p-2 shadow-xl backdrop-blur-xl dark:border-gray-700/50 dark:bg-gray-900/95"
+            className="absolute start-0 z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-brand-border/50 bg-white/95 p-2 shadow-xl backdrop-blur-xl"
         >
             <div className="p-1">
                 {items.map((item) => {
@@ -58,21 +58,21 @@ export default function NavDropdown({
                             onClick={onClose}
                             className={`group flex items-start gap-x-3 rounded-xl p-3 transition-all duration-200 ${
                                 isActive
-                                    ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400'
-                                    : 'hover:bg-slate-100/70 dark:hover:bg-gray-800/70'
+                                    ? 'bg-brand-soft text-brand-ink dark:bg-brand-deep/40'
+                                    : 'hover:bg-brand-soft/70 dark:hover:bg-gray-800/70'
                             }`}
                         >
                             <div
                                 className={`rounded-lg p-2 ${
                                     isActive
-                                        ? 'bg-blue-100 dark:bg-blue-900/40'
-                                        : 'bg-slate-100 group-hover:bg-slate-200 dark:bg-gray-800 dark:group-hover:bg-gray-700'
+                                        ? 'bg-brand-soft-strong dark:bg-brand-deep/40'
+                                        : 'bg-brand-soft group-hover:bg-slate-200 dark:group-hover:bg-gray-700'
                                 }`}
                             >
                                 <Icon
                                     className={`h-4 w-4 ${
                                         isActive
-                                            ? 'text-blue-600 dark:text-blue-400'
+                                            ? 'text-brand-ink'
                                             : 'text-gray-700 dark:text-gray-300'
                                     }`}
                                 />
@@ -82,7 +82,7 @@ export default function NavDropdown({
                                 <p
                                     className={`truncate text-sm font-medium ${
                                         isActive
-                                            ? 'text-blue-600 dark:text-blue-400'
+                                            ? 'text-brand-ink'
                                             : 'text-gray-800 dark:text-gray-200'
                                     }`}
                                 >
@@ -96,7 +96,7 @@ export default function NavDropdown({
                             </div>
 
                             {isActive && (
-                                <div className="ms-2 h-4 w-1 rounded-full bg-blue-500/50" />
+                                <div className="ms-2 h-4 w-1 rounded-full bg-brand/50" />
                             )}
                         </Link>
                     );

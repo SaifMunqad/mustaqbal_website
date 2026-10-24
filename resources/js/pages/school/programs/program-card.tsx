@@ -43,17 +43,17 @@ export const PROGRAM_ACCENTS: Record<ProgramType, TypeAccent> = {
     school: {
         icon: GraduationCap,
         tile: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300',
-        ring: 'hover:border-blue-300 dark:hover:border-blue-500/50',
+        ring: 'hover:border-brand dark:hover:border-brand/50',
     },
     courses: {
         icon: BookOpen,
         tile: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300',
-        ring: 'hover:border-blue-300 dark:hover:border-blue-500/50',
+        ring: 'hover:border-brand dark:hover:border-brand/50',
     },
     islamic_madrasa: {
         icon: MoonStar,
         tile: 'bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
-        ring: 'hover:border-blue-300 dark:hover:border-blue-500/50',
+        ring: 'hover:border-brand dark:hover:border-brand/50',
     },
 };
 
@@ -96,7 +96,7 @@ export default function ProgramCard({ program }: { program: Program }) {
     return (
         <article
             className={cn(
-                'group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition',
+                'group relative flex h-full flex-col overflow-hidden rounded-2xl border border-brand-border bg-brand-soft shadow-sm transition',
                 'hover:-translate-y-0.5 hover:shadow-md dark:bg-gray-900',
                 accent.ring,
             )}
@@ -162,7 +162,7 @@ export default function ProgramCard({ program }: { program: Program }) {
                             'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold',
                             program.available_for_enroll
                                 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
-                                : 'bg-slate-100 text-slate-500 dark:bg-slate-700/60 dark:text-slate-400',
+                                : 'bg-brand-soft text-slate-500 dark:text-slate-400',
                         )}
                     >
                         <span

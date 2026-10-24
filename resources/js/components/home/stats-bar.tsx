@@ -46,7 +46,7 @@ export default function StatsBar({
         <section className="space-y-2">
             {header}
             <div
-                className={`grid gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-gray-900 ${gridCols(columns, 4)}`}
+                className={`grid gap-4 rounded-3xl border border-brand-border bg-brand-soft p-6 shadow-sm ${gridCols(columns, 4)}`}
             >
                 {items.map((stat, index) => (
                     <Reveal
@@ -55,7 +55,7 @@ export default function StatsBar({
                         direction="zoom"
                     >
                         <div className="flex flex-col items-center gap-1 text-center">
-                            <span className="text-3xl font-bold text-blue-600 md:text-4xl dark:text-blue-400">
+                            <span className="text-3xl font-bold text-brand-ink md:text-4xl">
                                 {stat.value}
                             </span>
                             <span className="text-sm font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400">

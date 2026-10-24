@@ -39,7 +39,7 @@ function SchoolEventsIndex() {
 
             <div className="space-y-6">
                 <Reveal direction="fade" defaultInView>
-                    <section className="rounded-3xl bg-blue-50 p-6 shadow-md md:p-10 dark:bg-blue-950">
+                    <section className="rounded-3xl bg-brand-soft p-6 shadow-md md:p-10 dark:bg-brand-deep">
                         <h1 className="text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">
                             {t('events.title')}
                         </h1>
@@ -59,7 +59,7 @@ function SchoolEventsIndex() {
                                 onSelectEvent={selectEvent}
                             />
                         </div>
-                        <div className="space-y-3 rounded-2xl border border-border bg-white p-4 shadow-sm dark:bg-gray-900">
+                        <div className="space-y-3 rounded-2xl border border-border bg-brand-soft p-4 shadow-sm">
                             <h3 className="font-semibold text-slate-900 dark:text-white">
                                 {t('events.upcoming')}
                             </h3>
@@ -72,7 +72,7 @@ function SchoolEventsIndex() {
                                     <Link
                                         key={event.id}
                                         href={`/school/events/${event.slug}`}
-                                        className="block rounded-xl border border-slate-100 p-3 transition hover:border-blue-300 hover:bg-blue-50/50 dark:border-slate-800 dark:hover:bg-slate-800"
+                                        className="block rounded-xl border border-slate-100 p-3 transition hover:border-brand-border hover:bg-brand-soft/50 dark:hover:bg-slate-800"
                                     >
                                         <p className="font-medium text-slate-900 dark:text-white">
                                             {event.title}
@@ -105,7 +105,7 @@ function SchoolEventsIndex() {
                             <Reveal key={event.id} delay={index * 45}>
                                 <Link
                                     href={`/school/events/${event.slug}`}
-                                    className="block overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-gray-900"
+                                    className="block overflow-hidden rounded-2xl border border-brand-border bg-brand-soft transition hover:-translate-y-0.5 hover:shadow-md"
                                 >
                                     {image ? (
                                         <img
@@ -114,7 +114,7 @@ function SchoolEventsIndex() {
                                             className="h-40 w-full object-cover"
                                         />
                                     ) : (
-                                        <div className="flex h-40 w-full items-center justify-center bg-blue-600 text-white">
+                                        <div className="flex h-40 w-full items-center justify-center bg-brand text-brand-fg">
                                             <span className="px-4 text-center text-sm font-semibold">
                                                 {formatDate(
                                                     event.start_at,

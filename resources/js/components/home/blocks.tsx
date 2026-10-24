@@ -1,15 +1,15 @@
 import { Link, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
 import { ChevronDown, ExternalLink, Quote as QuoteIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import ArticleBody from '@/components/editor/article-body';
+import type { BlockListRow, RenderBlock } from '@/components/home/page-block';
 import ContactInfoPanel from '@/components/school/contact/contact-info-panel';
 import ContactMessageForm from '@/components/school/contact/contact-message-form';
 import ContactSuccessCard from '@/components/school/contact/contact-success-card';
 import Reveal from '@/components/ui/reveal';
 import { gridCols, masonryCols } from '@/lib/grid-cols';
 import { resolveIcon } from '@/lib/icon-map';
-import type { BlockListRow, RenderBlock } from '@/components/home/page-block';
 import type { SharedData } from '@/types';
 
 /**
@@ -42,20 +42,14 @@ const masonryColsFor = (block: RenderBlock, fallback: number): string =>
     masonryCols(block.columns, fallback);
 
 const bandTones: Record<string, string> = {
-    default: 'from-blue-600 to-sky-500',
-    blue: 'from-blue-600 to-sky-500',
+    default: 'from-brand to-accent-brand',
+    blue: 'from-brand to-accent-brand',
     green: 'from-emerald-600 to-teal-500',
     amber: 'from-amber-500 to-orange-500',
     red: 'from-rose-600 to-red-500',
 };
 
-function BlockHeading({
-    heading,
-    body,
-}: {
-    heading: string;
-    body?: string;
-}) {
+function BlockHeading({ heading, body }: { heading: string; body?: string }) {
     if (!heading && !body) return null;
     return (
         <header className="mb-6 text-center">
@@ -84,8 +78,12 @@ export function ListGrid({ block }: BlockProps) {
             <BlockHeading heading={heading} body={body} />
             <div className={`grid gap-5 ${gridColsFor(block, 3)}`}>
                 {items.map((item, i) => (
-                    <Reveal key={`${item.title}-${i}`} delay={i * 50} className="h-full">
-                        <article className="flex h-full flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-gray-900">
+                    <Reveal
+                        key={`${item.title}-${i}`}
+                        delay={i * 50}
+                        className="h-full"
+                    >
+                        <article className="flex h-full flex-col gap-4 rounded-2xl border border-brand-border bg-brand-soft p-6 shadow-sm">
                             <div className="flex items-center gap-3">
                                 {item.image ? (
                                     <img
@@ -166,7 +164,7 @@ export function Gallery({ block }: BlockProps) {
                 {items.map((item, i) => (
                     <figure
                         key={i}
-                        className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800"
+                        className="overflow-hidden rounded-xl border border-brand-border"
                     >
                         <img
                             src={item.image}
@@ -231,7 +229,7 @@ export function SocialLinks({ block }: BlockProps) {
                         href={item.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-blue-400 hover:text-blue-600 dark:text-slate-200"
+                        className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-border hover:text-brand-ink dark:text-slate-200"
                     >
                         {item.image ? (
                             <img src={item.image} alt="" className="size-4" />
@@ -254,13 +252,13 @@ export function Contact({ block }: BlockProps) {
     if (items.length === 0 && !heading && !body) return null;
 
     return (
-        <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-gray-900">
+        <section className="rounded-3xl border border-brand-border bg-brand-soft p-8 shadow-sm">
             <BlockHeading heading={heading} body={body} />
             <div className="grid gap-6 md:grid-cols-2">
                 <ul className="space-y-3">
                     {items.map((item, i) => (
                         <li key={i} className="flex items-start gap-3">
-                            <span className="mt-0.5 text-sm font-semibold text-blue-600 dark:text-blue-400">
+                            <span className="mt-0.5 text-sm font-semibold text-brand-ink">
                                 {item.title}
                             </span>
                             {item.url ? (
@@ -344,13 +342,17 @@ export function Cta({ block }: BlockProps) {
             className={`rounded-3xl bg-gradient-to-r ${tone} px-8 py-12 text-center text-white shadow-md`}
         >
             {heading ? (
-                <h2 className="text-2xl font-extrabold md:text-3xl">{heading}</h2>
+                <h2 className="text-2xl font-extrabold md:text-3xl">
+                    {heading}
+                </h2>
             ) : null}
-            {body ? <p className="mx-auto mt-3 max-w-2xl opacity-90">{body}</p> : null}
+            {body ? (
+                <p className="mx-auto mt-3 max-w-2xl opacity-90">{body}</p>
+            ) : null}
             {block.cta_url && cta_label ? (
                 <Link
                     href={block.cta_url}
-                    className="mt-6 inline-block rounded-xl bg-white px-6 py-2.5 text-sm font-bold text-slate-900 shadow-sm transition hover:bg-slate-100"
+                    className="mt-6 inline-block rounded-xl bg-brand-fg px-6 py-2.5 text-sm font-bold text-brand shadow-sm transition hover:bg-brand-fg/90"
                 >
                     {cta_label}
                 </Link>
@@ -365,10 +367,10 @@ export function Quote({ block }: BlockProps) {
     if (!body && !heading) return null;
 
     return (
-        <section className="mx-auto max-w-3xl rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm dark:border-slate-800 dark:bg-gray-900">
-            <QuoteIcon className="mx-auto size-8 text-blue-500" />
+        <section className="mx-auto max-w-3xl rounded-3xl border border-brand-border bg-brand-soft p-10 text-center shadow-sm">
+            <QuoteIcon className="mx-auto size-8 text-brand-ink" />
             {body ? (
-                <p className="mt-4 text-xl font-medium leading-relaxed text-slate-800 italic dark:text-slate-100">
+                <p className="mt-4 text-xl leading-relaxed font-medium text-slate-800 italic dark:text-slate-100">
                     {body}
                 </p>
             ) : null}
@@ -387,7 +389,7 @@ export function MediaText({ block }: BlockProps) {
     if (!block.image_path && !heading && !body) return null;
 
     return (
-        <section className="grid items-center gap-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:grid-cols-2 dark:border-slate-800 dark:bg-gray-900">
+        <section className="grid items-center gap-8 rounded-3xl border border-brand-border bg-brand-soft p-6 shadow-sm md:grid-cols-2">
             {block.image_path ? (
                 <img
                     src={block.image_path}
@@ -409,7 +411,7 @@ export function MediaText({ block }: BlockProps) {
                 {block.cta_url && cta_label ? (
                     <Link
                         href={block.cta_url}
-                        className="mt-6 inline-block rounded-xl border-2 border-sky-600 px-6 py-2.5 text-sm font-bold text-sky-800 transition hover:bg-sky-600 hover:text-white dark:border-sky-400 dark:text-sky-300"
+                        className="mt-6 inline-block rounded-xl border-2 border-brand-border px-6 py-2.5 text-sm font-bold text-brand-ink transition hover:bg-brand-hover hover:text-white"
                     >
                         {cta_label}
                     </Link>
@@ -428,7 +430,7 @@ export function VideoEmbed({ block }: BlockProps) {
     return (
         <section className="space-y-6">
             <BlockHeading heading={heading} body={body} />
-            <div className="mx-auto aspect-video max-w-4xl overflow-hidden rounded-2xl border border-slate-200 shadow-sm dark:border-slate-800">
+            <div className="mx-auto aspect-video max-w-4xl overflow-hidden rounded-2xl border border-brand-border shadow-sm">
                 <iframe
                     title={heading || 'video'}
                     src={src}
@@ -464,7 +466,7 @@ export function MapBlock({ block }: BlockProps) {
             <iframe
                 title="map"
                 src={embed}
-                className="h-96 w-full rounded-3xl border border-slate-200 shadow-sm dark:border-slate-800"
+                className="h-96 w-full rounded-3xl border border-brand-border shadow-sm"
                 loading="lazy"
             />
         </section>
@@ -477,7 +479,7 @@ export function Newsletter({ block }: BlockProps) {
     if (!heading && !body) return null;
 
     return (
-        <section className="rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm dark:border-slate-800 dark:bg-gray-900">
+        <section className="rounded-3xl border border-brand-border bg-brand-soft p-8 text-center shadow-sm">
             {heading ? (
                 <h2 className="text-xl font-bold text-slate-900 md:text-2xl dark:text-white">
                     {heading}
@@ -500,7 +502,7 @@ export function Newsletter({ block }: BlockProps) {
                 />
                 <button
                     type="submit"
-                    className="h-11 shrink-0 rounded-xl bg-blue-600 px-5 text-sm font-bold text-white transition hover:bg-blue-700"
+                    className="h-11 shrink-0 rounded-xl bg-brand px-5 text-sm font-bold text-brand-fg transition hover:bg-brand-hover"
                 >
                     {cta_label || 'Subscribe'}
                 </button>
@@ -532,7 +534,7 @@ export function CountdownBlock({ block }: BlockProps) {
     ];
 
     return (
-        <section className="rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm dark:border-slate-800 dark:bg-gray-900">
+        <section className="rounded-3xl border border-brand-border bg-brand-soft p-8 text-center shadow-sm">
             {heading ? (
                 <h2 className="text-xl font-bold text-slate-900 md:text-2xl dark:text-white">
                     {heading}
@@ -546,7 +548,7 @@ export function CountdownBlock({ block }: BlockProps) {
             <div className="mt-6 flex justify-center gap-4">
                 {units.map((u) => (
                     <div key={u.label} className="min-w-16">
-                        <div className="text-3xl font-extrabold text-blue-600 tabular-nums md:text-4xl dark:text-blue-400">
+                        <div className="text-3xl font-extrabold text-brand-ink tabular-nums md:text-4xl">
                             {String(u.value).padStart(2, '0')}
                         </div>
                         <div className="text-xs tracking-wide text-slate-500 uppercase">
@@ -572,9 +574,9 @@ export function StatsCards({ block }: BlockProps) {
                 {items.map((item, i) => (
                     <div
                         key={i}
-                        className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm dark:border-slate-800 dark:bg-gray-900"
+                        className="rounded-2xl border border-brand-border bg-brand-soft p-6 text-center shadow-sm"
                     >
-                        <div className="text-3xl font-extrabold text-blue-600 md:text-4xl dark:text-blue-400">
+                        <div className="text-3xl font-extrabold text-brand-ink md:text-4xl">
                             {item.value}
                         </div>
                         <div className="mt-1 text-sm font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400">
@@ -598,7 +600,7 @@ export function IconCards({ block }: BlockProps) {
     if (items.length === 0) return null;
 
     const accents = [
-        'bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-300',
+        'bg-brand-soft-strong text-brand-ink dark:bg-brand/15',
         'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300',
         'bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
         'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300',
@@ -619,7 +621,7 @@ export function IconCards({ block }: BlockProps) {
                             delay={index * 50}
                             className="h-full"
                         >
-                            <article className="flex h-full flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-gray-900">
+                            <article className="flex h-full flex-col gap-3 rounded-2xl border border-brand-border bg-brand-soft p-6 shadow-sm">
                                 <div
                                     className={`flex size-12 items-center justify-center rounded-xl ${accents[index % accents.length]}`}
                                 >
@@ -651,7 +653,7 @@ export function RichTextBlock({ block }: BlockProps) {
     if (!body && !heading) return null;
 
     return (
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-10 dark:border-slate-800 dark:bg-gray-900">
+        <section className="rounded-3xl border border-brand-border bg-brand-soft p-6 shadow-sm md:p-10">
             {heading ? (
                 <h2 className="mb-6 text-2xl font-bold text-slate-900 md:text-3xl dark:text-white">
                     {heading}

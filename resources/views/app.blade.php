@@ -4,6 +4,13 @@
     $dir = \App\Models\Language::dirFor($locale);
     $icons = SiteSetting::current()->iconAssets();
     $favicon = $icons['ico'] ?? $icons['favicon_32'] ?? null;
+    // Branding palette (light + dark tokens). Falls back to the app.css values
+    // when the settings table/columns are not available yet.
+    try {
+        $palette = SiteSetting::current()->palette();
+    } catch (\Throwable) {
+        $palette = null;
+    }
 @endphp
 <html lang="{{ str_replace('_', '-', $locale) }}" dir="{{ $dir }}" @class(['dark' => ($appearance ?? 'system') == 'dark'])>
 <head>
@@ -25,16 +32,21 @@
         })();
     </script>
 
-    {{-- Inline style to set the HTML background color based on our theme in app.css --}}
+    {{-- Inline style to set the HTML background color. --app-bg is frozen in
+         app.css (white in light mode, dark gray in dark mode) so overscroll
+         always matches the page and never follows the school's brand color. --}}
     <style>
       html {
-        background-color: oklch(1 0 0);
-      }
-
-      html.dark {
-        background-color: oklch(0.145 0 0);
+        background-color: var(--app-bg, #fdfdfc);
       }
     </style>
+
+    @if ($palette)
+        {{-- Branding palette derived from the school's brand color, emitted
+             before first paint so there is no flash of the default blue. --}}
+        <style id="brand-palette">{!! \App\Support\Theme\BrandPalette::toCss($palette) !!}</style>
+        <meta name="theme-color" content="{{ $palette['light']['--brand'] }}">
+    @endif
 
     <title inertia>{{ config('app.name', 'Laravel') }}</title>
 

@@ -1,14 +1,18 @@
 import { Link } from '@inertiajs/react';
-import { useTranslation } from 'react-i18next';
 import { ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function AboutCtaBand() {
     const { t } = useTranslation();
 
     return (
-        <section className="overflow-hidden rounded-3xl bg-blue-700 p-8 text-center shadow-md md:p-12">
-            <h2 className="text-2xl font-bold text-white md:text-3xl">{t('about.ctaTitle')}</h2>
-            <p className="mx-auto mt-2 max-w-2xl text-blue-100">{t('about.ctaText')}</p>
+        <section className="overflow-hidden rounded-3xl bg-brand p-8 text-center shadow-md md:p-12">
+            <h2 className="text-2xl font-bold text-brand-fg md:text-3xl">
+                {t('about.ctaTitle')}
+            </h2>
+            <p className="mx-auto mt-2 max-w-2xl text-brand-fg/85">
+                {t('about.ctaText')}
+            </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
                 <Link
                     href="/school/enroll"

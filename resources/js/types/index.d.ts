@@ -34,12 +34,43 @@ export interface HomeFeature {
     description: string;
 }
 
+/** How strongly brand color is tinted into sections and cards. */
+export type TintDepth = 'subtle' | 'medium' | 'bold';
+
+/**
+ * Server-derived branding tokens, split per color scheme. Keys are CSS custom
+ * property names (e.g. `--brand-soft`) so they can be applied directly as an
+ * inline `style` object to scope a preview subtree.
+ */
+export interface BrandPalette {
+    light: Record<string, string>;
+    dark: Record<string, string>;
+    contrast: {
+        on_brand: number;
+        on_page: number;
+        on_dark_brand: number;
+        on_dark_page: number;
+    };
+}
+
 export interface SiteSettings {
     brand_name: string;
     brand_short_name: string;
     tagline?: string | null;
     logo_url?: string | null;
     favicon_url?: string | null;
+    /**
+     * Branding palette: the admin-supplied inputs plus the CSS tokens the server
+     * derives from them (see App\Support\Theme\BrandPalette). The page
+     * background is frozen and is NOT part of this payload.
+     */
+    theme: {
+        brand_color?: string | null;
+        accent_color?: string | null;
+        tint_depth: TintDepth;
+        reverse_logo_url?: string | null;
+        palette: BrandPalette;
+    };
     home: {
         title?: string | null;
         subtitle?: string | null;

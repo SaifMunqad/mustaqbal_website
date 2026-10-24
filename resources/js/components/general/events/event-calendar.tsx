@@ -158,7 +158,7 @@ export default function EventCalendar({
         });
 
     return (
-        <div className="rounded-2xl border border-border bg-white p-4 shadow-sm md:p-6 dark:bg-gray-900">
+        <div className="rounded-2xl border border-border bg-brand-soft p-4 shadow-sm md:p-6">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
                     {monthLabel}
@@ -218,7 +218,7 @@ export default function EventCalendar({
                             className={cn(
                                 'min-h-16 rounded-lg border p-1 text-start align-top',
                                 cellIsToday
-                                    ? 'border-blue-400 bg-blue-50 dark:bg-blue-950'
+                                    ? 'border-brand-border bg-brand-soft dark:bg-brand-deep'
                                     : 'border-slate-100 dark:border-slate-800',
                             )}
                         >
@@ -226,7 +226,7 @@ export default function EventCalendar({
                                 className={cn(
                                     'text-xs',
                                     cellIsToday
-                                        ? 'font-bold text-blue-700'
+                                        ? 'font-bold text-brand-ink'
                                         : 'text-slate-500',
                                 )}
                             >
@@ -240,7 +240,7 @@ export default function EventCalendar({
                                         key={event.id}
                                         type="button"
                                         onClick={() => onSelectEvent?.(event)}
-                                        className="block w-full truncate rounded bg-blue-600 px-1 py-0.5 text-start text-[10px] text-white transition hover:bg-blue-700"
+                                        className="block w-full truncate rounded bg-brand px-1 py-0.5 text-start text-[10px] text-brand-fg transition hover:bg-brand-hover"
                                         title={event.title}
                                     >
                                         {event.title}

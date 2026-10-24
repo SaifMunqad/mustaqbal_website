@@ -35,7 +35,7 @@ export default function ProgramsHighlight({
                 </div>
                 <Link
                     href="/school/programs"
-                    className="text-sm font-semibold text-blue-700 hover:underline dark:text-blue-300"
+                    className="text-sm font-semibold text-brand-ink hover:underline"
                 >
                     {t('home.viewAllPrograms')}
                 </Link>

@@ -25,7 +25,7 @@ export default function LatestJobs({ jobs }: { jobs: Job[] }) {
                 </h2>
                 <Link
                     href="/school/jobs"
-                    className="shrink-0 text-sm font-semibold text-blue-700 hover:underline dark:text-blue-300"
+                    className="shrink-0 text-sm font-semibold text-brand-ink hover:underline"
                 >
                     {t('home.viewAllJobs')}
                 </Link>

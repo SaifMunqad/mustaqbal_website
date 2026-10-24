@@ -92,7 +92,7 @@ function SchoolSearch() {
 
             <div className="space-y-6">
                 <Reveal direction="fade" defaultInView>
-                    <section className="rounded-3xl bg-white p-6 shadow-sm dark:bg-gray-900">
+                    <section className="rounded-3xl bg-brand-soft p-6 shadow-sm">
                         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
                             {t('search.title')}
                         </h1>
@@ -108,19 +108,19 @@ function SchoolSearch() {
                             className="mt-4 flex flex-wrap gap-3"
                         >
                             <div className="relative min-w-52 flex-1">
-                                <MagnifyingGlassIcon className="absolute top-1/2 start-3 size-5 -translate-y-1/2 text-slate-400" />
+                                <MagnifyingGlassIcon className="absolute start-3 top-1/2 size-5 -translate-y-1/2 text-slate-400" />
                                 <input
                                     value={term}
                                     onChange={(event) =>
                                         setTerm(event.target.value)
                                     }
                                     placeholder={t('search.placeholder')}
-                                    className="w-full rounded-2xl border border-border bg-background py-2 pe-3 ps-10 text-sm transition outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                                    className="w-full rounded-2xl border border-border bg-background py-2 ps-10 pe-3 text-sm transition outline-none focus:border-brand-border focus:ring-2 focus:ring-brand/20"
                                 />
                             </div>
                             <button
                                 type="submit"
-                                className="rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+                                className="rounded-xl bg-brand px-5 py-2 text-sm font-semibold text-brand-fg transition hover:bg-brand-hover"
                             >
                                 {t('search.button')}
                             </button>

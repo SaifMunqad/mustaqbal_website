@@ -21,7 +21,7 @@ export default function ContactInfoCard({
     accent,
 }: ContactInfoCardProps) {
     const body = (
-        <div className="flex items-start gap-3.5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md dark:border-slate-800 dark:bg-gray-900">
+        <div className="flex items-start gap-3.5 rounded-2xl border border-brand-border bg-brand-soft p-4 shadow-sm transition hover:shadow-md">
             <span
                 className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${accent}`}
             >

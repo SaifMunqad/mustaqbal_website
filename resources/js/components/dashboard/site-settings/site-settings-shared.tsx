@@ -1,5 +1,5 @@
+import type { HomeFeature, HomeStat, TintDepth } from '@/types';
 import { type ReactNode } from 'react';
-import type { HomeFeature, HomeStat } from '@/types';
 
 // Shared control styling for the inline repeatable stats/features editors, kept
 // consistent with the plain TextField look used elsewhere on this page.
@@ -38,6 +38,10 @@ export interface SiteSettingRecord {
     brand_short_name: string;
     tagline?: string | null;
     logo_url?: string | null;
+    brand_color?: string | null;
+    accent_color?: string | null;
+    tint_depth?: TintDepth | null;
+    reverse_logo_url?: string | null;
     home_title?: string | null;
     home_subtitle?: string | null;
     home_cta_primary?: string | null;
@@ -61,11 +65,28 @@ export interface SiteSettingRecord {
     footer_text?: string | null;
 }
 
+// Branding tint depths, in increasing strength. Kept next to the shared record
+// so the editor, the preview and the backend rule list stay in sync.
+export const TINT_DEPTHS: TintDepth[] = ['subtle', 'medium', 'bold'];
+
+// i18n keys for the depth labels, resolved in the editor.
+export const TINT_DEPTH_LABELS: Record<TintDepth, string> = {
+    subtle: 'dashboard.settings.form.tintSubtle',
+    medium: 'dashboard.settings.form.tintMedium',
+    bold: 'dashboard.settings.form.tintBold',
+};
+
 export function buildEmbedUrl(lat: number, lng: number, zoom: number): string {
     return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
 }
 
-export function Group({ title, children }: { title: string; children: ReactNode }) {
+export function Group({
+    title,
+    children,
+}: {
+    title: string;
+    children: ReactNode;
+}) {
     return (
         <fieldset className="grid gap-3 rounded-xl border p-4">
             <legend className="px-1 text-sm font-semibold text-slate-700 dark:text-slate-300">

@@ -93,7 +93,7 @@ export default function Navbar() {
     return (
         <nav
             ref={navRef}
-            className="fixed inset-x-0 top-0 z-50 w-full rounded-none border-b border-gray-200/40 bg-white/90 px-3 py-1 shadow-sm backdrop-blur-md backdrop-saturate-150 transition-all duration-300 dark:border-gray-800/40 dark:bg-[#121212]/90"
+            className="fixed inset-x-0 top-0 z-50 w-full rounded-none border-b border-brand-border/40 bg-white/90 px-3 py-1 shadow-sm backdrop-blur-md backdrop-saturate-150 transition-all duration-300 dark:bg-[#121212]/90"
         >
             <div className="container mx-auto flex flex-wrap items-center justify-between">
                 <NavbarBrand />
@@ -137,7 +137,7 @@ export default function Navbar() {
                         aria-label={t('navigation.toggleMenu')}
                         aria-expanded={mobileMenuOpen}
                         onClick={toggleMobileMenu}
-                        className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-transparent text-gray-700 transition-colors duration-200 hover:bg-gray-100 hover:text-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-blue-400"
+                        className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-transparent text-gray-700 transition-colors duration-200 hover:bg-brand-soft hover:text-brand-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-brand-ink"
                     >
                         <Bars3Icon
                             aria-hidden="true"

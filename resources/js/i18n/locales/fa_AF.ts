@@ -75,8 +75,7 @@ const faAF = {
         imageAlt: 'تصویر {{number}} از {{title}}',
         imagesCount: '{{count}} تصویر',
         noImages: 'هیچ تصویری ضمیمه نشده است.',
-        previewImagesEmpty:
-            'پیش‌نمایش تصاویر ضمیمه شده را اینجا نشان می‌دهد.',
+        previewImagesEmpty: 'پیش‌نمایش تصاویر ضمیمه شده را اینجا نشان می‌دهد.',
         write: 'نوشتن',
         preview: 'پیش‌نمایش',
         copy: 'کاپی',
@@ -97,8 +96,7 @@ const faAF = {
         coverAlt: 'جلد کتاب',
         pdfCoverHint:
             'یک PDF آپلود کنید تا صفحه اول آن به عنوان جلد استفاده شود.',
-        replaceHint:
-            'می‌توانید آن تصویر را با هر تصویر دیگری جایگزین کنید.',
+        replaceHint: 'می‌توانید آن تصویر را با هر تصویر دیگری جایگزین کنید.',
         viewPdf: 'مشاهده PDF',
         uploadPdf: 'آپلود PDF',
         changeImage: 'تغییر تصویر',
@@ -106,8 +104,7 @@ const faAF = {
         remove: 'حذف',
         removeFileAndImage: 'حذف فایل و تصویر',
         removeImage: 'حذف تصویر',
-        pasteImageUrl:
-            'آدرس یا مسیر تصویر را برای افزودن پیست کنید',
+        pasteImageUrl: 'آدرس یا مسیر تصویر را برای افزودن پیست کنید',
         addUrl: 'افزودن آدرس',
         uploadLabel: 'آپلود {{label}}',
         replace: 'جایگزینی',
@@ -119,10 +116,8 @@ const faAF = {
         galleryAlt: '{{label}} {{number}}',
     },
     homeBuilder: {
-        empty:
-            'هنوز بخشی برای صفحه اصلی وجود ندارد. برای نمایش محتوا روی «افزودن بخش» کلیک کنید.',
-        orderHint:
-            'ترتیب تعیین می‌کند بازدیدکنندگان ابتدا چه چیزی را ببینند.',
+        empty: 'هنوز بخشی برای صفحه اصلی وجود ندارد. برای نمایش محتوا روی «افزودن بخش» کلیک کنید.',
+        orderHint: 'ترتیب تعیین می‌کند بازدیدکنندگان ابتدا چه چیزی را ببینند.',
         saveOrder: 'ذخیره ترتیب',
         moveUp: 'انتقال به بالا',
         moveDown: 'انتقال به پایین',
@@ -140,8 +135,7 @@ const faAF = {
         visualEditorHint:
             'صفحه اصلی را همراه با پیش‌نمایش، برای هر زبان ویرایش کنید.',
         open: 'باز کردن',
-        intro:
-            'بلوک‌های نمایش داده شده در صفحه اصلی عمومی را مرتب کنید. بلوک‌های منتخب محتوای زنده را می‌آورند؛ بلوک‌های مخصوص صفحه اصلی اینجا نوشته می‌شوند. اگر هیچ بلوک فعالی نباشد، صفحه اصلی به افتخارات برجسته برمی‌گردد.',
+        intro: 'بلوک‌های نمایش داده شده در صفحه اصلی عمومی را مرتب کنید. بلوک‌های منتخب محتوای زنده را می‌آورند؛ بلوک‌های مخصوص صفحه اصلی اینجا نوشته می‌شوند. اگر هیچ بلوک فعالی نباشد، صفحه اصلی به افتخارات برجسته برمی‌گردد.',
         editIn: 'ویرایش به {{language}}.',
         done: 'انجام شد',
         form: {
@@ -978,7 +972,8 @@ const faAF = {
                     'دقیقاً همان‌طور که روی سند یا در سابقه دانش‌آموز نوشته شده است.',
                 awardId: 'آی‌دی جایزه',
                 awardIdPlaceholder: 'مثلاً DIP-2024-000137',
-                awardIdHint: 'هر شخص یک آی‌دی جایزه مشخص را فقط یک بار می‌تواند داشته باشد.',
+                awardIdHint:
+                    'هر شخص یک آی‌دی جایزه مشخص را فقط یک بار می‌تواند داشته باشد.',
                 fullName: 'نام کامل',
                 fullNamePlaceholder: 'نام دریافت‌کننده همان‌طور که نوشته شده',
                 fatherName: 'نام پدر',
@@ -1269,8 +1264,7 @@ const faAF = {
                 sendAnswer: 'ارسال پاسخ',
                 anonymous: 'ناشناس',
                 management: 'مدیریت',
-                answeredToast:
-                    'پاسخ ثبت و به ایمیل فرستنده ارسال شد.',
+                answeredToast: 'پاسخ ثبت و به ایمیل فرستنده ارسال شد.',
             },
         },
         emailCampaigns: {
@@ -1280,8 +1274,7 @@ const faAF = {
             new: 'کمپين جديد',
             form: {
                 queued: 'کمپین در صف قرار گرفت.',
-                noValidEmails:
-                    'هیچ آدرس ایمیل معتبری در آن فایل یافت نشد.',
+                noValidEmails: 'هیچ آدرس ایمیل معتبری در آن فایل یافت نشد.',
                 contactsFound: '{{count}} تماس یافت شد',
                 fromColumn: 'از ستون «{{column}}»',
                 duplicatesRemoved: '{{count}} تکراری حذف شد',
@@ -1332,14 +1325,12 @@ const faAF = {
             configureNow: 'اکنون تنظیم کنید',
             form: {
                 queued: 'کمپین واتساپ در صف قرار گرفت.',
-                noValidPhones:
-                    'هیچ شماره تیلیفون معتبری در آن فایل یافت نشد.',
+                noValidPhones: 'هیچ شماره تیلیفون معتبری در آن فایل یافت نشد.',
                 numbersFound: '{{count}} شماره یافت شد',
                 fromColumn: 'از ستون «{{column}}»',
                 duplicatesRemoved: '{{count}} تکراری حذف شد',
                 invalidSkipped: '{{count}} نامعتبر نادیده گرفته شد',
-                importNote:
-                    '{{notes}} — فهرست زیر پر شده و آماده ارسال است.',
+                importNote: '{{notes}} — فهرست زیر پر شده و آماده ارسال است.',
                 notConfiguredTitle: 'واتساپ تنظیم نشده است',
                 notConfiguredBody:
                     'قبل از ارسال کمپین، اسناد WhatsApp Business Cloud API خود (توکن دسترسی و شناسه شماره تیلیفون) را اضافه کنید. می‌توانید آنها را در صفحه تنظیمات وارد کنید — به صورت رمزنگاری شده ذخیره می‌شوند.',
@@ -1363,8 +1354,7 @@ const faAF = {
                 messageHint: 'متن ساده واتساپ (تا ۴۰۹۶ حرف).',
                 templateName: 'نام قالب',
                 templateNamePlaceholder: 'order_confirmation',
-                templateNameHint:
-                    'نام دقیق قالب تأیید شده واتساپ شما.',
+                templateNameHint: 'نام دقیق قالب تأیید شده واتساپ شما.',
                 templateLanguage: 'زبان قالب',
                 templateLanguageHint:
                     'کد زبان قالب (مثلاً en, ar, ps) مطابق نسخه تأیید شده.',
@@ -1610,6 +1600,39 @@ const faAF = {
                 logoLabel: 'لوگو (PNG)',
                 logoHint:
                     'در نوار ناوبری عمومی، فوتر و نوار کناری داشبورد نمایش داده می‌شود. آیکون تب مرورگر (فاوآیکون) به طور خودکار از این لوگو ساخته می‌شود.',
+                reverseLogoLabel: 'لوگوی معکوس (اختیاری)',
+                reverseLogoHint:
+                    'نسخه روشن لوگو که روی نوارهای تیره و رنگی نمایش داده می‌شود.',
+                brandColor: 'رنگ برند',
+                brandColorHint:
+                    'همین یک رنگ تمام سایت عمومی را رنگ می‌زند: دکمه‌ها، لینک‌ها، نوار بخش‌ها، کارت‌ها، حاشیه‌ها و نسخه حالت تاریک. پس‌زمینه صفحه سفید یا خاکستری تیره باقی می‌ماند.',
+                accentColor: 'رنگ تأکیدی (اختیاری)',
+                accentColorHint:
+                    'برای تأکیدهای کوچک و نشان‌ها. روی «خودکار» بگذارید تا یک رنگ هماهنگ ساخته شود.',
+                accentAuto: 'خودکار',
+                invalidColor:
+                    'از یک رنگ هگز شش‌رقمی استفاده کنید، مثلاً #2563eb.',
+                tintDepth: 'شدت رنگ بخش‌ها',
+                tintDepthHint:
+                    'این‌که رنگ برند با چه شدتی روی نوار بخش‌ها و کارت‌ها پخش شود.',
+                tintSubtle: 'ملایم',
+                tintMedium: 'متوسط',
+                tintBold: 'پررنگ',
+                previewTitle: 'پیش‌نمایش زنده',
+                previewLight: 'روشن',
+                previewDark: 'تاریک',
+                previewBrand: 'مکتب شما',
+                previewNavHome: 'خانه',
+                previewNavAbout: 'درباره ما',
+                previewBand: 'نوار بخش',
+                previewBody: 'متن روی سطح رنگی قرار می‌گیرد و خوانا می‌ماند.',
+                previewPrimary: 'اصلی',
+                previewSecondary: 'ثانوی',
+                previewAccent: 'تأکیدی',
+                contrastOnBrand: 'متن روی برند: {{ratio}}:1',
+                contrastOnPage: 'متن برند روی صفحه: {{ratio}}:1',
+                contrastPass: 'مطابق WCAG AA',
+                contrastWarn: 'در برخی اندازه‌ها کنتراست کم است',
                 homePageTitle: 'صفحه اصلی',
                 heroImageUrl: 'آدرس تصویر سرصفحه',
                 heroImagePlaceholder: 'https://...',
@@ -1805,10 +1828,8 @@ const faAF = {
         categoryDeleted:
             'دسته‌بندی حذف شد. کتاب‌های داخل آن حفظ می‌شوند اما بدون دسته باقی می‌مانند.',
         siteSettingsUpdated: 'تنظیمات سایت به‌روزرسانی شد.',
-        accountCreatedVerification:
-            'حساب ایجاد شد. ایمیل تأیید ارسال شد.',
-        accountCreatedInvite:
-            'حساب ایجاد شد. لینک تعیین رمز عبور ایمیل شد.',
+        accountCreatedVerification: 'حساب ایجاد شد. ایمیل تأیید ارسال شد.',
+        accountCreatedInvite: 'حساب ایجاد شد. لینک تعیین رمز عبور ایمیل شد.',
         accountUpdated: 'حساب به‌روزرسانی شد.',
         accountDeleted: 'حساب حذف شد.',
         aboutUpdated: 'تنظیمات صفحه درباره ما ذخیره شد.',
@@ -1825,10 +1846,8 @@ const faAF = {
             'واتساپ هنوز تنظیم نشده است. پیش از ارسال کمپین، اعتبارنامه API خود را اضافه کنید.',
         noValidNumbers:
             'برای منبع انتخاب‌شده هیچ شماره تلیفون معتبری یافت نشد.',
-        noValidRecipients:
-            'برای منبع انتخاب‌شده هیچ گیرنده معتبری یافت نشد.',
-        emailCampaignQueued:
-            'کمپین برای {{count}} گیرنده در صف قرار گرفت.',
+        noValidRecipients: 'برای منبع انتخاب‌شده هیچ گیرنده معتبری یافت نشد.',
+        emailCampaignQueued: 'کمپین برای {{count}} گیرنده در صف قرار گرفت.',
         whatsappCampaignQueued:
             'کمپین واتساپ برای {{count}} گیرنده در صف قرار گرفت.',
         noFailedRecipients: 'هیچ گیرنده ناکامی برای تلاش مجدد وجود ندارد.',

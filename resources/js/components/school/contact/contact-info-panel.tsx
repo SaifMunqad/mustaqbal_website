@@ -1,3 +1,5 @@
+import ContactInfoCard from '@/components/school/contact/contact-info-card';
+import type { SiteSettings } from '@/types';
 import {
     ArrowTopRightOnSquareIcon,
     ChatBubbleLeftRightIcon,
@@ -6,8 +8,6 @@ import {
     PhoneIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
-import ContactInfoCard from '@/components/school/contact/contact-info-card';
-import type { SiteSettings } from '@/types';
 
 interface ContactInfoPanelProps {
     contact: NonNullable<SiteSettings['contact']>;
@@ -16,7 +16,10 @@ interface ContactInfoPanelProps {
 
 // The "get in touch" column: quick call/email/WhatsApp actions, the info tiles,
 // and any configured social profiles.
-export default function ContactInfoPanel({ contact, social }: ContactInfoPanelProps) {
+export default function ContactInfoPanel({
+    contact,
+    social,
+}: ContactInfoPanelProps) {
     const { t } = useTranslation();
 
     const phones = [contact.phone_primary, contact.phone_secondary].filter(
@@ -26,9 +29,21 @@ export default function ContactInfoPanel({ contact, social }: ContactInfoPanelPr
     const whatsappDigits = (social.whatsapp ?? '').replace(/[^\d]/g, '');
 
     const socialLinks = [
-        { key: 'facebook', label: 'Facebook', url: social.facebook ?? undefined },
-        { key: 'instagram', label: 'Instagram', url: social.instagram ?? undefined },
-        { key: 'twitter', label: 'Twitter / X', url: social.twitter ?? undefined },
+        {
+            key: 'facebook',
+            label: 'Facebook',
+            url: social.facebook ?? undefined,
+        },
+        {
+            key: 'instagram',
+            label: 'Instagram',
+            url: social.instagram ?? undefined,
+        },
+        {
+            key: 'twitter',
+            label: 'Twitter / X',
+            url: social.twitter ?? undefined,
+        },
         { key: 'youtube', label: 'YouTube', url: social.youtube ?? undefined },
     ].filter((item) => Boolean(item.url));
 
@@ -38,7 +53,7 @@ export default function ContactInfoPanel({ contact, social }: ContactInfoPanelPr
                 {phones[0] ? (
                     <a
                         href={telHref(phones[0])}
-                        className="flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                        className="flex items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-brand-fg shadow-sm transition hover:bg-brand-hover"
                     >
                         <PhoneIcon className="size-5" aria-hidden />
                         {t('contact.callUs')}
@@ -47,7 +62,7 @@ export default function ContactInfoPanel({ contact, social }: ContactInfoPanelPr
                 {contact.email ? (
                     <a
                         href={`mailto:${contact.email}`}
-                        className="flex items-center justify-center gap-2 rounded-2xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                        className="flex items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-brand-fg shadow-sm transition hover:bg-brand-hover"
                     >
                         <EnvelopeIcon className="size-5" aria-hidden />
                         {t('contact.emailUs')}
@@ -60,9 +75,12 @@ export default function ContactInfoPanel({ contact, social }: ContactInfoPanelPr
                     href={`https://wa.me/${whatsappDigits}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-blue-800 transition hover:bg-blue-100 dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-200"
+                    className="flex items-center gap-3 rounded-2xl border border-brand-border bg-brand-soft p-4 text-brand-ink transition hover:bg-brand-soft-strong dark:bg-brand-deep/40"
                 >
-                    <ChatBubbleLeftRightIcon className="size-6 shrink-0" aria-hidden />
+                    <ChatBubbleLeftRightIcon
+                        className="size-6 shrink-0"
+                        aria-hidden
+                    />
                     <span className="text-sm font-semibold">
                         {t('contact.whatsappLabel')}
                     </span>
@@ -80,7 +98,7 @@ export default function ContactInfoPanel({ contact, social }: ContactInfoPanelPr
                     }
                     value={phone}
                     href={telHref(phone)}
-                    accent="bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-300"
+                    accent="bg-brand-soft-strong text-brand-ink dark:bg-brand/15"
                 />
             ))}
 
@@ -104,7 +122,7 @@ export default function ContactInfoPanel({ contact, social }: ContactInfoPanelPr
             ) : null}
 
             {socialLinks.length > 0 ? (
-                <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-gray-900">
+                <div className="rounded-2xl border border-brand-border bg-brand-soft p-4 shadow-sm">
                     <p className="text-xs font-semibold tracking-wide text-slate-400 uppercase">
                         {t('contact.followUs')}
                     </p>
@@ -115,7 +133,7 @@ export default function ContactInfoPanel({ contact, social }: ContactInfoPanelPr
                                 href={link.url}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-blue-950/40"
+                                className="inline-flex items-center gap-1.5 rounded-full border border-brand-border px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:border-brand hover:bg-brand-soft dark:text-slate-200 dark:hover:bg-brand-deep/40"
                             >
                                 {link.label}
                                 <ArrowTopRightOnSquareIcon

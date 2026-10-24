@@ -47,14 +47,14 @@ function SchoolStoreShow() {
             <div className="space-y-8">
                 <Link
                     href="/store"
-                    className="text-sm font-medium text-blue-600 underline"
+                    className="text-sm font-medium text-brand-ink underline"
                 >
                     {t('store.back')}
                 </Link>
 
                 <Reveal direction="fade" defaultInView>
                     <div className="grid gap-8 lg:grid-cols-2">
-                        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-gray-900">
+                        <div className="overflow-hidden rounded-3xl border border-brand-border bg-brand-soft">
                             {gallery[0] ? (
                                 <img
                                     src={gallery[0]}
@@ -62,7 +62,7 @@ function SchoolStoreShow() {
                                     className="h-full max-h-[28rem] w-full object-cover"
                                 />
                             ) : (
-                                <div className="flex h-80 items-center justify-center bg-blue-600 text-white">
+                                <div className="flex h-80 items-center justify-center bg-brand text-brand-fg">
                                     <BookOpenIcon className="size-16" />
                                 </div>
                             )}
@@ -70,7 +70,7 @@ function SchoolStoreShow() {
 
                         <div className="space-y-4">
                             {book.category ? (
-                                <span className="text-sm text-blue-600">
+                                <span className="text-sm text-brand-ink">
                                     {book.category}
                                 </span>
                             ) : null}
@@ -121,7 +121,7 @@ function SchoolStoreShow() {
                             {book.downloadable ? (
                                 <a
                                     href={book.download_url ?? '#'}
-                                    className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+                                    className="flex items-center justify-center gap-2 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-brand-fg transition hover:bg-brand-hover"
                                 >
                                     <ArrowDownTrayIcon className="size-5" />
                                     {t('store.download')}

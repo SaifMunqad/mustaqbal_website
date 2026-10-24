@@ -31,7 +31,7 @@ export default function AboutValuesSection({
                             className="h-full"
                             delay={index * 50}
                         >
-                            <article className="flex h-full flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-800 dark:bg-gray-900">
+                            <article className="flex h-full flex-col gap-3 rounded-2xl border border-brand-border bg-brand-soft p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                                 <div
                                     className={cn(
                                         'flex size-12 items-center justify-center rounded-xl',

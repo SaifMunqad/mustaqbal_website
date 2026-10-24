@@ -65,9 +65,9 @@ export default function DateTypeSwitcher({
                 aria-expanded={isOpen}
                 aria-label={t('events.dateType')}
                 title={t('events.dateType')}
-                className="inline-flex items-center gap-2 rounded-xl border border-blue-200/70 bg-white/70 px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-white dark:border-blue-900/60 dark:bg-gray-900/70 dark:text-slate-200 dark:hover:bg-gray-900"
+                className="inline-flex items-center gap-2 rounded-xl border border-brand-border/70 bg-white/70 px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-brand-soft dark:border-brand-border/60 dark:text-slate-200 dark:hover:bg-gray-900"
             >
-                <CalendarDaysIcon className="size-5 text-blue-600 dark:text-blue-400" />
+                <CalendarDaysIcon className="size-5 text-brand-ink" />
                 <span>{t(current.labelKey)}</span>
                 <ChevronDownIcon
                     className={cn(
@@ -81,7 +81,7 @@ export default function DateTypeSwitcher({
                 <div
                     role="listbox"
                     aria-label={t('events.dateType')}
-                    className="absolute end-0 z-50 mt-2 min-w-44 overflow-hidden rounded-xl border border-gray-200/50 bg-white/95 p-1 shadow-xl backdrop-blur-xl dark:border-gray-700/50 dark:bg-gray-900/95"
+                    className="absolute end-0 z-50 mt-2 min-w-44 overflow-hidden rounded-xl border border-brand-border/50 bg-white/95 p-1 shadow-xl backdrop-blur-xl"
                 >
                     {DATE_TYPE_OPTIONS.map((option) => {
                         const isActive = option.value === value;
@@ -96,8 +96,8 @@ export default function DateTypeSwitcher({
                                 className={cn(
                                     'flex w-full items-center justify-between rounded-lg px-3 py-2 text-start text-sm transition-colors',
                                     isActive
-                                        ? 'bg-blue-50 text-blue-600 dark:bg-gray-800/80 dark:text-blue-400'
-                                        : 'hover:bg-slate-100/80 dark:hover:bg-gray-800/40',
+                                        ? 'bg-brand-soft text-brand-ink'
+                                        : 'hover:bg-brand-soft/80 dark:hover:bg-gray-800/40',
                                 )}
                             >
                                 <span>{t(option.labelKey)}</span>

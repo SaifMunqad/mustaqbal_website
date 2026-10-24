@@ -61,7 +61,7 @@ export default function JobCard({ job }: { job: Job }) {
     const categoryMeta = job.category ? categoryStyles[job.category] : null;
 
     return (
-        <article className="rounded-2xl border border-gray-200/60 bg-white p-6 shadow-sm transition hover:shadow-md dark:border-gray-700/60 dark:bg-gray-900">
+        <article className="rounded-2xl border border-brand-border/60 bg-brand-soft p-6 shadow-sm transition hover:shadow-md">
             <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                     <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
@@ -80,20 +80,26 @@ export default function JobCard({ job }: { job: Job }) {
                                     className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${categoryMeta.classes}`}
                                 >
                                     <categoryMeta.Icon className="size-3.5" />
-                                    {t(`jobs.category.${job.category ?? ''}`, categoryMeta.label)}
+                                    {t(
+                                        `jobs.category.${job.category ?? ''}`,
+                                        categoryMeta.label,
+                                    )}
                                 </span>
                             ) : null}
                         </div>
                     ) : null}
                 </div>
-                <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-brand-soft px-3 py-1 text-xs font-medium text-brand-ink dark:bg-brand-deep/40">
                     <BriefcaseIcon className="size-3.5" />
-                    {t(`jobs.employmentType.${job.employment_type}`, job.employment_type)}
+                    {t(
+                        `jobs.employmentType.${job.employment_type}`,
+                        job.employment_type,
+                    )}
                 </span>
             </div>
 
             {job.employment_type === 'part_time' && job.working_hours ? (
-                <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-slate-50 px-3 py-1.5 text-sm text-slate-700 dark:bg-slate-800/60 dark:text-slate-200">
+                <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-brand-soft px-3 py-1.5 text-sm text-slate-700 dark:text-slate-200">
                     <ClockIcon className="size-4" />
                     <span className="font-medium">{t('jobs.hours')}:</span>
                     <span>{job.working_hours}</span>
@@ -107,7 +113,7 @@ export default function JobCard({ job }: { job: Job }) {
             </div>
 
             {job.requirements ? (
-                <div className="mt-3 rounded-xl bg-gray-50 p-4 dark:bg-gray-800/60">
+                <div className="mt-3 rounded-xl bg-brand-soft p-4">
                     <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                         {t('jobs.requirements')}
                     </h3>
@@ -124,7 +130,7 @@ export default function JobCard({ job }: { job: Job }) {
                             showEmail ? (
                                 <a
                                     href={`mailto:${job.application_email}`}
-                                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+                                    className="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2 text-sm font-medium text-brand-fg transition hover:bg-brand-hover"
                                 >
                                     <EnvelopeIcon className="size-4" />
                                     {job.application_email}
@@ -133,7 +139,7 @@ export default function JobCard({ job }: { job: Job }) {
                                 <button
                                     type="button"
                                     onClick={() => setShowEmail(true)}
-                                    className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700 transition hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/30 dark:text-blue-300 dark:hover:bg-blue-950/50"
+                                    className="inline-flex items-center gap-2 rounded-xl border border-brand-border bg-brand-soft px-4 py-2 text-sm font-medium text-brand-ink transition hover:bg-brand-soft-strong dark:bg-brand-deep/30 dark:hover:bg-brand-deep/50"
                                 >
                                     <EnvelopeIcon className="size-4" />
                                     {t('jobs.showEmail')}

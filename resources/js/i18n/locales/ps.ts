@@ -75,8 +75,7 @@ const ps = {
         imageAlt: '{{title}} انځور {{number}}',
         imagesCount: '{{count}} انځورونه',
         noImages: 'هیڅ انځور نه دی ضمیمه شوی.',
-        previewImagesEmpty:
-            'مخکتنه به ضمیمه شوي انځورونه دلته ښکاره کړي.',
+        previewImagesEmpty: 'مخکتنه به ضمیمه شوي انځورونه دلته ښکاره کړي.',
         write: 'لیکل',
         preview: 'مخکتنه',
         copy: 'کاپي',
@@ -90,17 +89,13 @@ const ps = {
     media: {
         uploading: 'اپلوډ کیږي…',
         uploadFailed: 'اپلوډ ناکام شو.',
-        uploadNoImage:
-            'اپلوډ بریالی شو خو هیڅ انځور بیرته راونه‌ګرځېد.',
-        uploadNoFile:
-            'اپلوډ بریالی شو خو د فایل هیڅ مسیر بیرته راونه‌ګرځېد.',
+        uploadNoImage: 'اپلوډ بریالی شو خو هیڅ انځور بیرته راونه‌ګرځېد.',
+        uploadNoFile: 'اپلوډ بریالی شو خو د فایل هیڅ مسیر بیرته راونه‌ګرځېد.',
         imageSet: 'انځور ټاکل شوی',
         noImageYet: 'تر اوسه انځور نشته',
         coverAlt: 'د کتاب پوښ',
-        pdfCoverHint:
-            'PDF اپلوډ کړئ او لومړی پاڼه یې د پوښ په توګه کیږي.',
-        replaceHint:
-            'تاسو کولی شئ دا انځور د بل هر انځور سره بدل کړئ.',
+        pdfCoverHint: 'PDF اپلوډ کړئ او لومړی پاڼه یې د پوښ په توګه کیږي.',
+        replaceHint: 'تاسو کولی شئ دا انځور د بل هر انځور سره بدل کړئ.',
         viewPdf: 'PDF وګورئ',
         uploadPdf: 'PDF اپلوډ کړئ',
         changeImage: 'انځور بدل کړئ',
@@ -120,8 +115,7 @@ const ps = {
         galleryAlt: '{{label}} {{number}}',
     },
     homeBuilder: {
-        empty:
-            'تر اوسه د کورنۍ پاڼې برخې نشته. د منځپانګې د ښودلو لپاره «برخه اضافه کول» کلیک کړئ.',
+        empty: 'تر اوسه د کورنۍ پاڼې برخې نشته. د منځپانګې د ښودلو لپاره «برخه اضافه کول» کلیک کړئ.',
         orderHint: 'ترتیب ټاکي چې لیدونکي لومړی څه وګوري.',
         saveOrder: 'ترتیب خوندي کړئ',
         moveUp: 'پورته کول',
@@ -137,11 +131,9 @@ const ps = {
             'برخه به د کورنۍ پاڼې څخه لرې شي. دا بیرته نشي کیدلی.',
         delete: 'حذف',
         visualEditor: 'لیدیز سمونکی',
-        visualEditorHint:
-            'کورنۍ پاڼه د مخکتنې سره سم، د هرې ژبې لپاره سمول.',
+        visualEditorHint: 'کورنۍ پاڼه د مخکتنې سره سم، د هرې ژبې لپاره سمول.',
         open: 'پرانیستل',
-        intro:
-            'د عامې کورنۍ پاڼې ښودل شوې بلاکونه ترتیب کړئ. منل شوې بلاکونه ژوندې منځپانګه راکاږي؛ یوازې د کورنۍ بلاکونه دلته لیکل کیږي. کله چې فعال بلاکونه نه وي، کورنۍ پاڼه غوره والي ته راګرځي.',
+        intro: 'د عامې کورنۍ پاڼې ښودل شوې بلاکونه ترتیب کړئ. منل شوې بلاکونه ژوندې منځپانګه راکاږي؛ یوازې د کورنۍ بلاکونه دلته لیکل کیږي. کله چې فعال بلاکونه نه وي، کورنۍ پاڼه غوره والي ته راګرځي.',
         editIn: 'په {{language}} کې سمول.',
         done: 'بشپړ',
         form: {
@@ -1008,8 +1000,7 @@ const ps = {
                 ready: '{{count}} کرښې د واردولو لپاره چمتو دي.',
                 skippedCodes:
                     '{{count}} کرښې پرېښودل شوې ځکه د شخص یا د جایزې آیډي خالي و.',
-                skippedDates:
-                    '{{count}} کرښې پرېښودل شوې ځکه نېټه لوستل نشوه.',
+                skippedDates: '{{count}} کرښې پرېښودل شوې ځکه نېټه لوستل نشوه.',
                 skippedOverLimit:
                     '{{count}} کرښې پرېښودل شوې ځکه د حد څخه زیاتې دي.',
                 upsertNote:
@@ -1260,8 +1251,7 @@ const ps = {
                 sendAnswer: 'ځواب ولېږئ',
                 anonymous: 'بې‌نومه',
                 management: 'مدیریت',
-                answeredToast:
-                    'ځواب ثبت او د لېږونکي ایمیل ته ولېږل شو.',
+                answeredToast: 'ځواب ثبت او د لېږونکي ایمیل ته ولېږل شو.',
             },
         },
         emailCampaigns: {
@@ -1271,8 +1261,7 @@ const ps = {
             new: 'نوی کمپاین',
             form: {
                 queued: 'کمپاین په قطار کې شو.',
-                noValidEmails:
-                    'په دې فایل کې هیڅ سم ایمیل ونه موندل شو.',
+                noValidEmails: 'په دې فایل کې هیڅ سم ایمیل ونه موندل شو.',
                 contactsFound: '{{count}} اړیکې وموندل شوې',
                 fromColumn: 'د «{{column}}» کالم څخه',
                 duplicatesRemoved: '{{count}} تکراري لرې شوې',
@@ -1292,8 +1281,7 @@ const ps = {
                 subject: 'موضوع',
                 subjectPlaceholder: 'د اختر مبارکی — د ښوونځي د بندیدو خبر',
                 message: 'پیغام',
-                messagePlaceholder:
-                    'اعلان داسې ولیکئ لکه کورنۍ یې باید ولولي…',
+                messagePlaceholder: 'اعلان داسې ولیکئ لکه کورنۍ یې باید ولولي…',
                 sendingNotice:
                     'د سپارلو سره سم لېږل پیل کیږي. تاسو کولی شئ پرمختګ وګورئ او ناکامي په کمپاین پاڼه کې بیا هڅه کړئ.',
                 send: 'کمپاین ولېږئ',
@@ -1349,13 +1337,11 @@ const ps = {
                 freeText: 'آزاد متن پیغام',
                 template: 'تصویب شوی ټیمپلیټ پیغام',
                 message: 'پیغام',
-                messagePlaceholder:
-                    'اعلان داسې ولیکئ لکه کورنۍ یې باید ولولي…',
+                messagePlaceholder: 'اعلان داسې ولیکئ لکه کورنۍ یې باید ولولي…',
                 messageHint: 'ساده واټساپ متن (تر 4096 تورو پورې).',
                 templateName: 'د ټیمپلیټ نوم',
                 templateNamePlaceholder: 'order_confirmation',
-                templateNameHint:
-                    'ستاسو د تصویب شوي واټساپ ټیمپلیټ دقیق نوم.',
+                templateNameHint: 'ستاسو د تصویب شوي واټساپ ټیمپلیټ دقیق نوم.',
                 templateLanguage: 'د ټیمپلیټ ژبه',
                 templateLanguageHint:
                     'د ټیمپلیټ ژبې کوډ (لکه en, ar, ps)، د تصویب شوې نسخې سره سم.',
@@ -1601,6 +1587,38 @@ const ps = {
                 logoLabel: 'لوګو (PNG)',
                 logoHint:
                     'په عام ناو بار، فوټر او د ډشبورډ اړخي پټه کې ښودل کیږي. د براوزر ټب انځور (فیویکون) له دې لوګو څخه په اتوماتیک ډول جوړیږي.',
+                reverseLogoLabel: 'برګز لوګو (اختیاري)',
+                reverseLogoHint:
+                    'د لوګو روښانه نسخه، چې پر تیاره او رنګینو پټو کارول کیږي.',
+                brandColor: 'د برانډ رنګ',
+                brandColorHint:
+                    'همدا یو رنګ ټول عام ویب‌سایټ رنګوي: تڼۍ، لینکونه، د برخو پټې، کارتونه، څنډې او د تیارې موډ نسخه. د پاڼې شالید سپین یا تیاره خړ پاتې کیږي.',
+                accentColor: 'د ټینګار رنګ (اختیاري)',
+                accentColorHint:
+                    'کوچنیو ټینګارونو او بیجونو لپاره. پر «اتوماتیک» پرېږدئ چې یو همغږی ملګری رنګ جوړ شي.',
+                accentAuto: 'اتوماتیک',
+                invalidColor: 'د ۶ عددي هیکس رنګ وکاروئ، لکه #2563eb.',
+                tintDepth: 'د برخو د رنګ شدت',
+                tintDepthHint:
+                    'څومره پیاوړی د برانډ رنګ پر برخو او کارتونو خپور شي.',
+                tintSubtle: 'نرم',
+                tintMedium: 'منځنی',
+                tintBold: 'پیاوړی',
+                previewTitle: 'ژوندی مخکتنه',
+                previewLight: 'روښانه',
+                previewDark: 'تیاره',
+                previewBrand: 'ستاسو ښوونځی',
+                previewNavHome: 'کور',
+                previewNavAbout: 'زموږ په اړه',
+                previewBand: 'د برخې پټه',
+                previewBody: 'متن د رنګین سطح پر سر وي او لوستل کیږي.',
+                previewPrimary: 'لومړنی',
+                previewSecondary: 'دوهم',
+                previewAccent: 'ټینګار',
+                contrastOnBrand: 'پر برانډ متن: {{ratio}}:1',
+                contrastOnPage: 'پر پاڼه برانډ متن: {{ratio}}:1',
+                contrastPass: 'د WCAG AA معیار پوره کوي',
+                contrastWarn: 'په ځینو اندازو کې کم کنټراسټ',
                 homePageTitle: 'کورنۍ پاڼه',
                 heroImageUrl: 'د سرلیک انځور URL',
                 heroImagePlaceholder: 'https://...',
@@ -1795,10 +1813,8 @@ const ps = {
         categoryDeleted:
             'ډول حذف شو. په هغې کې کتابونه ساتل شوي خو بې ډوله دي.',
         siteSettingsUpdated: 'د سایت تنظیمات تازه شول.',
-        accountCreatedVerification:
-            'حساب جوړ شو. د تصدیق ایمیل ولېږل شو.',
-        accountCreatedInvite:
-            'حساب جوړ شو. د پټنوم ټاکلو لینک ایمیل شو.',
+        accountCreatedVerification: 'حساب جوړ شو. د تصدیق ایمیل ولېږل شو.',
+        accountCreatedInvite: 'حساب جوړ شو. د پټنوم ټاکلو لینک ایمیل شو.',
         accountUpdated: 'حساب تازه شو.',
         accountDeleted: 'حساب حذف شو.',
         aboutUpdated: 'د زموږ په اړه پاڼې تنظیمات خوندي شول.',
@@ -1808,7 +1824,8 @@ const ps = {
         whatsappSaved: 'د واټساپ تنظیمات خوندي شول او د لیږلو لپاره چمتو دي.',
         whatsappSavedIncomplete:
             'د واټساپ تنظیمات خوندي شول، خو د لیږلو دمخه د توکن او تلیفون شمېرې ID دواړه اړین دي.',
-        whatsappConnectionPassed: 'د اړیکې ازموینه د {{number}} لپاره بریالۍ شوه.',
+        whatsappConnectionPassed:
+            'د اړیکې ازموینه د {{number}} لپاره بریالۍ شوه.',
         whatsappConnectionPassedNoNumber: 'د اړیکې ازموینه بریالۍ شوه.',
         whatsappConnectionFailed: 'د اړیکې ازموینه ناکامه شوه: {{message}}',
         whatsappNotConfigured:
@@ -1817,10 +1834,12 @@ const ps = {
             'د ټاکل شوې سرچینې لپاره هیڅ معتبر تلیفون شمېرې ونه موندل شوې.',
         noValidRecipients:
             'د ټاکل شوې سرچینې لپاره هیڅ معتبر ترلاسه کوونکي ونه موندل شول.',
-        emailCampaignQueued: 'کمپاین د {{count}} ترلاسه کوونکو لپاره په قطار کې ځای پرځای شو.',
+        emailCampaignQueued:
+            'کمپاین د {{count}} ترلاسه کوونکو لپاره په قطار کې ځای پرځای شو.',
         whatsappCampaignQueued:
             'واټساپ کمپاین د {{count}} ترلاسه کوونکو لپاره په قطار کې ځای پرځای شو.',
-        noFailedRecipients: 'د بیا هڅه کولو لپاره هیڅ ناکام ترلاسه کوونکي نشته.',
+        noFailedRecipients:
+            'د بیا هڅه کولو لپاره هیڅ ناکام ترلاسه کوونکي نشته.',
         reSentFailed: '{{count}} ناکام ترلاسه کوونکو ته بیا ولېږل شو.',
         awardCreated: 'جایزه ثبت شوه.',
         awardUpdated: 'جایزه تازه شوه.',

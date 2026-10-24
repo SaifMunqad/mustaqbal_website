@@ -80,7 +80,7 @@ export default function HomeCardItem({
     // card's aspect ratio (square / portrait / landscape).
     const inner = (
         <div
-            className={`group relative flex w-full ${shapeClass} flex-col overflow-hidden rounded-2xl border border-slate-200 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700`}
+            className={`group relative flex w-full ${shapeClass} flex-col overflow-hidden rounded-2xl border border-brand-border shadow-sm transition hover:-translate-y-0.5 hover:shadow-md`}
         >
             {card.image ? (
                 <img
@@ -89,7 +89,7 @@ export default function HomeCardItem({
                     className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-105"
                 />
             ) : (
-                <div className="absolute inset-0 flex items-center justify-center bg-blue-600 text-5xl font-bold text-white">
+                <div className="absolute inset-0 flex items-center justify-center bg-brand text-5xl font-bold text-brand-fg">
                     {card.title.slice(0, 1)}
                 </div>
             )}
@@ -106,7 +106,7 @@ export default function HomeCardItem({
                 >
                     {card.subtitle ? (
                         <p
-                            className={`text-xs font-semibold tracking-wide text-blue-300 uppercase ${rtl ? 'text-right' : 'text-left'}`}
+                            className={`text-xs font-semibold tracking-wide text-brand-ink uppercase ${rtl ? 'text-right' : 'text-left'}`}
                         >
                             {card.subtitle}
                         </p>

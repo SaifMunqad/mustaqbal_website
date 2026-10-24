@@ -39,12 +39,14 @@ function SchoolArticlesShow() {
         <>
             <Head title={article.title} />
 
-            <section className="rounded-3xl bg-white p-6 shadow-sm md:p-10 dark:bg-gray-900">
+            {/* Content sits directly on the frozen page background: an extra
+                tinted panel here would swallow the article body. */}
+            <section className="p-6 md:p-10">
                 <Reveal direction="fade" defaultInView>
                     <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                         <Link
                             href="/school/articles"
-                            className="text-sm font-medium text-blue-600 underline"
+                            className="text-sm font-medium text-brand-ink underline"
                         >
                             {t('articles.back')}
                         </Link>
@@ -68,10 +70,10 @@ function SchoolArticlesShow() {
                 <Reveal>
                     <div dir={contentDir} className="space-y-6">
                         <div className="flex flex-wrap gap-2 text-xs text-slate-600 dark:text-slate-300">
-                            <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-800">
+                            <span className="rounded-full bg-brand-soft px-3 py-1">
                                 {t('articles.by', { name: byline })}
                             </span>
-                            <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-800">
+                            <span className="rounded-full bg-brand-soft px-3 py-1">
                                 {article.published_at
                                     ? t('articles.published')
                                     : t('articles.draft')}

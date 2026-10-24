@@ -1,6 +1,6 @@
+import type { SiteSettings } from '@/types';
 import { MapPinIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
-import type { SiteSettings } from '@/types';
 
 interface ContactMapSectionProps {
     contact: NonNullable<SiteSettings['contact']>;
@@ -23,7 +23,7 @@ export default function ContactMapSection({ contact }: ContactMapSectionProps) {
               : null;
 
     return (
-        <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-gray-900">
+        <section className="overflow-hidden rounded-3xl border border-brand-border bg-brand-soft shadow-sm">
             <div className="flex flex-wrap items-center justify-between gap-3 p-5">
                 <div>
                     <h2 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -38,7 +38,7 @@ export default function ContactMapSection({ contact }: ContactMapSectionProps) {
                         href={directionsUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-gray-800"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-brand-border px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-brand-soft dark:text-slate-200 dark:hover:bg-gray-800"
                     >
                         <MapPinIcon className="size-4" aria-hidden />
                         {t('contact.getDirections')}

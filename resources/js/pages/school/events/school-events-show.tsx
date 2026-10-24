@@ -85,12 +85,12 @@ function SchoolEventsShow() {
         <>
             <Head title={event.title} />
 
-            <article className="space-y-6 rounded-3xl bg-white p-6 shadow-sm md:p-10 dark:bg-gray-900">
+            <article className="space-y-6 rounded-3xl bg-brand-soft p-6 shadow-sm md:p-10">
                 <Reveal direction="fade" defaultInView>
                     <div className="flex flex-wrap items-center justify-between gap-3">
                         <Link
                             href="/school/events"
-                            className="text-sm font-medium text-blue-600 underline"
+                            className="text-sm font-medium text-brand-ink underline"
                         >
                             {t('events.back')}
                         </Link>
@@ -101,7 +101,7 @@ function SchoolEventsShow() {
                     </h1>
 
                     <div className="mt-3 flex flex-wrap gap-2 text-sm text-slate-600 dark:text-slate-300">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-800">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-brand-soft px-3 py-1">
                             <CalendarDaysIcon className="size-4" />
                             {formatDate(
                                 event.start_at,
@@ -114,7 +114,7 @@ function SchoolEventsShow() {
                             )}
                         </span>
                         {event.end_at ? (
-                            <span className="rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-800">
+                            <span className="rounded-full bg-brand-soft px-3 py-1">
                                 {t('events.until')}:{' '}
                                 {formatDate(
                                     event.end_at,
@@ -128,7 +128,7 @@ function SchoolEventsShow() {
                             </span>
                         ) : null}
                         {event.location ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 dark:bg-slate-800">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-brand-soft px-3 py-1">
                                 <MapPinIcon className="size-4" />
                                 {event.location}
                             </span>
@@ -215,7 +215,7 @@ function SchoolEventsShow() {
                                             <Link
                                                 key={item.id}
                                                 href={`/school/events/${item.slug}`}
-                                                className="rounded-2xl border border-slate-200 p-4 transition hover:border-blue-300 hover:bg-blue-50/50 dark:border-slate-700 dark:hover:bg-slate-800"
+                                                className="rounded-2xl border border-brand-border p-4 transition hover:border-brand hover:bg-brand-soft/50 dark:hover:bg-slate-800"
                                             >
                                                 <p className="font-medium text-slate-900 dark:text-white">
                                                     {item.title}

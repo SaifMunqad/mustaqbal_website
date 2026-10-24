@@ -12,7 +12,7 @@ function SchoolAdmissions() {
             <Head title={t('navigation.admissions')} />
 
             <Reveal direction="fade" defaultInView>
-                <section className="rounded-3xl bg-white p-6 shadow-sm md:p-10 dark:bg-gray-900">
+                <section className="rounded-3xl bg-brand-soft p-6 shadow-sm md:p-10">
                     <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
                         {t('admissions.title')}
                     </h1>

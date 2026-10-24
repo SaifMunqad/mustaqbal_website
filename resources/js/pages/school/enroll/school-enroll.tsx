@@ -45,7 +45,7 @@ function SchoolEnroll() {
         <>
             <Head title={t('enroll.title')} />
             <Reveal direction="fade" defaultInView>
-                <section className="rounded-3xl bg-white p-6 shadow-sm md:p-10 dark:bg-gray-900">
+                <section className="rounded-3xl bg-brand-soft p-6 shadow-sm md:p-10">
                     <h1 className="text-2xl font-bold">
                         {t('enroll.heading')}
                     </h1>
@@ -108,7 +108,7 @@ function SchoolEnroll() {
                             {t('enroll.emailUpdates')}
                         </label>
                         <button
-                            className="rounded bg-blue-600 px-4 py-2 text-white"
+                            className="rounded bg-brand px-4 py-2 text-brand-fg"
                             type="submit"
                         >
                             {t('enroll.submit')}
@@ -119,7 +119,7 @@ function SchoolEnroll() {
                     ) : null}
                     <Link
                         href="/school/enroll/resend-email"
-                        className="mt-4 inline-block text-sm text-blue-600 underline"
+                        className="mt-4 inline-block text-sm text-brand-ink underline"
                     >
                         {t('enroll.resendLink')}
                     </Link>

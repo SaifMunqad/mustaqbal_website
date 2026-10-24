@@ -65,25 +65,25 @@ const RANK_THEME: Record<CardRank, RankTheme> = {
         role: 'text-amber-700 dark:text-amber-300',
     },
     1: {
-        card: 'border-slate-300 hover:border-slate-400 dark:border-slate-600 dark:hover:border-slate-500',
+        card: 'border-brand-border hover:border-slate-400 dark:border-slate-600 dark:hover:border-slate-500',
         ribbon: 'from-slate-300/50 via-slate-200/25 to-transparent dark:from-slate-500/40',
         ring: 'ring-slate-100 dark:ring-slate-600/40',
         fallback: 'from-slate-400 to-slate-600',
         role: 'text-slate-600 dark:text-slate-300',
     },
     2: {
-        card: 'border-slate-300 hover:border-slate-400 dark:border-slate-600 dark:hover:border-slate-500',
+        card: 'border-brand-border hover:border-slate-400 dark:border-slate-600 dark:hover:border-slate-500',
         ribbon: 'from-slate-300/50 via-slate-200/25 to-transparent dark:from-slate-500/40',
         ring: 'ring-slate-100 dark:ring-slate-600/40',
         fallback: 'from-slate-400 to-slate-600',
         role: 'text-slate-600 dark:text-slate-300',
     },
     3: {
-        card: 'border-slate-200 hover:border-blue-200 dark:border-slate-800 dark:hover:border-blue-900/70',
-        ribbon: 'from-blue-500/20 via-blue-500/10 to-transparent dark:from-blue-500/25',
+        card: 'border-brand-border hover:border-brand dark:hover:border-brand/70',
+        ribbon: 'from-brand/20 via-brand/10 to-transparent dark:from-brand/25',
         ring: 'ring-white dark:ring-gray-900',
-        fallback: 'from-blue-500 to-blue-700',
-        role: 'text-blue-700 dark:text-blue-400',
+        fallback: 'from-brand to-accent-brand',
+        role: 'text-brand-ink',
     },
 };
 
@@ -113,7 +113,7 @@ function HonoreeCard({ post, rank }: { post: ShowcasePost; rank: CardRank }) {
 
     return (
         <article
-            className={`group relative flex h-full w-full flex-col items-center overflow-hidden rounded-3xl border bg-white text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg dark:bg-gray-900 ${theme.card}`}
+            className={`group relative flex h-full w-full flex-col items-center overflow-hidden rounded-3xl border bg-brand-soft text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg ${theme.card}`}
         >
             {/* Decorative ribbon behind the avatar. */}
             <div
@@ -154,7 +154,7 @@ function HonoreeCard({ post, rank }: { post: ShowcasePost; rank: CardRank }) {
                 ) : null}
 
                 {post.created_at ? (
-                    <span className="mt-4 inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500 dark:bg-gray-800 dark:text-slate-400">
+                    <span className="mt-4 inline-flex items-center rounded-full bg-brand-soft px-3 py-1 text-xs font-medium text-slate-500 dark:text-slate-400">
                         {post.created_at}
                     </span>
                 ) : null}
@@ -245,7 +245,7 @@ export default function ShowcaseSection({
 
     if (groups.length === 0) {
         return (
-            <section className="rounded-3xl bg-white p-6 text-center shadow-sm md:p-10 dark:bg-gray-900">
+            <section className="rounded-3xl bg-brand-soft p-6 text-center shadow-sm md:p-10">
                 <p className="text-slate-500 dark:text-slate-400">
                     {t('showcase.empty')}
                 </p>
@@ -265,7 +265,7 @@ export default function ShowcaseSection({
                     </h2>
                     <Link
                         href="/school/showcase"
-                        className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white/60 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-gray-800/60"
+                        className="rounded-xl border border-brand-border px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-white/60 dark:text-slate-200 dark:hover:bg-gray-800/60"
                     >
                         {t('showcase.viewAll')}
                     </Link>
@@ -292,8 +292,8 @@ export default function ShowcaseSection({
                                     onClick={() => setActiveType(group.type)}
                                     className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
                                         active
-                                            ? 'bg-blue-600 text-white shadow-sm'
-                                            : 'border border-slate-300 text-slate-700 hover:bg-white/60 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-gray-800/60'
+                                            ? 'bg-brand text-brand-fg shadow-sm'
+                                            : 'border border-brand-border text-slate-700 hover:bg-white/60 dark:text-slate-200 dark:hover:bg-gray-800/60'
                                     }`}
                                 >
                                     {t(
@@ -303,7 +303,7 @@ export default function ShowcaseSection({
                                         className={`rounded-full px-2 py-0.5 text-xs font-bold ${
                                             active
                                                 ? 'bg-white/25 text-white'
-                                                : 'bg-slate-100 text-slate-500 dark:bg-gray-800 dark:text-slate-400'
+                                                : 'bg-brand-soft text-slate-500 dark:text-slate-400'
                                         }`}
                                     >
                                         {group.posts.length}
@@ -315,7 +315,7 @@ export default function ShowcaseSection({
 
                     {activeGroup ? (
                         <div className="space-y-4">
-                            <h3 className="text-lg font-semibold text-blue-700 dark:text-blue-400">
+                            <h3 className="text-lg font-semibold text-brand-ink">
                                 {t(
                                     activeGroup.labelKey ?? activeGroup.label,
                                     activeGroup.label,
@@ -328,7 +328,7 @@ export default function ShowcaseSection({
             ) : (
                 groups.map((group) => (
                     <div key={group.type} className="space-y-4">
-                        <h3 className="text-lg font-semibold text-blue-700 dark:text-blue-400">
+                        <h3 className="text-lg font-semibold text-brand-ink">
                             {t(group.labelKey ?? group.label, group.label)}
                         </h3>
                         <PostsGrid posts={group.posts} />

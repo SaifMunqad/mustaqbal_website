@@ -35,7 +35,7 @@ function SchoolJobs() {
                 </Reveal>
 
                 {items.length === 0 ? (
-                    <div className="rounded-2xl border border-dashed border-gray-300 p-10 text-center text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                    <div className="rounded-2xl border border-dashed border-brand-border p-10 text-center text-gray-500 dark:text-gray-400">
                         {t('jobs.empty')}
                     </div>
                 ) : (
