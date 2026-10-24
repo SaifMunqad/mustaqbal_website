@@ -23,6 +23,7 @@ enum SectionType: string
     case Hero = 'hero';
     case SplitHero = 'split_hero';
     case Features = 'features';
+    case IconCards = 'icon_cards';
     case Stats = 'stats';
     case StatsCards = 'stats_cards';
     case Banner = 'banner';
@@ -31,11 +32,14 @@ enum SectionType: string
     case CtaBand = 'cta_band';
     case Quote = 'quote';
     case MediaText = 'media_text';
+    case RichText = 'rich_text';
     case VideoEmbed = 'video_embed';
     case Map = 'map';
     case Newsletter = 'newsletter';
     case Countdown = 'countdown';
     case Contact = 'contact';
+    case ContactForm = 'contact_form';
+    case ContactDetails = 'contact_details';
 
     // --- List-driven authored rails ---
     case Testimonials = 'testimonials';
@@ -58,6 +62,7 @@ enum SectionType: string
             self::Hero => 'Hero',
             self::SplitHero => 'Split hero',
             self::Features => 'Why-families features',
+            self::IconCards => 'Icon cards',
             self::Stats => 'Quick stats bar',
             self::StatsCards => 'Stat cards',
             self::Banner => 'Banner',
@@ -66,11 +71,14 @@ enum SectionType: string
             self::CtaBand => 'Call to action',
             self::Quote => 'Quote',
             self::MediaText => 'Media + text',
+            self::RichText => 'Rich text',
             self::VideoEmbed => 'Video',
             self::Map => 'Map',
             self::Newsletter => 'Newsletter signup',
             self::Countdown => 'Countdown',
             self::Contact => 'Contact',
+            self::ContactForm => 'Contact form',
+            self::ContactDetails => 'Contact details',
             self::Testimonials => 'Testimonials',
             self::Team => 'Team / staff',
             self::Partners => 'Partners / logos',
@@ -100,15 +108,13 @@ enum SectionType: string
         return match ($this) {
             self::Hero, self::SplitHero, self::Banner, self::Announcement,
             self::AnnouncementBar, self::Quote, self::MediaText, self::VideoEmbed,
-            self::Map, self::Countdown
-                => 'layout',
-            self::Features, self::Stats, self::StatsCards, self::Testimonials, self::Team,
-            self::Partners, self::Gallery, self::Faqs
-                => 'content',
-            self::CtaBand, self::Newsletter, self::Contact, self::SocialLinks
-                => 'conversion',
-            self::Programs, self::Jobs, self::Recognition, self::Articles, self::Events
-                => 'live',
+            self::Map, self::Countdown => 'layout',
+            self::Features, self::IconCards, self::Stats, self::StatsCards,
+            self::Testimonials, self::Team, self::Partners, self::Gallery, self::Faqs,
+            self::RichText => 'content',
+            self::CtaBand, self::Newsletter, self::Contact, self::ContactForm,
+            self::ContactDetails, self::SocialLinks => 'conversion',
+            self::Programs, self::Jobs, self::Recognition, self::Articles, self::Events => 'live',
         };
     }
 
@@ -147,6 +153,7 @@ enum SectionType: string
         return match ($this) {
             self::Hero, self::SplitHero => 'hero',
             self::Features => 'features',
+            self::IconCards => 'icon_cards',
             self::Stats => 'stats',
             self::StatsCards => 'stats_cards',
             self::Programs => 'programs',
@@ -156,11 +163,14 @@ enum SectionType: string
             self::CtaBand => 'cta',
             self::Quote => 'quote',
             self::MediaText => 'media_text',
+            self::RichText => 'rich_text',
             self::VideoEmbed => 'video',
             self::Map => 'map',
             self::Newsletter => 'newsletter',
             self::Countdown => 'countdown',
             self::Contact => 'contact',
+            self::ContactForm => 'contact_form',
+            self::ContactDetails => 'contact_details',
             self::Testimonials, self::Team => 'list',
             self::Partners => 'logos',
             self::Gallery => 'gallery',
@@ -189,15 +199,16 @@ enum SectionType: string
     public function stores(): array
     {
         return match ($this) {
-            self::Programs, self::Jobs, self::Recognition, self::Articles, self::Events
-                => ['settings', 'items', 'translations'],
-            self::Features, self::Stats, self::StatsCards, self::Testimonials, self::Team,
-            self::Partners, self::Gallery, self::Faqs, self::SocialLinks, self::Contact
-                => ['settings', 'list', 'translations'],
+            self::Programs, self::Jobs, self::Recognition, self::Articles, self::Events => ['settings', 'items', 'translations'],
+            self::Features, self::IconCards, self::Stats, self::StatsCards,
+            self::Testimonials, self::Team, self::Partners, self::Gallery, self::Faqs,
+            self::SocialLinks, self::Contact => ['settings', 'list', 'translations'],
             self::Hero, self::SplitHero, self::Banner, self::Announcement, self::AnnouncementBar,
-            self::CtaBand, self::Quote, self::MediaText, self::VideoEmbed, self::Map,
-            self::Newsletter, self::Countdown
-                => ['settings', 'media', 'translations'],
+            self::CtaBand, self::Quote, self::MediaText, self::RichText, self::VideoEmbed,
+            self::Map, self::Newsletter, self::Countdown => ['settings', 'media', 'translations'],
+            // Text-only blocks whose body is fully driven by live settings or a
+            // built-in form, so they only own localized copy.
+            self::ContactForm, self::ContactDetails => ['settings', 'translations'],
         };
     }
 
@@ -208,7 +219,7 @@ enum SectionType: string
     public function listGroup(): ?string
     {
         return match ($this) {
-            self::Features => 'features',
+            self::Features, self::IconCards => 'features',
             self::Stats, self::StatsCards => 'stats',
             self::Testimonials => 'testimonials',
             self::Team => 'team',

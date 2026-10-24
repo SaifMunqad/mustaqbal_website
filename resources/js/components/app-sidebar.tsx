@@ -92,6 +92,11 @@ export function AppSidebar() {
                               href: '/dashboard/about',
                               icon: Info,
                           },
+                          {
+                              title: t('dashboard.tabs.contactPage'),
+                              href: '/dashboard/pages/contact',
+                              icon: Phone,
+                          },
                       ]
                     : []),
                 ...(canManageUsers

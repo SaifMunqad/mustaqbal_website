@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Program;
 use App\Models\SitePage;
+use App\Support\Home\PageSections;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -17,8 +18,12 @@ class SchoolPageController extends Controller
             ->where('is_published', true)
             ->first();
 
-        return Inertia::render('school/about/index', [
+        return Inertia::render('school/about/school-about', [
             'page' => $page,
+            // Authored layout from the unified page builder. Empty until the
+            // backfill/editor has run, in which case the view keeps rendering
+            // the legacy site_pages composition.
+            'blocks' => PageSections::render('about'),
         ]);
     }
 
@@ -59,7 +64,7 @@ class SchoolPageController extends Controller
             ->pluck('aggregate', 'program_type')
             ->all();
 
-        return Inertia::render('school/programs/index', [
+        return Inertia::render('school/programs/school-programs', [
             'page' => $page,
             'programs' => $programs,
             'programCounts' => $programCounts,
@@ -74,18 +79,22 @@ class SchoolPageController extends Controller
             ->where('is_published', true)
             ->first();
 
-        return Inertia::render('school/contact/index', [
+        return Inertia::render('school/contact/school-contact', [
             'page' => $page,
+            // Authored layout from the unified page builder. Empty until the
+            // contact page has blocks, in which case the view keeps rendering
+            // the legacy site_pages composition.
+            'blocks' => PageSections::render('contact'),
         ]);
     }
 
     public function enrollment(): Response
     {
-        return Inertia::render('school/enroll/index');
+        return Inertia::render('school/enroll/school-enroll');
     }
 
     public function resendEnrollmentEmail(): Response
     {
-        return Inertia::render('school/enroll/resend-email');
+        return Inertia::render('school/enroll/school-enroll-resend-email');
     }
 }

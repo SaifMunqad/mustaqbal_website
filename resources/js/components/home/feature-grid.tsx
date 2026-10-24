@@ -1,26 +1,8 @@
 import Reveal from '@/components/ui/reveal';
+import { gridCols } from '@/lib/grid-cols';
+import { resolveIcon } from '@/lib/icon-map';
 import type { HomeFeature } from '@/types';
-import {
-    Building2,
-    GraduationCap,
-    HeartHandshake,
-    Sparkles,
-    Users,
-    type LucideIcon,
-} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-
-/**
- * Icon per admin-selected feature key. The Site Settings editor offers these
- * keys in a dropdown; unknown/empty values fall back to `Sparkles` so the tile
- * always shows something.
- */
-const ICON_MAP: Record<string, LucideIcon> = {
-    faculty: Users,
-    values: HeartHandshake,
-    facilities: Building2,
-    classes: GraduationCap,
-};
 
 // Rotating accent tints so adjacent feature tiles read as varied, not uniform.
 const ACCENTS = [
@@ -30,7 +12,19 @@ const ACCENTS = [
     'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300',
 ];
 
-export default function FeatureGrid({ features }: { features: HomeFeature[] }) {
+export default function FeatureGrid({
+    features,
+    heading,
+    body,
+    columns,
+}: {
+    features: HomeFeature[];
+    /** Authored heading/body; blank falls back to the built-in wording. */
+    heading?: string | null;
+    body?: string | null;
+    /** Admin-chosen track count (defaults to the four-column design). */
+    columns?: number | null;
+}) {
     const { t } = useTranslation();
 
     const items = (features ?? []).filter(
@@ -45,16 +39,16 @@ export default function FeatureGrid({ features }: { features: HomeFeature[] }) {
         <section className="space-y-6">
             <header className="text-center">
                 <h2 className="text-2xl font-bold text-slate-900 md:text-3xl dark:text-white">
-                    {t('home.featuresTitle')}
+                    {heading?.trim() || t('home.featuresTitle')}
                 </h2>
                 <p className="mx-auto mt-2 max-w-2xl text-slate-600 dark:text-slate-300">
-                    {t('home.featuresSubtitle')}
+                    {body?.trim() || t('home.featuresSubtitle')}
                 </p>
             </header>
 
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className={`grid gap-5 ${gridCols(columns, 4)}`}>
                 {items.map((feature, index) => {
-                    const Icon = ICON_MAP[feature.icon ?? ''] ?? Sparkles;
+                    const Icon = resolveIcon(feature.icon);
 
                     return (
                         <Reveal

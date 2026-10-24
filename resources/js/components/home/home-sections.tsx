@@ -19,8 +19,6 @@ export interface HomeSection {
     type: string;
     variant: 'cards' | 'banner' | 'announcement';
     title?: string | null;
-    /** i18n fallback heading used when the admin left the title blank. */
-    titleKey?: string;
     items?: HomeCard[];
     config?: HomeSectionConfig;
     /** Editor-only metadata, present when rendering inside the visual editor. */
@@ -67,20 +65,19 @@ const bannerCtaClasses =
 function EditableText({
     as: Tag,
     value,
-    fallback,
     placeholder,
     className,
     onEdit,
 }: {
     as: 'h2' | 'h3' | 'p' | 'span';
     value?: string | null;
-    /** Fallback already-resolved text (e.g. the i18n label) shown when blank. */
-    fallback?: string;
     placeholder: string;
     className?: string;
     onEdit: () => void;
 }) {
-    const shown = (value ?? '').trim() || (fallback ?? '').trim();
+    // Authored text only: visitor-facing copy is never resolved through i18n,
+    // so an untranslated string can never leak a translation key into content.
+    const shown = (value ?? '').trim();
 
     return (
         <Tag
@@ -265,33 +262,23 @@ function CardsSection({
     section: HomeSection;
     edit?: HomeSectionEditApi;
 }) {
-    const { t } = useTranslation();
-    const fallbackLabel = section.titleKey ? t(section.titleKey) : '';
+    const title = section.title?.trim();
 
-    const heading = (
-        <>
+    return (
+        <section className="space-y-4">
             {edit ? (
                 <EditableText
                     as="h2"
                     value={section.title}
-                    fallback={fallbackLabel}
                     placeholder="+ Add heading"
                     className="text-2xl font-bold text-slate-900 dark:text-white"
                     onEdit={() => edit.editText(section.id, 'title')}
                 />
-            ) : (
-                section.title?.trim() || fallbackLabel ? (
-                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                        {section.title?.trim() ? section.title : fallbackLabel}
-                    </h2>
-                ) : null
-            )}
-        </>
-    );
-
-    return (
-        <section className="space-y-4">
-            {heading}
+            ) : title ? (
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+                    {title}
+                </h2>
+            ) : null}
             <div className="grid items-start gap-5 md:grid-cols-2 lg:grid-cols-3">
                 {(section.items ?? []).map((card, index) => (
                     <HomeCardItem

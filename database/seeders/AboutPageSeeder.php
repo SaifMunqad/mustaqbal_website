@@ -18,9 +18,9 @@ use Illuminate\Support\Arr;
  * supported but intentionally left empty here — it is configured from the
  * dashboard editor (paste an iframe embed code or a video URL).
  *
- * Idempotent: keyed on the `about` slug. The dashboard page editor preserves
- * these structured keys and only overwrites the `body` HTML, so reseeding and
- * editing never clobber each other.
+ * Idempotent: keyed on the `about` slug. This seeder writes the legacy
+ * `site_pages` payload; {@see \App\Support\Home\AboutPageBackfill} copies it
+ * into the unified page builder, which is now the single content editor.
  */
 class AboutPageSeeder extends Seeder
 {

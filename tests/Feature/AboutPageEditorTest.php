@@ -7,13 +7,13 @@ use App\Models\Language;
 use App\Models\SitePage;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 /**
- * Covers localized About-page section editing: the batched save stores the
- * default language on the parent (universal fallback) and other languages as
- * per-language overrides, and the reader's merged `content` prefers a language's
- * own copy while falling back to the default for un-translated sections.
+ * Covers the About page dashboard surfaces after the builder cutover:
+ * `/dashboard/about` only owns publishing, while `/dashboard/about/visual`
+ * serves the unified page builder for the `about` page key.
  */
 class AboutPageEditorTest extends TestCase
 {
@@ -25,113 +25,59 @@ class AboutPageEditorTest extends TestCase
 
         $this->withoutVite();
 
-        // Build a controlled en(default)+ps fixture: clear the language the
-        // languages migration seeds by default so it is not an unexpected extra
-        // active language (which would make the editor require its translations).
         Language::query()->delete();
-
         Language::flushCache();
 
         $this->language('en', true);
         $this->language('ps', false);
     }
 
-    public function test_update_stores_default_on_parent_and_secondary_as_override(): void
+    public function test_update_stores_the_publishing_flag_only(): void
     {
         $page = $this->aboutPage();
 
         $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
             ->put(route('dashboard.about.update'), [
-                'slug' => 'about',
-                'is_published' => true,
-                'video_embed' => '<iframe src="x"></iframe>',
-                'translations' => [
-                    'en' => ['title' => 'About', 'body' => '<p>story</p>'],
-                ],
-                'contents' => [
-                    'en' => [
-                        'mission' => 'EN mission',
-                        'stats' => [['value' => '100+', 'label' => 'Students'], ['value' => '', 'label' => '']],
-                        'values' => [['icon' => 'book-open', 'title' => 'Knowledge', 'text' => 'First']],
-                    ],
-                    'ps' => [
-                        'mission' => 'PS mission',
-                    ],
-                ],
+                'is_published' => false,
+                // Legacy/editor fields must be ignored, never written by this
+                // screen (content is owned by the builder).
+                'slug' => 'hacked',
+                'translations' => ['en' => ['title' => 'Nope']],
             ])
-            ->assertSessionHasNoErrors()
-            ->assertRedirect();
+            ->assertRedirect(route('dashboard.about.edit'));
 
-        $page->refresh()->load('translations.language');
+        $page->refresh();
 
-        // Default language structured content lives on the parent (fallback).
-        $shared = $page->sharedContent();
-        $this->assertSame('EN mission', $shared['mission']);
-        $this->assertSame('<iframe src="x"></iframe>', $shared['video_embed']);
-        // The empty stat row was dropped by the sanitizer.
-        $this->assertCount(1, $shared['stats']);
-
-        $ps = Language::where('code', 'ps')->first();
-        $psRow = $page->translations->firstWhere('language_id', $ps->id);
-        $this->assertNotNull($psRow);
-        $this->assertSame('PS mission', $psRow->content['mission']);
-
-        // Reader merged content is language-aware.
-        app()->setLocale('en');
-        $this->assertSame('EN mission', $page->getContentAttribute()['mission']);
-
-        app()->setLocale('ps');
-        // PS overrides mission but falls back to the parent for stats.
-        $merged = $page->getContentAttribute();
-        $this->assertSame('PS mission', $merged['mission']);
-        $this->assertSame('Students', $merged['stats'][0]['label']);
+        $this->assertFalse($page->is_published);
+        $this->assertSame('about', $page->slug);
     }
 
-    public function test_untranslated_secondary_falls_back_to_default(): void
-    {
-        $page = $this->aboutPage();
-
-        $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
-            ->put(route('dashboard.about.update'), [
-                'slug' => 'about',
-                'is_published' => true,
-                'translations' => ['en' => ['title' => 'About', 'body' => '<p>story</p>']],
-                'contents' => [
-                    'en' => ['vision' => 'EN vision'],
-                    // Pashto submits only blanks → stored as null (no override).
-                    'ps' => ['vision' => '   '],
-                ],
-            ])
-            ->assertRedirect();
-
-        $page->refresh()->load('translations.language');
-
-        $ps = Language::where('code', 'ps')->first();
-        $psRow = $page->translations->firstWhere('language_id', $ps->id);
-        $this->assertNull($psRow?->content);
-
-        // Pashto readers still get the default vision (parent fallback).
-        app()->setLocale('ps');
-        $this->assertSame('EN vision', $page->getContentAttribute()['vision']);
-    }
-
-    public function test_visual_editor_renders_for_management(): void
+    public function test_visual_editor_renders_the_about_builder_for_management(): void
     {
         $page = $this->aboutPage();
 
         $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
             ->get(route('dashboard.about.visual'))
             ->assertOk()
-            ->assertInertia(fn (\Inertia\Testing\AssertableInertia $p) => $p
-                ->component('dashboard/about/visual')
-                ->where('page.id', $page->id)
-                ->has('contents')
+            ->assertInertia(fn (Assert $p) => $p
+                ->component('dashboard/page-builder/dashboard-page-builder-about')
+                ->where('page.key', 'about')
+                ->where('page.save_url', route('dashboard.pages.about.save'))
+                ->where('page.index_url', route('dashboard.about.edit'))
+                ->where('page.label', 'About page')
+                ->where('page.label_key', 'dashboard.about.title')
+                ->has('sections')
+                ->has('palette')
+                ->where('defaultLanguage', 'en')
             );
+
+        $this->assertDatabaseHas('pages', ['key' => 'about']);
+        $this->assertSame('about', $page->refresh()->slug);
     }
 
     public function test_visual_editor_is_management_only(): void
     {
-        $page = $this->aboutPage();
+        $this->aboutPage();
 
         $this->actingAs(User::factory()->create(['role' => UserRole::Family->value]))
             ->get(route('dashboard.about.visual'))

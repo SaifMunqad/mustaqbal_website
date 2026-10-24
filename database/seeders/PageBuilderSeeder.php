@@ -17,6 +17,7 @@ use Illuminate\Database\Seeder;
  *
  * Idempotent: {@see PageBuilderBackfill::run()} no-ops once the home page
  * already has builder sections, so reseeding never duplicates or clobbers.
+ * The About page has its own seeder ({@see AboutPageBuilderSeeder}).
  */
 class PageBuilderSeeder extends Seeder
 {

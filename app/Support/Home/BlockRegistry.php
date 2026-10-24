@@ -20,6 +20,9 @@ use App\Models\Program;
  * candidate items a curated block can pick — is derived here from
  * {@see SectionType}, so the sidebar palette and the server-side save validation
  * enforce exactly the same rules and can never drift apart.
+ *
+ * The catalog is global: every builder page ({@see BuilderPages}) offers every
+ * block type, so an admin can compose any page from the same collection.
  */
 class BlockRegistry
 {
@@ -34,7 +37,17 @@ class BlockRegistry
     }
 
     /**
-     * Palette options with an `addable` flag reflecting the current per-page count.
+     * Whether a block may be added on a page. The catalog is shared across every
+     * builder page, so this only rejects page keys the builder does not manage.
+     */
+    public static function canUse(string $pageKey, SectionType $type): bool
+    {
+        return BuilderPages::has($pageKey);
+    }
+
+    /**
+     * The palette for any builder page, with an `addable` flag reflecting the
+     * current instance count.
      *
      * @param  array<string, int>  $countsByType  section_type value => instance count on the page
      * @return list<array<string, mixed>>

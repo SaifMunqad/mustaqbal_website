@@ -5,6 +5,7 @@ import { uploadImage } from '@/lib/upload';
 import { cn } from '@/lib/utils';
 import { PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { ReactNode, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface BaseProps {
     label: string;
@@ -37,6 +38,7 @@ function FieldShell({
 }
 
 function useUploader() {
+    const { t } = useTranslation();
     const [uploading, setUploading] = useState(false);
     const [uploadError, setUploadError] = useState<string | null>(null);
 
@@ -47,7 +49,7 @@ function useUploader() {
             return await uploadImage(file);
         } catch (err) {
             setUploadError(
-                err instanceof Error ? err.message : 'Upload failed.',
+                err instanceof Error ? err.message : t('media.uploadFailed'),
             );
             return null;
         } finally {
@@ -68,6 +70,12 @@ interface ImageUploadFieldProps extends BaseProps {
     previewClassName?: string;
     /** Size classes for the empty drop-zone. Defaults to `h-40 w-full`. */
     dropzoneClassName?: string;
+    /**
+     * Render a single-row control instead of the banner drop-zone: a small
+     * thumbnail with Upload / Replace / Remove. Used inside repeatable rows
+     * (gallery shots, logo marks, avatars) where a full drop-zone is too tall.
+     */
+    compact?: boolean;
 }
 
 /**
@@ -86,7 +94,9 @@ export function ImageUploadField({
     accept = 'image/*',
     previewClassName,
     dropzoneClassName,
+    compact = false,
 }: ImageUploadFieldProps) {
+    const { t } = useTranslation();
     const inputRef = useRef<HTMLInputElement>(null);
     const { uploading, uploadError, run } = useUploader();
 
@@ -96,6 +106,88 @@ export function ImageUploadField({
         const url = await run(file);
         if (url) onChange(url);
     };
+
+    if (compact) {
+        return (
+            <FieldShell
+                label={label}
+                hint={hint}
+                error={error ?? uploadError ?? undefined}
+                className={className}
+            >
+                <input type="hidden" name={name} value={value} />
+                <div
+                    className="flex items-center gap-2"
+                    onDragOver={(event) => event.preventDefault()}
+                    onDrop={(event) => {
+                        event.preventDefault();
+                        handleFiles(event.dataTransfer.files);
+                    }}
+                >
+                    <div className="relative size-14 shrink-0 overflow-hidden rounded-lg border border-border bg-muted/30">
+                        {value ? (
+                            <img
+                                src={value}
+                                alt={t('media.previewAlt', { label })}
+                                className="size-full object-cover"
+                            />
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => inputRef.current?.click()}
+                                aria-label={t('media.uploadLabel', { label })}
+                                className="flex size-full items-center justify-center text-muted-foreground"
+                            >
+                                <PhotoIcon className="size-5" />
+                            </button>
+                        )}
+                    </div>
+                    <div className="flex min-w-0 flex-1 flex-col gap-1">
+                        <Input
+                            type="text"
+                            value={value}
+                            placeholder={t('media.urlPlaceholder')}
+                            onChange={(event) => onChange(event.target.value)}
+                        />
+                        <div className="flex items-center gap-1">
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                className="h-7 px-2 text-xs"
+                                disabled={uploading}
+                                onClick={() => inputRef.current?.click()}
+                            >
+                                {uploading
+                                    ? t('media.uploading')
+                                    : value
+                                      ? t('media.replace')
+                                      : t('media.upload')}
+                            </Button>
+                            {value ? (
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-7 px-2 text-xs text-destructive"
+                                    onClick={() => onChange('')}
+                                >
+                                    {t('media.remove')}
+                                </Button>
+                            ) : null}
+                        </div>
+                    </div>
+                </div>
+                <input
+                    ref={inputRef}
+                    type="file"
+                    accept={accept}
+                    className="hidden"
+                    onChange={(event) => handleFiles(event.target.files)}
+                />
+            </FieldShell>
+        );
+    }
 
     return (
         <FieldShell
@@ -114,7 +206,7 @@ export function ImageUploadField({
                 >
                     <img
                         src={value}
-                        alt={`${label} preview`}
+                        alt={t('media.previewAlt', { label })}
                         className={previewClassName ?? 'h-40 w-full object-cover'}
                     />
                     <Button
@@ -123,7 +215,7 @@ export function ImageUploadField({
                         variant="secondary"
                         className="absolute top-2 end-2 size-8 rounded-full"
                         onClick={() => onChange('')}
-                        aria-label="Remove image"
+                        aria-label={t('media.removeImage')}
                     >
                         <XMarkIcon className="size-4" />
                     </Button>
@@ -145,10 +237,12 @@ export function ImageUploadField({
                     <PhotoIcon className="size-7" />
                     <span>
                         {uploading
-                            ? 'Uploading…'
-                            : 'Click or drag an image here'}
+                            ? t('media.uploading')
+                            : t('media.clickOrDrag')}
                     </span>
-                    <span className="text-xs">or paste a URL below</span>
+                    <span className="text-xs">
+                        {t('media.orPasteUrl')}
+                    </span>
                 </button>
             )}
             <input
@@ -161,7 +255,7 @@ export function ImageUploadField({
             <Input
                 type="text"
                 value={value}
-                placeholder="/storage/uploads/image.jpg or https://..."
+                placeholder={t('media.urlPlaceholder')}
                 onChange={(event) => onChange(event.target.value)}
             />
         </FieldShell>
@@ -191,6 +285,7 @@ export function GalleryUploadField({
     className,
     max,
 }: GalleryUploadFieldProps) {
+    const { t } = useTranslation();
     const [draft, setDraft] = useState('');
     const { uploading, uploadError, run } = useUploader();
 
@@ -232,14 +327,17 @@ export function GalleryUploadField({
                         >
                             <img
                                 src={image}
-                                alt={`${label} ${index + 1}`}
+                                alt={t('media.galleryAlt', {
+                                    label,
+                                    number: index + 1,
+                                })}
                                 className="h-full w-full object-cover"
                             />
                             <button
                                 type="button"
                                 onClick={() => removeAt(index)}
                                 className="absolute top-1 end-1 rounded-full bg-black/60 p-1 text-white transition hover:bg-black/80"
-                                aria-label="Remove image"
+                                aria-label={t('media.removeImage')}
                             >
                                 <XMarkIcon className="size-3.5" />
                             </button>
@@ -258,7 +356,7 @@ export function GalleryUploadField({
                     className="flex h-24 w-24 flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-border bg-muted/20 text-xs text-muted-foreground transition hover:border-blue-400 hover:bg-muted/40 disabled:opacity-50"
                 >
                     <PhotoIcon className="size-5" />
-                    {uploading ? 'Uploading…' : 'Add'}
+                    {uploading ? t('media.uploading') : t('editor.add')}
                 </button>
             </div>
             <input
@@ -273,7 +371,7 @@ export function GalleryUploadField({
                 <Input
                     type="text"
                     value={draft}
-                    placeholder="Paste an image URL or path to add"
+                    placeholder={t('media.pasteImageUrl')}
                     onChange={(event) => setDraft(event.target.value)}
                     onKeyDown={(event) => {
                         if (event.key === 'Enter') {
@@ -288,7 +386,7 @@ export function GalleryUploadField({
                     variant="outline"
                     onClick={() => addUrl(draft)}
                 >
-                    Add URL
+                    {t('media.addUrl')}
                 </Button>
             </div>
             {images.map((image, index) => (

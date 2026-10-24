@@ -156,7 +156,14 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
 
     Route::prefix('about')->name('dashboard.about.')->middleware('role:management')->group(function () {
         Route::get('/', [DashboardAboutController::class, 'edit'])->name('edit');
-        Route::get('/visual', [DashboardAboutController::class, 'visual'])->name('visual');
+        // The About page is authored in the unified page builder; the legacy
+        // URL is kept so existing links and bookmarks keep working.
+        Route::get('/visual', [DashboardPageBuilderController::class, 'visual'])
+            ->defaults('page', 'about')
+            ->name('visual');
+        Route::put('/visual', [DashboardPageBuilderController::class, 'save'])
+            ->defaults('page', 'about')
+            ->name('visual.save');
         Route::put('/', [DashboardAboutController::class, 'update'])->name('update');
     });
 
@@ -193,11 +200,23 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
         Route::delete('/{homeSection}', [DashboardHomeSectionController::class, 'destroy'])->name('destroy');
     });
 
-    // Normalized page builder (home first). Runs alongside the legacy
-    // home-sections portal until the builder is cut over.
+    // Normalized page builder. Every page key in App\Support\Home\BuilderPages
+    // offers the same block catalog and shares this editor.
     Route::prefix('pages')->name('dashboard.pages.')->middleware('role:management')->group(function () {
         Route::get('/home', [DashboardPageBuilderController::class, 'visual'])->name('home');
         Route::put('/home', [DashboardPageBuilderController::class, 'save'])->name('home.save');
+        Route::get('/about', [DashboardPageBuilderController::class, 'visual'])
+            ->defaults('page', 'about')
+            ->name('about');
+        Route::put('/about', [DashboardPageBuilderController::class, 'save'])
+            ->defaults('page', 'about')
+            ->name('about.save');
+        Route::get('/contact', [DashboardPageBuilderController::class, 'visual'])
+            ->defaults('page', 'contact')
+            ->name('contact');
+        Route::put('/contact', [DashboardPageBuilderController::class, 'save'])
+            ->defaults('page', 'contact')
+            ->name('contact.save');
     });
 });
 

@@ -1,9 +1,16 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { ChevronDown, ExternalLink, Quote as QuoteIcon } from 'lucide-react';
 
+import ArticleBody from '@/components/editor/article-body';
+import ContactInfoPanel from '@/components/school/contact/contact-info-panel';
+import ContactMessageForm from '@/components/school/contact/contact-message-form';
+import ContactSuccessCard from '@/components/school/contact/contact-success-card';
 import Reveal from '@/components/ui/reveal';
+import { gridCols, masonryCols } from '@/lib/grid-cols';
+import { resolveIcon } from '@/lib/icon-map';
 import type { BlockListRow, RenderBlock } from '@/components/home/page-block';
+import type { SharedData } from '@/types';
 
 /**
  * Presentational renderers for the newer page-builder blocks. They all read the
@@ -23,6 +30,16 @@ const text = (b: RenderBlock) => ({
 });
 const cfgStr = (b: RenderBlock, key: string): string =>
     String(((b.config ?? {}) as Record<string, unknown>)[key] ?? '');
+
+/**
+ * Grid/list blocks read their track count from the block, falling back to the
+ * count their renderer was designed with.
+ */
+const gridColsFor = (block: RenderBlock, fallback: number): string =>
+    gridCols(block.columns, fallback);
+
+const masonryColsFor = (block: RenderBlock, fallback: number): string =>
+    masonryCols(block.columns, fallback);
 
 const bandTones: Record<string, string> = {
     default: 'from-blue-600 to-sky-500',
@@ -65,7 +82,7 @@ export function ListGrid({ block }: BlockProps) {
     return (
         <section className="space-y-6">
             <BlockHeading heading={heading} body={body} />
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className={`grid gap-5 ${gridColsFor(block, 3)}`}>
                 {items.map((item, i) => (
                     <Reveal key={`${item.title}-${i}`} delay={i * 50} className="h-full">
                         <article className="flex h-full flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-gray-900">
@@ -145,7 +162,7 @@ export function Gallery({ block }: BlockProps) {
     return (
         <section className="space-y-6">
             <BlockHeading heading={heading} body={body} />
-            <div className="columns-2 gap-4 md:columns-3 lg:columns-4 [&>*]:mb-4">
+            <div className={`${masonryColsFor(block, 4)} gap-4 [&>*]:mb-4`}>
                 {items.map((item, i) => (
                     <figure
                         key={i}
@@ -274,6 +291,48 @@ export function Contact({ block }: BlockProps) {
     );
 }
 
+/**
+ * Contact form — the real inquiry form, self-contained so it can be placed on
+ * any page (Contact, Home, About). The submitted state lives here, so the
+ * success card replaces only this block instead of the whole page.
+ */
+export function ContactForm({ block }: BlockProps) {
+    const [submitted, setSubmitted] = useState(false);
+    const { heading, body } = text(block);
+
+    if (submitted) {
+        return <ContactSuccessCard onSendAnother={() => setSubmitted(false)} />;
+    }
+
+    return (
+        <ContactMessageForm
+            title={heading || undefined}
+            description={body || undefined}
+            onSuccess={() => setSubmitted(true)}
+        />
+    );
+}
+
+/**
+ * Contact details — the Site Settings contact column (phones, email, address
+ * and social profiles), resolved live so there is exactly one place to edit
+ * them. Never duplicates those values into authored list rows.
+ */
+export function ContactDetails({ block }: BlockProps) {
+    const { site } = usePage<SharedData>().props;
+    const { heading, body } = text(block);
+
+    return (
+        <section className="space-y-6">
+            <BlockHeading heading={heading} body={body} />
+            <ContactInfoPanel
+                contact={site?.contact ?? {}}
+                social={site?.social ?? {}}
+            />
+        </section>
+    );
+}
+
 /** Call to action band — heading/body + button on a tinted gradient. */
 export function Cta({ block }: BlockProps) {
     const { heading, body, cta_label } = text(block);
@@ -384,12 +443,18 @@ export function VideoEmbed({ block }: BlockProps) {
 
 /** Map — embedded iframe from config (embed URL or lat/lng). */
 export function MapBlock({ block }: BlockProps) {
+    const { site } = usePage<SharedData>().props;
     const { heading, body } = text(block);
     let embed = cfgStr(block, 'map_embed_url');
     const lat = cfgStr(block, 'map_latitude');
     const lng = cfgStr(block, 'map_longitude');
     if (!embed && lat && lng) {
         embed = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
+    }
+    // A bare Map block falls back to the location configured in Site Settings,
+    // so it works out of the box (e.g. on the Contact page).
+    if (!embed) {
+        embed = site?.contact?.map_embed_url ?? '';
     }
     if (!embed) return null;
 
@@ -503,7 +568,7 @@ export function StatsCards({ block }: BlockProps) {
     return (
         <section className="space-y-6">
             <BlockHeading heading={heading} body={body} />
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className={`grid gap-4 ${gridColsFor(block, 4)}`}>
                 {items.map((item, i) => (
                     <div
                         key={i}
@@ -518,6 +583,84 @@ export function StatsCards({ block }: BlockProps) {
                     </div>
                 ))}
             </div>
+        </section>
+    );
+}
+
+/**
+ * Icon cards — list rows rendered as icon + title + description tiles. This is
+ * the generic home for About-style “values” (and any other icon-led grid),
+ * with an optional admin-authored heading instead of a built-in one.
+ */
+export function IconCards({ block }: BlockProps) {
+    const items = rows(block).filter((r) => r.title || r.description);
+    const { heading, body } = text(block);
+    if (items.length === 0) return null;
+
+    const accents = [
+        'bg-blue-100 text-blue-600 dark:bg-blue-500/15 dark:text-blue-300',
+        'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300',
+        'bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
+        'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300',
+        'bg-rose-100 text-rose-600 dark:bg-rose-500/15 dark:text-rose-300',
+        'bg-teal-100 text-teal-600 dark:bg-teal-500/15 dark:text-teal-300',
+    ];
+
+    return (
+        <section className="space-y-6">
+            <BlockHeading heading={heading} body={body} />
+            <div className={`grid gap-5 ${gridColsFor(block, 3)}`}>
+                {items.map((item, index) => {
+                    const Icon = resolveIcon(item.icon);
+
+                    return (
+                        <Reveal
+                            key={`${item.title}-${index}`}
+                            delay={index * 50}
+                            className="h-full"
+                        >
+                            <article className="flex h-full flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-gray-900">
+                                <div
+                                    className={`flex size-12 items-center justify-center rounded-xl ${accents[index % accents.length]}`}
+                                >
+                                    <Icon className="size-6" aria-hidden />
+                                </div>
+                                <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                                    {item.title}
+                                </h3>
+                                <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                                    {item.description}
+                                </p>
+                            </article>
+                        </Reveal>
+                    );
+                })}
+            </div>
+        </section>
+    );
+}
+
+/**
+ * Rich text — server-sanitized HTML authored with the Tiptap editor. Used for
+ * the About story and any other narrative block.
+ */
+export function RichTextBlock({ block }: BlockProps) {
+    const body = block.text?.body ?? '';
+    const heading = block.text?.heading ?? '';
+
+    if (!body && !heading) return null;
+
+    return (
+        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-10 dark:border-slate-800 dark:bg-gray-900">
+            {heading ? (
+                <h2 className="mb-6 text-2xl font-bold text-slate-900 md:text-3xl dark:text-white">
+                    {heading}
+                </h2>
+            ) : null}
+            <ArticleBody
+                body={body}
+                className="text-slate-700 dark:text-slate-300"
+            />
         </section>
     );
 }

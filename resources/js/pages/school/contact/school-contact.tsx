@@ -1,3 +1,4 @@
+import PageGrid, { type RenderBlock } from '@/components/home/page-block';
 import ContactInfoPanel from '@/components/school/contact/contact-info-panel';
 import ContactIntroBand from '@/components/school/contact/contact-intro-band';
 import ContactMapSection from '@/components/school/contact/contact-map-section';
@@ -16,19 +17,38 @@ interface ContactPageData {
 }
 
 function SchoolContact() {
-    const { t } = useTranslation();
-    const { page, site } = usePage<{
+    const { t, i18n } = useTranslation();
+    const { page, site, blocks } = usePage<{
         page: ContactPageData | null;
         site: SiteSettings;
+        blocks?: RenderBlock[];
     }>().props;
 
-    const title = page?.title ?? t('contact.title');
+    // Authored layout from the unified page builder. Empty until the contact
+    // page has blocks (or the contact backfill seeder has run), in which case
+    // the view keeps rendering the legacy site_pages composition below.
+    const builderBlocks = blocks ?? [];
+    const heroTitle = builderBlocks.find((block) => block.component === 'hero')
+        ?.hero?.title;
+    const title = heroTitle || page?.title || t('contact.title');
     const intro = page?.content?.body?.trim();
 
     const contact = site?.contact ?? {};
     const social = site?.social ?? {};
 
     const [submitted, setSubmitted] = useState(false);
+
+    if (builderBlocks.length > 0) {
+        return (
+            <div className="mx-auto max-w-6xl px-4">
+                <Head title={title} />
+                <PageGrid
+                    blocks={builderBlocks}
+                    rtl={i18n.dir() === 'rtl' || i18n.language === 'ar'}
+                />
+            </div>
+        );
+    }
 
     if (submitted) {
         return (

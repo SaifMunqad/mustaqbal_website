@@ -9,6 +9,7 @@ use App\Models\PageSection;
 use App\Support\Translation\TranslationPayload;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Stevebauman\Purify\Facades\Purify;
 
 /**
  * Commits a whole page layout in one transaction across the normalized stores.
@@ -26,7 +27,7 @@ class PageLayoutWriter
 {
     /**
      * @param  list<array<string, mixed>>  $sections
-     * @return list<int>  the resulting section ids, in display order
+     * @return list<int> the resulting section ids, in display order
      */
     public static function save(string $pageKey, array $sections, ?array $siteSettings = null): array
     {
@@ -37,7 +38,7 @@ class PageLayoutWriter
 
         $kept = [];
 
-        DB::transaction(function () use ($page, $sections, $allowedCodes, &$kept): void {
+        DB::transaction(function () use ($pageKey, $page, $sections, $allowedCodes, &$kept): void {
             foreach (array_values($sections) as $index => $data) {
                 $type = SectionType::from($data['section_type']);
 
@@ -45,12 +46,21 @@ class PageLayoutWriter
                     ? PageSection::query()->where('page_id', $page->id)->findOrFail($data['id'])
                     : new PageSection(['page_id' => $page->id]);
 
+                // A page's palette is the source of truth for what may be
+                // created there; existing blocks stay editable even if the
+                // catalog later narrows.
+                if ($section->exists === false && ! BlockRegistry::canUse($pageKey, $type)) {
+                    throw ValidationException::withMessages([
+                        'sections' => "The '{$type->label()}' block is not available on this page.",
+                    ]);
+                }
+
                 $section->fill(self::columns($data, $index));
                 $section->save();
 
                 $kept[] = $section->id;
 
-                self::applyTranslations($section, $data['translations'] ?? [], $allowedCodes);
+                self::applyTranslations($section, $data['translations'] ?? [], $allowedCodes, $type);
 
                 if (in_array('items', $type->stores(), true)) {
                     self::syncItems($section, $type, $data['items'] ?? []);
@@ -104,10 +114,12 @@ class PageLayoutWriter
      *
      * @param  array<string, array<string, mixed>>  $raw
      * @param  list<string>  $allowedCodes
+     * @param  SectionType|null  $type  the block type, used for HTML sanitization
      */
-    private static function applyTranslations(PageSection $section, array $raw, array $allowedCodes): void
+    private static function applyTranslations(PageSection $section, array $raw, array $allowedCodes, ?SectionType $type = null): void
     {
         $fields = $section->translatedAttributes();
+        $sanitize = $type === SectionType::RichText;
         $clean = [];
 
         foreach ($raw as $code => $values) {
@@ -122,6 +134,12 @@ class PageLayoutWriter
 
                 if ($value === null || (is_string($value) && trim($value) === '')) {
                     continue;
+                }
+
+                // Rich-text bodies are HTML; strip anything unsafe before it is
+                // ever rendered with dangerouslySetInnerHTML.
+                if ($sanitize && $field === 'body' && is_string($value)) {
+                    $value = Purify::clean($value);
                 }
 
                 $clean[$code][$field] = $value;

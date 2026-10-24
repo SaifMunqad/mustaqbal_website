@@ -94,13 +94,13 @@ export default function HomeHero({ home, tagline, rtl }: HomeHeroProps) {
 
                         <div className="mt-8 flex flex-wrap items-center gap-3.5">
                             <Link
-                                href="/school/programs"
+                                href={home.cta_primary_url || '/school/programs'}
                                 className="rounded-xl border-2 border-sky-600 bg-transparent px-6 py-2.5 text-sm font-bold text-sky-800 shadow-sm transition-all hover:bg-sky-600 hover:text-white dark:border-sky-400 dark:text-sky-300 dark:hover:bg-sky-500 dark:hover:text-white"
                             >
                                 {primaryLabel}
                             </Link>
                             <Link
-                                href="/school/contact"
+                                href={home.cta_secondary_url || '/school/contact'}
                                 className="rounded-xl border border-slate-300/80 bg-white/80 px-6 py-2.5 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:bg-white dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200 dark:hover:bg-slate-800"
                             >
                                 {secondaryLabel}

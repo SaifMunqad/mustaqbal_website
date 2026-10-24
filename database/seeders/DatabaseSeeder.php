@@ -259,5 +259,14 @@ class DatabaseSeeder extends Seeder
         // visual editor (which reads the builder) matches the public page. Runs
         // last, after SiteSettings + HomeSectionSeeder have written their data.
         $this->call(PageBuilderSeeder::class);
+
+        // Mirror the seeded About page (site_pages) into builder blocks so the
+        // unified editor opens populated on a fresh seed.
+        $this->call(AboutPageBuilderSeeder::class);
+
+        // Mirror the seeded Contact page (site_pages) into builder blocks so the
+        // contact page opens with the current design (intro, form, details, map)
+        // instead of an empty canvas. Never runs automatically outside seeding.
+        $this->call(ContactPageBuilderSeeder::class);
     }
 }

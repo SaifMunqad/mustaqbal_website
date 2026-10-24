@@ -28,6 +28,12 @@ use Illuminate\Support\Facades\Cache;
  */
 class PageSections
 {
+    /**
+     * Bumped whenever the invalidation strategy changes, so renders cached by
+     * an older, buggy version can never be served again.
+     */
+    private const CACHE_VERSION = 2;
+
     /** @return list<array<string, mixed>> */
     public static function render(string $pageKey): array
     {
@@ -40,12 +46,27 @@ class PageSections
 
             $locale = app()->getLocale();
             $version = (int) Cache::get(self::versionKey($pageKey), 0);
+            $cacheKey = self::cacheKey($pageKey, $locale, $version);
 
-            return Cache::remember(
-                self::cacheKey($pageKey, $locale, $version),
-                now()->addMinutes(30),
-                fn (): array => self::build($page, $locale),
-            );
+            // A cached empty layout is never trusted: a page first visited
+            // before its editor had content must start rendering as soon as a
+            // block is saved (and an empty payload is cheap to rebuild).
+            $cached = Cache::get($cacheKey);
+
+            if (is_array($cached) && $cached !== []) {
+                return $cached;
+            }
+
+            $blocks = self::build($page, $locale);
+
+            // Don't persist an empty layout either: with the database/file
+            // stores an empty entry otherwise outlives the first save whenever
+            // the version bump cannot be applied.
+            if ($blocks !== []) {
+                Cache::put($cacheKey, $blocks, now()->addMinutes(30));
+            }
+
+            return $blocks;
         } catch (\Throwable $e) {
             // Degrade to an empty layout for visitors, but never hide a bug from
             // the test suite.
@@ -60,12 +81,18 @@ class PageSections
     /** Invalidate every cached locale for a page (called from the write path). */
     public static function flush(string $pageKey): void
     {
-        Cache::increment(self::versionKey($pageKey));
+        $key = self::versionKey($pageKey);
+
+        // `Cache::increment()` returns false without creating the key on the
+        // database (and file) stores, so the very first save silently kept
+        // serving the old render. Writing the next version explicitly works on
+        // every store and also creates the key on first use.
+        Cache::forever($key, ((int) Cache::get($key, 0)) + 1);
     }
 
     private static function cacheKey(string $pageKey, string $locale, int $version): string
     {
-        return "pagebuilder.render.{$pageKey}.{$locale}.v{$version}";
+        return 'pagebuilder.render.v'.self::CACHE_VERSION.".{$pageKey}.{$locale}.v{$version}";
     }
 
     private static function versionKey(string $pageKey): string
@@ -104,9 +131,12 @@ class PageSections
             'sort_order' => $section->sort_order,
             'is_active' => $section->is_active,
             'type_label' => $type->label(),
+            // Localized copy is authored data, never an i18n key: the renderer
+            // shows the stored text as-is (or nothing) instead of resolving a
+            // fallback label that could leak a raw key into the page.
             'title' => $section->translated('title', $locale) ?: '',
-            'title_key' => $type->labelKey(),
             'spans' => self::spansFor($section, $type),
+            'columns' => $section->columns,
         ];
 
         return match ($type->component()) {
@@ -161,6 +191,8 @@ class PageSections
                 'subtitle' => $section->translated('body', $locale) ?: '',
                 'cta_primary' => $section->translated('cta_label', $locale) ?: '',
                 'cta_secondary' => $config['cta_secondary'] ?? '',
+                'cta_primary_url' => $section->cta_url ?: '',
+                'cta_secondary_url' => $config['cta_secondary_url'] ?? '',
                 'tagline' => $config['tagline'] ?? '',
                 'hero_image' => $section->image_path ?: ($config['image_url'] ?? ''),
             ],
@@ -174,6 +206,13 @@ class PageSections
 
         return [
             ...$base,
+            // Features/stats render their own layout, but still honour an
+            // authored heading/body so the editor's text fields are not dead.
+            'text' => [
+                'heading' => $section->translated('heading', $locale) ?: '',
+                'body' => $section->translated('body', $locale) ?: '',
+                'cta_label' => $section->translated('cta_label', $locale) ?: '',
+            ],
             $group => match ($group) {
                 'stats' => array_map(
                     static fn (array $r): array => ['value' => $r['value'], 'label' => $r['title']],
@@ -196,9 +235,20 @@ class PageSections
     {
         $heading = $section->translated('heading', $locale);
         $body = $section->translated('body', $locale);
+        $ctaLabel = $section->translated('cta_label', $locale);
 
-        // Don't render an empty authored block.
-        if (blank($heading) && blank($body)) {
+        // Don't drop an authored block that still has something to show: a
+        // banner may be image-only, and either variant may be button-only. Only
+        // the parts its renderer actually paints count — announcements ignore
+        // images, so an image alone does not make one visible.
+        $hasCta = filled($section->cta_url) && filled($ctaLabel);
+        $standsAlone = match ($base['variant'] ?? null) {
+            'banner' => filled($section->image_path) || $hasCta,
+            'announcement' => $hasCta,
+            default => false,
+        };
+
+        if (blank($heading) && blank($body) && ! $standsAlone) {
             return null;
         }
 
@@ -208,7 +258,7 @@ class PageSections
                 'heading' => $heading,
                 'body' => $body,
                 'image_url' => $section->image_path ?: null,
-                'cta_label' => $section->translated('cta_label', $locale),
+                'cta_label' => $ctaLabel,
                 'cta_url' => $section->cta_url ?: null,
                 'tone' => $section->tone ?: 'default',
             ],
@@ -348,7 +398,7 @@ class PageSections
             'subtitle' => $a->writer_name ?: $a->author?->name,
             'excerpt' => $a->excerpt ?: str($a->body)->limit(140)->toString(),
             'image' => $a->cover_image ?: ($a->images[0] ?? null),
-            'url' => '/school/articles/' . $a->slug,
+            'url' => '/school/articles/'.$a->slug,
             'date' => $a->published_at?->toIso8601String(),
             'dir' => $a->language_dir,
         ])->values()->all();
@@ -371,7 +421,7 @@ class PageSections
             'subtitle' => $e->location,
             'excerpt' => $e->excerpt,
             'image' => $e->cover_image ?: ($e->images[0] ?? null),
-            'url' => '/school/events/' . $e->slug,
+            'url' => '/school/events/'.$e->slug,
             'date' => $e->start_at?->toIso8601String(),
             'dir' => null,
         ])->values()->all();

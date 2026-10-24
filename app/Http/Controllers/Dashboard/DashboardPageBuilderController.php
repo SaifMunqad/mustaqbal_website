@@ -8,6 +8,7 @@ use App\Models\Language;
 use App\Models\Page;
 use App\Models\PageSection;
 use App\Support\Home\BlockRegistry;
+use App\Support\Home\BuilderPages;
 use App\Support\Home\PageLayoutWriter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,8 +17,12 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * Admin portal for the normalized page builder (home page first). Management
- * only, since the layout is shown to every visitor.
+ * Admin portal for the normalized page builder (home, about and contact).
+ * Management only, since the layouts are shown to every visitor.
+ *
+ * Every builder page offers the same block catalog, so the editor is one
+ * component driven entirely by the request's page key; {@see BuilderPages} owns
+ * which keys exist and the chrome around each one.
  *
  * The editor works on a fallback-free draft: every block is sent with its raw,
  * per-language rows (never the resolved fallback) plus its ordered references
@@ -27,12 +32,13 @@ use Inertia\Response;
  */
 class DashboardPageBuilderController extends Controller
 {
-    public function visual(): Response
+    public function visual(string $page = 'home'): Response
     {
-        $page = Page::resolve('home');
+        $pageKey = $this->pageKey($page);
+        $record = Page::resolve($pageKey, BuilderPages::label($pageKey));
 
         $sections = PageSection::query()
-            ->where('page_id', $page->id)
+            ->where('page_id', $record->id)
             ->with([
                 'translations.language',
                 'items',
@@ -51,17 +57,27 @@ class DashboardPageBuilderController extends Controller
             }
         }
 
-        return Inertia::render('dashboard/pages/home', [
+        return Inertia::render(BuilderPages::inertiaComponent($pageKey), [
+            'page' => [
+                'key' => $pageKey,
+                'label' => BuilderPages::label($pageKey),
+                'label_key' => BuilderPages::labelKey($pageKey),
+                'save_url' => route("dashboard.pages.{$pageKey}.save"),
+                'visual_url' => route("dashboard.pages.{$pageKey}"),
+                'index_url' => BuilderPages::indexUrl($pageKey),
+            ],
             'sections' => $sections,
-            'palette' => BlockRegistry::palette(BlockRegistry::countsFor($page->id)),
+            'palette' => BlockRegistry::palette(BlockRegistry::countsFor($record->id)),
             'categories' => SectionType::categories(),
             'availableItems' => $availableItems,
             'defaultLanguage' => Language::defaultCode(),
         ]);
     }
 
-    public function save(Request $request): RedirectResponse
+    public function save(Request $request, string $page = 'home'): RedirectResponse
     {
+        $pageKey = $this->pageKey($page);
+
         $validated = $request->validate([
             'sections' => ['present', 'array'],
             'sections.*.id' => ['nullable', 'integer', Rule::exists('page_sections', 'id')],
@@ -87,14 +103,32 @@ class DashboardPageBuilderController extends Controller
             'sections.*.lists.*.*.*.title' => ['nullable', 'string', 'max:255'],
             'sections.*.lists.*.*.*.description' => ['nullable', 'string', 'max:2000'],
             'sections.*.lists.*.*.*.icon' => ['nullable', 'string', 'max:60'],
+            // Row media/link columns are part of the generic list store; without
+            // explicit rules they would rely on the wildcard-array behaviour.
+            'sections.*.lists.*.*.*.image_path' => ['nullable', 'string', 'max:2048'],
+            'sections.*.lists.*.*.*.url' => ['nullable', 'string', 'max:2048'],
             'sections.*.translations' => ['nullable', 'array'],
             'sections.*.translations.*' => ['array'],
             'sections.*.translations.*.*' => ['nullable', 'string', 'max:5000'],
         ]);
 
-        PageLayoutWriter::save('home', $validated['sections']);
+        PageLayoutWriter::save($pageKey, $validated['sections']);
 
-        return back()->with('success', 'Home page saved.');
+        return back()->with(
+            'success',
+            BuilderPages::label($pageKey).' saved.',
+        );
+    }
+
+    /**
+     * Keep the builder limited to the pages the routes expose; anything else is
+     * a 404 rather than silently editing another page's layout.
+     */
+    private function pageKey(string $page): string
+    {
+        abort_unless(BuilderPages::has($page), 404);
+
+        return $page;
     }
 
     /**

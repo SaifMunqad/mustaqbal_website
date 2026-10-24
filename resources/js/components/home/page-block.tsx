@@ -10,15 +10,19 @@ import StatsBar from '@/components/home/stats-bar';
 import {
     Cta,
     Contact,
+    ContactDetails,
+    ContactForm,
     CountdownBlock,
     Faq,
     Gallery,
+    IconCards,
     ListGrid,
     Logos,
     MapBlock,
     MediaText,
     Newsletter,
     Quote,
+    RichTextBlock,
     SocialLinks,
     StatsCards,
     VideoEmbed,
@@ -57,8 +61,9 @@ export interface RenderBlock {
     is_active: boolean;
     type_label: string;
     title: string;
-    title_key: string;
     spans: { lg: number; md: number; sm: number };
+    /** Admin-chosen track count for grid/list blocks; null keeps the default. */
+    columns?: number | null;
     items?: HomeCard[];
     config?: HomeSectionConfig;
     features?: HomeFeature[];
@@ -75,6 +80,8 @@ export interface RenderBlock {
         subtitle?: string;
         cta_primary?: string;
         cta_secondary?: string;
+        cta_primary_url?: string;
+        cta_secondary_url?: string;
         tagline?: string;
         hero_image?: string;
     };
@@ -99,6 +106,8 @@ export function HomeBlock({
                         subtitle: block.hero?.subtitle,
                         cta_primary: block.hero?.cta_primary,
                         cta_secondary: block.hero?.cta_secondary,
+                        cta_primary_url: block.hero?.cta_primary_url,
+                        cta_secondary_url: block.hero?.cta_secondary_url,
                         hero_image: block.hero?.hero_image,
                     }}
                     tagline={block.hero?.tagline}
@@ -107,10 +116,27 @@ export function HomeBlock({
             );
 
         case 'features':
-            return <FeatureGrid features={block.features ?? []} />;
+            return (
+                <FeatureGrid
+                    features={block.features ?? []}
+                    heading={block.text?.heading}
+                    body={block.text?.body}
+                    columns={block.columns}
+                />
+            );
+
+        case 'icon_cards':
+            return <IconCards block={block} />;
 
         case 'stats':
-            return <StatsBar stats={block.stats ?? []} />;
+            return (
+                <StatsBar
+                    stats={block.stats ?? []}
+                    heading={block.text?.heading}
+                    body={block.text?.body}
+                    columns={block.columns}
+                />
+            );
 
         case 'programs':
             return (
@@ -135,6 +161,10 @@ export function HomeBlock({
             return <SocialLinks block={block} />;
         case 'contact':
             return <Contact block={block} />;
+        case 'contact_form':
+            return <ContactForm block={block} />;
+        case 'contact_details':
+            return <ContactDetails block={block} />;
         case 'cta':
             return <Cta block={block} />;
         case 'quote':
@@ -143,6 +173,8 @@ export function HomeBlock({
             return <MediaText block={block} />;
         case 'video':
             return <VideoEmbed block={block} />;
+        case 'rich_text':
+            return <RichTextBlock block={block} />;
         case 'map':
             return <MapBlock block={block} />;
         case 'newsletter':
@@ -159,7 +191,6 @@ export function HomeBlock({
                 type: block.type,
                 variant: block.variant,
                 title: block.title,
-                titleKey: block.title_key,
                 items: block.items,
                 config: block.config,
             };

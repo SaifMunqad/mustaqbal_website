@@ -45,6 +45,8 @@ export interface SiteSettings {
         subtitle?: string | null;
         cta_primary?: string | null;
         cta_secondary?: string | null;
+        cta_primary_url?: string | null;
+        cta_secondary_url?: string | null;
         hero_image?: string | null;
     };
     stats?: HomeStat[];
@@ -112,6 +114,7 @@ export interface SharedData {
             variant: 'success' | 'error' | 'info';
             title: string;
             description?: string | null;
+            params?: Record<string, string | number> | null;
         } | null;
     };
     sidebarOpen: boolean;

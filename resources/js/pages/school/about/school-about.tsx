@@ -10,6 +10,7 @@ import AboutStorySection from '@/components/school/about/about-story-section';
 import type { AboutPageData } from '@/components/school/about/about-types';
 import AboutValuesSection from '@/components/school/about/about-values-section';
 import AboutVideoSection from '@/components/school/about/about-video-section';
+import PageGrid, { type RenderBlock } from '@/components/home/page-block';
 import Reveal from '@/components/ui/reveal';
 import MainLayout from '@/layouts/app/main-layout';
 import type { SiteSettings } from '@/types';
@@ -18,13 +19,33 @@ import { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 function SchoolAbout() {
-    const { t } = useTranslation();
-    const { page, site } = usePage<{
+    const { t, i18n } = useTranslation();
+    const { page, site, blocks } = usePage<{
         page: AboutPageData | null;
         site: SiteSettings;
+        blocks?: RenderBlock[];
     }>().props;
     const content = page?.content ?? {};
-    const title = page?.title ?? site?.brand_name ?? t('about.title');
+    const builderBlocks = blocks ?? [];
+
+    // The builder hero owns the page heading once an About layout exists; the
+    // legacy site_pages title remains the fallback for SEO and the old layout.
+    const heroTitle = builderBlocks.find((block) => block.component === 'hero')
+        ?.hero?.title;
+    const title =
+        heroTitle || page?.title || site?.brand_name || t('about.title');
+
+    if (builderBlocks.length > 0) {
+        return (
+            <div className="mx-auto max-w-6xl px-4">
+                <Head title={title} />
+                <PageGrid
+                    blocks={builderBlocks}
+                    rtl={i18n.dir() === 'rtl' || i18n.language === 'ar'}
+                />
+            </div>
+        );
+    }
 
     // Rich-text body authored from the dashboard is the main narrative.
     const body = content.body?.trim();

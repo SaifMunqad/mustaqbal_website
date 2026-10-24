@@ -324,8 +324,8 @@ class PageBuilderTest extends TestCase
             ->get(route('dashboard.pages.home'))
             ->assertOk()
             ->assertInertia(fn (Assert $p) => $p
-                ->component('dashboard/pages/home')
-                ->has('palette', 27)
+                ->component('dashboard/page-builder/dashboard-page-builder-home')
+                ->has('palette', count(SectionType::cases()))
                 ->has('categories', 4)
                 ->where('defaultLanguage', 'en')
                 ->where('sections.0.section_type', 'hero')
@@ -341,8 +341,8 @@ class PageBuilderTest extends TestCase
             ->assertOk()
             // Consolidated: the legacy URL now renders the full builder feed.
             ->assertInertia(fn (Assert $p) => $p
-                ->component('dashboard/pages/home')
-                ->has('palette', 27)
+                ->component('dashboard/page-builder/dashboard-page-builder-home')
+                ->has('palette', count(SectionType::cases()))
             );
     }
 
@@ -365,5 +365,165 @@ class PageBuilderTest extends TestCase
 
         $this->assertDatabaseHas('page_sections', ['section_type' => 'banner', 'span_lg' => 6]);
         $this->assertDatabaseHas('page_section_translations', ['heading' => 'Saved banner']);
+    }
+
+    public function test_builder_save_endpoint_persists_row_images_and_links(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
+            ->put(route('dashboard.pages.home.save'), [
+                'sections' => [
+                    [
+                        'id' => null,
+                        'section_type' => 'gallery',
+                        'is_active' => true,
+                        'translations' => ['en' => ['heading' => 'Campus']],
+                        'lists' => [
+                            'gallery' => [
+                                'en' => [
+                                    [
+                                        'title' => 'Front gate',
+                                        'image_path' => '/storage/uploads/gate.jpg',
+                                        'url' => '/about',
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('section_list_items', [
+            'item_group' => 'gallery',
+            'title' => 'Front gate',
+            'image_path' => '/storage/uploads/gate.jpg',
+            'url' => '/about',
+        ]);
+    }
+
+    public function test_authored_banner_with_only_an_image_still_renders(): void
+    {
+        $page = $this->page();
+        $banner = $this->section($page, SectionType::Banner, 0);
+        $banner->update(['image_path' => '/storage/uploads/promo.jpg']);
+
+        $blocks = PageSections::render('home');
+
+        // An image-only banner is a valid authored block: it must not vanish
+        // from the live page just because the text has not been written yet.
+        $this->assertCount(1, $blocks);
+        $this->assertSame('banner', $blocks[0]['variant']);
+        $this->assertSame('/storage/uploads/promo.jpg', $blocks[0]['config']['image_url']);
+    }
+
+    public function test_authored_blocks_with_only_a_button_still_render(): void
+    {
+        $page = $this->page();
+
+        $banner = $this->section($page, SectionType::Banner, 0);
+        $banner->update(['cta_url' => '/school/programs']);
+        $banner->translations()->create(['language_id' => $this->en->id, 'cta_label' => 'See programs']);
+
+        $announcement = $this->section($page, SectionType::Announcement, 1);
+        $announcement->update(['cta_url' => '/school/contact']);
+        $announcement->translations()->create(['language_id' => $this->en->id, 'cta_label' => 'Contact us']);
+
+        $blocks = PageSections::render('home');
+
+        // A button-only banner/announcement is still real content: the author
+        // may add the heading later, so it must not be dropped in the meantime.
+        $this->assertCount(2, $blocks);
+        $this->assertSame('See programs', $blocks[0]['config']['cta_label']);
+        $this->assertSame('/school/programs', $blocks[0]['config']['cta_url']);
+        $this->assertSame('announcement', $blocks[1]['variant']);
+        $this->assertSame('/school/contact', $blocks[1]['config']['cta_url']);
+    }
+
+    public function test_authored_block_with_a_bare_link_stays_hidden(): void
+    {
+        $page = $this->page();
+        $announcement = $this->section($page, SectionType::Announcement, 0);
+
+        // A URL with no label paints nothing, so the block is still dropped
+        // rather than emitting an empty card.
+        $announcement->update(['cta_url' => '/nowhere']);
+
+        $this->assertCount(0, PageSections::render('home'));
+    }
+
+    public function test_grid_blocks_expose_columns_and_authored_heading(): void
+    {
+        $page = $this->page();
+
+        $features = $this->section($page, SectionType::Features, 0);
+        $features->update(['columns' => 2]);
+        $features->translations()->create([
+            'language_id' => $this->en->id,
+            'heading' => 'Why families stay',
+            'body' => 'Small classes, steady teachers.',
+        ]);
+        SectionListItem::create([
+            'page_section_id' => $features->id,
+            'language_id' => $this->en->id,
+            'item_group' => 'features',
+            'sort_order' => 0,
+            'title' => 'Small classes',
+            'icon' => 'classes',
+        ]);
+
+        $blocks = PageSections::render('home');
+
+        // The editor's Columns field and heading/body inputs are real controls:
+        // they reach the renderer instead of being silently dropped.
+        $this->assertSame(2, $blocks[0]['columns']);
+        $this->assertSame('Why families stay', $blocks[0]['text']['heading']);
+        $this->assertSame('Small classes, steady teachers.', $blocks[0]['text']['body']);
+    }
+
+    public function test_builder_save_persists_columns(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
+            ->put(route('dashboard.pages.home.save'), [
+                'sections' => [
+                    [
+                        'id' => null,
+                        'section_type' => 'gallery',
+                        'is_active' => true,
+                        'columns' => 2,
+                        'translations' => ['en' => ['heading' => 'Campus photos']],
+                    ],
+                ],
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('page_sections', [
+            'section_type' => 'gallery',
+            'columns' => 2,
+        ]);
+    }
+
+    public function test_curated_block_without_a_title_exposes_no_translation_key(): void
+    {
+        $page = $this->page();
+
+        $article = Article::create([
+            'user_id' => User::factory()->create()->id,
+            'title' => 'Untitled rail article',
+            'slug' => 'untitled-rail-article',
+            'body' => 'Body text.',
+            'is_published' => true,
+            'published_at' => now()->subDay(),
+        ]);
+
+        $section = $this->section($page, SectionType::Articles, 0);
+        $section->items()->create(['item_type' => 'article', 'item_id' => $article->id, 'sort_order' => 0]);
+
+        $blocks = PageSections::render('home');
+
+        // Authored copy is data, never an i18n key: an un-authored heading is
+        // simply blank, so the renderer never prints something like
+        // "enums.sectionType.articles" into the page.
+        $this->assertSame('', $blocks[0]['title']);
+        $this->assertArrayNotHasKey('title_key', $blocks[0]);
     }
 }
