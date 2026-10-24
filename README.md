@@ -48,3 +48,36 @@ php artisan test
 - Management can publish news, jobs, and events.
 - Queries are eager loaded in controllers using `with()`, `withCount()`, and `load()`.
 
+## License
+
+My School Website is free software: you can redistribute it and/or modify it under the terms of the
+GNU General Public License as published by the Free Software Foundation, either version 2 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+[GNU General Public License](LICENSE) for more details.
+
+Copyright (C) 2026 saifmunqad <saifullahparhizgar@gmail.com>
+
+The full license text is in [LICENSE](LICENSE). The SPDX identifier for this project is
+`GPL-2.0-or-later`.
+
+### Third-party components
+
+This project links against third-party libraries whose licenses are compatible with the GPL:
+
+- Laravel, Inertia.js, React and most npm/composer dependencies: MIT
+- `ezyang/htmlpurifier` (via `stevebauman/purify`): LGPL-2.1-or-later
+- `nette/schema` and `nette/utils`: BSD-3-Clause (also offered under GPL-2.0-only / GPL-3.0-only)
+- `jszip`: MIT (also offered under GPL-3.0-or-later)
+
+Those components stay under their own licenses; this repository's GPL notice applies to the
+code of this project.
+
+### Contributing
+
+By submitting a pull request, patch or any other contribution to this repository you agree to
+license your contribution under `GPL-2.0-or-later` (inbound = outbound), and you confirm that you
+have the right to do so.
+
