@@ -1,5 +1,5 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import { DataTable, DataTableColumn } from '@/components/table';
+import { DataTable, DataTableColumn } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import campaigns from '@/routes/dashboard/email-campaigns';
 import { Form, Link, router, usePage } from '@inertiajs/react';

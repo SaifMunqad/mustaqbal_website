@@ -1,6 +1,6 @@
 import AwardForm from '@/components/dashboard/awards/award-form';
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import { useFormToast } from '@/components/use-form-toast';
+import { useFormToast } from '@/components/feedback/use-form-toast';
 import { useTranslation } from 'react-i18next';
 
 export default function DashboardAwardsCreate() {

@@ -14,7 +14,7 @@ import StatsBar from '@/components/home/stats-bar';
 import type { Job } from '@/components/school/job-card';
 import Reveal from '@/components/ui/reveal';
 import MainLayout from '@/layouts/app/main-layout';
-import type { Program } from '@/pages/school/programs/program-card';
+import type { Program } from '@/components/school/program-card';
 import type { SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { ReactNode } from 'react';

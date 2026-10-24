@@ -1,5 +1,5 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import { DataTable, DataTableColumn } from '@/components/table';
+import { DataTable, DataTableColumn } from '@/components/ui/table';
 import { Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 

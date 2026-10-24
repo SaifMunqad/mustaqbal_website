@@ -1,16 +1,16 @@
 import { Form, router } from '@inertiajs/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SelectField, TextField } from '@/components/form-fields';
+import { SelectField, TextField } from '@/components/form/form-fields';
 import { BookMediaField } from '@/components/form/book-media-field';
 import { GalleryUploadField } from '@/components/form/image-upload-field';
 import LanguageTabsEditor, {
     type TranslatableField,
     type TranslationValues,
-} from '@/components/language-tabs-editor';
+} from '@/components/editor/language-tabs-editor';
 import { Button } from '@/components/ui/button';
 
-export type { TranslationValues } from '@/components/language-tabs-editor';
+export type { TranslationValues } from '@/components/editor/language-tabs-editor';
 
 export interface BookCategoryOption {
     id: number;

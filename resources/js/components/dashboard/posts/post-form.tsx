@@ -8,16 +8,16 @@ import {
 import { Form } from '@inertiajs/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CheckboxField, SelectField, TextField } from '@/components/form-fields';
+import { CheckboxField, SelectField, TextField } from '@/components/form/form-fields';
 import FormSection from '@/components/form/form-section';
 import { GalleryUploadField } from '@/components/form/image-upload-field';
 import StickyFormFooter from '@/components/form/sticky-form-footer';
 import LanguageTabsEditor, {
     type TranslatableField,
     type TranslationValues,
-} from '@/components/language-tabs-editor';
+} from '@/components/editor/language-tabs-editor';
 
-export type { TranslationValues } from '@/components/language-tabs-editor';
+export type { TranslationValues } from '@/components/editor/language-tabs-editor';
 
 export interface PostUserOption {
     id: number;

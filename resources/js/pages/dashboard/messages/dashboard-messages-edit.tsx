@@ -1,7 +1,7 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import { SelectField, TextAreaField, TextField } from '@/components/form-fields';
+import { SelectField, TextAreaField, TextField } from '@/components/form/form-fields';
 import { Button } from '@/components/ui/button';
-import { useFormToast } from '@/components/use-form-toast';
+import { useFormToast } from '@/components/feedback/use-form-toast';
 import { Form, usePage } from '@inertiajs/react';
 import messages from '@/routes/dashboard/messages';
 import { useTranslation } from 'react-i18next';

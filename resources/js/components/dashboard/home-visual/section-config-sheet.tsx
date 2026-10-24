@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { SelectField } from '@/components/form-fields';
+import { SelectField } from '@/components/form/form-fields';
 import { ImageUploadField } from '@/components/form/image-upload-field';
 import type { AvailableItem } from '@/components/dashboard/home-section-form';
 import type { DraftConfig, SectionDraft } from './types';

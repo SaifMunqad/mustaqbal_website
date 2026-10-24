@@ -7,7 +7,7 @@ import { Form, usePage } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import RichTextEditor from '@/components/editor/rich-text-editor';
-import { CheckboxField, SelectField, TextField } from '@/components/form-fields';
+import { CheckboxField, SelectField, TextField } from '@/components/form/form-fields';
 import FormSection from '@/components/form/form-section';
 import {
     GalleryUploadField,

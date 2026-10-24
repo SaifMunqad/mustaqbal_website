@@ -1,8 +1,8 @@
 import { Head } from '@inertiajs/react';
 
-import AppearanceLanguage from '@/components/appearance-language';
-import AppearanceTabs from '@/components/appearance-tabs';
-import HeadingSmall from '@/components/heading-small';
+import AppearanceLanguage from '@/components/appearance/appearance-language';
+import AppearanceTabs from '@/components/appearance/appearance-tabs';
+import HeadingSmall from '@/components/general/elements/heading-small';
 import { type BreadcrumbItem } from '@/types';
 
 import AppLayout from '@/layouts/app-layout';

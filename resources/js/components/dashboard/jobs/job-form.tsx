@@ -5,17 +5,17 @@ import {
 } from '@heroicons/react/24/outline';
 import { Form, router } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import { CheckboxField, SelectField, TextField } from '@/components/form-fields';
+import { CheckboxField, SelectField, TextField } from '@/components/form/form-fields';
 import ConfirmDialog from '@/components/form/confirm-dialog';
 import FormSection from '@/components/form/form-section';
 import StickyFormFooter from '@/components/form/sticky-form-footer';
 import LanguageTabsEditor, {
     type TranslatableField,
     type TranslationValues,
-} from '@/components/language-tabs-editor';
+} from '@/components/editor/language-tabs-editor';
 import { Button } from '@/components/ui/button';
 
-export type { TranslationValues } from '@/components/language-tabs-editor';
+export type { TranslationValues } from '@/components/editor/language-tabs-editor';
 
 export interface JobOption {
     value: string;

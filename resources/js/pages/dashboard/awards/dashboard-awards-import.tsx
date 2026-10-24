@@ -4,7 +4,7 @@ import ExcelAwardsImport, {
 } from '@/components/dashboard/awards/excel-awards-import';
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { Button } from '@/components/ui/button';
-import { useFormToast } from '@/components/use-form-toast';
+import { useFormToast } from '@/components/feedback/use-form-toast';
 import { useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

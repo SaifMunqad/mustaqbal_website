@@ -1,5 +1,5 @@
-import { DateField, TextField } from '@/components/form-fields';
-import { useToast } from '@/components/toast';
+import { DateField, TextField } from '@/components/form/form-fields';
+import { useToast } from '@/components/feedback/toast';
 import Reveal from '@/components/ui/reveal';
 import MainLayout from '@/layouts/app/main-layout';
 import { Head } from '@inertiajs/react';

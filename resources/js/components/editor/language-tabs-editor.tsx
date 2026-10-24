@@ -1,7 +1,7 @@
 import { usePage } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 import RichTextEditor from '@/components/editor/rich-text-editor';
-import { TextAreaField, TextField } from '@/components/form-fields';
+import { TextAreaField, TextField } from '@/components/form/form-fields';
 import { cn } from '@/lib/utils';
 import type { LanguageOption, SharedData } from '@/types';
 

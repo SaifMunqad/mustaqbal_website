@@ -7,11 +7,11 @@ import {
     type SiteSettingsPageProps,
 } from '@/components/dashboard/site-settings/site-settings-shared';
 import { useSectionDirty } from '@/components/dashboard/site-settings/use-section-dirty';
-import { TextField } from '@/components/form-fields';
+import { TextField } from '@/components/form/form-fields';
 import LanguageTabsEditor, {
     type TranslatableField,
     type TranslationValues,
-} from '@/components/language-tabs-editor';
+} from '@/components/editor/language-tabs-editor';
 import { cn } from '@/lib/utils';
 import type { HomeFeature, HomeStat, LanguageOption } from '@/types';
 import { usePage } from '@inertiajs/react';

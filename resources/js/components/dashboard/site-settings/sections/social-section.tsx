@@ -1,7 +1,7 @@
 import SettingsSection from '@/components/dashboard/site-settings/settings-section';
 import type { SiteSettingsPageProps } from '@/components/dashboard/site-settings/site-settings-shared';
 import { useSectionDirty } from '@/components/dashboard/site-settings/use-section-dirty';
-import { TextField } from '@/components/form-fields';
+import { TextField } from '@/components/form/form-fields';
 import { usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';

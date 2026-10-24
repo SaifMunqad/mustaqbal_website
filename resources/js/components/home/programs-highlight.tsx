@@ -1,7 +1,7 @@
 import Reveal from '@/components/ui/reveal';
 import ProgramCard, {
     type Program,
-} from '@/pages/school/programs/program-card';
+} from '@/components/school/program-card';
 import { Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 

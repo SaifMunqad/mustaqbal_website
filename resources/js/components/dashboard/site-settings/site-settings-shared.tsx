@@ -1,7 +1,7 @@
 import type {
     TranslatableField,
     TranslationValues,
-} from '@/components/language-tabs-editor';
+} from '@/components/editor/language-tabs-editor';
 import type {
     HomeFeature,
     HomeStat,

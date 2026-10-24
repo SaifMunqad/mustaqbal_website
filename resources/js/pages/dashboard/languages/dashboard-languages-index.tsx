@@ -1,7 +1,7 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import ConfirmDialog from '@/components/form/confirm-dialog';
 import { Button } from '@/components/ui/button';
-import { useFormToast } from '@/components/use-form-toast';
+import { useFormToast } from '@/components/feedback/use-form-toast';
 import { Form, router, usePage } from '@inertiajs/react';
 import { GripVertical } from 'lucide-react';
 import { type DragEvent, useEffect, useRef, useState } from 'react';

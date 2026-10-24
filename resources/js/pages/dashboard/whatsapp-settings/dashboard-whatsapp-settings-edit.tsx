@@ -1,7 +1,7 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import { SelectField, TextField } from '@/components/form-fields';
+import { SelectField, TextField } from '@/components/form/form-fields';
 import { Button } from '@/components/ui/button';
-import { useFormToast } from '@/components/use-form-toast';
+import { useFormToast } from '@/components/feedback/use-form-toast';
 import settings from '@/routes/dashboard/whatsapp-settings';
 import campaigns from '@/routes/dashboard/whatsapp-campaigns';
 import { Form, Link, usePage } from '@inertiajs/react';

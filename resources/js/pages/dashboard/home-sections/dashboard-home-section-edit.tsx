@@ -4,8 +4,8 @@ import HomeSectionForm, {
     type HomeSectionFormData,
     type TypeOption,
 } from '@/components/dashboard/home-section-form';
-import type { TranslationValues } from '@/components/language-tabs-editor';
-import { useFormToast } from '@/components/use-form-toast';
+import type { TranslationValues } from '@/components/editor/language-tabs-editor';
+import { useFormToast } from '@/components/feedback/use-form-toast';
 import { usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 

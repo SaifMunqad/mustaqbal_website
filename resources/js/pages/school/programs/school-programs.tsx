@@ -12,7 +12,7 @@ import ProgramCard, {
     PROGRAM_ACCENTS,
     type Program,
     type ProgramType,
-} from './program-card';
+} from '@/components/school/program-card';
 
 interface ProgramsPageData {
     title?: string;

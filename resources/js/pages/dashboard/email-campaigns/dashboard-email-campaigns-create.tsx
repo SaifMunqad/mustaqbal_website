@@ -1,8 +1,8 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import ExcelEmailsImport, { type ExtractedEmails } from '@/components/excel-emails-import';
-import { SelectField, TextAreaField, TextField } from '@/components/form-fields';
+import ExcelEmailsImport, { type ExtractedEmails } from '@/components/dashboard/import/excel-emails-import';
+import { SelectField, TextAreaField, TextField } from '@/components/form/form-fields';
 import { Button } from '@/components/ui/button';
-import { useFormToast } from '@/components/use-form-toast';
+import { useFormToast } from '@/components/feedback/use-form-toast';
 import campaigns from '@/routes/dashboard/email-campaigns';
 import { Form, usePage } from '@inertiajs/react';
 import { useState } from 'react';

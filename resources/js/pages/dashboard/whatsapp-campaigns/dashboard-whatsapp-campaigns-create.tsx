@@ -1,8 +1,8 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import ExcelPhonesImport, { type ExtractedPhones } from '@/components/excel-phones-import';
-import { SelectField, TextAreaField, TextField } from '@/components/form-fields';
+import ExcelPhonesImport, { type ExtractedPhones } from '@/components/dashboard/import/excel-phones-import';
+import { SelectField, TextAreaField, TextField } from '@/components/form/form-fields';
 import { Button } from '@/components/ui/button';
-import { useFormToast } from '@/components/use-form-toast';
+import { useFormToast } from '@/components/feedback/use-form-toast';
 import campaigns from '@/routes/dashboard/whatsapp-campaigns';
 import settings from '@/routes/dashboard/whatsapp-settings';
 import { AlertTriangle } from 'lucide-react';

@@ -3,7 +3,7 @@ import {
     type SettingsSectionKey,
 } from '@/components/dashboard/site-settings/site-settings-shared';
 import { Button } from '@/components/ui/button';
-import { useFormToast } from '@/components/use-form-toast';
+import { useFormToast } from '@/components/feedback/use-form-toast';
 import { Form } from '@inertiajs/react';
 import { type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';

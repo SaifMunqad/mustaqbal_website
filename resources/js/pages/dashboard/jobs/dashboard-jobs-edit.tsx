@@ -4,7 +4,7 @@ import JobForm, {
     type JobOption,
     type TranslationValues,
 } from '@/components/dashboard/jobs/job-form';
-import { useFormToast } from '@/components/use-form-toast';
+import { useFormToast } from '@/components/feedback/use-form-toast';
 import { usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 

@@ -45,7 +45,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import type { Program } from '@/pages/school/programs/program-card';
+import type { Program } from '@/components/school/program-card';
 import type { LanguageOption, SharedData } from '@/types';
 
 interface VisualProps {

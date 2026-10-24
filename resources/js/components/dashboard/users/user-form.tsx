@@ -1,6 +1,6 @@
 import { Form, router } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import { SelectField, TextField } from '@/components/form-fields';
+import { SelectField, TextField } from '@/components/form/form-fields';
 import { Button } from '@/components/ui/button';
 import type { User } from '@/types';
 

@@ -7,7 +7,7 @@ import '@fontsource/carlito/700.css';
 
 import '@/i18n';
 import { bootstrapLanguage } from '@/i18n';
-import { ToastProvider, type FlashProps } from '@/components/toast';
+import { ToastProvider, type FlashProps } from '@/components/feedback/toast';
 import type { SharedData, SiteSettings } from '@/types';
 import { createInertiaApp, router } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';

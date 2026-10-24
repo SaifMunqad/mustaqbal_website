@@ -1,8 +1,8 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import { CheckboxField } from '@/components/form-fields';
+import { CheckboxField } from '@/components/form/form-fields';
 import FormSection from '@/components/form/form-section';
 import StickyFormFooter from '@/components/form/sticky-form-footer';
-import { useFormToast } from '@/components/use-form-toast';
+import { useFormToast } from '@/components/feedback/use-form-toast';
 import { Button } from '@/components/ui/button';
 import { EyeIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
 import { Link, useForm, usePage } from '@inertiajs/react';

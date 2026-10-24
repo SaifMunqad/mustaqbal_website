@@ -1,5 +1,5 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import { TextAreaField, TextField } from '@/components/form-fields';
+import { TextAreaField, TextField } from '@/components/form/form-fields';
 import { Button } from '@/components/ui/button';
 import { Form } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';

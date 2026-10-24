@@ -1,6 +1,6 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import ArticleForm, { type Article } from '@/components/dashboard/articles/article-form';
-import { useFormToast } from '@/components/use-form-toast';
+import { useFormToast } from '@/components/feedback/use-form-toast';
 import { usePage } from '@inertiajs/react';
 import articles from '@/routes/dashboard/articles';
 import type { SharedData } from '@/types';

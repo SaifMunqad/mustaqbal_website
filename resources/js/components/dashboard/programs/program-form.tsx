@@ -2,16 +2,16 @@ import {
     CheckboxField,
     SelectField,
     TextField,
-} from '@/components/form-fields';
+} from '@/components/form/form-fields';
 import LanguageTabsEditor, {
     type TranslatableField,
     type TranslationValues,
-} from '@/components/language-tabs-editor';
+} from '@/components/editor/language-tabs-editor';
 import { Button } from '@/components/ui/button';
 import { Form } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
-export type { TranslationValues } from '@/components/language-tabs-editor';
+export type { TranslationValues } from '@/components/editor/language-tabs-editor';
 
 export interface Program {
     id: number;

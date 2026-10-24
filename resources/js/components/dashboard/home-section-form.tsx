@@ -1,11 +1,11 @@
 import FormSection from '@/components/form/form-section';
 import StickyFormFooter from '@/components/form/sticky-form-footer';
-import { CheckboxField, SelectField, TextField } from '@/components/form-fields';
+import { CheckboxField, SelectField, TextField } from '@/components/form/form-fields';
 import { ImageUploadField } from '@/components/form/image-upload-field';
 import LanguageTabsEditor, {
     type TranslatableField,
     type TranslationValues,
-} from '@/components/language-tabs-editor';
+} from '@/components/editor/language-tabs-editor';
 import { Button } from '@/components/ui/button';
 import { router, useForm } from '@inertiajs/react';
 import {

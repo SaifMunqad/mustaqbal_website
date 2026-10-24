@@ -1,5 +1,5 @@
 import ArticleBody from '@/components/editor/article-body';
-import ShareButton from '@/components/editor/share-button';
+import ShareButton from '@/components/general/elements/share-button';
 import Reveal from '@/components/ui/reveal';
 import MainLayout from '@/layouts/app/main-layout';
 import { Head, Link, usePage } from '@inertiajs/react';

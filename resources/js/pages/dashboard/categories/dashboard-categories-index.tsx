@@ -1,5 +1,5 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import { DataTable, DataTableColumn } from '@/components/table';
+import { DataTable, DataTableColumn } from '@/components/ui/table';
 import ConfirmDialog from '@/components/form/confirm-dialog';
 import { Button } from '@/components/ui/button';
 import { Link, router, usePage } from '@inertiajs/react';

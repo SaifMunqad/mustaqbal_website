@@ -1,5 +1,5 @@
 import ConfirmDialog from '@/components/form/confirm-dialog';
-import { DateField, TextField } from '@/components/form-fields';
+import { DateField, TextField } from '@/components/form/form-fields';
 import { Button } from '@/components/ui/button';
 import { Form, router } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';

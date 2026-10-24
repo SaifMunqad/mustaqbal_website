@@ -1,6 +1,6 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import ArticleForm from '@/components/dashboard/articles/article-form';
-import { useFormToast } from '@/components/use-form-toast';
+import { useFormToast } from '@/components/feedback/use-form-toast';
 import articles from '@/routes/dashboard/articles';
 import { useTranslation } from 'react-i18next';
 

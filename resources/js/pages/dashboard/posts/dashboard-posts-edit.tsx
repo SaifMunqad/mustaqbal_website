@@ -5,7 +5,7 @@ import PostForm, {
     type PostTypeOption,
     type TranslationValues,
 } from '@/components/dashboard/posts/post-form';
-import { useFormToast } from '@/components/use-form-toast';
+import { useFormToast } from '@/components/feedback/use-form-toast';
 import { usePage } from '@inertiajs/react';
 import posts from '@/routes/dashboard/posts';
 import { useTranslation } from 'react-i18next';
