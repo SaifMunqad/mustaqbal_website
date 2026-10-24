@@ -41,12 +41,15 @@ const gridColsFor = (block: RenderBlock, fallback: number): string =>
 const masonryColsFor = (block: RenderBlock, fallback: number): string =>
     masonryCols(block.columns, fallback);
 
+// Band gradients always stay inside the brand pair: the label color derived for
+// the filled brand (`text-brand-fg`) is only guaranteed readable on the brand
+// and its own shade, never on a fixed green/amber/red gradient.
 const bandTones: Record<string, string> = {
-    default: 'from-brand to-accent-brand',
-    blue: 'from-brand to-accent-brand',
-    green: 'from-emerald-600 to-teal-500',
-    amber: 'from-amber-500 to-orange-500',
-    red: 'from-rose-600 to-red-500',
+    default: 'from-brand to-brand-hover',
+    blue: 'from-brand to-brand-hover',
+    green: 'from-brand to-brand-hover',
+    amber: 'from-brand to-brand-hover',
+    red: 'from-brand to-brand-hover',
 };
 
 function BlockHeading({ heading, body }: { heading: string; body?: string }) {
@@ -339,7 +342,7 @@ export function Cta({ block }: BlockProps) {
 
     return (
         <section
-            className={`rounded-3xl bg-gradient-to-r ${tone} px-8 py-12 text-center text-white shadow-md`}
+            className={`rounded-3xl bg-gradient-to-r ${tone} px-8 py-12 text-center text-brand-fg shadow-md`}
         >
             {heading ? (
                 <h2 className="text-2xl font-extrabold md:text-3xl">
@@ -411,7 +414,7 @@ export function MediaText({ block }: BlockProps) {
                 {block.cta_url && cta_label ? (
                     <Link
                         href={block.cta_url}
-                        className="mt-6 inline-block rounded-xl border-2 border-brand-border px-6 py-2.5 text-sm font-bold text-brand-ink transition hover:bg-brand-hover hover:text-white"
+                        className="mt-6 inline-block rounded-xl border-2 border-brand-border px-6 py-2.5 text-sm font-bold text-brand-ink transition hover:bg-brand-hover hover:text-brand-fg"
                     >
                         {cta_label}
                     </Link>

@@ -11,6 +11,13 @@
     } catch (\Throwable) {
         $palette = null;
     }
+    // Per-language typeface chosen in the dashboard. Null means the language
+    // uses the built-in stack declared in app.css (Noto Naskh Arabic).
+    try {
+        $typography = \App\Models\Language::typographyFor($locale);
+    } catch (\Throwable) {
+        $typography = null;
+    }
 @endphp
 <html lang="{{ str_replace('_', '-', $locale) }}" dir="{{ $dir }}" @class(['dark' => ($appearance ?? 'system') == 'dark'])>
 <head>
@@ -46,6 +53,19 @@
              before first paint so there is no flash of the default blue. --}}
         <style id="brand-palette">{!! \App\Support\Theme\BrandPalette::toCss($palette) !!}</style>
         <meta name="theme-color" content="{{ $palette['light']['--brand'] }}">
+    @endif
+
+    @if ($typography)
+        {{-- Uploaded typeface for the active language: its @font-face rules plus
+             the --app-font-active stack. Emitted before first paint so text
+             never flashes in the fallback font. A curated Google Font instead
+             links its stylesheet, so only that family is downloaded. --}}
+        @if (! empty($typography['href']))
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link rel="stylesheet" href="{{ $typography['href'] }}">
+        @endif
+        <style id="app-font">{!! \App\Support\Typography\FontStyles::css($typography) !!}</style>
     @endif
 
     <title inertia>{{ config('app.name', 'Laravel') }}</title>

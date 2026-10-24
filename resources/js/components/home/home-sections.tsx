@@ -60,8 +60,12 @@ const editableRing =
 
 // One shared look for the banner CTA so the visual editor's preview button is
 // pixel-identical to the button visitors actually see on the live home page.
+//
+// The banner paints a neutral black scrim over its image/tone, so this button
+// uses a fixed reverse palette. Brand tokens (brand-ink on a dark scrim) are
+// unreadable for most colors — the border would show while the label vanished.
 const bannerCtaClasses =
-    'rounded-xl border-2 border-brand-border bg-transparent px-6 py-2.5 text-sm font-bold text-brand-ink shadow-sm transition-all hover:border-brand hover:bg-brand-hover hover:text-brand-fg';
+    'rounded-xl border-2 border-white/70 bg-transparent px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all hover:border-white hover:bg-white/10';
 
 function EditableText({
     as: Tag,

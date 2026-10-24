@@ -53,7 +53,7 @@ export default function OverlayMediaCard({
                     ) : null}
                 </div>
                 {badge ? (
-                    <span className="absolute start-2 top-2 z-10 rounded-full bg-white/80 px-2 py-0.5 text-xs font-medium text-brand-ink shadow-sm backdrop-blur-sm">
+                    <span className="absolute start-2 top-2 z-10 rounded-full bg-brand-fg/90 px-2 py-0.5 text-xs font-medium text-brand shadow-sm backdrop-blur-sm">
                         {badge}
                     </span>
                 ) : null}

@@ -105,8 +105,10 @@ export default function HomeCardItem({
                     className="relative z-10 flex items-start justify-between gap-2 p-4"
                 >
                     {card.subtitle ? (
+                        // Pinned over the neutral top scrim, so the label stays
+                        // neutral white: a brand token would disappear on it.
                         <p
-                            className={`text-xs font-semibold tracking-wide text-brand-ink uppercase ${rtl ? 'text-right' : 'text-left'}`}
+                            className={`text-xs font-semibold tracking-wide text-white/90 uppercase ${rtl ? 'text-right' : 'text-left'}`}
                         >
                             {card.subtitle}
                         </p>

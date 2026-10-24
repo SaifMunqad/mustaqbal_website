@@ -97,7 +97,7 @@ export default function HomeHero({ home, tagline, rtl }: HomeHeroProps) {
                                 href={
                                     home.cta_primary_url || '/school/programs'
                                 }
-                                className="rounded-xl border-2 border-brand-border bg-transparent px-6 py-2.5 text-sm font-bold text-brand-ink shadow-sm transition-all hover:bg-brand-hover hover:text-white dark:hover:bg-brand-hover dark:hover:text-white"
+                                className="rounded-xl border-2 border-brand-border bg-transparent px-6 py-2.5 text-sm font-bold text-brand-ink shadow-sm transition-all hover:bg-brand-hover hover:text-brand-fg"
                             >
                                 {primaryLabel}
                             </Link>
@@ -105,7 +105,7 @@ export default function HomeHero({ home, tagline, rtl }: HomeHeroProps) {
                                 href={
                                     home.cta_secondary_url || '/school/contact'
                                 }
-                                className="rounded-xl border border-brand-border/80 bg-white/80 px-6 py-2.5 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:bg-brand-soft dark:text-slate-200 dark:hover:bg-slate-800"
+                                className="rounded-xl border border-brand-border/80 bg-brand-fg/85 px-6 py-2.5 text-sm font-semibold text-brand shadow-sm backdrop-blur-sm transition-all hover:bg-brand-fg"
                             >
                                 {secondaryLabel}
                             </Link>

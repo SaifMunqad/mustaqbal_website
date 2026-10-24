@@ -107,7 +107,7 @@ const variantStyles: Record<ToastVariant, string> = {
     success:
         'border-emerald-200 bg-emerald-50 text-emerald-950 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-50',
     error: 'border-rose-200 bg-rose-50 text-rose-950 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-50',
-    info: 'border-brand-border bg-brand-soft text-brand-ink border-brand-border dark:bg-brand-deep text-brand-ink',
+    info: 'border-brand-border bg-brand-soft text-brand-ink dark:bg-brand-deep',
 };
 
 const iconByVariant: Record<
