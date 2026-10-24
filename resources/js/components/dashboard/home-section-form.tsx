@@ -15,6 +15,7 @@ import {
     RectangleStackIcon,
 } from '@heroicons/react/24/outline';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface TypeOption {
     value: string;
@@ -27,24 +28,9 @@ export interface AvailableItem {
     label: string;
 }
 
-// The localized fields rendered per language. Curated sections only carry a
-// section title; authored blocks also have heading / body / button label.
-const titleField: TranslatableField = {
-    name: 'title',
-    label: 'Section heading (optional)',
-    type: 'text',
-    hint: 'Shown above this block on the home page.',
-    required: false,
-};
-
-const authoredFields: TranslatableField[] = [
-    titleField,
-    { name: 'heading', label: 'Heading', type: 'text', required: false },
-    { name: 'body', label: 'Body', type: 'textarea', rows: 4, required: false },
-    { name: 'cta_label', label: 'Button label', type: 'text', required: false },
-];
-
-const curatedFields: TranslatableField[] = [titleField];
+// The localized fields are built inside the component so their labels follow
+// the active UI language. Curated sections only carry a section title; authored
+// blocks also have heading / body / button label.
 
 // Parent (non-localized) config shape persisted on the row.
 interface HomeSectionParentConfig {
@@ -75,11 +61,11 @@ interface HomeSectionFormProps {
 }
 
 const toneOptions = [
-    { value: 'default', label: 'Default' },
-    { value: 'blue', label: 'Blue' },
-    { value: 'green', label: 'Green' },
-    { value: 'amber', label: 'Amber' },
-    { value: 'red', label: 'Red' },
+    { value: 'default', labelKey: 'homeBuilder.tones.default' },
+    { value: 'blue', labelKey: 'homeBuilder.tones.blue' },
+    { value: 'green', labelKey: 'homeBuilder.tones.green' },
+    { value: 'amber', labelKey: 'homeBuilder.tones.amber' },
+    { value: 'red', labelKey: 'homeBuilder.tones.red' },
 ];
 
 function mergeInitial(
@@ -110,6 +96,37 @@ export default function HomeSectionForm({
     deleteUrl,
     toastOnError,
 }: HomeSectionFormProps) {
+    const { t } = useTranslation();
+    const titleField: TranslatableField = {
+        name: 'title',
+        label: t('homeBuilder.form.titleLabel'),
+        type: 'text',
+        hint: t('homeBuilder.form.titleHint'),
+        required: false,
+    };
+    const authoredFields: TranslatableField[] = [
+        titleField,
+        {
+            name: 'heading',
+            label: t('homeBuilder.form.heading'),
+            type: 'text',
+            required: false,
+        },
+        {
+            name: 'body',
+            label: t('homeBuilder.form.body'),
+            type: 'textarea',
+            rows: 4,
+            required: false,
+        },
+        {
+            name: 'cta_label',
+            label: t('homeBuilder.form.buttonLabel'),
+            type: 'text',
+            required: false,
+        },
+    ];
+    const curatedFields: TranslatableField[] = [titleField];
     const [selectedType, setSelectedType] = useState(initial.section_type ?? 'articles');
     const form = useForm<HomeSectionFormData>(mergeInitial(initial));
 
@@ -151,34 +168,42 @@ export default function HomeSectionForm({
             <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
                 <div className="space-y-4">
                     <FormSection
-                        title="Section type"
-                        description="Pull existing content onto the home page, or create a home-only block."
+                        title={t('homeBuilder.form.sectionType')}
+                        description={t(
+                            'homeBuilder.form.sectionTypeDescription',
+                        )}
                         icon={<CircleStackIcon className="size-5" />}
                     >
                         <SelectField
-                            label="Type"
+                            label={t('homeBuilder.form.type')}
                             name="section_type"
                             required
                             defaultValue={form.data.section_type}
-                            options={typeOptions.map(({ value, label }) => ({ value, label }))}
+                            options={typeOptions.map(({ value, label }) => ({
+                                value,
+                                label,
+                                labelKey: `enums.sectionType.${value}`,
+                            }))}
                             onChange={handleTypeChange}
                             error={form.errors.section_type}
                             hint={
                                 isCurated
-                                    ? 'Curated: references live content and stays in sync with its source.'
-                                    : 'Home-only: create content that appears only on the home page.'
+                                    ? t('homeBuilder.form.curatedHint')
+                                    : t('homeBuilder.form.homeOnlyHint')
                             }
                         />
                     </FormSection>
 
                     {isCurated ? (
                         <FormSection
-                            title="Choose what to feature"
-                            description="Pick specific items, or leave empty to auto-show the latest."
+                            title={t('homeBuilder.form.choose')}
+                            description={t(
+                                'homeBuilder.form.chooseDescription',
+                            )}
                             icon={<RectangleStackIcon className="size-5" />}
                         >
                             <TextField
-                                label="Number to show when auto"
+                                label={t('homeBuilder.form.limit')}
                                 name="limit"
                                 type="number"
                                 min={1}
@@ -186,12 +211,12 @@ export default function HomeSectionForm({
                                 value={form.data.limit}
                                 onChange={(event) => form.setData('limit', event.target.value)}
                                 error={form.errors.limit}
-                                hint="Used only when no specific items are picked. Default 3."
+                                hint={t('homeBuilder.form.limitHint')}
                             />
 
                             {candidates.length === 0 ? (
                                 <p className="text-sm text-muted-foreground">
-                                    No publishable items available for this type yet.
+                                    {t('homeBuilder.form.noItems')}
                                 </p>
                             ) : (
                                 <div className="max-h-72 space-y-1 overflow-y-auto rounded-xl border border-border p-3">
@@ -214,14 +239,16 @@ export default function HomeSectionForm({
                         </FormSection>
                     ) : (
                         <FormSection
-                            title="Media & call to action"
-                            description="Shared across all languages. Translate the button label in the content section below."
+                            title={t('homeBuilder.form.media')}
+                            description={t(
+                                'homeBuilder.form.mediaDescription',
+                            )}
                             icon={<PhotoIcon className="size-5" />}
                             columns={2}
                         >
                             <div className="md:col-span-2">
                                 <ImageUploadField
-                                    label="Image"
+                                    label={t('homeBuilder.form.image')}
                                     name="image_url"
                                     value={form.data.config.image_url}
                                     onChange={(value) => setConfig({ image_url: value })}
@@ -229,20 +256,24 @@ export default function HomeSectionForm({
                                 />
                             </div>
                             <TextField
-                                label="Button link"
+                                label={t('homeBuilder.form.buttonLink')}
                                 name="cta_url"
-                                placeholder="/school/programs"
+                                placeholder={t(
+                                    'homeBuilder.form.buttonLinkPlaceholder',
+                                )}
                                 value={form.data.config.cta_url}
                                 onChange={(event) => setConfig({ cta_url: event.target.value })}
                                 error={form.errors['config.cta_url']}
-                                hint="Relative path or full URL."
+                                hint={t('homeBuilder.form.buttonLinkHint')}
                             />
                         </FormSection>
                     )}
 
                     <FormSection
-                        title="Localized content"
-                        description="Add this block's text for each language. The starred language is the fallback."
+                        title={t('homeBuilder.form.localized')}
+                        description={t(
+                            'homeBuilder.form.localizedDescription',
+                        )}
                         icon={<DocumentTextIcon className="size-5" />}
                     >
                         <LanguageTabsEditor
@@ -255,10 +286,10 @@ export default function HomeSectionForm({
                 </div>
 
                 <aside className="space-y-4">
-                    <FormSection title="Appearance & status">
+                    <FormSection title={t('homeBuilder.form.appearance')}>
                         {!isCurated ? (
                             <SelectField
-                                label="Tone"
+                                label={t('homeBuilder.form.tone')}
                                 name="tone"
                                 defaultValue={form.data.config.tone}
                                 options={toneOptions}
@@ -267,7 +298,7 @@ export default function HomeSectionForm({
                             />
                         ) : null}
                         <CheckboxField
-                            label="Active (shown on home page)"
+                            label={t('homeBuilder.form.active')}
                             name="is_active"
                             checked={form.data.is_active}
                             onCheckedChange={(checked) =>
@@ -288,12 +319,12 @@ export default function HomeSectionForm({
                         type="button"
                         variant="destructive"
                         onClick={() => {
-                            if (window.confirm('Remove this section from the home page?')) {
+                            if (window.confirm(t('homeBuilder.form.deleteConfirm'))) {
                                 router.delete(deleteUrl);
                             }
                         }}
                     >
-                        Delete
+                        {t('homeBuilder.form.delete')}
                     </Button>
                 ) : null}
             </StickyFormFooter>

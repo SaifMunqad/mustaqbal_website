@@ -9,43 +9,46 @@ import { edit as editPassword } from '@/routes/user-password';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
-
-const sidebarNavItems: NavItem[] = [
-    {
-        title: 'Profile',
-        href: edit(),
-        icon: null,
-    },
-    {
-        title: 'Password',
-        href: editPassword(),
-        icon: null,
-    },
-    {
-        title: 'Two-Factor Auth',
-        href: show(),
-        icon: null,
-    },
-    {
-        title: 'Appearance',
-        href: editAppearance(),
-        icon: null,
-    },
-];
+import { useTranslation } from 'react-i18next';
 
 export default function SettingsLayout({ children }: PropsWithChildren) {
+    const { t } = useTranslation();
+
     // When server-side rendering, we only render the layout on the client...
     if (typeof window === 'undefined') {
         return null;
     }
+
+    const sidebarNavItems: NavItem[] = [
+        {
+            title: t('settings.layout.profile'),
+            href: edit(),
+            icon: null,
+        },
+        {
+            title: t('settings.layout.password'),
+            href: editPassword(),
+            icon: null,
+        },
+        {
+            title: t('settings.layout.twoFactor'),
+            href: show(),
+            icon: null,
+        },
+        {
+            title: t('settings.layout.appearance'),
+            href: editAppearance(),
+            icon: null,
+        },
+    ];
 
     const currentPath = window.location.pathname;
 
     return (
         <div className="px-4 py-6">
             <Heading
-                title="Settings"
-                description="Manage your profile and account settings"
+                title={t('settings.layout.title')}
+                description={t('settings.layout.description')}
             />
 
             <div className="flex flex-col lg:flex-row lg:gap-12">

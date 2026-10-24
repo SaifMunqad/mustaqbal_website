@@ -9,6 +9,7 @@ import LanguageTabsEditor, {
 } from '@/components/language-tabs-editor';
 import { Button } from '@/components/ui/button';
 import { Form } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 
 export type { TranslationValues } from '@/components/language-tabs-editor';
 
@@ -21,52 +22,16 @@ export interface Program {
 }
 
 const programTypeOptions = [
-    { value: 'school', label: 'School' },
-    { value: 'courses', label: 'Courses' },
-    { value: 'islamic_madrasa', label: 'Islamic Madrasa' },
-];
-
-// Localized inputs rendered once per active language. The starred default
-// language is required and used as the fallback; others are optional.
-const translatableFields: TranslatableField[] = [
+    { value: 'school', labelKey: 'dashboard.programs.form.school' },
+    { value: 'courses', labelKey: 'dashboard.programs.form.courses' },
     {
-        name: 'name',
-        label: 'Program name',
-        type: 'text',
-        placeholder: 'e.g. Grade 1 - Primary',
-        maxLength: 255,
-    },
-    {
-        name: 'description',
-        label: 'Description',
-        type: 'textarea',
-        placeholder: 'What this program covers...',
-        rows: 5,
-    },
-    {
-        name: 'schedule',
-        label: 'Schedule',
-        type: 'text',
-        placeholder: 'e.g. Sat-Thu, 8:00 AM - 12:30 PM',
-        maxLength: 255,
-    },
-    {
-        name: 'age_recommendation',
-        label: 'Age recommendation',
-        type: 'text',
-        placeholder: 'e.g. 6-12 years',
-        maxLength: 255,
-    },
-    {
-        name: 'classroom_number',
-        label: 'Classroom',
-        type: 'text',
-        placeholder: 'e.g. A-01',
-        required: false,
-        maxLength: 100,
+        value: 'islamic_madrasa',
+        labelKey: 'dashboard.programs.form.islamicMadrasa',
     },
 ];
 
+// Localized inputs are built inside the component so their labels follow the
+// active UI language.
 interface ProgramFormProps {
     // Inertia route target, e.g. programs.store.form() / programs.update.form(id).
     formProps: { action: string; method: 'post' | 'put' | 'patch' };
@@ -90,34 +55,77 @@ export default function ProgramForm({
     program,
     translations,
 }: ProgramFormProps) {
+    const { t } = useTranslation();
+
+    const translatableFields: TranslatableField[] = [
+        {
+            name: 'name',
+            label: t('dashboard.programs.form.name'),
+            type: 'text',
+            placeholder: t('dashboard.programs.form.namePlaceholder'),
+            maxLength: 255,
+        },
+        {
+            name: 'description',
+            label: t('dashboard.programs.form.description'),
+            type: 'textarea',
+            placeholder: t('dashboard.programs.form.descriptionPlaceholder'),
+            rows: 5,
+        },
+        {
+            name: 'schedule',
+            label: t('dashboard.programs.form.schedule'),
+            type: 'text',
+            placeholder: t('dashboard.programs.form.schedulePlaceholder'),
+            maxLength: 255,
+        },
+        {
+            name: 'age_recommendation',
+            label: t('dashboard.programs.form.age'),
+            type: 'text',
+            placeholder: t('dashboard.programs.form.agePlaceholder'),
+            maxLength: 255,
+        },
+        {
+            name: 'classroom_number',
+            label: t('dashboard.programs.form.classroom'),
+            type: 'text',
+            placeholder: t('dashboard.programs.form.classroomPlaceholder'),
+            required: false,
+            maxLength: 100,
+        },
+    ];
+
     return (
         <Form {...formProps} onError={toastOnError} className="space-y-4">
             <div className="grid gap-3 rounded-xl border p-4 md:grid-cols-2">
                 <SelectField
-                    label="Program type"
+                    label={t('dashboard.programs.form.type')}
                     name="program_type"
                     required
                     defaultValue={program?.program_type ?? 'school'}
                     options={programTypeOptions}
                 />
                 <TextField
-                    label="Fees"
+                    label={t('dashboard.programs.form.fees')}
                     name="fees"
                     required
                     type="number"
                     step="0.01"
                     defaultValue={program?.fees ?? ''}
-                    placeholder="Fees"
+                    placeholder={t('dashboard.programs.form.feesPlaceholder')}
                 />
                 <TextField
-                    label="Display order"
+                    label={t('dashboard.programs.form.displayOrder')}
                     name="display_order"
                     type="number"
                     defaultValue={program?.display_order ?? ''}
-                    placeholder="Display order"
+                    placeholder={t(
+                        'dashboard.programs.form.displayOrderPlaceholder',
+                    )}
                 />
                 <CheckboxField
-                    label="Available for enroll"
+                    label={t('dashboard.programs.form.availableForEnroll')}
                     name="available_for_enroll"
                     value="1"
                     defaultChecked={
@@ -128,11 +136,11 @@ export default function ProgramForm({
 
             <div className="space-y-3 rounded-xl border p-4">
                 <div>
-                    <h2 className="text-sm font-semibold">Localized content</h2>
+                    <h2 className="text-sm font-semibold">
+                        {t('dashboard.programs.form.localized')}
+                    </h2>
                     <p className="text-sm text-muted-foreground">
-                        Add the name, description, schedule, age and classroom
-                        for each language. The starred language is required and
-                        used as the fallback.
+                        {t('dashboard.programs.form.localizedDescription')}
                     </p>
                 </div>
                 <LanguageTabsEditor

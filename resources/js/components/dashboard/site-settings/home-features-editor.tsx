@@ -5,6 +5,7 @@ import {
 } from '@/components/dashboard/site-settings/site-settings-shared';
 import { Button } from '@/components/ui/button';
 import { type HomeFeature } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 interface HomeFeaturesEditorProps {
     features: HomeFeature[];
@@ -27,6 +28,7 @@ export default function HomeFeaturesEditor({
     onChange,
     namePrefix = '',
 }: HomeFeaturesEditorProps) {
+    const { t } = useTranslation();
     const base = namePrefix ? `${namePrefix}.home_features` : 'home_features';
 
     const update = (index: number, key: keyof HomeFeature, value: string) =>
@@ -49,10 +51,10 @@ export default function HomeFeaturesEditor({
         <div className="mt-4 space-y-2">
             <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Why choose us (features)
+                    {t('dashboard.settings.form.featuresTitle')}
                 </span>
                 <Button type="button" size="sm" onClick={add}>
-                    Add feature
+                    {t('dashboard.settings.form.featuresAdd')}
                 </Button>
             </div>
             {features.map((feature, index) => (
@@ -71,7 +73,7 @@ export default function HomeFeaturesEditor({
                         >
                             {FEATURE_ICONS.map((icon) => (
                                 <option key={icon.value} value={icon.value}>
-                                    {icon.label}
+                                    {t(icon.labelKey)}
                                 </option>
                             ))}
                         </select>
@@ -82,14 +84,16 @@ export default function HomeFeaturesEditor({
                             onChange={(event) =>
                                 update(index, 'title', event.target.value)
                             }
-                            placeholder="Feature title"
+                            placeholder={t(
+                                'dashboard.settings.form.featureTitlePlaceholder',
+                            )}
                         />
                         <button
                             type="button"
                             className={`${rowRemoveButtonClass} text-center md:self-start`}
                             onClick={() => remove(index)}
                         >
-                            Remove
+                            {t('dashboard.form.remove')}
                         </button>
                     </div>
                     <textarea
@@ -99,7 +103,9 @@ export default function HomeFeaturesEditor({
                         onChange={(event) =>
                             update(index, 'description', event.target.value)
                         }
-                        placeholder="Short description"
+                        placeholder={t(
+                            'dashboard.settings.form.featureDescriptionPlaceholder',
+                        )}
                     />
                 </div>
             ))}

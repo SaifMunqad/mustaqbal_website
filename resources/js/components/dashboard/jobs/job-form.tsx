@@ -4,6 +4,7 @@ import {
     EnvelopeIcon,
 } from '@heroicons/react/24/outline';
 import { Form, router } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import { CheckboxField, SelectField, TextField } from '@/components/form-fields';
 import ConfirmDialog from '@/components/form/confirm-dialog';
 import FormSection from '@/components/form/form-section';
@@ -19,6 +20,7 @@ export type { TranslationValues } from '@/components/language-tabs-editor';
 export interface JobOption {
     value: string;
     label: string;
+    labelKey?: string;
 }
 
 export interface JobDetail {
@@ -52,26 +54,8 @@ interface JobFormProps {
     deleteUrl?: string;
 }
 
-// Localized inputs rendered once per active language (default language required).
-const translatableFields: TranslatableField[] = [
-    { name: 'title', label: 'Job title', type: 'text', placeholder: 'e.g. Mathematics Teacher', maxLength: 255 },
-    { name: 'department', label: 'Department', type: 'text', placeholder: 'e.g. Academic, Administration', required: false },
-    {
-        name: 'description',
-        label: 'Description',
-        type: 'textarea',
-        placeholder: 'Describe the role, responsibilities, and work environment...',
-        rows: 6,
-    },
-    {
-        name: 'requirements',
-        label: 'Requirements',
-        type: 'textarea',
-        placeholder: 'Qualifications, experience, skills needed...',
-        rows: 4,
-        required: false,
-    },
-];
+// Localized inputs are built inside the component so their labels follow the
+// active UI language.
 
 /**
  * Shared create/edit form for job postings. Renders identical markup for both
@@ -90,6 +74,51 @@ export default function JobForm({
     translations,
     deleteUrl,
 }: JobFormProps) {
+    const { t } = useTranslation();
+
+    const employmentTypeOptions = employmentTypes.map((option) => ({
+        ...option,
+        labelKey: `jobs.employmentType.${option.value}`,
+    }));
+    const categoryOptions = categories.map((option) => ({
+        ...option,
+        labelKey: option.value
+            ? `jobs.category.${option.value}`
+            : 'dashboard.jobs.form.noCategory',
+    }));
+
+    const translatableFields: TranslatableField[] = [
+        {
+            name: 'title',
+            label: t('dashboard.jobs.form.title'),
+            type: 'text',
+            placeholder: t('dashboard.jobs.form.titlePlaceholder'),
+            maxLength: 255,
+        },
+        {
+            name: 'department',
+            label: t('dashboard.jobs.form.department'),
+            type: 'text',
+            placeholder: t('dashboard.jobs.form.departmentPlaceholder'),
+            required: false,
+        },
+        {
+            name: 'description',
+            label: t('dashboard.jobs.form.description'),
+            type: 'textarea',
+            placeholder: t('dashboard.jobs.form.descriptionPlaceholder'),
+            rows: 6,
+        },
+        {
+            name: 'requirements',
+            label: t('dashboard.jobs.form.requirements'),
+            type: 'textarea',
+            placeholder: t('dashboard.jobs.form.requirementsPlaceholder'),
+            rows: 4,
+            required: false,
+        },
+    ];
+
     const removeJob = () => {
         if (!job) {
             return;
@@ -106,41 +135,59 @@ export default function JobForm({
                     <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
                         <div className="space-y-4">
                             <FormSection
-                                title="Job details"
-                                description="Set the program category, employment type and working hours (shared across languages)."
+                                title={t('dashboard.jobs.form.details')}
+                                description={t(
+                                    'dashboard.jobs.form.detailsDescription',
+                                )}
                                 icon={<BriefcaseIcon className="size-5" />}
                                 columns={2}
                             >
                                 <SelectField
-                                    label="Program category"
+                                    label={t(
+                                        'dashboard.jobs.form.category',
+                                    )}
                                     name="category"
                                     defaultValue={job?.category ?? ''}
-                                    options={categories}
-                                    placeholder="Select a category (optional)"
-                                    hint="Shown on the public card next to the department"
+                                    options={categoryOptions}
+                                    placeholder={t(
+                                        'dashboard.jobs.form.categoryPlaceholder',
+                                    )}
+                                    hint={t(
+                                        'dashboard.jobs.form.categoryHint',
+                                    )}
                                     error={errors.category}
                                 />
                                 <SelectField
-                                    label="Employment type"
+                                    label={t(
+                                        'dashboard.jobs.form.employmentType',
+                                    )}
                                     name="employment_type"
                                     required
                                     defaultValue={job?.employment_type ?? 'full_time'}
-                                    options={employmentTypes}
+                                    options={employmentTypeOptions}
                                     error={errors.employment_type}
                                 />
                                 <TextField
-                                    label="Working hours"
+                                    label={t(
+                                        'dashboard.jobs.form.workingHours',
+                                    )}
                                     name="working_hours"
                                     defaultValue={job?.working_hours ?? ''}
-                                    placeholder="e.g. 12:30 PM - 5:30 PM"
-                                    hint="Displayed on the card for part-time roles"
+                                    placeholder={t(
+                                        'dashboard.jobs.form.workingHoursPlaceholder',
+                                    )}
+                                    hint={t(
+                                        'dashboard.jobs.form.workingHoursHint',
+                                    )}
                                     error={errors.working_hours}
                                 />
                             </FormSection>
 
                             <FormSection
-                                title="Localized content"
-                                description="Add the title, department, description and requirements for each language. The starred language is required and used as the fallback."
+                                title={t('dashboard.jobs.form.localized')}
+                                description={t(
+                                    'dashboard.jobs.form.localizedDescription',
+                                )}
                                 icon={<DocumentTextIcon className="size-5" />}
                             >
                                 <LanguageTabsEditor
@@ -152,43 +199,57 @@ export default function JobForm({
 
                         <aside className="space-y-4">
                             <FormSection
-                                title="Application"
+                                title={t('dashboard.jobs.form.application')}
                                 icon={<EnvelopeIcon className="size-5" />}
                             >
                                 <TextField
-                                    label="Application email"
+                                    label={t(
+                                        'dashboard.jobs.form.applicationEmail',
+                                    )}
                                     name="application_email"
                                     type="email"
                                     defaultValue={job?.application_email ?? ''}
-                                    placeholder="hr@school.com"
-                                    hint="Shown as a button on the public listing"
+                                    placeholder={t(
+                                        'dashboard.jobs.form.applicationEmailPlaceholder',
+                                    )}
+                                    hint={t(
+                                        'dashboard.jobs.form.applicationEmailHint',
+                                    )}
                                     error={errors.application_email}
                                 />
                                 <TextField
-                                    label="Application URL"
+                                    label={t(
+                                        'dashboard.jobs.form.applicationUrl',
+                                    )}
                                     name="application_url"
                                     type="text"
                                     defaultValue={job?.application_url ?? ''}
-                                    placeholder="https://forms.google.com/..."
-                                    hint="External form link (optional)"
+                                    placeholder={t(
+                                        'dashboard.jobs.form.applicationUrlPlaceholder',
+                                    )}
+                                    hint={t(
+                                        'dashboard.jobs.form.applicationUrlHint',
+                                    )}
                                     error={errors.application_url}
                                 />
                             </FormSection>
 
                             <FormSection
-                                title="Settings"
+                                title={t('dashboard.jobs.form.settings')}
                                 icon={<BriefcaseIcon className="size-5" />}
                             >
                                 <TextField
-                                    label="Deadline"
+                                    label={t('dashboard.jobs.form.deadline')}
                                     name="deadline"
                                     type="date"
                                     defaultValue={job?.deadline ?? ''}
-                                    hint="Job auto-hides after this date"
+                                    hint={t(
+                                        'dashboard.jobs.form.deadlineHint',
+                                    )}
                                     error={errors.deadline}
                                 />
                                 <CheckboxField
-                                    label="Active"
+                                    label={t('dashboard.jobs.form.active')}
                                     name="is_active"
                                     value="1"
                                     defaultChecked={job ? job.is_active : true}
@@ -204,17 +265,16 @@ export default function JobForm({
                     >
                         {deleteUrl && job ? (
                             <ConfirmDialog
-                                title="Delete job?"
-                                description={
-                                    <>
-                                        Delete &ldquo;{job.title}&rdquo;? This cannot be undone.
-                                    </>
-                                }
-                                confirmLabel="Delete"
+                                title={t('dashboard.jobs.form.deleteTitle')}
+                                description={t(
+                                    'dashboard.jobs.form.deleteDescription',
+                                    { name: job.title },
+                                )}
+                                confirmLabel={t('dashboard.form.delete')}
                                 onConfirm={removeJob}
                             >
                                 <Button type="button" variant="destructive">
-                                    Delete job
+                                    {t('dashboard.jobs.form.delete')}
                                 </Button>
                             </ConfirmDialog>
                         ) : null}

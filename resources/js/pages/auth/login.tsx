@@ -5,6 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { translateAuthStatus } from '@/i18n';
 import AuthLayout from '@/layouts/auth-layout';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
@@ -18,6 +19,7 @@ interface LoginProps {
 
 export default function Login({ status, canResetPassword }: LoginProps) {
     const { t } = useTranslation();
+    const statusMessage = translateAuthStatus(status, t);
 
     return (
         <AuthLayout
@@ -104,9 +106,9 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                 )}
             </Form>
 
-            {status && (
+            {statusMessage && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    {status}
+                    {statusMessage}
                 </div>
             )}
         </AuthLayout>

@@ -1,5 +1,6 @@
 import { Form, router } from '@inertiajs/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { SelectField, TextField } from '@/components/form-fields';
 import { BookMediaField } from '@/components/form/book-media-field';
 import { GalleryUploadField } from '@/components/form/image-upload-field';
@@ -30,26 +31,8 @@ export interface BookDetail {
     book_category_id?: number | null;
 }
 
-// Localized inputs rendered once per active language (default language required).
-const translatableFields: TranslatableField[] = [
-    { name: 'title', label: 'Title', type: 'text', placeholder: 'Title', maxLength: 255 },
-    {
-        name: 'publisher',
-        label: 'Publisher / Production company',
-        type: 'text',
-        placeholder: 'Company that published the book',
-        required: false,
-    },
-    {
-        name: 'description',
-        label: 'Description',
-        type: 'textarea',
-        placeholder: 'Description',
-        rows: 5,
-        required: false,
-    },
-];
-
+// Localized inputs are built inside the component so their labels follow the
+// active UI language.
 interface BookFormProps {
     action: string;
     method: 'post' | 'put';
@@ -79,6 +62,7 @@ export default function BookForm({
     translations,
     deleteUrl,
 }: BookFormProps) {
+    const { t } = useTranslation();
     const [images, setImages] = useState<string[]>(
         book?.images?.length ? book.images : [''],
     );
@@ -88,28 +72,53 @@ export default function BookForm({
     );
 
     const remove = () => {
-        if (book && window.confirm(`Delete "${book.title}"?`)) {
+        if (book && window.confirm(t('dashboard.books.form.deleteConfirm', { name: book.title }))) {
             router.delete(`${deleteUrl}`, {
                 onSuccess: () => router.visit('/dashboard/books'),
             });
         }
     };
 
+    const translatableFields: TranslatableField[] = [
+        {
+            name: 'title',
+            label: t('dashboard.books.form.title'),
+            type: 'text',
+            placeholder: t('dashboard.books.form.titlePlaceholder'),
+            maxLength: 255,
+        },
+        {
+            name: 'publisher',
+            label: t('dashboard.books.form.publisher'),
+            type: 'text',
+            placeholder: t('dashboard.books.form.publisherPlaceholder'),
+            required: false,
+        },
+        {
+            name: 'description',
+            label: t('dashboard.books.form.description'),
+            type: 'textarea',
+            placeholder: t('dashboard.books.form.descriptionPlaceholder'),
+            rows: 5,
+            required: false,
+        },
+    ];
+
     return (
         <Form action={action} method={method} onError={toastOnError} className="space-y-4">
             {({ errors }) => (
                 <div className="space-y-4 rounded-2xl border border-border bg-background p-4">
                     <div className="grid gap-4 md:grid-cols-2">
-                        <TextField label="Author" name="author" defaultValue={book?.author ?? ''} placeholder="Author" error={errors.author} />
-                        <TextField label="Publish year" name="published_year" type="number" min="1000" max="2100" defaultValue={book?.published_year ?? ''} placeholder="e.g. 2023" error={errors.published_year} />
-                        <TextField label="ISBN" name="isbn" defaultValue={book?.isbn ?? ''} placeholder="ISBN" error={errors.isbn} />
+                        <TextField label={t('dashboard.books.form.author')} name="author" defaultValue={book?.author ?? ''} placeholder={t('dashboard.books.form.authorPlaceholder')} error={errors.author} />
+                        <TextField label={t('dashboard.books.form.publishYear')} name="published_year" type="number" min="1000" max="2100" defaultValue={book?.published_year ?? ''} placeholder={t('dashboard.books.form.publishYearPlaceholder')} error={errors.published_year} />
+                        <TextField label={t('dashboard.books.form.isbn')} name="isbn" defaultValue={book?.isbn ?? ''} placeholder={t('dashboard.books.form.isbnPlaceholder')} error={errors.isbn} />
                         <SelectField
-                            label="Category"
+                            label={t('dashboard.books.form.category')}
                             name="book_category_id"
-                            placeholder="No category"
+                            placeholder={t('dashboard.books.form.noCategory')}
                             defaultValue={book?.book_category_id ? String(book.book_category_id) : ''}
                             options={[
-                                { value: '', label: 'No category' },
+                                { value: '', label: t('dashboard.books.form.noCategory') },
                                 ...categories.map((category) => ({ value: String(category.id), label: category.name })),
                             ]}
                             error={errors.book_category_id}
@@ -117,7 +126,7 @@ export default function BookForm({
                     </div>
 
                     <BookMediaField
-                        label="Book file & cover image"
+                        label={t('dashboard.books.form.media')}
                         filePathName="file_path"
                         thumbnailPathName="thumbnail_path"
                         filePath={filePath}
@@ -132,7 +141,7 @@ export default function BookForm({
                     />
 
                     <GalleryUploadField
-                        label="Additional gallery images (optional)"
+                        label={t('dashboard.books.form.gallery')}
                         name="images"
                         images={images}
                         onChange={setImages}
@@ -150,7 +159,7 @@ export default function BookForm({
                         <Button type="submit">{submitLabel}</Button>
                         {deleteUrl && book ? (
                             <Button type="button" variant="destructive" onClick={remove}>
-                                Delete book
+                                {t('dashboard.books.form.delete')}
                             </Button>
                         ) : null}
                     </div>

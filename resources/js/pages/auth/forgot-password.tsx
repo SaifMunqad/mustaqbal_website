@@ -9,11 +9,13 @@ import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { translateAuthStatus } from '@/i18n';
 import AuthLayout from '@/layouts/auth-layout';
 import { useTranslation } from 'react-i18next';
 
 export default function ForgotPassword({ status }: { status?: string }) {
     const { t } = useTranslation();
+    const statusMessage = translateAuthStatus(status, t);
 
     return (
         <AuthLayout
@@ -22,9 +24,9 @@ export default function ForgotPassword({ status }: { status?: string }) {
         >
             <Head title={t('auth.forgotPassword.title')} />
 
-            {status && (
+            {statusMessage && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    {status}
+                    {statusMessage}
                 </div>
             )}
 

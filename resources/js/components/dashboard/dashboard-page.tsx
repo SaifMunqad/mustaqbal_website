@@ -18,7 +18,7 @@ interface DashboardPageProps {
 
 export default function DashboardPage({
     titleKey,
-    breadcrumbs = [{ title: 'Dashboard', href: '/dashboard' }],
+    breadcrumbs,
     createHref,
     createLabelKey,
     actions,
@@ -27,8 +27,12 @@ export default function DashboardPage({
     const { t, i18n } = useTranslation();
     const isRtl = i18n.dir() === 'rtl';
 
+    const resolvedBreadcrumbs: BreadcrumbItem[] = breadcrumbs ?? [
+        { title: t('dashboard.title'), href: '/dashboard' },
+    ];
+
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
+        <AppLayout breadcrumbs={resolvedBreadcrumbs}>
             <Head title={t(titleKey)} />
 
             <div

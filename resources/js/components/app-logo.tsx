@@ -1,11 +1,13 @@
 import { usePage } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import type { SharedData } from '@/types';
 import AppLogoIcon from './app-logo-icon';
 
 export default function AppLogo() {
+    const { t } = useTranslation();
     const { site } = usePage<SharedData>().props;
 
-    const name = site?.brand_name || site?.brand_short_name || 'Laravel Starter Kit';
+    const name = site?.brand_name || site?.brand_short_name || t('brand.name');
 
     return (
         <>

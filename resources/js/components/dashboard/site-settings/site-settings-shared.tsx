@@ -12,11 +12,24 @@ export const rowRemoveButtonClass =
 
 // Feature icon keys offered to the admin; must match ICON_MAP in
 // components/home/feature-grid.tsx so the chosen icon actually renders.
-export const FEATURE_ICONS: Array<{ value: string; label: string }> = [
-    { value: 'faculty', label: 'Faculty (people)' },
-    { value: 'values', label: 'Values (heart)' },
-    { value: 'facilities', label: 'Facilities (building)' },
-    { value: 'classes', label: 'Classes (graduation)' },
+// Labels are i18n keys resolved in the editor.
+export const FEATURE_ICONS: Array<{ value: string; labelKey: string }> = [
+    {
+        value: 'faculty',
+        labelKey: 'dashboard.settings.form.featureIconFaculty',
+    },
+    {
+        value: 'values',
+        labelKey: 'dashboard.settings.form.featureIconValues',
+    },
+    {
+        value: 'facilities',
+        labelKey: 'dashboard.settings.form.featureIconFacilities',
+    },
+    {
+        value: 'classes',
+        labelKey: 'dashboard.settings.form.featureIconClasses',
+    },
 ];
 
 export interface SiteSettingRecord {

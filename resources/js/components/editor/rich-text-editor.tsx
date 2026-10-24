@@ -17,6 +17,7 @@ import Toolbar, { ToolButton } from '@/components/editor/editor-toolbar';
 import { dataUriToFile, type ChartDraft } from '@/components/editor/editor-utils';
 import { uploadImage } from '@/lib/upload';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface RichTextEditorProps {
     /** Form field name; a hidden input with this name carries the HTML value. */
@@ -33,10 +34,12 @@ export default function RichTextEditor({
     name,
     value,
     onChange,
-    placeholder = 'Write your article here, or import a Word document / paste from Word...',
+    placeholder,
     dir = 'ltr',
     className,
 }: RichTextEditorProps) {
+    const { t } = useTranslation();
+    const resolvedPlaceholder = placeholder ?? t('editor.placeholder');
     const [mounted, setMounted] = useState(false);
     const [chartOpen, setChartOpen] = useState(false);
     const [busy, setBusy] = useState<string | null>(null);
@@ -71,7 +74,7 @@ export default function RichTextEditor({
             }),
             Underline,
             Image.configure({ inline: false, allowBase64: false }),
-            Placeholder.configure({ placeholder }),
+            Placeholder.configure({ placeholder: resolvedPlaceholder }),
             TextAlign.configure({
                 types: ['heading', 'paragraph'],
             }),
@@ -94,7 +97,7 @@ export default function RichTextEditor({
         async (files: FileList | null) => {
             const file = files?.[0];
             if (!file || !editor) return;
-            setBusy('Uploading image...');
+            setBusy(t('editor.uploadingImage'));
             try {
                 const url = await uploadImage(file);
                 editor.chain().focus().setImage({ src: url, alt: file.name }).run();
@@ -103,14 +106,14 @@ export default function RichTextEditor({
                 if (imageInputRef.current) imageInputRef.current.value = '';
             }
         },
-        [editor],
+        [editor, t],
     );
 
     const handleDocxImport = useCallback(
         async (files: FileList | null) => {
             const file = files?.[0];
             if (!file || !editor) return;
-            setBusy('Importing Word document...');
+            setBusy(t('editor.importingWord'));
             try {
                 const arrayBuffer = await file.arrayBuffer();
                 const { value: html } = await mammoth.convertToHtml({ arrayBuffer });
@@ -142,13 +145,13 @@ export default function RichTextEditor({
                 if (docxInputRef.current) docxInputRef.current.value = '';
             }
         },
-        [editor, onChange],
+        [editor, onChange, t],
     );
 
     const setLink = useCallback(() => {
         if (!editor) return;
         const previous = editor.getAttributes('link').href as string | undefined;
-        const url = window.prompt('Enter link URL', previous ?? 'https://');
+        const url = window.prompt(t('editor.linkPrompt'), previous ?? 'https://');
         if (url === null) return;
         if (url === '' || url === 'https://') {
             editor.chain().focus().extendMarkRange('link').unsetLink().run();
@@ -160,7 +163,7 @@ export default function RichTextEditor({
             .extendMarkRange('link')
             .setLink({ href: url })
             .run();
-    }, [editor]);
+    }, [editor, t]);
 
     const insertChartBlock = useCallback(() => {
         if (!editor) return;
@@ -204,20 +207,20 @@ export default function RichTextEditor({
             <div className="flex flex-wrap items-center gap-2 border-b border-border bg-muted/30 px-2 py-2">
                 <ToolButton
                     onClick={() => imageInputRef.current?.click()}
-                    title="Insert image"
+                    title={t('editor.insertImage')}
                 >
                     <PhotoIcon className="size-4" />
                 </ToolButton>
                 <ToolButton
                     onClick={() => setChartOpen((open) => !open)}
-                    title="Insert chart"
+                    title={t('editor.insertChart')}
                     active={chartOpen}
                 >
                     <TableCellsIcon className="size-4" />
                 </ToolButton>
                 <ToolButton
                     onClick={() => docxInputRef.current?.click()}
-                    title="Import Word (.docx)"
+                    title={t('editor.importWord')}
                 >
                     <DocumentIcon className="size-4" />
                     <span className="ms-1 text-xs">.docx</span>

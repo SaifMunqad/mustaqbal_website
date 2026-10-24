@@ -29,6 +29,6 @@ class ContactController extends Controller
         // Queued so a busy SMTP server never delays the form submission.
         Mail::to($message->sender_email)->queue(new ContactReceivedAcknowledgment($message));
 
-        return back()->with('success', 'Message received. Thank you! We will get back to you as soon as possible.');
+        return back()->with('success', 'flash.contactReceived');
     }
 }

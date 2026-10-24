@@ -9,6 +9,7 @@ import {
     UnderlineIcon,
 } from '@heroicons/react/24/outline';
 import { type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
 interface ToolButtonProps {
@@ -53,33 +54,35 @@ interface ToolbarProps {
 
 /** Formatting toolbar: headings, marks, lists, alignment, and undo/redo. */
 export default function Toolbar({ editor, onSetLink }: ToolbarProps) {
+    const { t } = useTranslation();
+
     return (
         <div className="flex flex-wrap items-center gap-1 border-b border-border p-2">
             <ToolButton
                 onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
                 active={editor.isActive('heading', { level: 1 })}
-                title="Heading 1"
+                title={t('editor.heading1')}
             >
                 <span className="text-xs font-bold">H1</span>
             </ToolButton>
             <ToolButton
                 onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
                 active={editor.isActive('heading', { level: 2 })}
-                title="Heading 2"
+                title={t('editor.heading2')}
             >
                 <span className="text-xs font-bold">H2</span>
             </ToolButton>
             <ToolButton
                 onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
                 active={editor.isActive('heading', { level: 3 })}
-                title="Heading 3"
+                title={t('editor.heading3')}
             >
                 <span className="text-xs font-bold">H3</span>
             </ToolButton>
             <ToolButton
                 onClick={() => editor.chain().focus().setParagraph().run()}
                 active={editor.isActive('paragraph')}
-                title="Paragraph"
+                title={t('editor.paragraph')}
             >
                 <span className="text-xs">P</span>
             </ToolButton>
@@ -89,41 +92,41 @@ export default function Toolbar({ editor, onSetLink }: ToolbarProps) {
             <ToolButton
                 onClick={() => editor.chain().focus().toggleBold().run()}
                 active={editor.isActive('bold')}
-                title="Bold"
+                title={t('editor.bold')}
             >
                 <BoldIcon className="size-4" />
             </ToolButton>
             <ToolButton
                 onClick={() => editor.chain().focus().toggleItalic().run()}
                 active={editor.isActive('italic')}
-                title="Italic"
+                title={t('editor.italic')}
             >
                 <ItalicIcon className="size-4" />
             </ToolButton>
             <ToolButton
                 onClick={() => editor.chain().focus().toggleUnderline().run()}
                 active={editor.isActive('underline')}
-                title="Underline"
+                title={t('editor.underline')}
             >
                 <UnderlineIcon className="size-4" />
             </ToolButton>
             <ToolButton
                 onClick={() => editor.chain().focus().toggleStrike().run()}
                 active={editor.isActive('strike')}
-                title="Strikethrough"
+                title={t('editor.strikethrough')}
             >
                 <span className="text-sm font-semibold line-through">S</span>
             </ToolButton>
 
             <Divider />
 
-            <ToolButton onClick={onSetLink} active={editor.isActive('link')} title="Link">
+            <ToolButton onClick={onSetLink} active={editor.isActive('link')} title={t('editor.link')}>
                 <LinkIcon className="size-4" />
             </ToolButton>
             {editor.isActive('link') ? (
                 <ToolButton
                     onClick={() => editor.chain().focus().unsetLink().run()}
-                    title="Remove link"
+                    title={t('editor.removeLink')}
                 >
                     <TrashIcon className="size-4" />
                 </ToolButton>
@@ -134,34 +137,34 @@ export default function Toolbar({ editor, onSetLink }: ToolbarProps) {
             <ToolButton
                 onClick={() => editor.chain().focus().toggleBulletList().run()}
                 active={editor.isActive('bulletList')}
-                title="Bullet list"
+                title={t('editor.bulletList')}
             >
                 <ListBulletIcon className="size-4" />
             </ToolButton>
             <ToolButton
                 onClick={() => editor.chain().focus().toggleOrderedList().run()}
                 active={editor.isActive('orderedList')}
-                title="Numbered list"
+                title={t('editor.numberedList')}
             >
                 <span className="text-xs font-semibold">1.</span>
             </ToolButton>
             <ToolButton
                 onClick={() => editor.chain().focus().toggleBlockquote().run()}
                 active={editor.isActive('blockquote')}
-                title="Quote"
+                title={t('editor.quote')}
             >
                 <CodeBracketIcon className="size-4" />
             </ToolButton>
             <ToolButton
                 onClick={() => editor.chain().focus().toggleCodeBlock().run()}
                 active={editor.isActive('codeBlock')}
-                title="Code block"
+                title={t('editor.codeBlock')}
             >
                 <CodeBracketIcon className="size-4" />
             </ToolButton>
             <ToolButton
                 onClick={() => editor.chain().focus().setHorizontalRule().run()}
-                title="Divider"
+                title={t('editor.divider')}
             >
                 <span className="text-xs">&#8213;</span>
             </ToolButton>
@@ -171,21 +174,21 @@ export default function Toolbar({ editor, onSetLink }: ToolbarProps) {
             <ToolButton
                 onClick={() => editor.chain().focus().setTextAlign('left').run()}
                 active={editor.isActive({ textAlign: 'left' })}
-                title="Align left"
+                title={t('editor.alignLeft')}
             >
                 <span className="text-xs">&#8676;</span>
             </ToolButton>
             <ToolButton
                 onClick={() => editor.chain().focus().setTextAlign('center').run()}
                 active={editor.isActive({ textAlign: 'center' })}
-                title="Align center"
+                title={t('editor.alignCenter')}
             >
                 <span className="text-xs">&#8596;</span>
             </ToolButton>
             <ToolButton
                 onClick={() => editor.chain().focus().setTextAlign('right').run()}
                 active={editor.isActive({ textAlign: 'right' })}
-                title="Align right"
+                title={t('editor.alignRight')}
             >
                 <span className="text-xs">&#8677;</span>
             </ToolButton>
@@ -195,14 +198,14 @@ export default function Toolbar({ editor, onSetLink }: ToolbarProps) {
             <ToolButton
                 onClick={() => editor.chain().focus().undo().run()}
                 disabled={!editor.can().undo()}
-                title="Undo"
+                title={t('editor.undo')}
             >
                 <span className="text-xs">&#8630;</span>
             </ToolButton>
             <ToolButton
                 onClick={() => editor.chain().focus().redo().run()}
                 disabled={!editor.can().redo()}
-                title="Redo"
+                title={t('editor.redo')}
             >
                 <span className="text-xs">&#8631;</span>
             </ToolButton>

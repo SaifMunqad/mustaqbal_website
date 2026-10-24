@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '@/components/toast';
 
 function stringifyErrors(errors: Record<string, unknown>): string {
@@ -9,8 +10,10 @@ function stringifyErrors(errors: Record<string, unknown>): string {
         .join(' • ');
 }
 
-export function useFormToast(successTitle: string, errorTitle = 'Please fix the highlighted fields.') {
+export function useFormToast(successTitle: string, errorTitle?: string) {
+    const { t } = useTranslation();
     const { success, error } = useToast();
+    const resolvedErrorTitle = errorTitle ?? t('dashboard.formError');
 
     const onSuccess = useCallback(() => {
         success(successTitle);
@@ -18,8 +21,8 @@ export function useFormToast(successTitle: string, errorTitle = 'Please fix the 
 
     const onError = useCallback((errors: Record<string, unknown>) => {
         const message = stringifyErrors(errors);
-        error(errorTitle, message || undefined);
-    }, [error, errorTitle]);
+        error(resolvedErrorTitle, message || undefined);
+    }, [error, resolvedErrorTitle]);
 
     return { onSuccess, onError };
 }

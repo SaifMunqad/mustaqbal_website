@@ -4,6 +4,7 @@ import {
 } from '@/components/dashboard/site-settings/site-settings-shared';
 import { Button } from '@/components/ui/button';
 import { type HomeStat } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 interface HomeStatsEditorProps {
     stats: HomeStat[];
@@ -27,6 +28,7 @@ export default function HomeStatsEditor({
     onChange,
     namePrefix = '',
 }: HomeStatsEditorProps) {
+    const { t } = useTranslation();
     const base = namePrefix ? `${namePrefix}.home_stats` : 'home_stats';
 
     const update = (index: number, key: keyof HomeStat, value: string) =>
@@ -45,10 +47,10 @@ export default function HomeStatsEditor({
         <div className="mt-2 space-y-2">
             <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Quick stats
+                    {t('dashboard.settings.form.statsTitle')}
                 </span>
                 <Button type="button" size="sm" onClick={add}>
-                    Add stat
+                    {t('dashboard.settings.form.statsAdd')}
                 </Button>
             </div>
             {stats.map((stat, index) => (
@@ -63,7 +65,9 @@ export default function HomeStatsEditor({
                         onChange={(event) =>
                             update(index, 'value', event.target.value)
                         }
-                        placeholder="1,200+"
+                        placeholder={t(
+                            'dashboard.settings.form.statsValuePlaceholder',
+                        )}
                     />
                     <input
                         className={`${rowInputClass} md:w-auto md:flex-1`}
@@ -72,14 +76,16 @@ export default function HomeStatsEditor({
                         onChange={(event) =>
                             update(index, 'label', event.target.value)
                         }
-                        placeholder="Students"
+                        placeholder={t(
+                            'dashboard.settings.form.statsLabelPlaceholder',
+                        )}
                     />
                     <button
                         type="button"
                         className={`${rowRemoveButtonClass} text-center md:self-start`}
                         onClick={() => remove(index)}
                     >
-                        Remove
+                        {t('dashboard.form.remove')}
                     </button>
                 </div>
             ))}

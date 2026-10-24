@@ -6,6 +6,8 @@
  * comparing it to the session token. This mirrors how Inertia's own axios
  * requests authenticate and avoids a "CSRF token mismatch" error.
  */
+import i18n from '@/i18n';
+
 function getCsrfToken(): string {
     const match = document.cookie.match(/(^|;\s*)XSRF-TOKEN=([^;]+)/);
     return match ? decodeURIComponent(match[2]) : '';
@@ -48,14 +50,14 @@ export async function uploadImageDetailed(file: File): Promise<ImageUploadResult
 
     const data = (await response.json()) as ImageUploadResult;
     if (!data.url || !data.path) {
-        throw new Error('Upload succeeded but no image was returned.');
+        throw new Error(i18n.t('media.uploadNoImage'));
     }
 
     return data;
 }
 
 async function readUploadError(response: Response): Promise<string> {
-    let message = 'Upload failed.';
+    let message = i18n.t('media.uploadFailed');
     try {
         const data = await response.json();
         const firstError = data?.errors
@@ -96,7 +98,7 @@ export async function uploadPdf(file: File): Promise<PdfUploadResult> {
     });
 
     if (!response.ok) {
-        let message = 'Upload failed.';
+        let message = i18n.t('media.uploadFailed');
         try {
             const data = await response.json();
             const firstError = data?.errors
@@ -111,7 +113,7 @@ export async function uploadPdf(file: File): Promise<PdfUploadResult> {
 
     const data = (await response.json()) as PdfUploadResult;
     if (!data.path) {
-        throw new Error('Upload succeeded but no file path was returned.');
+        throw new Error(i18n.t('media.uploadNoFile'));
     }
 
     return data;

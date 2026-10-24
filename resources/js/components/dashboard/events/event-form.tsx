@@ -6,6 +6,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { Form, router } from '@inertiajs/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CheckboxField, SelectField, TextField } from '@/components/form-fields';
 import ConfirmDialog from '@/components/form/confirm-dialog';
 import FormSection from '@/components/form/form-section';
@@ -63,25 +64,8 @@ interface EventFormProps {
     deleteUrl?: string;
 }
 
-// Localized inputs rendered once per active language (default language required).
-const translatableFields: TranslatableField[] = [
-    { name: 'title', label: 'Event title', type: 'text', placeholder: 'Event title', maxLength: 255 },
-    {
-        name: 'excerpt',
-        label: 'Short summary',
-        type: 'text',
-        placeholder: 'Shown in event cards',
-        hint: 'Max 1000 characters',
-        maxLength: 1000,
-    },
-    { name: 'location', label: 'Location', type: 'text', placeholder: 'Location' },
-    {
-        name: 'body',
-        label: 'Event details',
-        type: 'richtext',
-        placeholder: 'Describe the event...',
-    },
-];
+// Localized inputs are built inside the component so their labels follow the
+// active UI language.
 
 /**
  * Shared create/edit form for events. The publishing block and a couple of
@@ -101,6 +85,7 @@ export default function EventForm({
     canDelete,
     deleteUrl,
 }: EventFormProps) {
+    const { t } = useTranslation();
     const isEdit = Boolean(event);
     const [coverImage, setCoverImage] = useState(event?.cover_image ?? '');
     const [images, setImages] = useState<string[]>(
@@ -116,6 +101,36 @@ export default function EventForm({
         });
     };
 
+    const translatableFields: TranslatableField[] = [
+        {
+            name: 'title',
+            label: t('dashboard.events.form.title'),
+            type: 'text',
+            placeholder: t('dashboard.events.form.titlePlaceholder'),
+            maxLength: 255,
+        },
+        {
+            name: 'excerpt',
+            label: t('dashboard.events.form.excerpt'),
+            type: 'text',
+            placeholder: t('dashboard.events.form.excerptPlaceholder'),
+            hint: t('dashboard.events.form.excerptHint'),
+            maxLength: 1000,
+        },
+        {
+            name: 'location',
+            label: t('dashboard.events.form.location'),
+            type: 'text',
+            placeholder: t('dashboard.events.form.location'),
+        },
+        {
+            name: 'body',
+            label: t('dashboard.events.form.details'),
+            type: 'richtext',
+            placeholder: t('dashboard.events.form.detailsPlaceholder'),
+        },
+    ];
+
     return (
         <Form action={action} method={method} onError={toastOnError}>
             {({ errors, processing }) => (
@@ -123,8 +138,10 @@ export default function EventForm({
                     <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
                         <div className="space-y-4">
                             <FormSection
-                                title="Localized content"
-                                description="Add the title, summary, location and details for each language. The starred language is required and used as the fallback."
+                                title={t('dashboard.events.form.localized')}
+                                description={t(
+                                    'dashboard.events.form.localizedDescription',
+                                )}
                                 icon={<DocumentTextIcon className="size-5" />}
                             >
                                 <LanguageTabsEditor
@@ -134,19 +151,23 @@ export default function EventForm({
                             </FormSection>
 
                             <FormSection
-                                title="Media"
-                                description="Upload or paste image URLs for the event."
+                                title={t('dashboard.events.form.media')}
+                                description={t(
+                                    'dashboard.events.form.mediaDescription',
+                                )}
                                 icon={<PhotoIcon className="size-5" />}
                             >
                                 <ImageUploadField
-                                    label="Cover image"
+                                    label={t(
+                                        'dashboard.events.form.coverImage',
+                                    )}
                                     name="cover_image"
                                     value={coverImage}
                                     onChange={setCoverImage}
                                     error={errors.cover_image}
                                 />
                                 <GalleryUploadField
-                                    label="Event photos"
+                                    label={t('dashboard.events.form.photos')}
                                     name="images"
                                     images={images}
                                     onChange={setImages}
@@ -157,11 +178,13 @@ export default function EventForm({
 
                         <aside className="space-y-4">
                             <FormSection
-                                title="Schedule & audience"
+                                title={t('dashboard.events.form.schedule')}
                                 icon={<CalendarIcon className="size-5" />}
                             >
                                 <TextField
-                                    label="Starts at"
+                                    label={t(
+                                        'dashboard.events.form.startsAt',
+                                    )}
                                     name="start_at"
                                     type="datetime-local"
                                     required
@@ -169,14 +192,16 @@ export default function EventForm({
                                     error={errors.start_at}
                                 />
                                 <TextField
-                                    label="Ends at"
+                                    label={t('dashboard.events.form.endsAt')}
                                     name="end_at"
                                     type="datetime-local"
                                     defaultValue={event ? toDateTimeInput(event.end_at) : ''}
                                     error={errors.end_at}
                                 />
                                 <SelectField
-                                    label="Audience"
+                                    label={t(
+                                        'dashboard.events.form.audience',
+                                    )}
                                     name="audience"
                                     required
                                     defaultValue={event?.audience ?? 'public'}
@@ -186,23 +211,31 @@ export default function EventForm({
                             </FormSection>
 
                             <FormSection
-                                title="Publishing"
+                                title={t('dashboard.events.form.publishing')}
                                 icon={<RocketLaunchIcon className="size-5" />}
                             >
                                 {canPublish ? (
                                     <CheckboxField
-                                        label={isEdit ? 'Published' : 'Publish now'}
+                                        label={
+                                            isEdit
+                                                ? t('dashboard.form.published')
+                                                : t('dashboard.form.publishNow')
+                                        }
                                         name="is_published"
                                         value="1"
                                         defaultChecked={event?.is_published}
                                     />
                                 ) : isEdit ? null : (
                                     <p className="text-sm text-muted-foreground">
-                                        Your event will be saved as a draft for review.
+                                        {t(
+                                            'dashboard.events.form.draftNotice',
+                                        )}
                                     </p>
                                 )}
                                 <CheckboxField
-                                    label="Cancelled"
+                                    label={t(
+                                        'dashboard.events.form.cancelled',
+                                    )}
                                     name="is_cancelled"
                                     value="1"
                                     defaultChecked={event?.is_cancelled}
@@ -218,17 +251,18 @@ export default function EventForm({
                     >
                         {isEdit && canDelete && event ? (
                             <ConfirmDialog
-                                title="Delete event?"
-                                description={
-                                    <>
-                                        Delete &ldquo;{event.title}&rdquo;? This cannot be undone.
-                                    </>
-                                }
-                                confirmLabel="Delete"
+                                title={t(
+                                    'dashboard.events.form.deleteTitle',
+                                )}
+                                description={t(
+                                    'dashboard.events.form.deleteDescription',
+                                    { name: event.title },
+                                )}
+                                confirmLabel={t('dashboard.form.delete')}
                                 onConfirm={removeEvent}
                             >
                                 <Button type="button" variant="destructive">
-                                    Delete event
+                                    {t('dashboard.events.form.delete')}
                                 </Button>
                             </ConfirmDialog>
                         ) : null}

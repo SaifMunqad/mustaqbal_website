@@ -1,4 +1,5 @@
 import { ReactNode, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type SortDirection = 'asc' | 'desc';
 
@@ -27,9 +28,12 @@ export function DataTable<T>({
     data,
     columns,
     rowKey,
-    emptyMessage = 'No records found.',
+    emptyMessage,
     defaultSort,
 }: DataTableProps<T>) {
+    const { t } = useTranslation();
+    const emptyLabel = emptyMessage ?? t('dashboard.table.empty');
+
     const [sortKey, setSortKey] = useState<string | null>(defaultSort?.key ?? null);
     const [sortDirection, setSortDirection] = useState<SortDirection>(defaultSort?.direction ?? 'asc');
 
@@ -120,7 +124,7 @@ export function DataTable<T>({
                     ) : (
                         <tr className="border-t">
                             <td className="p-3 text-slate-500 dark:text-slate-300" colSpan={columns.length}>
-                                {emptyMessage}
+                                {emptyLabel}
                             </td>
                         </tr>
                     )}

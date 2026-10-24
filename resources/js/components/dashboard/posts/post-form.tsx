@@ -7,6 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { Form } from '@inertiajs/react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CheckboxField, SelectField, TextField } from '@/components/form-fields';
 import FormSection from '@/components/form/form-section';
 import { GalleryUploadField } from '@/components/form/image-upload-field';
@@ -27,6 +28,7 @@ export interface PostUserOption {
 export interface PostTypeOption {
     value: string;
     label: string;
+    labelKey?: string;
 }
 
 export interface Post {
@@ -51,11 +53,6 @@ export interface Post {
 const toDateTimeInput = (value?: string | null): string =>
     value ? value.slice(0, 16) : '';
 
-const visibilityOptions = [
-    { value: 'community', label: 'Community' },
-    { value: 'public', label: 'Public' },
-];
-
 interface PostFormProps {
     // Inertia route target, e.g. posts.store.form() / posts.update.form(id).
     formProps: { action: string; method: 'post' | 'put' | 'patch' };
@@ -70,22 +67,8 @@ interface PostFormProps {
     translations?: TranslationValues;
 }
 
-// Localized inputs rendered once per active language (default language required).
-const translatableFields: TranslatableField[] = [
-    {
-        name: 'title',
-        label: 'Title',
-        type: 'text',
-        placeholder: 'Post title',
-        maxLength: 255,
-    },
-    {
-        name: 'content',
-        label: 'Post content',
-        type: 'richtext',
-        placeholder: 'Write your post here...',
-    },
-];
+// Localized inputs are built inside the component so their labels follow the
+// active UI language.
 
 /**
  * Shared create/edit form for community posts. Type-driven conditional fields
@@ -102,6 +85,7 @@ export default function PostForm({
     post,
     translations,
 }: PostFormProps) {
+    const { t } = useTranslation();
     const isEdit = Boolean(post);
     const [images, setImages] = useState<string[]>(
         (post?.images ?? []).filter(Boolean),
@@ -114,6 +98,33 @@ export default function PostForm({
         label: `${user.name} (${user.role})`,
     }));
 
+    const visibilityOptions = [
+        {
+            value: 'community',
+            labelKey: 'dashboard.posts.form.visibilityCommunity',
+        },
+        {
+            value: 'public',
+            labelKey: 'dashboard.posts.form.visibilityPublic',
+        },
+    ];
+
+    const translatableFields: TranslatableField[] = [
+        {
+            name: 'title',
+            label: t('dashboard.posts.form.title'),
+            type: 'text',
+            placeholder: t('dashboard.posts.form.titlePlaceholder'),
+            maxLength: 255,
+        },
+        {
+            name: 'content',
+            label: t('dashboard.posts.form.postContent'),
+            type: 'richtext',
+            placeholder: t('dashboard.posts.form.contentPlaceholder'),
+        },
+    ];
+
     return (
         <Form {...formProps} onError={toastOnError}>
             {({ errors, processing }) => (
@@ -121,13 +132,21 @@ export default function PostForm({
                     <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
                         <div className="space-y-4">
                             <FormSection
-                                title="Post details"
-                                description={isEdit ? 'Pick the type and audience, then update the title.' : 'Pick the type and audience, then add a clear title.'}
+                                title={t('dashboard.posts.form.details')}
+                                description={
+                                    isEdit
+                                        ? t(
+                                              'dashboard.posts.form.detailsEdit',
+                                          )
+                                        : t(
+                                              'dashboard.posts.form.detailsCreate',
+                                          )
+                                }
                                 icon={<DocumentTextIcon className="size-5" />}
                                 columns={2}
                             >
                                 <SelectField
-                                    label="Type"
+                                    label={t('dashboard.posts.form.type')}
                                     name="type"
                                     required
                                     defaultValue={post?.type ?? 'news'}
@@ -136,7 +155,9 @@ export default function PostForm({
                                     error={errors.type}
                                 />
                                 <SelectField
-                                    label="Visibility"
+                                    label={t(
+                                        'dashboard.posts.form.visibility',
+                                    )}
                                     name="visibility"
                                     required
                                     defaultValue={post?.visibility ?? 'community'}
@@ -146,8 +167,10 @@ export default function PostForm({
                             </FormSection>
 
                             <FormSection
-                                title="Content"
-                                description="Add the title and body for each language. The starred language is required and used as the fallback."
+                                title={t('dashboard.posts.form.content')}
+                                description={t(
+                                    'dashboard.posts.form.contentDescription',
+                                )}
                                 icon={<DocumentTextIcon className="size-5" />}
                             >
                                 <LanguageTabsEditor
@@ -157,12 +180,16 @@ export default function PostForm({
                             </FormSection>
 
                             <FormSection
-                                title="Images"
-                                description="Upload or paste image URLs for this post."
+                                title={t('dashboard.posts.form.images')}
+                                description={t(
+                                    'dashboard.posts.form.imagesDescription',
+                                )}
                                 icon={<PhotoIcon className="size-5" />}
                             >
                                 <GalleryUploadField
-                                    label="Post images"
+                                    label={t(
+                                        'dashboard.posts.form.postImages',
+                                    )}
                                     name="images"
                                     images={images}
                                     onChange={setImages}
@@ -173,11 +200,11 @@ export default function PostForm({
 
                         <aside className="space-y-4">
                             <FormSection
-                                title="Author"
+                                title={t('dashboard.posts.form.author')}
                                 icon={<UserIcon className="size-5" />}
                             >
                                 <SelectField
-                                    label="Author"
+                                    label={t('dashboard.posts.form.author')}
                                     name="user_id"
                                     required
                                     defaultValue={post ? String(post.user_id) : (users[0] ? String(users[0].id) : '')}
@@ -185,26 +212,41 @@ export default function PostForm({
                                     error={errors.user_id}
                                 />
                                 <SelectField
-                                    label="Highlighted student"
+                                    label={t(
+                                        'dashboard.posts.form.highlightedStudent',
+                                    )}
                                     name="highlighted_student_id"
-                                    placeholder="No highlighted student"
+                                    placeholder={t(
+                                        'dashboard.posts.form.noHighlightedStudent',
+                                    )}
                                     defaultValue={post?.highlighted_student_id ? String(post.highlighted_student_id) : ''}
                                     options={[
-                                        { value: '', label: 'No highlighted student' },
+                                        {
+                                            value: '',
+                                            label: t(
+                                                'dashboard.posts.form.noHighlightedStudent',
+                                            ),
+                                        },
                                         ...userOptions,
                                     ]}
-                                    hint="Used for recognition posts."
+                                    hint={t(
+                                        'dashboard.posts.form.highlightedHint',
+                                    )}
                                     error={errors.highlighted_student_id}
                                 />
                             </FormSection>
 
                             <FormSection
-                                title="Scheduling"
+                                title={t(
+                                    'dashboard.posts.form.scheduling',
+                                )}
                                 icon={<CalendarIcon className="size-5" />}
                                 columns={1}
                             >
                                 <TextField
-                                    label="Scheduled at"
+                                    label={t(
+                                        'dashboard.posts.form.scheduledAt',
+                                    )}
                                     name="scheduled_at"
                                     type="datetime-local"
                                     defaultValue={post ? toDateTimeInput(post.scheduled_at) : ''}
@@ -213,14 +255,18 @@ export default function PostForm({
                                 {type === 'event' ? (
                                     <>
                                         <TextField
-                                            label="Starts at"
+                                            label={t(
+                                                'dashboard.posts.form.startsAt',
+                                            )}
                                             name="starts_at"
                                             type="datetime-local"
                                             defaultValue={post ? toDateTimeInput(post.starts_at) : ''}
                                             error={errors.starts_at}
                                         />
                                         <TextField
-                                            label="Ends at"
+                                            label={t(
+                                                'dashboard.posts.form.endsAt',
+                                            )}
                                             name="ends_at"
                                             type="datetime-local"
                                             defaultValue={post ? toDateTimeInput(post.ends_at) : ''}
@@ -230,7 +276,9 @@ export default function PostForm({
                                 ) : null}
                                 {type === 'job' ? (
                                     <TextField
-                                        label="Job apply URL"
+                                        label={t(
+                                            'dashboard.posts.form.jobApplyUrl',
+                                        )}
                                         name="job_apply_url"
                                         type="url"
                                         defaultValue={post?.job_apply_url ?? ''}
@@ -241,11 +289,13 @@ export default function PostForm({
                             </FormSection>
 
                             <FormSection
-                                title="Homepage showcase"
+                                title={t('dashboard.posts.form.showcase')}
                                 icon={<SparklesIcon className="size-5" />}
                             >
                                 <CheckboxField
-                                    label="Feature on homepage"
+                                    label={t(
+                                        'dashboard.posts.form.featureOnHomepage',
+                                    )}
                                     name="featured"
                                     value="1"
                                     defaultChecked={isEdit ? Boolean(post?.featured) : false}
@@ -254,14 +304,18 @@ export default function PostForm({
                                 {featured ? (
                                     <>
                                         <TextField
-                                            label="Featured from"
+                                            label={t(
+                                                'dashboard.posts.form.featuredFrom',
+                                            )}
                                             name="featured_from"
                                             type="datetime-local"
                                             defaultValue={post ? toDateTimeInput(post.featured_from) : ''}
                                             error={errors.featured_from}
                                         />
                                         <TextField
-                                            label="Featured until"
+                                            label={t(
+                                                'dashboard.posts.form.featuredUntil',
+                                            )}
                                             name="featured_until"
                                             type="datetime-local"
                                             defaultValue={post ? toDateTimeInput(post.featured_until) : ''}

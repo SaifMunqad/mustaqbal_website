@@ -1,4 +1,5 @@
 import { Form, router } from '@inertiajs/react';
+import { useTranslation } from 'react-i18next';
 import { TextField } from '@/components/form-fields';
 import { Button } from '@/components/ui/button';
 
@@ -8,12 +9,6 @@ export interface CategoryDetail {
     slug: string;
     name_translations?: Record<string, string> | null;
 }
-
-const localeLabels: Record<string, string> = {
-    ps: 'Pashto',
-    fa_AF: 'Dari',
-    ar: 'Arabic',
-};
 
 interface CategoryFormProps {
     action: string;
@@ -40,8 +35,19 @@ export default function CategoryForm({
     category,
     deleteUrl,
 }: CategoryFormProps) {
+    const { t } = useTranslation();
+
+    const localeLabel = (locale: string) =>
+        locale === 'ps'
+            ? t('language.pashto')
+            : locale === 'fa_AF'
+              ? t('language.dari')
+              : locale === 'ar'
+                ? t('language.arabic')
+                : locale;
+
     const remove = () => {
-        if (category && window.confirm(`Delete "${category.name}"?`)) {
+        if (category && window.confirm(t('dashboard.categories.form.deleteConfirm', { name: category.name }))) {
             router.delete(`${deleteUrl}`, {
                 onSuccess: () => router.visit('/dashboard/categories'),
             });
@@ -52,26 +58,31 @@ export default function CategoryForm({
         <Form action={action} method={method} onError={toastOnError} className="space-y-4">
             <div className="space-y-4 rounded-2xl border border-border bg-background p-4 md:max-w-xl">
                 <TextField
-                    label="Category name"
+                    label={t('dashboard.categories.form.name')}
                     name="name"
                     required
                     defaultValue={category?.name ?? ''}
-                    placeholder="Category name (English)"
+                    placeholder={t('dashboard.categories.form.namePlaceholder')}
                 />
                 {translationLocales.map((locale) => (
                     <TextField
                         key={locale}
-                        label={localeLabels[locale] ?? locale}
+                        label={localeLabel(locale)}
                         name={`name_${locale}`}
                         defaultValue={category?.name_translations?.[locale] ?? ''}
-                        placeholder={`${localeLabels[locale] ?? locale} translation${category ? '' : ' (optional)'}`}
+                        placeholder={t(
+                            category
+                                ? 'dashboard.categories.form.translationPlaceholder'
+                                : 'dashboard.categories.form.translationPlaceholderOptional',
+                            { language: localeLabel(locale) },
+                        )}
                     />
                 ))}
                 <div className="flex flex-wrap items-center gap-3">
                     <Button type="submit">{submitLabel}</Button>
                     {deleteUrl && category ? (
                         <Button type="button" variant="destructive" onClick={remove}>
-                            Delete category
+                            {t('dashboard.categories.form.delete')}
                         </Button>
                     ) : null}
                 </div>

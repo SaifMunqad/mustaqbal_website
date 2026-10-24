@@ -1,3 +1,4 @@
+import i18n from '@/i18n';
 import { qrCode, recoveryCodes, secretKey } from '@/routes/two-factor';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -40,7 +41,10 @@ export const useTwoFactorAuth = () => {
             const { svg } = await fetchJson<TwoFactorSetupData>(qrCode.url());
             setQrCodeSvg(svg);
         } catch {
-            setErrors((prev) => [...prev, 'Failed to fetch QR code']);
+            setErrors((prev) => [
+                ...prev,
+                i18n.t('settings.twoFactor.errors.qrCode'),
+            ]);
             setQrCodeSvg(null);
         }
     }, []);
@@ -52,7 +56,10 @@ export const useTwoFactorAuth = () => {
             );
             setManualSetupKey(key);
         } catch {
-            setErrors((prev) => [...prev, 'Failed to fetch a setup key']);
+            setErrors((prev) => [
+                ...prev,
+                i18n.t('settings.twoFactor.errors.setupKey'),
+            ]);
             setManualSetupKey(null);
         }
     }, []);
@@ -73,7 +80,10 @@ export const useTwoFactorAuth = () => {
             const codes = await fetchJson<string[]>(recoveryCodes.url());
             setRecoveryCodesList(codes);
         } catch {
-            setErrors((prev) => [...prev, 'Failed to fetch recovery codes']);
+            setErrors((prev) => [
+                ...prev,
+                i18n.t('settings.twoFactor.errors.recoveryCodes'),
+            ]);
             setRecoveryCodesList([]);
         }
     }, [clearErrors]);

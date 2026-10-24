@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // Shared styling for the dashboard listing filter bars.
 export const filterBarClass =
@@ -30,6 +31,8 @@ export default function ResourceFilterBar({
     placeholder,
     children,
 }: ResourceFilterBarProps) {
+    const { t } = useTranslation();
+
     return (
         <div className={filterBarClass}>
             <input
@@ -41,7 +44,7 @@ export default function ResourceFilterBar({
             />
             {children}
             <Button type="button" onClick={onApply}>
-                Filter
+                {t('dashboard.form.filter')}
             </Button>
         </div>
     );

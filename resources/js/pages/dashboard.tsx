@@ -18,13 +18,6 @@ import {
     type LucideIcon,
 } from 'lucide-react';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
-    },
-];
-
 interface OverviewStats {
     articles: number;
     posts: number;
@@ -78,6 +71,10 @@ export default function Dashboard() {
     const { t, i18n } = useTranslation();
     const { stats } = usePage<{ stats: OverviewStats }>().props;
     const isRtl = i18n.dir() === 'rtl';
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        { title: t('dashboard.title'), href: '/dashboard' },
+    ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>

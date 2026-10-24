@@ -4,6 +4,7 @@ import { uploadImageDetailed, uploadPdf } from '@/lib/upload';
 import { cn } from '@/lib/utils';
 import { ArrowUpTrayIcon, DocumentTextIcon, PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface BookMediaFieldProps {
     label: string;
@@ -42,6 +43,7 @@ export function BookMediaField({
     error,
     className,
 }: BookMediaFieldProps) {
+    const { t } = useTranslation();
     const pdfInputRef = useRef<HTMLInputElement>(null);
     const imageInputRef = useRef<HTMLInputElement>(null);
     const [busy, setBusy] = useState<null | 'pdf' | 'image'>(null);
@@ -59,7 +61,7 @@ export function BookMediaField({
             setPreview(result.thumbnail_url);
             onChange({ file_path: result.path, thumbnail_path: result.thumbnail_path });
         } catch (err) {
-            setUploadError(err instanceof Error ? err.message : 'Upload failed.');
+            setUploadError(err instanceof Error ? err.message : t('media.uploadFailed'));
         } finally {
             setBusy(null);
         }
@@ -77,7 +79,7 @@ export function BookMediaField({
             // Keep the existing PDF path; only replace the image.
             onChange({ file_path: filePath, thumbnail_path: result.path });
         } catch (err) {
-            setUploadError(err instanceof Error ? err.message : 'Upload failed.');
+            setUploadError(err instanceof Error ? err.message : t('media.uploadFailed'));
         } finally {
             setBusy(null);
         }
@@ -101,20 +103,26 @@ export function BookMediaField({
             <div className="flex flex-col gap-3 rounded-xl border border-border bg-muted/20 p-3 sm:flex-row sm:items-center">
                 <div className="flex items-center gap-3">
                     {preview ? (
-                        <img src={preview} alt="Book cover" className="h-28 w-20 rounded-lg border border-border object-cover" />
+                        <img src={preview} alt={t('media.coverAlt')} className="h-28 w-20 rounded-lg border border-border object-cover" />
                     ) : (
                         <div className="flex h-28 w-20 items-center justify-center rounded-lg border border-dashed border-border bg-background text-muted-foreground">
                             <PhotoIcon className="size-6" />
                         </div>
                     )}
                     <div className="space-y-1 text-xs text-muted-foreground">
-                        <p className="font-medium text-foreground">{busy ? 'Uploading…' : preview ? 'Image set' : 'No image yet'}</p>
-                        <p>Upload a PDF and its first page becomes the cover.</p>
-                        <p>You can replace that image with any picture.</p>
+                        <p className="font-medium text-foreground">
+                            {busy
+                                ? t('media.uploading')
+                                : preview
+                                  ? t('media.imageSet')
+                                  : t('media.noImageYet')}
+                        </p>
+                        <p>{t('media.pdfCoverHint')}</p>
+                        <p>{t('media.replaceHint')}</p>
                         {currentUrl ? (
                             <a href={currentUrl} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-blue-600 underline">
                                 <DocumentTextIcon className="size-3.5" />
-                                View PDF
+                                {t('media.viewPdf')}
                             </a>
                         ) : null}
                     </div>
@@ -129,7 +137,7 @@ export function BookMediaField({
                         disabled={busy !== null}
                     >
                         <ArrowUpTrayIcon className="size-4" />
-                        Upload PDF
+                        {t('media.uploadPdf')}
                     </Button>
                     <Button
                         type="button"
@@ -139,12 +147,12 @@ export function BookMediaField({
                         disabled={busy !== null}
                     >
                         <PhotoIcon className="size-4" />
-                        {preview ? 'Change image' : 'Upload image'}
+                        {preview ? t('media.changeImage') : t('media.uploadImage')}
                     </Button>
                     {preview || filePath ? (
-                        <Button type="button" variant="ghost" size="sm" onClick={clear} aria-label="Remove file and image">
+                        <Button type="button" variant="ghost" size="sm" onClick={clear} aria-label={t('media.removeFileAndImage')}>
                             <XMarkIcon className="size-4" />
-                            Remove
+                            {t('media.remove')}
                         </Button>
                     ) : null}
                 </div>

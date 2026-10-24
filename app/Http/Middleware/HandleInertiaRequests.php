@@ -71,11 +71,11 @@ class HandleInertiaRequests extends Middleware
      *     return back()->with('info', 'translate.contact.form.success');
      *
      * The message may be a plain string or an i18n key (resolved on the client),
-     * or an array carrying a `description`. A stable id is stamped here so the
-     * frontend can show each notification exactly once. Legacy `toast` payloads
-     * are still understood during the migration.
+     * or an array carrying a `description` and interpolation `params`. A stable
+     * id is stamped here so the frontend can show each notification exactly once.
+     * Legacy `toast` payloads are still understood during the migration.
      *
-     * @return array{id: string, variant: string, title: string, description: string|null}|null
+     * @return array{id: string, variant: string, title: string, description: string|null, params: array<string, mixed>|null}|null
      */
     private function notification(Request $request): ?array
     {
@@ -91,9 +91,11 @@ class HandleInertiaRequests extends Middleware
             if (is_array($payload)) {
                 $title = (string) ($payload['title'] ?? ($payload['message'] ?? ''));
                 $description = isset($payload['description']) ? (string) $payload['description'] : null;
+                $params = isset($payload['params']) && is_array($payload['params']) ? $payload['params'] : null;
             } else {
                 $title = (string) $payload;
                 $description = null;
+                $params = null;
             }
 
             if ($title === '') {
@@ -105,6 +107,7 @@ class HandleInertiaRequests extends Middleware
                 'variant' => $variant,
                 'title' => $title,
                 'description' => $description,
+                'params' => $params,
             ];
         }
 
@@ -119,6 +122,7 @@ class HandleInertiaRequests extends Middleware
                 'variant' => $variant,
                 'title' => (string) ($legacy['title'] ?? ''),
                 'description' => isset($legacy['description']) ? (string) $legacy['description'] : null,
+                'params' => null,
             ];
         }
 

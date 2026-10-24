@@ -138,7 +138,7 @@ function TextAreaField({
 
 interface SelectOption {
     value: string;
-    label: string;
+    label?: string;
     /** Optional i18n key; when present the label is translated with `label` as fallback. */
     labelKey?: string;
 }
@@ -170,7 +170,7 @@ function SelectField({
     hint,
     className,
     required,
-    placeholder = 'Select an option',
+    placeholder,
     onChange,
 }: SelectFieldProps) {
     const { t } = useTranslation();
@@ -195,7 +195,12 @@ function SelectField({
                 }}
             >
                 <SelectTrigger id={name}>
-                    <SelectValue placeholder={placeholder} />
+                    <SelectValue
+                        placeholder={
+                            placeholder ??
+                            t('dashboard.form.selectPlaceholder')
+                        }
+                    />
                 </SelectTrigger>
                 <SelectContent>
                     {options.map((option) => {
@@ -205,7 +210,11 @@ function SelectField({
                                 : option.value;
                         return (
                             <SelectItem key={itemValue} value={itemValue}>
-                                {t(option.labelKey ?? option.label, option.label)}
+                                {t(
+                                    option.labelKey ??
+                                        option.label ??
+                                        option.value,
+                                )}
                             </SelectItem>
                         );
                     })}

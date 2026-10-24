@@ -11,14 +11,9 @@ import { SelectField } from '@/components/form-fields';
 import { ImageUploadField } from '@/components/form/image-upload-field';
 import type { AvailableItem } from '@/components/dashboard/home-section-form';
 import type { DraftConfig, SectionDraft } from './types';
+import { useTranslation } from 'react-i18next';
 
-const toneOptions = [
-    { value: 'default', label: 'Default' },
-    { value: 'blue', label: 'Blue' },
-    { value: 'green', label: 'Green' },
-    { value: 'amber', label: 'Amber' },
-    { value: 'red', label: 'Red' },
-];
+const TONES = ['default', 'blue', 'green', 'amber', 'red'] as const;
 
 interface SectionConfigSheetProps {
     open: boolean;
@@ -42,9 +37,16 @@ export default function SectionConfigSheet({
     onPatchConfig,
     onPatchLimit,
 }: SectionConfigSheetProps) {
+    const { t } = useTranslation();
+
     if (!draft) {
         return null;
     }
+
+    const toneOptions = TONES.map((tone) => ({
+        value: tone,
+        labelKey: `homeBuilder.tones.${tone}`,
+    }));
 
     const isCurated = draft.kind === 'curated';
     const picked = draft.config.item_ids;
@@ -60,10 +62,13 @@ export default function SectionConfigSheet({
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent side="right" className="w-full gap-0 overflow-y-auto sm:max-w-md">
                 <SheetHeader>
-                    <SheetTitle>{draft.type_label} · Settings</SheetTitle>
+                    <SheetTitle>
+                        {t('homeBuilder.form.settingsTitle', {
+                            type: draft.type_label,
+                        })}
+                    </SheetTitle>
                     <SheetDescription>
-                        Shared across all languages. Text is edited by clicking it
-                        on the page.
+                        {t('homeBuilder.form.settingsDescription')}
                     </SheetDescription>
                 </SheetHeader>
 
@@ -71,7 +76,9 @@ export default function SectionConfigSheet({
                     {isCurated ? (
                         <>
                             <div className="grid gap-2">
-                                <Label htmlFor="limit">Number to show when auto</Label>
+                                <Label htmlFor="limit">
+                                    {t('homeBuilder.form.limit')}
+                                </Label>
                                 <Input
                                     id="limit"
                                     type="number"
@@ -88,15 +95,15 @@ export default function SectionConfigSheet({
                                     }
                                 />
                                 <p className="text-xs text-muted-foreground">
-                                    Used only when no specific items are picked.
+                                    {t('homeBuilder.form.limitHintShort')}
                                 </p>
                             </div>
 
                             <div className="grid gap-2">
-                                <Label>Pick specific items</Label>
+                                <Label>{t('homeBuilder.form.pickItems')}</Label>
                                 {candidates.length === 0 ? (
                                     <p className="text-sm text-muted-foreground">
-                                        No publishable items available for this type yet.
+                                        {t('homeBuilder.form.noItems')}
                                     </p>
                                 ) : (
                                     <div className="max-h-80 space-y-1 overflow-y-auto rounded-xl border border-border p-3">
@@ -121,31 +128,34 @@ export default function SectionConfigSheet({
                     ) : (
                         <>
                             <ImageUploadField
-                                label="Image"
+                                label={t('homeBuilder.form.image')}
                                 name="image_url"
                                 value={draft.config.image_url}
                                 onChange={(value) => onPatchConfig({ image_url: value })}
                             />
 
                             <div className="grid gap-2">
-                                <Label htmlFor="cta_url">Button link</Label>
+                                <Label htmlFor="cta_url">
+                                    {t('homeBuilder.form.buttonLink')}
+                                </Label>
                                 <Input
                                     id="cta_url"
                                     value={draft.config.cta_url}
-                                    placeholder="/school/programs"
+                                    placeholder={t(
+                                        'homeBuilder.form.buttonLinkPlaceholder',
+                                    )}
                                     onChange={(event) =>
                                         onPatchConfig({ cta_url: event.target.value })
                                     }
                                 />
                                 <p className="text-xs text-muted-foreground">
-                                    Relative path or full URL. The button label is
-                                    edited on the page.
+                                    {t('homeBuilder.form.buttonLinkHintShared')}
                                 </p>
                             </div>
 
                             <SelectField
                                 key={`${draft.key}-tone`}
-                                label="Tone"
+                                label={t('homeBuilder.form.tone')}
                                 name="tone"
                                 defaultValue={draft.config.tone}
                                 options={toneOptions}

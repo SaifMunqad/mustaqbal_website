@@ -58,7 +58,17 @@ function FieldError({ message }: { message?: string }) {
     return <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{message}</p>;
 }
 
-export default function ContactMessageForm({ onSuccess }: { onSuccess: () => void }) {
+export default function ContactMessageForm({
+    onSuccess,
+    title,
+    description,
+}: {
+    onSuccess: () => void;
+    /** Authored heading from the builder block; falls back to the translated default. */
+    title?: string;
+    /** Optional intro paragraph shown above the required-fields note. */
+    description?: string;
+}) {
     const { t } = useTranslation();
 
     const { data, setData, post, processing, errors, reset } =
@@ -84,8 +94,13 @@ export default function ContactMessageForm({ onSuccess }: { onSuccess: () => voi
     return (
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8 dark:border-slate-800 dark:bg-gray-900">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                {t('contact.formTitle')}
+                {title || t('contact.formTitle')}
             </h2>
+            {description ? (
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                    {description}
+                </p>
+            ) : null}
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 {t('contact.requiredNote')}
             </p>

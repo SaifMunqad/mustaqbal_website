@@ -8,6 +8,7 @@ use App\Enums\EventAudience;
 use App\Enums\EventStatus;
 use App\Enums\HomeSectionType;
 use App\Enums\PostType;
+use App\Enums\SectionType;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Enums\WhatsAppCampaignStatus;
@@ -31,6 +32,7 @@ class EnumTranslationKeysTest extends TestCase
         return [
             PostType::class,
             HomeSectionType::class,
+            SectionType::class,
             EventAudience::class,
             EventStatus::class,
             UserRole::class,
@@ -69,6 +71,16 @@ class EnumTranslationKeysTest extends TestCase
         }
 
         $this->assertNotEmpty($expected, 'No enum cases were discovered.');
+
+        // Palette group labels are static chrome too, so they follow the same
+        // contract even though they are not enum cases.
+        foreach (SectionType::categories() as $category) {
+            $parts = explode('.', $category['labelKey']);
+            $this->assertCount(3, $parts, "Unexpected labelKey format on category: {$category['value']}");
+            [$namespace, $group, $value] = $parts;
+            $this->assertSame('enums', $namespace);
+            $expected[$group][$value] = true;
+        }
 
         foreach ($expected as $group => $values) {
             $groupStart = strpos($enumsBlock, $group.': {');

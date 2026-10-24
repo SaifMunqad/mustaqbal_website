@@ -9,6 +9,7 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { ReactNode, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface ConfirmDialogProps {
     title: string;
@@ -29,13 +30,14 @@ interface ConfirmDialogProps {
 export default function ConfirmDialog({
     title,
     description,
-    confirmLabel = 'Confirm',
-    cancelLabel = 'Cancel',
+    confirmLabel,
+    cancelLabel,
     onConfirm,
     destructive = true,
     children,
     disabled,
 }: ConfirmDialogProps) {
+    const { t } = useTranslation();
     const [open, setOpen] = useState(false);
 
     return (
@@ -54,7 +56,7 @@ export default function ConfirmDialog({
                         variant="outline"
                         onClick={() => setOpen(false)}
                     >
-                        {cancelLabel}
+                        {cancelLabel ?? t('dashboard.form.cancel')}
                     </Button>
                     <Button
                         type="button"
@@ -64,7 +66,7 @@ export default function ConfirmDialog({
                             onConfirm();
                         }}
                     >
-                        {confirmLabel}
+                        {confirmLabel ?? t('dashboard.form.confirm')}
                     </Button>
                 </DialogFooter>
             </DialogContent>

@@ -23,6 +23,8 @@ export interface FlashNotification {
     variant: ToastVariant;
     title: string;
     description?: string | null;
+    /** Interpolation values for an i18n-key title/description. */
+    params?: Record<string, string | number> | null;
 }
 
 export interface FlashProps {
@@ -63,7 +65,10 @@ const rememberSeenId = (id: string): void => {
 
 // The backend may send either a plain message or an i18n key; translate when a
 // matching key exists, otherwise show the string verbatim.
-const resolveText = (text: string): string => (i18n.exists(text) ? String(i18n.t(text)) : text);
+const resolveText = (
+    text: string,
+    params?: Record<string, string | number> | null,
+): string => (i18n.exists(text) ? String(i18n.t(text, params ?? {})) : text);
 
 interface ToastRecord extends Required<Pick<ToastInput, 'title'>> {
     id: string;
@@ -171,8 +176,10 @@ export function ToastProvider({
             rememberSeenId(notification.id);
 
             toast({
-                title: resolveText(notification.title),
-                description: notification.description ? resolveText(notification.description) : undefined,
+                title: resolveText(notification.title, notification.params),
+                description: notification.description
+                    ? resolveText(notification.description, notification.params)
+                    : undefined,
                 variant: notification.variant,
             });
         },

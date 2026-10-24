@@ -144,6 +144,35 @@ export const bootstrapLanguage = (
     }
 };
 
+// Fortify flashes password-reset statuses as English framework strings. Map
+// the known ones to i18n keys so the auth pages render them in the active
+// language; unknown statuses pass through unchanged.
+const AUTH_STATUS_KEYS: Record<string, string> = {
+    'We have emailed your password reset link.': 'auth.status.resetLinkSent',
+    'Your password has been reset.': 'auth.status.passwordReset',
+};
+
+/**
+ * Translate a status flashed by Fortify (e.g. after requesting a reset link).
+ *
+ * @param status the raw session status shared by the auth pages.
+ * @param t the translator returned by `useTranslation`.
+ */
+export const translateAuthStatus = (
+    status: string | undefined,
+    t: (key: string) => string,
+): string | undefined => {
+    if (!status) {
+        return undefined;
+    }
+
+    const key =
+        AUTH_STATUS_KEYS[status] ??
+        (status.startsWith('auth.') ? status : null);
+
+    return key ? t(key) : status;
+};
+
 if (!i18n.isInitialized) {
     i18n.use(initReactI18next).init({
         resources,

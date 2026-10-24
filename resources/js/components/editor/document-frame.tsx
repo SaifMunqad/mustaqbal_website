@@ -10,6 +10,7 @@ import {
     XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { ReactNode, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface DocumentFrameProps {
     title: string;
@@ -38,10 +39,12 @@ function DocumentFrame({
     bodyName = 'body',
     images = [],
     onImagesChange,
-    bodyLabel = 'Body',
+    bodyLabel,
     copyText,
     children,
 }: DocumentFrameProps) {
+    const { t } = useTranslation();
+    const resolvedBodyLabel = bodyLabel ?? t('editor.body');
     const [mode, setMode] = useState<'write' | 'preview'>('write');
     const [copiedText, copy] = useClipboard();
     const canEdit = typeof onBodyChange === 'function';
@@ -91,10 +94,10 @@ function DocumentFrame({
             <div className="flex items-center justify-between gap-2">
                 <div>
                     <p className="text-sm font-medium text-foreground">
-                        Images
+                        {t('editor.images')}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                        Add one or more image URLs.
+                        {t('editor.imagesHint')}
                     </p>
                 </div>
                 <Button
@@ -104,7 +107,7 @@ function DocumentFrame({
                     onClick={handleAddImage}
                 >
                     <PlusIcon className="size-4" aria-hidden="true" />
-                    Add
+                    {t('editor.add')}
                 </Button>
             </div>
 
@@ -116,7 +119,9 @@ function DocumentFrame({
                     >
                         <div className="flex items-center justify-between gap-2">
                             <span className="text-xs font-medium text-muted-foreground">
-                                Image #{index + 1}
+                                {t('editor.imageNumber', {
+                                    number: index + 1,
+                                })}
                             </span>
                             <Button
                                 type="button"
@@ -150,11 +155,15 @@ function DocumentFrame({
     const previewImagesPanel = (
         <div className="space-y-3 rounded-2xl border border-border bg-muted/30 p-4">
             <div>
-                <p className="text-sm font-medium text-foreground">Images</p>
+                <p className="text-sm font-medium text-foreground">
+                    {t('editor.images')}
+                </p>
                 <p className="text-xs text-muted-foreground">
                     {safeImages.length
-                        ? `${safeImages.length} image(s)`
-                        : 'No images attached.'}
+                        ? t('editor.imagesCount', {
+                              count: safeImages.length,
+                          })
+                        : t('editor.noImages')}
                 </p>
             </div>
 
@@ -167,7 +176,10 @@ function DocumentFrame({
                         >
                             <img
                                 src={image}
-                                alt={`${title} image ${index + 1}`}
+                                alt={t('editor.imageAlt', {
+                                    title,
+                                    number: index + 1,
+                                })}
                                 className="h-44 w-full object-cover"
                             />
                         </figure>
@@ -175,7 +187,7 @@ function DocumentFrame({
                 </div>
             ) : (
                 <div className="rounded-xl border border-dashed border-border bg-background p-4 text-sm text-muted-foreground">
-                    The preview will show attached images here.
+                    {t('editor.previewImagesEmpty')}
                 </div>
             )}
         </div>
@@ -215,7 +227,7 @@ function DocumentFrame({
                                     className="size-4"
                                     aria-hidden="true"
                                 />
-                                Write
+                                {t('editor.write')}
                             </Button>
                             <Button
                                 type="button"
@@ -230,7 +242,7 @@ function DocumentFrame({
                                     className="size-4"
                                     aria-hidden="true"
                                 />
-                                Preview
+                                {t('editor.preview')}
                             </Button>
                         </div>
                     ) : null}
@@ -245,7 +257,9 @@ function DocumentFrame({
                             className="size-4"
                             aria-hidden="true"
                         />
-                        {copiedText === (copyText ?? body) ? 'Copied' : 'Copy'}
+                        {copiedText === (copyText ?? body)
+                            ? t('editor.copied')
+                            : t('editor.copy')}
                     </Button>
                 </div>
             </div>
@@ -264,12 +278,14 @@ function DocumentFrame({
                         <label className="block space-y-2">
                             <div className="flex items-center justify-between">
                                 <span className="text-sm font-medium text-foreground">
-                                    {bodyLabel}
+                                    {resolvedBodyLabel}
                                 </span>
                                 <span className="text-xs text-muted-foreground">
-                                    {wordCount}{' '}
-                                    {wordCount === 1 ? 'word' : 'words'} ·{' '}
-                                    {body.length} characters
+                                    {t('editor.words', { count: wordCount })}{' '}
+                                    ·{' '}
+                                    {t('editor.characters', {
+                                        count: body.length,
+                                    })}
                                 </span>
                             </div>
                             <textarea
@@ -279,7 +295,9 @@ function DocumentFrame({
                                     onBodyChange?.(event.target.value)
                                 }
                                 className="min-h-[24rem] w-full rounded-2xl border border-border bg-background p-4 text-sm leading-7 transition outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
-                                placeholder={`Write the ${bodyLabel.toLowerCase()} here...`}
+                                placeholder={t('editor.bodyPlaceholder', {
+                                    label: resolvedBodyLabel,
+                                })}
                             />
                         </label>
                     </div>
@@ -289,7 +307,7 @@ function DocumentFrame({
                             <input type="hidden" name={bodyName} value={body} />
                         ) : null}
                         <p className="text-sm font-medium text-foreground">
-                            {bodyLabel}
+                            {resolvedBodyLabel}
                         </p>
                         <div className="text-sm leading-7 whitespace-pre-wrap text-foreground">
                             {renderParagraphs(body).length ? (
@@ -305,7 +323,7 @@ function DocumentFrame({
                                 )
                             ) : (
                                 <p className="text-muted-foreground">
-                                    No content available.
+                                    {t('editor.noContent')}
                                 </p>
                             )}
                         </div>

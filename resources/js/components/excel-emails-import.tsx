@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as XLSX from 'xlsx';
 
 export interface ExtractedEmails {
@@ -116,6 +117,7 @@ interface ExcelEmailsImportProps {
 }
 
 export default function ExcelEmailsImport({ onExtract }: ExcelEmailsImportProps) {
+    const { t } = useTranslation();
     const inputRef = useRef<HTMLInputElement>(null);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -131,7 +133,7 @@ export default function ExcelEmailsImport({ onExtract }: ExcelEmailsImportProps)
         try {
             onExtract(await extractEmailsFromWorkbook(file));
         } catch {
-            setError('Could not read that file. Please use a .xlsx, .xls, or .csv export.');
+            setError(t('common.excelImport.readFailed'));
         } finally {
             setBusy(false);
 
@@ -152,12 +154,14 @@ export default function ExcelEmailsImport({ onExtract }: ExcelEmailsImportProps)
                     onChange={(event) => handleFile(event.target.files?.[0])}
                     className="block w-full cursor-pointer text-sm file:me-3 file:rounded-lg file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-sm file:text-white hover:file:bg-blue-700 md:w-auto"
                 />
-                {busy && <span className="text-sm text-slate-500">Reading file…</span>}
+                {busy && (
+                    <span className="text-sm text-slate-500">
+                        {t('common.excelImport.reading')}
+                    </span>
+                )}
             </div>
             <p className="mt-2 text-xs text-slate-500">
-                Upload a spreadsheet and the email column is detected automatically from its first
-                sheet. Addresses may be separated by commas, spaces, or newlines. The file is analysed
-                in your browser only — it is never uploaded.
+                {t('common.excelImport.emailsHint')}
             </p>
             {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
         </div>

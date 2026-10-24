@@ -51,7 +51,7 @@ export default function ArticleForm({
     toastOnError,
     article,
 }: ArticleFormProps) {
-    const { i18n } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { languages } = usePage<SharedData>().props;
 
     const [body, setBody] = useState(article?.body ?? '');
@@ -82,46 +82,64 @@ export default function ArticleForm({
                     <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
                         <div className="space-y-4">
                             <FormSection
-                                title="Content"
-                                description="Give the article a clear title and a short summary."
+                                title={t('dashboard.articles.form.contentTitle')}
+                                description={t(
+                                    'dashboard.articles.form.contentDescription',
+                                )}
                                 icon={<DocumentTextIcon className="size-5" />}
                                 columns={2}
                             >
                                 <TextField
-                                    label="Title"
+                                    label={t('dashboard.articles.form.title')}
                                     name="title"
                                     required
                                     defaultValue={article?.title ?? ''}
-                                    placeholder="Article title"
+                                    placeholder={t(
+                                        'dashboard.articles.form.titlePlaceholder',
+                                    )}
                                     className="text-base md:col-span-2"
                                     error={errors.title}
                                 />
                                 <TextField
-                                    label="Excerpt"
+                                    label={t('dashboard.articles.form.excerpt')}
                                     name="excerpt"
                                     defaultValue={article?.excerpt ?? ''}
-                                    placeholder="One or two sentences shown in listings"
+                                    placeholder={t(
+                                        'dashboard.articles.form.excerptPlaceholder',
+                                    )}
                                     className="md:col-span-2"
-                                    hint="Max 1000 characters"
+                                    hint={t(
+                                        'dashboard.articles.form.excerptHint',
+                                    )}
                                     maxLength={1000}
                                     error={errors.excerpt}
                                 />
                                 <TextField
-                                    label="Writer name"
+                                    label={t(
+                                        'dashboard.articles.form.writerName',
+                                    )}
                                     name="writer_name"
                                     defaultValue={article?.writer_name ?? ''}
-                                    placeholder="The person who actually wrote the article"
+                                    placeholder={t(
+                                        'dashboard.articles.form.writerPlaceholder',
+                                    )}
                                     className="md:col-span-2"
-                                    hint="Shown as the byline. The signed-in account is recorded as the uploader."
+                                    hint={t(
+                                        'dashboard.articles.form.writerHint',
+                                    )}
                                     error={errors.writer_name}
                                 />
                                 <SelectField
-                                    label="Language"
+                                    label={t(
+                                        'dashboard.articles.form.language',
+                                    )}
                                     name="language"
                                     options={languageOptions}
                                     defaultValue={language}
                                     className="md:col-span-2"
-                                    hint="Sets the article's text direction (RTL/LTR), independent of the site language."
+                                    hint={t(
+                                        'dashboard.articles.form.languageHint',
+                                    )}
                                     onChange={setLanguage}
                                     error={errors.language}
                                 />
@@ -135,19 +153,25 @@ export default function ArticleForm({
                             />
 
                             <FormSection
-                                title="Media"
-                                description="Upload or paste image URLs. Files are stored and previewed instantly."
+                                title={t('dashboard.articles.form.mediaTitle')}
+                                description={t(
+                                    'dashboard.articles.form.mediaDescription',
+                                )}
                                 icon={<PhotoIcon className="size-5" />}
                             >
                                 <ImageUploadField
-                                    label="Cover image"
+                                    label={t(
+                                        'dashboard.articles.form.coverImage',
+                                    )}
                                     name="cover_image"
                                     value={coverImage}
                                     onChange={setCoverImage}
                                     error={errors.cover_image}
                                 />
                                 <GalleryUploadField
-                                    label="Gallery images"
+                                    label={t(
+                                        'dashboard.articles.form.galleryImages',
+                                    )}
                                     name="images"
                                     images={images}
                                     onChange={setImages}
@@ -162,19 +186,29 @@ export default function ArticleForm({
 
                         <aside className="space-y-4">
                             <FormSection
-                                title="Publishing"
+                                title={t(
+                                    'dashboard.articles.form.publishing',
+                                )}
                                 icon={<RocketLaunchIcon className="size-5" />}
                             >
                                 <CheckboxField
-                                    label={isEdit ? 'Published' : 'Publish now'}
+                                    label={
+                                        isEdit
+                                            ? t('dashboard.form.published')
+                                            : t('dashboard.form.publishNow')
+                                    }
                                     name="is_published"
                                     value="1"
                                     defaultChecked={article?.is_published}
                                 />
                                 <p className="text-xs text-muted-foreground">
                                     {isEdit
-                                        ? 'Uncheck to revert this article to a draft.'
-                                        : 'Leave unchecked to save the article as a draft.'}
+                                        ? t(
+                                              'dashboard.articles.form.publishHintEdit',
+                                          )
+                                        : t(
+                                              'dashboard.articles.form.publishHintCreate',
+                                          )}
                                 </p>
                             </FormSection>
                         </aside>

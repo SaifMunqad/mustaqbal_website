@@ -1,5 +1,6 @@
 import { Autocomplete, GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // Client-only gate without a mount effect: the server snapshot is false (render
 // the placeholder) and the client snapshot is true (render the map), giving the
@@ -36,6 +37,7 @@ const containerStyle = { width: '100%', height: '320px' };
  * safe under Inertia SSR, where `window`/`document` are unavailable.
  */
 function PickerInner({ apiKey, latitude, longitude, zoom, onChange }: GoogleLocationPickerProps) {
+    const { t } = useTranslation();
     const { isLoaded, loadError } = useJsApiLoader({
         id: 'school-location-picker',
         googleMapsApiKey: apiKey,
@@ -91,8 +93,7 @@ function PickerInner({ apiKey, latitude, longitude, zoom, onChange }: GoogleLoca
     if (loadError) {
         return (
             <p className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
-                Google Maps failed to load. Check that the API key is valid and that the Maps
-                JavaScript API and Places API are enabled.
+                {t('dashboard.settings.form.mapLoadError')}
             </p>
         );
     }
@@ -100,7 +101,7 @@ function PickerInner({ apiKey, latitude, longitude, zoom, onChange }: GoogleLoca
     if (!isLoaded) {
         return (
             <div className="flex h-[320px] items-center justify-center rounded-xl border text-sm text-slate-500">
-                Loading map…
+                {t('dashboard.settings.form.mapLoading')}
             </div>
         );
     }
@@ -115,7 +116,9 @@ function PickerInner({ apiKey, latitude, longitude, zoom, onChange }: GoogleLoca
             >
                 <input
                     type="text"
-                    placeholder="Search a place (address, landmark, city)…"
+                    placeholder={t(
+                        'dashboard.settings.form.mapSearchPlaceholder',
+                    )}
                     className="w-full rounded-lg border p-2"
                 />
             </Autocomplete>
@@ -147,13 +150,15 @@ function PickerInner({ apiKey, latitude, longitude, zoom, onChange }: GoogleLoca
             </div>
 
             <p className="text-xs text-slate-500">
-                Search a place or click / drag the pin to set the school location.
+                {t('dashboard.settings.form.mapSearchHint')}
             </p>
         </div>
     );
 }
 
 export default function GoogleLocationPicker(props: GoogleLocationPickerProps) {
+    const { t } = useTranslation();
+
     // Defer the map to the client only; keeps SSR from touching window/document.
     const mounted = useSyncExternalStore(
         emptySubscribe,
@@ -164,8 +169,7 @@ export default function GoogleLocationPicker(props: GoogleLocationPickerProps) {
     if (!props.apiKey) {
         return (
             <p className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300">
-                The interactive map needs a Google Maps API key (set GOOGLE_MAPS_API_KEY). You can
-                still paste a map embed URL below.
+                {t('dashboard.settings.form.mapMissingKey')}
             </p>
         );
     }
@@ -173,7 +177,7 @@ export default function GoogleLocationPicker(props: GoogleLocationPickerProps) {
     if (!mounted) {
         return (
             <div className="flex h-[320px] items-center justify-center rounded-xl border text-sm text-slate-500">
-                Loading map…
+                {t('dashboard.settings.form.mapLoading')}
             </div>
         );
     }

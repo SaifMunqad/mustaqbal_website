@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface TextEditDialogProps {
     open: boolean;
@@ -45,6 +46,7 @@ export default function TextEditDialog({
     untranslatedHint,
     onSave,
 }: TextEditDialogProps) {
+    const { t } = useTranslation();
     const [draft, setDraft] = useState(value);
 
     const commit = () => {
@@ -58,7 +60,7 @@ export default function TextEditDialog({
                 <DialogHeader>
                     <DialogTitle>{label}</DialogTitle>
                     <DialogDescription>
-                        Editing in <span className="font-semibold">{languageName}</span>.
+                        {t('homeBuilder.editIn', { language: languageName })}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -87,10 +89,10 @@ export default function TextEditDialog({
 
                 <DialogFooter>
                     <Button variant="ghost" type="button" onClick={() => onOpenChange(false)}>
-                        Cancel
+                        {t('dashboard.form.cancel')}
                     </Button>
                     <Button type="button" onClick={commit}>
-                        Done
+                        {t('homeBuilder.done')}
                     </Button>
                 </DialogFooter>
             </DialogContent>

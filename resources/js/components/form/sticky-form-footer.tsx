@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Link } from '@inertiajs/react';
 import { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface StickyFormFooterProps {
     submitLabel: string;
@@ -25,10 +26,12 @@ export default function StickyFormFooter({
     processing = false,
     disabled = false,
     cancelHref,
-    cancelLabel = 'Cancel',
+    cancelLabel,
     children,
     className,
 }: StickyFormFooterProps) {
+    const { t } = useTranslation();
+
     return (
         <div
             className={cn(
@@ -40,11 +43,13 @@ export default function StickyFormFooter({
             <div className="ms-auto flex flex-wrap items-center gap-3">
                 {cancelHref ? (
                     <Button type="button" variant="ghost" asChild>
-                        <Link href={cancelHref}>{cancelLabel}</Link>
+                        <Link href={cancelHref}>
+                            {cancelLabel ?? t('dashboard.form.cancel')}
+                        </Link>
                     </Button>
                 ) : null}
                 <Button type="submit" disabled={processing || disabled}>
-                    {processing ? 'Saving…' : submitLabel}
+                    {processing ? t('dashboard.form.saving') : submitLabel}
                 </Button>
             </div>
         </div>

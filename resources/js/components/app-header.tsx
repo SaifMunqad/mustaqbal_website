@@ -30,29 +30,29 @@ import { UserMenuContent } from '@/components/user-menu-content';
 import { useInitials } from '@/hooks/use-initials';
 import { cn, isSameUrl, resolveUrl } from '@/lib/utils';
 import { dashboard } from '@/routes';
-import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
+import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
 
-const mainNavItems: NavItem[] = [
+const mainNavItems = [
     {
-        title: 'Dashboard',
+        titleKey: 'dashboard.title',
         href: dashboard(),
         icon: LayoutGrid,
     },
 ];
 
-const rightNavItems: NavItem[] = [
+const rightNavItems = [
     {
-        title: 'Repository',
+        titleKey: 'common.repository',
         href: 'https://github.com/laravel/react-starter-kit',
         icon: Folder,
     },
     {
-        title: 'Documentation',
+        titleKey: 'common.documentation',
         href: 'https://laravel.com/docs/starter-kits#react',
         icon: BookOpen,
     },
@@ -68,7 +68,7 @@ interface AppHeaderProps {
 export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     const page = usePage<SharedData>();
     const { auth } = page.props;
-    const { i18n } = useTranslation();
+    const { t, i18n } = useTranslation();
     const sheetSide = i18n.dir() === 'rtl' ? 'right' : 'left';
     const getInitials = useInitials();
     return (
@@ -92,7 +92,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                 className="flex h-full w-64 flex-col items-stretch justify-between bg-sidebar"
                             >
                                 <SheetTitle className="sr-only">
-                                    Navigation Menu
+                                    {t('common.navigationMenu')}
                                 </SheetTitle>
                                 <SheetHeader className="flex justify-start text-start">
                                     <AppLogoIcon className="h-6 w-6 fill-current text-black dark:text-white" />
@@ -102,7 +102,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                         <div className="flex flex-col space-y-4">
                                             {mainNavItems.map((item) => (
                                                 <Link
-                                                    key={item.title}
+                                                    key={item.titleKey}
                                                     href={item.href}
                                                     className="flex items-center gap-2 font-medium"
                                                 >
@@ -112,7 +112,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                             className="h-5 w-5"
                                                         />
                                                     )}
-                                                    <span>{item.title}</span>
+                                                    <span>{t(item.titleKey)}</span>
                                                 </Link>
                                             ))}
                                         </div>
@@ -120,7 +120,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                         <div className="flex flex-col space-y-4">
                                             {rightNavItems.map((item) => (
                                                 <a
-                                                    key={item.title}
+                                                    key={item.titleKey}
                                                     href={resolveUrl(item.href)}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
@@ -132,7 +132,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                             className="h-5 w-5"
                                                         />
                                                     )}
-                                                    <span>{item.title}</span>
+                                                    <span>{t(item.titleKey)}</span>
                                                 </a>
                                             ))}
                                         </div>
@@ -176,7 +176,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                     className="me-2 h-4 w-4"
                                                 />
                                             )}
-                                            {item.title}
+                                            {t(item.titleKey)}
                                         </Link>
                                         {isSameUrl(page.url, item.href) && (
                                             <div className="absolute bottom-0 start-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"></div>
@@ -199,7 +199,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                             <div className="hidden lg:flex">
                                 {rightNavItems.map((item) => (
                                     <TooltipProvider
-                                        key={item.title}
+                                        key={item.titleKey}
                                         delayDuration={0}
                                     >
                                         <Tooltip>
@@ -211,7 +211,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                     className="group ms-1 inline-flex h-9 w-9 items-center justify-center rounded-md bg-transparent p-0 text-sm font-medium text-accent-foreground ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
                                                 >
                                                     <span className="sr-only">
-                                                        {item.title}
+                                                        {t(item.titleKey)}
                                                     </span>
                                                     {item.icon && (
                                                         <Icon
@@ -222,7 +222,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                 </a>
                                             </TooltipTrigger>
                                             <TooltipContent>
-                                                <p>{item.title}</p>
+                                                <p>{t(item.titleKey)}</p>
                                             </TooltipContent>
                                         </Tooltip>
                                     </TooltipProvider>
