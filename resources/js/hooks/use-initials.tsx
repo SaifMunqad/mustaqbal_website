@@ -1,3 +1,7 @@
+/**
+ * Returns a formatter that reduces a person's name to one or two uppercase
+ * initials, used as the avatar fallback throughout the dashboard.
+ */
 import { useCallback } from 'react';
 
 export function useInitials() {

@@ -1,3 +1,7 @@
+/**
+ * Grid of school highlights (accreditations, facilities, achievements) authored
+ * in the About page content.
+ */
 import AboutSectionHeading from '@/components/school/about/about-section-heading';
 import type { Highlight } from '@/components/school/about/about-types';
 import { CheckCircle2 } from 'lucide-react';

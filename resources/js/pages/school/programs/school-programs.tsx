@@ -1,3 +1,9 @@
+/**
+ * Public programmes listing.
+ *
+ * Groups programmes by type and lets the visitor switch between them; each card is
+ * the shared `ProgramCard`, and further pages load as the visitor scrolls.
+ */
 import InfiniteScrollFooter from '@/components/ui/infinite-scroll-footer';
 import Reveal from '@/components/ui/reveal';
 import { useInfinitePagination } from '@/hooks/use-infinite-pagination';

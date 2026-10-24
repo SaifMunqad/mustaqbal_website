@@ -1,3 +1,9 @@
+/**
+ * Embedded location map with a "get directions" link.
+ *
+ * Hides itself entirely when no map embed URL is configured. Directions prefer
+ * the stored coordinates and fall back to the address text.
+ */
 import type { SiteSettings } from '@/types';
 import { MapPinIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';

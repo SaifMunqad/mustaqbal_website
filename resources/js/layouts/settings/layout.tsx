@@ -1,3 +1,10 @@
+/**
+ * Layout for the account settings area.
+ *
+ * Renders a side navigation (profile, password, two-factor, appearance) beside the
+ * page content and marks the active entry. Returns nothing during SSR because the
+ * active link depends on the client-side URL.
+ */
 import Heading from '@/components/general/elements/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';

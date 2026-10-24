@@ -1,3 +1,7 @@
+/**
+ * Book listing with filtering, per-row deletion and the entry point to category
+ * management.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import ResourceFilterBar from '@/components/dashboard/resource-filter-bar';
 import { DataTable, DataTableColumn } from '@/components/ui/table';

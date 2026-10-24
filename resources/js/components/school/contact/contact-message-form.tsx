@@ -1,3 +1,11 @@
+/**
+ * Public contact form.
+ *
+ * Submits through Inertia's `useForm` and carries every field's validation error
+ * inline; the success state is owned by the parent page so it survives the
+ * post-submit re-render. Shared input styling keeps the fields consistent in both
+ * colour schemes.
+ */
 import { EnvelopeIcon } from '@heroicons/react/24/outline';
 import { useForm } from '@inertiajs/react';
 import { type FormEvent, type ReactNode } from 'react';

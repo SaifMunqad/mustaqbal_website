@@ -1,3 +1,9 @@
+/**
+ * Content shapes for the admin-authored About page (see the site-pages seeder).
+ *
+ * Keeping them here rather than in `@/types` marks them as belonging to this
+ * feature only; the page assembles them from the stored page content.
+ */
 // Content shapes for the admin-authored About page (see the site-pages seeder).
 
 export interface Stat {

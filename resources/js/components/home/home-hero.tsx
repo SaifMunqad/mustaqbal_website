@@ -1,3 +1,12 @@
+/**
+ * Hero banner at the top of the public home page.
+ *
+ * Copy falls back to translated defaults whenever the admin has not filled the
+ * corresponding settings field. The image mask mirrors itself for RTL, and fades
+ * bottom-up on small screens but horizontally beside the text on wide ones. The
+ * `rtl` override exists so the visual editor can preview the language being
+ * edited instead of the admin UI's language.
+ */
 import type { SiteSettings } from '@/types';
 import { Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';

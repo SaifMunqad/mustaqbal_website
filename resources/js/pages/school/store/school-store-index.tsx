@@ -1,3 +1,7 @@
+/**
+ * Bookstore listing with category filtering and infinite scroll. Selecting a
+ * category re-requests the first page through the router.
+ */
 import BookCard from '@/components/store/book-card';
 import InfiniteScrollFooter from '@/components/ui/infinite-scroll-footer';
 import Reveal from '@/components/ui/reveal';

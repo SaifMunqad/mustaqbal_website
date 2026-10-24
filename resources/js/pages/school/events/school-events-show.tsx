@@ -1,3 +1,7 @@
+/**
+ * Public event detail: schedule, venue, description and a link back to the events
+ * listing. All dates respect the visitor's chosen calendar.
+ */
 import Reveal from '@/components/ui/reveal';
 import { useDateType } from '@/hooks/use-date-type';
 import MainLayout from '@/layouts/app/main-layout';

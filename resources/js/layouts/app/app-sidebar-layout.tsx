@@ -1,3 +1,10 @@
+/**
+ * Sidebar-variant dashboard shell.
+ *
+ * The content column is the single scroll region — not the document — so the thin
+ * scrollbar runs the full height and the sidebar header can stay sticky inside
+ * it. This is the shape the RTL scrollbar behaviour was tuned against.
+ */
 import { AppContent } from '@/components/layout/app-content';
 import { AppShell } from '@/components/layout/app-shell';
 import { AppSidebar } from '@/components/layout/app-sidebar';

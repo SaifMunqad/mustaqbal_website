@@ -1,3 +1,7 @@
+/**
+ * Bulk email campaign listing. Row links open the campaign detail, which is where
+ * delivery status is tracked.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { DataTable, DataTableColumn } from '@/components/ui/table';
 import campaigns from '@/routes/dashboard/email-campaigns';

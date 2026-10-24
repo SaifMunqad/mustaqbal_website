@@ -1,3 +1,7 @@
+/**
+ * Conversation detail: the message, its existing answers, and a form to add a new
+ * answer from the dashboard.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { TextAreaField } from '@/components/form/form-fields';
 import { Button } from '@/components/ui/button';

@@ -1,3 +1,6 @@
+/**
+ * Edit screen for a community post.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import PostForm, {
     type Post,

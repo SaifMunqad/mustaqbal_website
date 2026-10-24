@@ -1,3 +1,11 @@
+/**
+ * Read-only renderer for article and post bodies.
+ *
+ * The HTML comes from the server already sanitized by HTMLPurifier; this
+ * component only mounts the charts embedded as `<canvas data-chart>` blocks and
+ * applies the body's own text direction, so a Pashto article reads correctly even
+ * when the surrounding UI is English.
+ */
 import { mountCharts } from '@/lib/charts';
 import { useEffect, useRef } from 'react';
 

@@ -1,3 +1,7 @@
+/**
+ * Create a dashboard account. The role and status options are server-provided so
+ * the selects can never offer a value the backend would reject.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import UserForm, { type UserOption } from '@/components/dashboard/users/user-form';
 import { useFormToast } from '@/components/feedback/use-form-toast';

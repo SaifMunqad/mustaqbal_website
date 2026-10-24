@@ -1,3 +1,7 @@
+/**
+ * Confirmation shown in place of the contact form after a successful send, with
+ * a button to compose another message without leaving the page.
+ */
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 

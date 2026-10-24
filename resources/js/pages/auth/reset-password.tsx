@@ -1,3 +1,7 @@
+/**
+ * Set a new password using the token emailed by the reset link. The token and email
+ * arrive as page props and are submitted with the new password.
+ */
 import { update } from '@/routes/password';
 import { Form, Head } from '@inertiajs/react';
 

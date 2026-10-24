@@ -1,3 +1,11 @@
+/**
+ * Sidebar footer entry for the signed-in account.
+ *
+ * The trigger adapts to the sidebar state: full identity plus a chevron when
+ * expanded, avatar-only when collapsed. The dropdown's anchor side flips on
+ * mobile so the panel never opens off-screen. The menu itself lives in
+ * `UserMenuContent`.
+ */
 import {
     DropdownMenu,
     DropdownMenuContent,

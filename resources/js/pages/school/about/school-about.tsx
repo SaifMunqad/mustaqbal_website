@@ -1,3 +1,10 @@
+/**
+ * Public About page.
+ *
+ * Composes the section components from the admin-authored content (hero, story,
+ * mission/vision, values, highlights, leadership, stats, video, FAQ, CTA) and skips
+ * any section whose content is empty.
+ */
 import AboutCtaBand from '@/components/school/about/about-cta-band';
 import AboutFaqSection from '@/components/school/about/about-faq-section';
 import AboutGoalsPointsSection from '@/components/school/about/about-goals-points-section';

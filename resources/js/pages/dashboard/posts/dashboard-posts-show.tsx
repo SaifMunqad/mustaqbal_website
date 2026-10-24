@@ -1,3 +1,7 @@
+/**
+ * Read-only post detail rendered through `DocumentFrame`, with links back to the
+ * listing and into the edit screen.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import DocumentFrame from '@/components/editor/document-frame';
 import { Button } from '@/components/ui/button';

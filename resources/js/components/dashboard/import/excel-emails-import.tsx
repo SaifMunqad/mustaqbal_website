@@ -1,3 +1,11 @@
+/**
+ * Excel/CSV drop target for bulk email campaigns.
+ *
+ * Parsing is exported separately as `extractEmailsFromWorkbook` and runs fully in
+ * the browser — the file never leaves the client. When a header cell matches
+ * "email" only that column is read, otherwise every cell is scanned; results are
+ * deduplicated and invalid tokens counted so the UI can report the outcome.
+ */
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as XLSX from 'xlsx';

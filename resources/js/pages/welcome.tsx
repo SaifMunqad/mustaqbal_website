@@ -1,3 +1,11 @@
+/**
+ * Public home page.
+ *
+ * Assembles the hero, curated sections, automatic programmes and jobs highlights,
+ * the stats and feature bands, and finally the ordered page-builder blocks. Every
+ * source is optional: a section with no data renders nothing, so the page stays
+ * coherent before an admin has filled everything in.
+ */
 import ShowcaseSection, {
     ShowcaseGroup,
 } from '@/components/general/showcase/showcase-section';

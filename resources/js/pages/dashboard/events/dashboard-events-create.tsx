@@ -1,3 +1,6 @@
+/**
+ * Create screen for a calendar event.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import EventForm, { type EventOption } from '@/components/dashboard/events/event-form';
 import { useFormToast } from '@/components/feedback/use-form-toast';

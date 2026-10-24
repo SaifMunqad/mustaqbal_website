@@ -1,3 +1,8 @@
+/**
+ * Card-framed authentication layout: logo above a bordered card holding the
+ * title, description and form. Used where the form benefits from a visible
+ * container.
+ */
 import AppLogoIcon from '@/components/layout/app-logo-icon';
 import {
     Card,

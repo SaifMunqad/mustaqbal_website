@@ -1,3 +1,9 @@
+/**
+ * Small shared utilities: `cn` merges Tailwind classes (later classes win, and
+ * conflicting utilities collapse), while `resolveUrl` / `isSameUrl` normalize
+ * Inertia's `href`, which may be either a string or a `{ url }` object returned by
+ * Wayfinder's route helpers.
+ */
 import { InertiaLinkProps } from '@inertiajs/react';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';

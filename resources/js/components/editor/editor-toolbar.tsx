@@ -1,3 +1,9 @@
+/**
+ * Formatting toolbar for `RichTextEditor`.
+ *
+ * Exports the small `ToolButton` and `Divider` atoms so callers can extend the
+ * toolbar without re-implementing the active/inactive styling.
+ */
 import type { Editor } from '@tiptap/react';
 import {
     BoldIcon,

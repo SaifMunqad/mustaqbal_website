@@ -1,3 +1,7 @@
+/**
+ * Appearance settings: theme selection and language preference. Both controls
+ * apply immediately — there is no save button.
+ */
 import { Head } from '@inertiajs/react';
 
 import AppearanceLanguage from '@/components/appearance/appearance-language';

@@ -1,3 +1,7 @@
+/**
+ * Read-only article detail for editors: metadata plus the rendered body through
+ * `ArticleBody`, which also mounts any embedded charts.
+ */
 import ArticleBody from '@/components/editor/article-body';
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { Button } from '@/components/ui/button';

@@ -1,3 +1,6 @@
+/**
+ * Edit screen for a job posting.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import JobForm, {
     type JobDetail,

@@ -1,3 +1,7 @@
+/**
+ * Intro band at the top of the contact page. Renders the admin-authored intro as
+ * rich text, falling back to translated body copy when none is set.
+ */
 import ArticleBody from '@/components/editor/article-body';
 import { useTranslation } from 'react-i18next';
 

@@ -1,3 +1,9 @@
+/**
+ * Public events listing: a month calendar plus the paginated event list beneath it.
+ *
+ * Dates are formatted in whichever calendar the visitor selected, and the list
+ * loads further pages on scroll.
+ */
 import EventCalendar, {
     CalendarEvent,
 } from '@/components/general/events/event-calendar';

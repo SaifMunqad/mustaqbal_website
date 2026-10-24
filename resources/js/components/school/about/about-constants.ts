@@ -1,3 +1,8 @@
+/**
+ * Static presentation data for the About page: the rotating accent tints shared
+ * by the value and mission tiles, and the icon lookup used to map an
+ * admin-selected icon name onto a Lucide component.
+ */
 import {
     BookOpen,
     GraduationCap,

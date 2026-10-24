@@ -1,3 +1,7 @@
+/**
+ * Row of headline numbers (students, teachers, years, …) authored in the About
+ * page content, laid out two-up on phones and up to four-up on desktop.
+ */
 import type { Stat } from '@/components/school/about/about-types';
 
 export default function AboutStatsBand({ stats }: { stats: Stat[] }) {

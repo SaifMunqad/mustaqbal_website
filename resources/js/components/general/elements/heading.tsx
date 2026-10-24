@@ -1,3 +1,7 @@
+/**
+ * Large page title with an optional description, used at the top of settings
+ * style pages.
+ */
 export default function Heading({
     title,
     description,

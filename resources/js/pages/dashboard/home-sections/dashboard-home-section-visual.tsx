@@ -1,3 +1,11 @@
+/**
+ * Visual editor for the home page.
+ *
+ * Renders the real home page components and layers editing affordances on top:
+ * add/reorder blocks, in-place text editing and per-block configuration. Edits are
+ * collected as a local draft list and posted once, which keeps the preview honest
+ * — the same components render for visitors and for the editor.
+ */
 import AppLayout from '@/layouts/app-layout';
 import type { FormDataConvertible } from '@inertiajs/core';
 import { Head, Link, router, usePage } from '@inertiajs/react';

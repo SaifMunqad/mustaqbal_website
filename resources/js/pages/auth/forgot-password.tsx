@@ -1,3 +1,7 @@
+/**
+ * "Forgot password" request screen. Sends the reset link to the given address and
+ * reports failures inline.
+ */
 // Components
 import { login } from '@/routes';
 import { email } from '@/routes/password';

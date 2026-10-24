@@ -1,3 +1,7 @@
+/**
+ * Eyebrow + title + subtitle header used by every About page section, so the
+ * vertical rhythm between sections stays consistent.
+ */
 interface AboutSectionHeadingProps {
     eyebrow?: string;
     title: string;

@@ -1,3 +1,7 @@
+/**
+ * Two-factor authentication settings: enable/disable the authenticator, show the
+ * recovery codes, and re-authenticate before any change.
+ */
 import HeadingSmall from '@/components/general/elements/heading-small';
 import TwoFactorRecoveryCodes from '@/components/auth/two-factor-recovery-codes';
 import TwoFactorSetupModal from '@/components/auth/two-factor-setup-modal';

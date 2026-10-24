@@ -1,3 +1,11 @@
+/**
+ * Bridges Inertia form submissions to the toast layer.
+ *
+ * Returns `onSuccess` / `onError` handlers to drop straight into an Inertia
+ * `useForm` submission: success raises the supplied title, failure raises a single
+ * toast whose description is the error bag flattened into one readable line.
+ * Dashboards use this instead of ad-hoc flash handling so feedback stays uniform.
+ */
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/components/feedback/toast';

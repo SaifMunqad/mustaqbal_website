@@ -1,3 +1,7 @@
+/**
+ * Leadership quote block: portrait, quotation and author attribution, all pulled
+ * from the About page content.
+ */
 import type { LeadershipMessage } from '@/components/school/about/about-types';
 import { Quote } from 'lucide-react';
 

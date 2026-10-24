@@ -1,3 +1,10 @@
+/**
+ * Public contact page.
+ *
+ * Shows the admin-authored intro, the contact details column and the map, and swaps
+ * the form for a success card once a message has been sent — without leaving the
+ * page.
+ */
 import PageGrid, { type RenderBlock } from '@/components/home/page-block';
 import ContactInfoPanel from '@/components/school/contact/contact-info-panel';
 import ContactIntroBand from '@/components/school/contact/contact-intro-band';

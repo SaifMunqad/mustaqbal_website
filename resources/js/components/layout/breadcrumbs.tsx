@@ -1,3 +1,9 @@
+/**
+ * Breadcrumb trail shared by both dashboard headers.
+ *
+ * Renders the last entry as the current page (plain text) and every earlier
+ * entry as an Inertia `Link`; renders nothing when the trail is empty.
+ */
 import {
     Breadcrumb,
     BreadcrumbItem,

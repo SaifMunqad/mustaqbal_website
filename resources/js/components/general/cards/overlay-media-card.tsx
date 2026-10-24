@@ -1,3 +1,11 @@
+/**
+ * Shared image-first card with a gradient overlay and text sitting over the
+ * media.
+ *
+ * Used by the bookstore and the media list so both areas share one card rhythm.
+ * Accepts an `overlay` slot (e.g. a download button) rendered inside the group
+ * wrapper, which keeps `group-hover` effects working across the whole surface.
+ */
 import { Link } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 

@@ -1,3 +1,7 @@
+/**
+ * Collapsible FAQ list on the About page. Items come from the admin-authored
+ * page content; each one opens independently.
+ */
 import AboutSectionHeading from '@/components/school/about/about-section-heading';
 import type { FaqItem } from '@/components/school/about/about-types';
 import { ChevronDown } from 'lucide-react';

@@ -1,3 +1,8 @@
+/**
+ * Intro band at the top of the About page: title, tagline, intro text, optional
+ * image and the two primary actions. Labels are passed in already translated
+ * because the caller also uses them elsewhere on the page.
+ */
 import { Link } from '@inertiajs/react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 

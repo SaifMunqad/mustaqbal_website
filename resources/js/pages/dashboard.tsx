@@ -1,3 +1,11 @@
+/**
+ * Dashboard overview screen (the `/dashboard` landing page).
+ *
+ * Shows one count per managed resource plus quick-action shortcuts, so an editor
+ * can see the state of the site at a glance and jump straight into the area that
+ * needs attention. Counts arrive as server props; role-restricted areas are
+ * filtered from the shortcut list before rendering.
+ */
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { type BreadcrumbItem } from '@/types';

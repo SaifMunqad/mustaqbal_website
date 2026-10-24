@@ -1,3 +1,6 @@
+/**
+ * Edit screen for a book category, seeding the translation tabs from the record.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import CategoryForm, {
     type CategoryDetail,

@@ -1,3 +1,7 @@
+/**
+ * Compose a message inside a conversation. Assigns the author from the account
+ * list and the thread from the conversation list.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { SelectField, TextAreaField, TextField } from '@/components/form/form-fields';
 import { Button } from '@/components/ui/button';

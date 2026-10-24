@@ -1,3 +1,6 @@
+/**
+ * Edit an existing home page section, including its per-language content.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import HomeSectionForm, {
     type AvailableItem,

@@ -1,3 +1,9 @@
+/**
+ * Copy-to-clipboard helper returning `[copiedText, copy]`.
+ *
+ * Resolves to `false` instead of throwing when the Clipboard API is unavailable
+ * (insecure context, older browser) so callers can show their own fallback.
+ */
 // Credit: https://usehooks-ts.com/
 import { useCallback, useState } from 'react';
 

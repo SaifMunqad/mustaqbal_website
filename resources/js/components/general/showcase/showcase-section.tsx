@@ -1,3 +1,11 @@
+/**
+ * Recognitions/honours showcase used on the public showcase page.
+ *
+ * Groups posts by category, lets the visitor switch between those groups, and
+ * lays each one out as a podium: the first entry is featured, the next two run
+ * beside it and the rest follow in a grid. The whole section staggers in through
+ * the shared `Reveal` primitive.
+ */
 import Reveal from '@/components/ui/reveal';
 import { Link } from '@inertiajs/react';
 import { useMemo, useState } from 'react';

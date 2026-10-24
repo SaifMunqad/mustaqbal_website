@@ -1,3 +1,10 @@
+/**
+ * Brand block shared by the dashboard sidebar and the auth pages.
+ *
+ * Prefers the admin-managed logo and brand name from the shared `site` props,
+ * falling back to the bundled vector mark and the translated default brand name.
+ * Both children are meant to be rendered inside a flex row.
+ */
 import { usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import type { SharedData } from '@/types';

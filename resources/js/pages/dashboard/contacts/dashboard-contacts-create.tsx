@@ -1,3 +1,7 @@
+/**
+ * Manually record a contact enquiry (for messages received outside the website
+ * form). Submitted with Inertia's plain `<Form>` since there is no shared editor.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { TextAreaField, TextField } from '@/components/form/form-fields';
 import { Button } from '@/components/ui/button';

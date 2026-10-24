@@ -1,3 +1,6 @@
+/**
+ * Edit an existing message's conversation, author and body.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { SelectField, TextAreaField, TextField } from '@/components/form/form-fields';
 import { Button } from '@/components/ui/button';

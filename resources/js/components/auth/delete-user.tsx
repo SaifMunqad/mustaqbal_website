@@ -1,3 +1,10 @@
+/**
+ * Danger-zone account deletion, rendered inside the profile settings page.
+ *
+ * Opens a confirmation dialog that requires the current password before
+ * submitting a `DELETE` to the profile controller; server-side validation errors
+ * are surfaced on the password field.
+ */
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import HeadingSmall from '@/components/general/elements/heading-small';
 import InputError from '@/components/form/input-error';

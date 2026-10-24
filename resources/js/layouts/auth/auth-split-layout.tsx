@@ -1,3 +1,9 @@
+/**
+ * Two-column authentication layout with a decorative brand panel beside the form.
+ *
+ * The panel shows the configured brand mark and quote; the whole layout collapses
+ * to a single column below the `lg` breakpoint.
+ */
 import AppLogoIcon from '@/components/layout/app-logo-icon';
 import { home } from '@/routes';
 import { type SharedData } from '@/types';

@@ -1,3 +1,11 @@
+/**
+ * Two-factor enrolment flow, in two steps: scan/toggle to enable, then confirm
+ * with a live TOTP code.
+ *
+ * Rendered from the two-factor settings page. The modal owns the QR code, the
+ * secret key, and the confirmation code input; it delegates the enable and
+ * confirm requests to the callbacks passed in by the page.
+ */
 import InputError from '@/components/form/input-error';
 import { Button } from '@/components/ui/button';
 import {

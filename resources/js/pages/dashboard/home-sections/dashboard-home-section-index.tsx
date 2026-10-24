@@ -1,3 +1,9 @@
+/**
+ * Home page section list.
+ *
+ * Order is edited locally and saved in one request (`saveOrder`), so reordering
+ * several rows costs a single round trip; deletion is confirmed first.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { Button } from '@/components/ui/button';
 import ConfirmDialog from '@/components/form/confirm-dialog';

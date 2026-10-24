@@ -1,3 +1,8 @@
+/**
+ * Constants and helpers shared by the editor and its chart panel: the supported
+ * chart types, the draft shape bound to the chart form, and a converter that
+ * turns a pasted data URI back into a `File` for upload.
+ */
 export const CHART_TYPES = [
     { value: 'bar', label: 'Bar' },
     { value: 'line', label: 'Line' },

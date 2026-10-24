@@ -1,3 +1,9 @@
+/**
+ * Segmented light / dark / system switch used on the appearance settings page.
+ *
+ * Options are translated and share one rounded track, matching the settings
+ * pages' visual language; actual persistence lives in `useAppearance`.
+ */
 import { Appearance, useAppearance } from '@/hooks/use-appearance';
 import { cn } from '@/lib/utils';
 import { LucideIcon, Monitor, Moon, Sun } from 'lucide-react';

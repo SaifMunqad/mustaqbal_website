@@ -1,3 +1,12 @@
+/**
+ * Fixed top navigation for the public site.
+ *
+ * Composes brand, desktop links and the mobile drawer, and owns the shell-level
+ * behaviour: scroll-state styling, the search overlay, the mobile panel, plus
+ * scroll locking and outside-click dismissal while that panel is open. The nav
+ * element doubles as the click-outside container so tapping the toggle cannot be
+ * mistaken for an outside click.
+ */
 import LanguageSwitcher from '@/components/general/header/language-switcher';
 import NavIconButton from '@/components/general/header/nav-icon-button';
 import NavbarBrand from '@/components/general/header/navbar-brand';

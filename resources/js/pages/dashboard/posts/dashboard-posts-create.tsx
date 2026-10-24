@@ -1,3 +1,6 @@
+/**
+ * Create screen for a community post, bound to the shared `PostForm`.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import PostForm, {
     type PostUserOption,

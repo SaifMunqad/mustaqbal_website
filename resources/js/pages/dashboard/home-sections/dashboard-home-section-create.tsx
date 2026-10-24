@@ -1,3 +1,7 @@
+/**
+ * Add a section to the home page. Curated sections pick existing records; authored
+ * sections carry their own copy. Both go through `HomeSectionForm`.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import HomeSectionForm, {
     type AvailableItem,

@@ -1,3 +1,6 @@
+/**
+ * Inline text link in the muted secondary style used on auth screens.
+ */
 import { cn } from '@/lib/utils';
 import { Link } from '@inertiajs/react';
 import { ComponentProps } from 'react';

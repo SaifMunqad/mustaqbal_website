@@ -1,3 +1,11 @@
+/**
+ * Dispatcher that turns one ordered page-builder block into a component.
+ *
+ * The public pages and the visual editor both walk the same block list through
+ * this switch, which is what keeps the editor preview honest: there is no second
+ * rendering path. Block types that predate the generic payload route to their
+ * dedicated components, newer ones to the shared renderers in `blocks.tsx`.
+ */
 import FeatureGrid from '@/components/home/feature-grid';
 import HomeHero from '@/components/home/home-hero';
 import HomeSections, {

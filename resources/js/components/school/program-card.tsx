@@ -1,3 +1,11 @@
+/**
+ * Public programme card.
+ *
+ * Renders one `Program` record as a leading icon tile, a type badge and an
+ * icon-led fact list (schedule, fees, age range, classroom, availability). The
+ * accent and icons come from the programme's type, so school programmes, courses
+ * and madrasa classes stay visually distinguishable.
+ */
 import { cn } from '@/lib/utils';
 import {
     BookOpen,

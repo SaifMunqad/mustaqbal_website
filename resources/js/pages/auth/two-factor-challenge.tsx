@@ -1,3 +1,10 @@
+/**
+ * Two-factor challenge shown after a successful password check.
+ *
+ * Accepts either a 6-digit authenticator code or a one-time recovery code;
+ * switching between the two modes clears the field so a half-typed value cannot be
+ * submitted to the wrong endpoint.
+ */
 import InputError from '@/components/form/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

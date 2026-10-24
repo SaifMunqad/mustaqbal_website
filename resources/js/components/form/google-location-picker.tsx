@@ -1,3 +1,12 @@
+/**
+ * Map + search picker used by the site-settings contact section.
+ *
+ * Renders only after mount (the Maps SDK is not SSR-safe). Without a Google Maps
+ * API key it renders a translated notice instead of the map, so the surrounding
+ * form still lays out correctly and the admin knows why nothing appears. Emits the
+ * full location object — coordinates, zoom and the human-readable address — so the
+ * address does not have to be looked up separately.
+ */
 import { Autocomplete, GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import { useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -1,3 +1,9 @@
+/**
+ * Inline validation message bound to a single field.
+ *
+ * Renders nothing when there is no message, so it can sit unconditionally under
+ * any control.
+ */
 import { cn } from '@/lib/utils';
 import { type HTMLAttributes } from 'react';
 

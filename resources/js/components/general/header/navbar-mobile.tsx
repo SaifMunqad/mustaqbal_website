@@ -1,3 +1,11 @@
+/**
+ * Mobile drawer for the public navbar.
+ *
+ * Animates the panel and its nested dropdowns with explicit durations and a
+ * shared easing curve, and skips the transition entirely when the user prefers
+ * reduced motion. Scroll locking and outside-click dismissal are handled by
+ * `Navbar` because it owns the shared container ref.
+ */
 import { isNavigationItemActive } from '@/components/general/header/navbar-utils';
 import useReducedMotion from '@/hooks/use-reduced-motion';
 import type { NavigationChildItem, NavigationItem } from '@/lib/navigation';

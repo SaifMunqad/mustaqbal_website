@@ -1,3 +1,11 @@
+/**
+ * Unified page builder for the home page.
+ *
+ * The whole layout — ordered sections, their per-language text, media and config —
+ * is edited in one place and committed in a single staged save (`save_url`), so a
+ * reorder plus a copy edit never becomes two conflicting requests. Adding, moving
+ * and configuring blocks happens against the same draft the live preview renders.
+ */
 import AppLayout from '@/layouts/app-layout';
 import type { FormDataConvertible } from '@inertiajs/core';
 import { Head, router, usePage } from '@inertiajs/react';

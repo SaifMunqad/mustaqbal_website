@@ -1,3 +1,10 @@
+/**
+ * Public-site language menu.
+ *
+ * Lists the languages the admin has enabled and, on selection, hands the code to
+ * i18next. The SetLocale middleware reads the cookie i18n writes, so a reload is
+ * required to re-localise server-rendered content and the document direction.
+ */
 import { navIconButtonClass } from '@/components/general/header/navbar-styles';
 import { setKnownLanguages } from '@/i18n';
 import type { LanguageOption, SharedData } from '@/types';

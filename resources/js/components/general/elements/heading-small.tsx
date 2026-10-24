@@ -1,3 +1,7 @@
+/**
+ * Section-level heading with an optional description, used inside settings
+ * pages to separate stacked forms.
+ */
 export default function HeadingSmall({
     title,
     description,

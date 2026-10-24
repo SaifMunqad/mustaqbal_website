@@ -1,3 +1,7 @@
+/**
+ * Card grid of school values. The icon per value is chosen by the admin from a
+ * fixed set (`VALUE_ICONS`) and unknown names fall back to a default glyph.
+ */
 import {
     ACCENTS,
     VALUE_ICONS,

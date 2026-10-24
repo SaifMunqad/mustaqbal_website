@@ -1,3 +1,7 @@
+/**
+ * Edit screen for an article. Seeds `ArticleForm` with the record and points it at
+ * the update route.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import ArticleForm, { type Article } from '@/components/dashboard/articles/article-form';
 import { useFormToast } from '@/components/feedback/use-form-toast';

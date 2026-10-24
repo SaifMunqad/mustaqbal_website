@@ -1,3 +1,10 @@
+/**
+ * Sign-in screen for the dashboard.
+ *
+ * Posts to the Fortify login endpoint, carries the "remember me" flag, and shows
+ * the translated status messages the backend flashes (e.g. after a password
+ * reset).
+ */
 import InputError from '@/components/form/input-error';
 import TextLink from '@/components/general/elements/text-link';
 import { Button } from '@/components/ui/button';

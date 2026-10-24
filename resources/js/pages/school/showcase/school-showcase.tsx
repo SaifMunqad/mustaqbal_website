@@ -1,3 +1,6 @@
+/**
+ * Public recognition/honours page, rendering the grouped showcase entries.
+ */
 import ShowcaseSection, {
     ShowcaseGroup,
 } from '@/components/general/showcase/showcase-section';

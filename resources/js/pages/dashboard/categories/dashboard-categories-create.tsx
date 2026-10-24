@@ -1,3 +1,7 @@
+/**
+ * Create screen for a book category. The set of translatable locales is
+ * server-provided, so the translation tabs match the enabled languages.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import CategoryForm from '@/components/dashboard/categories/category-form';
 import { useFormToast } from '@/components/feedback/use-form-toast';

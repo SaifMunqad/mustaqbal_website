@@ -1,3 +1,14 @@
+/**
+ * Top bar for the header-variant dashboard shell (`AppHeaderLayout`).
+ *
+ * Renders brand, primary navigation, breadcrumbs and the user menu, collapsing
+ * into a `Sheet` drawer on mobile. The primary nav is a single dashboard entry
+ * resolved through Wayfinder's `dashboard()` helper.
+ *
+ * The shell currently defaults to the sidebar variant; this header stays as the
+ * supported alternative and still carries the starter-kit repository/docs links
+ * declared at the top of this file.
+ */
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { Icon } from '@/components/layout/icon';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

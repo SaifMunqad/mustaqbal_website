@@ -1,3 +1,10 @@
+/**
+ * "Get in touch" column of the contact page.
+ *
+ * Offers quick call / email / WhatsApp actions built from the site settings, the
+ * info tiles, and whichever social profiles are configured — contact details are
+ * read from the shared settings so the page and the footer never disagree.
+ */
 import ContactInfoCard from '@/components/school/contact/contact-info-card';
 import type { SiteSettings } from '@/types';
 import {

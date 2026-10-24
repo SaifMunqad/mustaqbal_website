@@ -1,3 +1,7 @@
+/**
+ * Change the account password. Requires the current password and confirms the new
+ * one before submitting; success is announced inline rather than by navigation.
+ */
 import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
 import InputError from '@/components/form/input-error';
 import AppLayout from '@/layouts/app-layout';

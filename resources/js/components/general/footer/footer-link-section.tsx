@@ -1,3 +1,10 @@
+/**
+ * One titled column of footer links.
+ *
+ * Each link may point at an internal path, an external URL or a contact detail
+ * pulled from the site settings; `contactHref` builds the correct
+ * `tel:` / `mailto:` / map-style target for the latter.
+ */
 import { usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import SmartLink from '@/components/general/elements/smart-link';

@@ -1,3 +1,7 @@
+/**
+ * Edit screen for a library book, including its existing translations and the
+ * category options.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import BookForm, {
     type BookCategoryOption,

@@ -1,3 +1,14 @@
+/**
+ * The dashboard's standard labelled form controls.
+ *
+ * Every field wraps a shadcn primitive in the same label + hint + error layout,
+ * so create/edit screens stay visually aligned without repeating markup. The date
+ * fields translate between the admin's chosen calendar (Persian or Islamic) and
+ * the Gregorian `YYYY-MM-DD` string the server expects, which keeps the stored
+ * values calendar-agnostic.
+ *
+ * Exports the individual `*Field` components plus the `FieldWrapper` shell.
+ */
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

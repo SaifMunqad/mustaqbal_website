@@ -1,3 +1,6 @@
+/**
+ * Create screen for a job posting.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import JobForm, { type JobOption } from '@/components/dashboard/jobs/job-form';
 import { useFormToast } from '@/components/feedback/use-form-toast';

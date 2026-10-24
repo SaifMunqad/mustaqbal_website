@@ -1,3 +1,6 @@
+/**
+ * Edit screen for a programme.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import ProgramForm, {
     type Program,

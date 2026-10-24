@@ -1,3 +1,10 @@
+/**
+ * Single card inside a home page section (cards or masonry variant).
+ *
+ * The card's generated background shape is derived from the item index via
+ * `shapeForIndex`, deliberately deterministic rather than random so the server
+ * and client render identical markup and hydration never mismatches.
+ */
 import { Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 

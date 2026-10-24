@@ -1,3 +1,12 @@
+/**
+ * Persistent dashboard navigation rail.
+ *
+ * Builds the menu from role-aware groups (overview / content / community /
+ * communications / system). Items the current user may not access are filtered
+ * out before rendering; `NavMain` drops any group that ends up empty, so no
+ * labels appear without children. Labels are translation keys resolved here via
+ * `react-i18next`.
+ */
 import { NavMain } from '@/components/layout/nav-main';
 import { NavUser } from '@/components/layout/nav-user';
 import {

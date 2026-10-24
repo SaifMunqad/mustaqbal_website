@@ -1,3 +1,7 @@
+/**
+ * Bookstore detail page for a single title: cover, metadata, category and the
+ * download action, plus related titles from the same category.
+ */
 import BookCard, { BookCardData } from '@/components/store/book-card';
 import Reveal from '@/components/ui/reveal';
 import MainLayout from '@/layouts/app/main-layout';

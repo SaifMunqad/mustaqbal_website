@@ -1,3 +1,11 @@
+/**
+ * Renders the admin-curated home page sections (cards, banner, announcement).
+ *
+ * This is the public renderer for `HomeSection` rows: it owns the card grid,
+ * masonry layout and per-section config. When `HomeSectionEditApi` callbacks are
+ * supplied it additionally exposes the visual editor's in-place affordances —
+ * omitting them makes the output byte-for-byte identical to the visitor view.
+ */
 import { cn } from '@/lib/utils';
 import { Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';

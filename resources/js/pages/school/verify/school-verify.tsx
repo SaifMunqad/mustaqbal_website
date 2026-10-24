@@ -1,3 +1,10 @@
+/**
+ * Certificate/award verification.
+ *
+ * The visitor submits an identifier and the server resolves it to a stored award.
+ * Rate limiting is enforced server-side; the page surfaces the remaining-attempt
+ * state (`blocked`, attempts left) rather than letting the form fail silently.
+ */
 import Reveal from '@/components/ui/reveal';
 import MainLayout from '@/layouts/app/main-layout';
 import { Head, useForm, usePage } from '@inertiajs/react';

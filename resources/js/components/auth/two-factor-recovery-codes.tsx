@@ -1,3 +1,10 @@
+/**
+ * Recovery-code panel for two-factor authentication.
+ *
+ * Codes are fetched on mount and shown in a grid; they can be copied to the
+ * clipboard or regenerated. Regeneration is destructive — the previous codes stop
+ * working immediately — so it goes through a confirmation dialog.
+ */
 import { Button } from '@/components/ui/button';
 import {
     Card,

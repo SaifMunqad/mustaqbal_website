@@ -1,3 +1,9 @@
+/**
+ * Vector fallback mark for the app logo.
+ *
+ * Used by `AppLogo` when the admin has not uploaded a branding logo yet. Colours
+ * come from `fill-current` so the mark adapts to the surrounding theme.
+ */
 import { SVGAttributes } from 'react';
 
 export default function AppLogoIcon(props: SVGAttributes<SVGElement>) {

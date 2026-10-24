@@ -1,3 +1,6 @@
+/**
+ * Create screen for a programme.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import ProgramForm from '@/components/dashboard/programs/program-form';
 import { useFormToast } from '@/components/feedback/use-form-toast';

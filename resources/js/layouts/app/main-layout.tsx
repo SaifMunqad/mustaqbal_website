@@ -1,3 +1,10 @@
+/**
+ * Public site layout: fixed navbar, scrolling content and the site footer.
+ *
+ * The document itself does not scroll; the inner wrapper does, with offsets
+ * (`mt-11` + `pt-7`) chosen to match the fixed navbar height so the scrollbar
+ * starts directly beneath it with no dead gap.
+ */
 // layouts/app/main-layout.tsx
 import Footer from '@/components/general/footer/footer';
 import Navbar from '@/components/general/header/navbar';

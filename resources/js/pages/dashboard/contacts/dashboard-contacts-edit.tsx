@@ -1,3 +1,7 @@
+/**
+ * Edit a contact enquiry, including marking it resolved. The stored timestamp is
+ * trimmed to the `datetime-local` input format on the way in.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { TextAreaField, TextField } from '@/components/form/form-fields';
 import { Button } from '@/components/ui/button';

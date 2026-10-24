@@ -1,3 +1,10 @@
+/**
+ * Excel/CSV drop target for WhatsApp campaigns.
+ *
+ * `extractPhonesFromWorkbook` normalises each candidate to the E.164 range
+ * (digits with at most one leading `+`), then deduplicates and reports invalid
+ * and duplicate counts. Like the email importer it parses entirely client-side.
+ */
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as XLSX from 'xlsx';

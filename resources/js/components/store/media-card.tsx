@@ -1,3 +1,7 @@
+/**
+ * Generic media card for bookstore/search results that are not books (articles,
+ * videos, documents). Wraps `OverlayMediaCard` with a document fallback icon.
+ */
 import { DocumentTextIcon } from '@heroicons/react/24/outline';
 import OverlayMediaCard from '@/components/general/cards/overlay-media-card';
 

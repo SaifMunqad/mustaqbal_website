@@ -1,3 +1,7 @@
+/**
+ * The school's story, rendered from sanitized rich text through the shared
+ * `ArticleBody`, which also mounts any embedded charts.
+ */
 import ArticleBody from '@/components/editor/article-body';
 
 export default function AboutStorySection({ body }: { body: string }) {

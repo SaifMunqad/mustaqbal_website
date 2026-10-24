@@ -1,3 +1,11 @@
+/**
+ * Public site footer shell.
+ *
+ * Lays out the four-column grid (brand column plus the link sections declared in
+ * `lib/navigation`) and ends with the legal/social bar. All copy and links come
+ * from the shared site settings, so the footer follows admin edits without a
+ * code change.
+ */
 import FooterBottom from '@/components/general/footer/footer-bottom';
 import FooterBrand from '@/components/general/footer/footer-brand';
 import FooterLinkSection from '@/components/general/footer/footer-link-section';

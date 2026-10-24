@@ -1,3 +1,10 @@
+/**
+ * Enrolment form.
+ *
+ * Submits over `fetch` rather than an Inertia visit (the endpoint returns JSON), so
+ * a validation failure keeps everything the visitor typed and is reported both
+ * inline and as a toast.
+ */
 import { DateField, TextAreaField, TextField } from '@/components/form/form-fields';
 import { useToast } from '@/components/feedback/toast';
 import Reveal from '@/components/ui/reveal';

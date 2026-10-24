@@ -1,3 +1,6 @@
+/**
+ * Community post listing.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { DataTable, DataTableColumn } from '@/components/ui/table';
 import { Link, usePage } from '@inertiajs/react';

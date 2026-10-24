@@ -1,3 +1,7 @@
+/**
+ * Brand lockup in the public navbar: uploaded logo when available, otherwise the
+ * short brand name text. Always links back to the site root.
+ */
 import type { SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';

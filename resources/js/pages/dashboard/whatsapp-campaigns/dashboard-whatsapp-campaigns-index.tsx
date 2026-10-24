@@ -1,3 +1,10 @@
+/**
+ * Bulk WhatsApp campaign listing.
+ *
+ * When the API credentials are missing the page shows a warning pointing at the
+ * WhatsApp settings screen instead of letting the admin start a campaign that
+ * cannot send.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { DataTable, DataTableColumn } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';

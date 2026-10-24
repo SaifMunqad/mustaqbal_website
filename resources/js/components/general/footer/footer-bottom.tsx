@@ -1,3 +1,10 @@
+/**
+ * Bottom strip of the public footer: copyright line plus social links.
+ *
+ * Only channels with a configured URL are rendered; the WhatsApp entry is
+ * converted to a `wa.me` deep link with non-digits stripped. The year is taken
+ * from the client clock, matching the rest of the site's date handling.
+ */
 import { usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import type { SharedData } from '@/types';

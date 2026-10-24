@@ -1,3 +1,9 @@
+/**
+ * Two-column goals / main-points list on the About page.
+ *
+ * Both lists are plain string arrays from the page content; each column renders
+ * with its own icon so the two read as distinct groups rather than one long list.
+ */
 import { CheckCircle2, GraduationCap, Target } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 

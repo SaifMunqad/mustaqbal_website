@@ -1,3 +1,11 @@
+/**
+ * Compact light/dark/system picker for places that cannot afford a wide tab
+ * strip. Delegates persistence to `useAppearance`, which writes the same
+ * `appearance` cookie as `AppearanceTabs`.
+ *
+ * Not currently referenced — `AppearanceTabs` is used on the appearance settings
+ * page. Kept as the compact variant for header placements.
+ */
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,

@@ -1,3 +1,6 @@
+/**
+ * Event listing with the shared search/filter toolbar.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import ResourceFilterBar from '@/components/dashboard/resource-filter-bar';
 import { DataTable, DataTableColumn } from '@/components/ui/table';

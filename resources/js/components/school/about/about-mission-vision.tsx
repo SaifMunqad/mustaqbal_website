@@ -1,3 +1,7 @@
+/**
+ * Paired mission and vision cards. Either side may be missing; a card with no
+ * text is simply not rendered.
+ */
 import { ACCENTS } from '@/components/school/about/about-constants';
 import { cn } from '@/lib/utils';
 import { Eye, Target, type LucideIcon } from 'lucide-react';

@@ -1,3 +1,11 @@
+/**
+ * Public job advert card.
+ *
+ * Presents title, department, location, deadline and contract time, and expands
+ * in place to reveal the description and application details instead of routing
+ * away. Also used by the homepage "latest jobs" block and the dashboard preview,
+ * so all three stay identical.
+ */
 import {
     AcademicCapIcon,
     BriefcaseIcon,

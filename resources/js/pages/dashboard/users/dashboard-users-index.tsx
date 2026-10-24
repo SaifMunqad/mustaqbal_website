@@ -1,3 +1,6 @@
+/**
+ * Account listing with role and status filters on top of the shared search bar.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import ResourceFilterBar, { filterSelectClass } from '@/components/dashboard/resource-filter-bar';
 import { DataTable, DataTableColumn } from '@/components/ui/table';

@@ -1,3 +1,13 @@
+/**
+ * Light / dark / system theme selection.
+ *
+ * The choice is mirrored into `localStorage` (for instant reads on boot) and an
+ * `appearance` cookie, which is what matters for rendering: it lets the server
+ * emit the correct theme class on the first paint, avoiding a flash of the wrong
+ * palette. `initializeTheme` runs once from `app.tsx` before React mounts, and
+ * `useAppearance` exposes the current choice plus an updater to the settings and
+ * header controls.
+ */
 import { useCallback, useEffect, useState } from 'react';
 
 export type Appearance = 'light' | 'dark' | 'system';

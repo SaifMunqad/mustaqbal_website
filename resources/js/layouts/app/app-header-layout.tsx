@@ -1,3 +1,7 @@
+/**
+ * Header-variant dashboard shell: the alternative to the sidebar, stacking
+ * `AppHeader` above the content inside a shared `AppShell`.
+ */
 import { AppContent } from '@/components/layout/app-content';
 import { AppHeader } from '@/components/layout/app-header';
 import { AppShell } from '@/components/layout/app-shell';

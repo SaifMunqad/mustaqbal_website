@@ -1,3 +1,7 @@
+/**
+ * Centred, chrome-free authentication layout used by most auth screens: logo,
+ * title, description and the form in a single narrow column.
+ */
 import AppLogoIcon from '@/components/layout/app-logo-icon';
 import { home } from '@/routes';
 import { Link } from '@inertiajs/react';

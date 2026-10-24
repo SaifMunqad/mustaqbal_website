@@ -1,3 +1,10 @@
+/**
+ * Language management.
+ *
+ * Languages can be reordered by drag and drop, and each row exposes the active and
+ * default flags. The default language cannot be deleted, and every change is
+ * persisted immediately rather than through a save button.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import ConfirmDialog from '@/components/form/confirm-dialog';
 import { Button } from '@/components/ui/button';

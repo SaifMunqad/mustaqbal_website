@@ -1,3 +1,6 @@
+/**
+ * Public article detail: metadata, the rendered body and a share action.
+ */
 import ArticleBody from '@/components/editor/article-body';
 import ShareButton from '@/components/general/elements/share-button';
 import Reveal from '@/components/ui/reveal';

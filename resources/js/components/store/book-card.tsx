@@ -1,3 +1,10 @@
+/**
+ * Bookstore card for a single title.
+ *
+ * Shows the cover (or a book glyph), publication details and category, plus a
+ * direct download action when a file is available. Built on the shared
+ * `OverlayMediaCard` so it matches the media list.
+ */
 import { ArrowDownTrayIcon, BookOpenIcon } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import OverlayMediaCard from '@/components/general/cards/overlay-media-card';

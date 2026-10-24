@@ -1,3 +1,10 @@
+/**
+ * Avatar + name lockup for a single user.
+ *
+ * Falls back to computed initials when no avatar image is set, and truncates the
+ * name so it cannot widen its container. `showEmail` opts into a second line for
+ * places with room for it.
+ */
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useInitials } from '@/hooks/use-initials';
 import { type User } from '@/types';

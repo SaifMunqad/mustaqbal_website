@@ -1,3 +1,7 @@
+/**
+ * Article listing. Columns, sorting and the create action are declared here; the
+ * table itself lives in the shared `DataTable`.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { DataTable, DataTableColumn } from '@/components/ui/table';
 import { Link, usePage } from '@inertiajs/react';

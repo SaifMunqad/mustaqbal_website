@@ -1,3 +1,11 @@
+/**
+ * Combined appearance + language control for the public shell.
+ *
+ * Mirrors the admin-managed language list from the shared props, falling back to
+ * the single active locale when the server sends none, and keeps the i18n
+ * runtime's known-language table in sync so direction changes are applied
+ * consistently.
+ */
 import { CheckIcon } from '@heroicons/react/24/outline';
 import { router, usePage } from '@inertiajs/react';
 import { useEffect } from 'react';

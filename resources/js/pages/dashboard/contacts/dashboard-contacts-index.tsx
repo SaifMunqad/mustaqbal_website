@@ -1,3 +1,6 @@
+/**
+ * Contact enquiry listing with links through to each enquiry.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { DataTable, DataTableColumn } from '@/components/ui/table';
 import { Link, usePage } from '@inertiajs/react';

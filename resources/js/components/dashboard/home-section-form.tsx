@@ -1,3 +1,12 @@
+/**
+ * Create/edit form for a home page section.
+ *
+ * Sections are split into two families: `curated` ones select existing records by
+ * id (with a limit) and only carry a section title, while `authored` ones hold
+ * their own heading, body and button label. The localized fields are built inside
+ * the component so their labels follow the active UI language, and the payload is
+ * submitted as `translations.{code}.{field}` alongside the non-localized config.
+ */
 import FormSection from '@/components/form/form-section';
 import StickyFormFooter from '@/components/form/sticky-form-footer';
 import { CheckboxField, SelectField, TextField } from '@/components/form/form-fields';

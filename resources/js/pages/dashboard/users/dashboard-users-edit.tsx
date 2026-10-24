@@ -1,3 +1,6 @@
+/**
+ * Edit a dashboard account, including its role and status.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import UserForm, { type UserOption } from '@/components/dashboard/users/user-form';
 import { useFormToast } from '@/components/feedback/use-form-toast';

@@ -1,3 +1,7 @@
+/**
+ * Static admissions information page: a single translated introduction to the
+ * admissions process, wrapped in the shared public layout.
+ */
 import Reveal from '@/components/ui/reveal';
 import MainLayout from '@/layouts/app/main-layout';
 import { Head } from '@inertiajs/react';

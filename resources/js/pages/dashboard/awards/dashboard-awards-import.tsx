@@ -1,3 +1,10 @@
+/**
+ * Bulk award import.
+ *
+ * The pasted or uploaded rows are parsed in the browser and previewed before
+ * submission; the server caps a single batch (`maxRows`) and the preview enforces
+ * the same limit so the admin sees the truncation before sending anything.
+ */
 import ExcelAwardsImport, {
     type AwardImportResult,
     type AwardImportRow,

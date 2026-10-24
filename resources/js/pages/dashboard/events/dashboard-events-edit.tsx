@@ -1,3 +1,6 @@
+/**
+ * Edit screen for a calendar event.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import EventForm, {
     type EventDetail,

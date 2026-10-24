@@ -1,3 +1,7 @@
+/**
+ * Create screen for an article. Binds the shared `ArticleForm` to the store route
+ * and wires the error toast.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import ArticleForm from '@/components/dashboard/articles/article-form';
 import { useFormToast } from '@/components/feedback/use-form-toast';

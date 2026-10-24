@@ -1,3 +1,10 @@
+/**
+ * Single source of truth for the public site's navigation.
+ *
+ * Both the navbar and the footer read from these declarations, so a menu change
+ * lands in both places at once. Entries carry a translation key rather than a
+ * label, and child items may add a longer description for the desktop dropdown.
+ */
 import {
     AcademicCapIcon,
     BookOpenIcon,

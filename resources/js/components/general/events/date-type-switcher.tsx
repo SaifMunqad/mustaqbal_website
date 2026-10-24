@@ -1,3 +1,10 @@
+/**
+ * Dropdown that picks which calendar a date should be read in (Gregorian,
+ * Solar Hijri or Lunar Hijri).
+ *
+ * Selection is presentation-only: the stored date never changes, the caller
+ * re-formats what it displays. Closes on outside click and Escape.
+ */
 import {
     CalendarDaysIcon,
     CheckIcon,

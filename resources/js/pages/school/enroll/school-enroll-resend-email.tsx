@@ -1,3 +1,7 @@
+/**
+ * Single-purpose screen for re-requesting the enrolment confirmation email, used
+ * when the original message never arrived.
+ */
 import { DateField, TextField } from '@/components/form/form-fields';
 import { useToast } from '@/components/feedback/toast';
 import Reveal from '@/components/ui/reveal';

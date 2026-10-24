@@ -1,3 +1,10 @@
+/**
+ * Dropdown items for the current account: profile settings and logout.
+ *
+ * Logout closes the mobile navigation first, then posts to the Fortify logout
+ * route; settings links resolve through Wayfinder so they stay in sync with the
+ * PHP routes.
+ */
 import {
     DropdownMenuGroup,
     DropdownMenuItem,

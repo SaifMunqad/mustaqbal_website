@@ -1,3 +1,11 @@
+/**
+ * Standard page frame for dashboard screens.
+ *
+ * Provides the `AppLayout` shell, the document title, the breadcrumb trail and
+ * the optional create/extra action buttons, so every listing and detail screen
+ * opens with the same header treatment. The title is passed as a translation key
+ * and resolved here, which keeps the call site free of i18n imports.
+ */
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { BreadcrumbItem } from '@/types';

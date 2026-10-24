@@ -1,3 +1,9 @@
+/**
+ * URL matching helpers for the public navbar.
+ *
+ * `isPathActive` compares normalised paths and treats `/` as exact-match only, so
+ * the home entry does not light up on every page.
+ */
 import type { NavigationItem } from '@/lib/navigation';
 
 const normalizePath = (value?: string | null): string => value ?? '';

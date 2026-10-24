@@ -1,3 +1,10 @@
+/**
+ * Data table with client-side sorting and optional row actions.
+ *
+ * Columns declare their own header, cell renderer and sort value; sorting is
+ * applied client-side against a normalised value so mixed types still order
+ * predictably. Handles the empty state so listing pages do not repeat it.
+ */
 import { ReactNode, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

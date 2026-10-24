@@ -1,3 +1,7 @@
+/**
+ * Email verification notice shown to signed-in users who have not verified yet.
+ * Offers a resend action and a link to sign out.
+ */
 // Components
 import TextLink from '@/components/general/elements/text-link';
 import { Button } from '@/components/ui/button';

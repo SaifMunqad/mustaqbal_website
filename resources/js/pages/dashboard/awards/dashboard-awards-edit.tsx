@@ -1,3 +1,6 @@
+/**
+ * Edit screen for an award record.
+ */
 import AwardForm, { type AwardRecord } from '@/components/dashboard/awards/award-form';
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { useFormToast } from '@/components/feedback/use-form-toast';

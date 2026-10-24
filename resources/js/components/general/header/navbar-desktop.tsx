@@ -1,3 +1,10 @@
+/**
+ * Desktop half of the public navbar.
+ *
+ * Renders the flattened navigation as either plain links or hover/click dropdowns
+ * (see `NavDropdown`), highlighting the entry that matches the current URL via
+ * `isNavigationItemActive`.
+ */
 import NavDropdown from '@/components/general/header/nav-dropdown';
 import { isNavigationItemActive } from '@/components/general/header/navbar-utils';
 import type { NavigationItem } from '@/lib/navigation';

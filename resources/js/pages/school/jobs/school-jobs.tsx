@@ -1,3 +1,7 @@
+/**
+ * Public open-positions listing, rendered with the shared `JobCard` and paginated
+ * by infinite scroll.
+ */
 import JobCard, { type Job } from '@/components/school/job-card';
 import InfiniteScrollFooter from '@/components/ui/infinite-scroll-footer';
 import Reveal from '@/components/ui/reveal';

@@ -1,3 +1,12 @@
+/**
+ * Main content region of the dashboard shell.
+ *
+ * Two variants mirror the two shell layouts: `sidebar` renders the sidebar's
+ * inset panel (the scrolling region itself is supplied by
+ * `AppSidebarLayout`), while `header` renders a centred `<main>` capped at
+ * `max-w-7xl`. Extra props are forwarded to the underlying element so callers can
+ * attach ids or ARIA attributes.
+ */
 import { SidebarInset } from '@/components/ui/sidebar';
 import * as React from 'react';
 

@@ -1,3 +1,7 @@
+/**
+ * Profile settings: name, email and email-verification status, plus the account
+ * deletion danger zone.
+ */
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import { send } from '@/routes/verification';
 import { type BreadcrumbItem, type SharedData } from '@/types';

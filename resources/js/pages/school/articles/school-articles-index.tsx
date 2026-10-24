@@ -1,3 +1,9 @@
+/**
+ * Public article listing with infinite scroll.
+ *
+ * The first page arrives as a prop; further pages are fetched by
+ * `useInfinitePagination` as the sentinel scrolls into view.
+ */
 import HomeCardItem, {
     shapeForSeed,
     type HomeCard,

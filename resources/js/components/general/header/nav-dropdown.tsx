@@ -1,3 +1,10 @@
+/**
+ * Desktop dropdown panel for a navbar item with children.
+ *
+ * Only mounts while open. Closes on outside pointer-down and on Escape, and
+ * keeps focus handling close to the panel rather than pushing it up to the
+ * navbar.
+ */
 import type { NavigationChildItem } from '@/lib/navigation';
 import { Link, usePage } from '@inertiajs/react';
 import { RefObject, useEffect, useRef } from 'react';

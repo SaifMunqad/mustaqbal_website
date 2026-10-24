@@ -1,3 +1,11 @@
+/**
+ * Preview/preview-and-edit frame for document-style content.
+ *
+ * Splits the stored document into paragraphs, supports images and a document
+ * source, and offers edit / preview / copy modes with a per-block action rail.
+ * Shared by the About page editor and other builder surfaces that store
+ * rich document text.
+ */
 import { Button } from '@/components/ui/button';
 import { useClipboard } from '@/hooks/use-clipboard';
 import { cn } from '@/lib/utils';

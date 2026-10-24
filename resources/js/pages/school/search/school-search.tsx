@@ -1,3 +1,8 @@
+/**
+ * Site-wide search results, grouped by content type (articles, events, books and
+ * other media). The query is submitted to the server on each search rather than
+ * filtered client-side, so results match what is actually published.
+ */
 import BookCard, { BookCardData } from '@/components/store/book-card';
 import MediaCard, { MediaCardData } from '@/components/store/media-card';
 import Reveal from '@/components/ui/reveal';

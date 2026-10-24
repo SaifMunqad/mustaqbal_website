@@ -1,3 +1,11 @@
+/**
+ * Data access for the two-factor settings page: QR code, secret key, recovery
+ * codes, and the enable/confirm/disable calls.
+ *
+ * Requests go to the Fortify endpoints over `fetch` with a JSON `Accept` header,
+ * and failures are surfaced as translated error messages rather than thrown.
+ * `OTP_MAX_LENGTH` is exported so the code input and the validation agree.
+ */
 import i18n from '@/i18n';
 import { qrCode, recoveryCodes, secretKey } from '@/routes/two-factor';
 import { useCallback, useMemo, useState } from 'react';

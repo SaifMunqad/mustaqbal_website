@@ -1,3 +1,15 @@
+/**
+ * Application-wide toast system: context, viewport and flash bridge.
+ *
+ * `ToastProvider` wraps the app once (see `app.tsx`) and owns the toast queue.
+ * Server-side flashes arrive through Inertia's `notification` prop and are shown
+ * exactly once — seen ids are recorded in `localStorage` so a reload or a
+ * re-rendered page cannot replay them.
+ *
+ * Exports `ToastProvider` (mounted once) and the `useToast` hook, plus the
+ * `ToastInput` / `FlashNotification` / `FlashProps` types the callers and the PHP
+ * middleware share.
+ */
 import i18n from '@/i18n';
 import { cn } from '@/lib/utils';
 import { router } from '@inertiajs/react';

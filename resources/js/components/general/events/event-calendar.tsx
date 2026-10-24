@@ -1,3 +1,11 @@
+/**
+ * Month-grid calendar for the public events page.
+ *
+ * Renders the selected month in whichever calendar `DateTypeSwitcher` reports,
+ * marking days that have events and letting the caller jump to a month. Switching
+ * calendars re-projects the same underlying dates, so the highlighted days stay
+ * identical across calendar systems.
+ */
 import DateTypeSwitcher from '@/components/general/events/date-type-switcher';
 import {
     dateTypeKey,

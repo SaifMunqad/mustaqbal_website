@@ -1,3 +1,8 @@
+/**
+ * Password confirmation screen, shown by Laravel before entering a
+ * password-protected area. Submits to the confirm endpoint and returns the visitor
+ * to the intended destination.
+ */
 import InputError from '@/components/form/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

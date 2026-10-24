@@ -1,3 +1,6 @@
+/**
+ * Book category listing with per-row deletion.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { DataTable, DataTableColumn } from '@/components/ui/table';
 import ConfirmDialog from '@/components/form/confirm-dialog';

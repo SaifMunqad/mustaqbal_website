@@ -1,3 +1,7 @@
+/**
+ * Closing call-to-action band on the About page. Copy is i18n-driven and both
+ * buttons lead into the admissions and contact pages.
+ */
 import { Link } from '@inertiajs/react';
 import { ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';

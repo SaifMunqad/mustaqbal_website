@@ -1,3 +1,10 @@
+/**
+ * WhatsApp API credentials and sender configuration.
+ *
+ * The page distinguishes credentials saved in the database (`source`) from the
+ * ones supplied by the environment, and shows whether the integration is usable
+ * (`configured`) before any campaign is attempted.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { SelectField, TextField } from '@/components/form/form-fields';
 import { Button } from '@/components/ui/button';

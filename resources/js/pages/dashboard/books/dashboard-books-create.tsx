@@ -1,3 +1,7 @@
+/**
+ * Create screen for a library book. Receives the category list from the server so
+ * the category select is populated before first paint.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import BookForm, { type BookCategoryOption } from '@/components/dashboard/books/book-form';
 import { useFormToast } from '@/components/feedback/use-form-toast';

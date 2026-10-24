@@ -1,3 +1,9 @@
+/**
+ * Brand column of the public footer.
+ *
+ * Shows the uploaded logo, or the brand initial on the brand gradient when none
+ * is set, followed by the brand name and tagline from the site settings.
+ */
 import type { SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
