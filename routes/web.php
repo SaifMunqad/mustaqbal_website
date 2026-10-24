@@ -7,6 +7,7 @@ use App\Http\Controllers\Dashboard\DashboardBookCategoryController;
 use App\Http\Controllers\Dashboard\DashboardBookController;
 use App\Http\Controllers\Dashboard\DashboardContactController;
 use App\Http\Controllers\Dashboard\DashboardEventController;
+use App\Http\Controllers\Dashboard\DashboardFontController;
 use App\Http\Controllers\Dashboard\DashboardHomeSectionController;
 use App\Http\Controllers\Dashboard\DashboardJobController;
 use App\Http\Controllers\Dashboard\DashboardLanguageController;
@@ -179,6 +180,14 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
         Route::post('/palette', [DashboardSiteSettingController::class, 'palette'])
             ->middleware('role:management')
             ->name('palette');
+    });
+
+    // Per-language typography: uploaded font families and the assignment of a
+    // family to a language. Managed from Settings → Appearance.
+    Route::prefix('typography')->name('dashboard.typography.')->middleware('role:management')->group(function () {
+        Route::post('/fonts', [DashboardFontController::class, 'store'])->name('fonts.store');
+        Route::delete('/fonts/{font}', [DashboardFontController::class, 'destroy'])->name('fonts.destroy');
+        Route::put('/languages/{language}', [DashboardFontController::class, 'assign'])->name('languages.update');
     });
 
     Route::prefix('jobs')->name('dashboard.jobs.')->middleware('role:management')->group(function () {

@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\Font;
 use App\Models\Language;
 use App\Models\SiteSetting;
 use App\Services\FaviconService;
 use App\Support\Rules\ImageLocation;
 use App\Support\Theme\BrandPalette;
 use App\Support\Translation\TranslationPayload;
+use App\Support\Typography\GoogleFonts;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -98,7 +100,59 @@ class DashboardSiteSettingController extends Controller
             'settings' => $setting,
             'translations' => $this->existingTranslations($setting),
             'mapsKey' => config('services.google.maps_key'),
+            'fonts' => $this->fontOptions(),
+            'typography' => $this->typographyRows(),
+            'googleFonts' => GoogleFonts::options(),
+            'googleFontsHref' => GoogleFonts::previewHref(),
         ]);
+    }
+
+    /**
+     * Uploaded font families for the typography editor, including their weight
+     * files so the dashboard can preview each family without a second request.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function fontOptions(): array
+    {
+        return Font::query()
+            ->with(['files', 'languages:id,code'])
+            ->orderBy('name')
+            ->get()
+            ->map(fn (Font $font): array => [
+                'id' => $font->id,
+                'name' => $font->name,
+                'family' => $font->cssFamily(),
+                'stack' => $font->fontStack(),
+                'files' => $font->faces(),
+                'languages' => $font->languages->pluck('code')->values()->all(),
+            ])
+            ->all();
+    }
+
+    /**
+     * Every language with the family it currently uses, so the typography
+     * editor can render one select + preview per language.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function typographyRows(): array
+    {
+        return Language::query()
+            ->orderByDesc('is_active')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get()
+            ->map(fn (Language $language): array => [
+                'id' => $language->id,
+                'code' => $language->code,
+                'name' => $language->name,
+                'dir' => $language->dir === 'rtl' ? 'rtl' : 'ltr',
+                'is_active' => $language->is_active,
+                'font_family_id' => $language->font_family_id,
+                'google_font' => $language->google_font,
+            ])
+            ->all();
     }
 
     public function update(Request $request): RedirectResponse

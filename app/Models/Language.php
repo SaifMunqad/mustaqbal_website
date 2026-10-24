@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Support\Typography\GoogleFonts;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Cache;
 
@@ -16,6 +18,8 @@ class Language extends Model
         'code',
         'name',
         'dir',
+        'font_family_id',
+        'google_font',
         'is_active',
         'is_default',
         'sort_order',
@@ -41,6 +45,15 @@ class Language extends Model
     }
 
     /**
+     * The uploaded typeface for this language, or null to use the built-in
+     * stack in resources/css/app.css.
+     */
+    public function fontFamily(): BelongsTo
+    {
+        return $this->belongsTo(Font::class, 'font_family_id');
+    }
+
+    /**
      * Languages that users are allowed to switch to, in display order.
      *
      * @return Builder<self>
@@ -61,6 +74,7 @@ class Language extends Model
     {
         Cache::forget('languages.active');
         Cache::forget('languages.default');
+        Cache::forget('languages.typography');
     }
 
     /**
@@ -137,6 +151,72 @@ class Language extends Model
                 ])
                 ->all();
         });
+    }
+
+    /**
+     * Per-language typography keyed by language code: the CSS family name, the
+     * full `font-family` stack and the `@font-face` files (or the Google Fonts
+     * stylesheet URL when a curated family is selected). Cached because it is
+     * read on every server render (see resources/views/app.blade.php) and only
+     * changes when a language or a font is edited.
+     *
+     * @return array<string, array{source: string, family: string, stack: string, faces: list<array{weight: int, style: string, url: string, format: string}>, href: string|null}>
+     */
+    public static function typographyMap(): array
+    {
+        return Cache::rememberForever('languages.typography', function (): array {
+            return static::query()
+                ->with('fontFamily.files')
+                ->where(fn (Builder $query): Builder => $query
+                    ->whereNotNull('font_family_id')
+                    ->orWhereNotNull('google_font'))
+                ->get()
+                ->mapWithKeys(fn (self $language): array => [
+                    $language->code => self::resolveTypography($language),
+                ])
+                ->filter()
+                ->all();
+        });
+    }
+
+    /**
+     * A curated Google Font wins over an uploaded family; an unknown catalog key
+     * falls through to the uploaded family and finally to the built-in stack.
+     *
+     * @return array{source: string, family: string, stack: string, faces: list<array{weight: int, style: string, url: string, format: string}>, href: string|null}|null
+     */
+    private static function resolveTypography(self $language): ?array
+    {
+        if ($language->google_font !== null && GoogleFonts::has($language->google_font)) {
+            return GoogleFonts::typography($language->google_font);
+        }
+
+        if ($language->fontFamily !== null) {
+            return [
+                'source' => 'uploaded',
+                'family' => $language->fontFamily->cssFamily(),
+                'stack' => $language->fontFamily->fontStack(),
+                'faces' => $language->fontFamily->faces(),
+                'href' => null,
+            ];
+        }
+
+        return null;
+    }
+
+    /**
+     * Typography for one language code, or null when it has no family and should
+     * fall back to the CSS defaults.
+     *
+     * @return array{source: string, family: string, stack: string, faces: list<array{weight: int, style: string, url: string, format: string}>, href: string|null}|null
+     */
+    public static function typographyFor(?string $code): ?array
+    {
+        if (! $code) {
+            return null;
+        }
+
+        return static::typographyMap()[$code] ?? null;
     }
 
     /**
