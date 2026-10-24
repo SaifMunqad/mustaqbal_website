@@ -2,6 +2,7 @@ import BrandingColorField from '@/components/dashboard/site-settings/branding-co
 import BrandingPalettePreview from '@/components/dashboard/site-settings/branding-palette-preview';
 import BrandingTintDepthField from '@/components/dashboard/site-settings/branding-tint-depth-field';
 import SettingsSection from '@/components/dashboard/site-settings/settings-section';
+import TypographySection from '@/components/dashboard/site-settings/typography-section';
 import type { SiteSettingsPageProps } from '@/components/dashboard/site-settings/site-settings-shared';
 import { useBrandingPreview } from '@/components/dashboard/site-settings/use-branding-preview';
 import { useSectionDirty } from '@/components/dashboard/site-settings/use-section-dirty';
@@ -53,12 +54,13 @@ export default function AppearanceSection({
     );
 
     return (
-        <SettingsSection
-            section="appearance"
-            active={active}
-            dirty={dirty}
-            onSaved={markSaved}
-        >
+        <>
+            <SettingsSection
+                section="appearance"
+                active={active}
+                dirty={dirty}
+                onSaved={markSaved}
+            >
             {({ errors }) => (
                 <>
                     <div className="grid gap-3 sm:grid-cols-2">
@@ -99,6 +101,11 @@ export default function AppearanceSection({
                     ) : null}
                 </>
             )}
-        </SettingsSection>
+            </SettingsSection>
+
+            {/* Typography is per language, so it saves through its own endpoints
+                instead of the branding form. */}
+            <TypographySection active={active} />
+        </>
     );
 }

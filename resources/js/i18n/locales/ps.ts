@@ -1668,6 +1668,48 @@ const ps = {
                 mapMissingKey:
                     'تعاملي نقشې ته د Google Maps API کیلي ته اړتیا ده (GOOGLE_MAPS_API_KEY تنظیم کړئ). تاسو لاهم کولی شئ لاندې د نقشې embed URL پیسټ کړئ.',
             },
+            typography: {
+                title: 'د لیکنې بڼه',
+                description:
+                    'د هرې ژبې لپاره د لیکنې بڼه وټاکئ. دا ټاکنه په عامه سایټ او ډشبورډ دواړو کې پلي کېږي؛ هغه ژبه چې فونټ نه لري Noto Naskh Arabic کاروي.',
+                inactive: 'غیر فعال',
+                fontFor: 'د {{language}} لپاره فونټ',
+                defaultFont: 'اصلي — Noto Naskh Arabic',
+                groupDefault: 'د سرور اصلي',
+                groupGoogleArabic: 'ګوګل فونټونه — عربي لیک',
+                groupGoogleLatin: 'ګوګل فونټونه — یوازې لاتیني',
+                groupUploaded: 'پورته شوې کورنۍ',
+                googleTitle: 'ګوګل فونټونه',
+                googleHint:
+                    'وړیا او ازاد جواز لرونکي فونټونه چې ګوګل وړاندې کوي. د عربي لیک ډله د پښتو، دري او عربي لپاره ده؛ لاتیني ډله دې لیکونو لپاره Noto Naskh Arabic ته ورګرځي.',
+                googleNetwork:
+                    'دا فونټونه په چلېدونکي وخت کې له fonts.googleapis.com څخه بار کېږي. که شبکه ګوګل ته لاسرسی نه لري، پورته شوې کورنۍ وکاروئ.',
+                arabicSupport: 'عربي لیک',
+                googleArabicTitle: 'عربي لیک',
+                googleLatinTitle: 'یوازې لاتیني',
+                latinOnly: 'یوازې لاتیني',
+                rtlFallback:
+                    'دا کورنۍ عربي لیکونه نه لري، نو دا ژبه به ډېره برخه د Noto Naskh Arabic په بڼه ښکاره شي.',
+                previewOf: 'مخکتنه · {{family}}',
+                previewDefault: 'مخکتنه · اصلي فونټ',
+                library: 'د فونټونو کتابتون',
+                libraryHint:
+                    'هغه کورنۍ پورته کړئ چې غواړئ هغه وزنونه ولري. WOFF2 تر ټولو وړوکی فایل ورکوي؛ TTF او OTF هم منل کېږي. یوازې هغه فونټونه پورته کړئ چې د کارولو حق یې لرئ.',
+                empty: 'تر اوسه هېڅ فونټ نه دی پورته شوی. سایټ Noto Naskh Arabic کاروي.',
+                usedBy: 'کاروونکي: {{languages}}',
+                deleteTitle: 'د «{{name}}» فونټ کورنۍ حذف کړو؟',
+                deleteDescription:
+                    'د هغې فایلونه تلپاتې حذف کېږي. هغه کورنۍ چې لا یوې ژبې ته ټاکل شوې حذف نشي.',
+                delete: 'حذف',
+                upload: 'د فونټ کورنۍ پورته کول',
+                uploadHint:
+                    'هر وزن لپاره یو فایل. عادي (400) اړین دی؛ که کورنۍ 500/600/700 ولري هغه هم ورزیات کړئ، که نه براوزر نري متن جوړوي. هر فایل تر 5 MB.',
+                familyName: 'د کورنۍ نوم',
+                familyNamePlaceholder: 'لکه B Nazanin',
+                weightFile: 'وزن {{weight}}',
+                uploadButton: 'کورنۍ پورته کړه',
+                uploading: 'پورته کېږي…',
+            },
         },
         homeSections: {
             title: 'کورنۍ پاڼه',

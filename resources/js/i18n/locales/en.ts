@@ -1676,6 +1676,49 @@ const en = {
                 mapMissingKey:
                     'The interactive map needs a Google Maps API key (set GOOGLE_MAPS_API_KEY). You can still paste a map embed URL below.',
             },
+            typography: {
+                title: 'Typography',
+                description:
+                    'Choose the typeface for each language. The selection applies across the public site and the dashboard; a language without a family uses Noto Naskh Arabic.',
+                inactive: 'Inactive',
+                fontFor: 'Font for {{language}}',
+                defaultFont: 'Default — Noto Naskh Arabic',
+                groupDefault: 'Server default',
+                groupGoogleArabic: 'Google Fonts — Arabic script',
+                groupGoogleLatin: 'Google Fonts — Latin only',
+                groupUploaded: 'Uploaded families',
+                googleTitle: 'Google Fonts',
+                googleHint:
+                    'Free, openly licensed families served by Google. The Arabic-script group covers Dari, Pashto and Arabic; the Latin-only group renders those scripts through Noto Naskh Arabic.',
+                googleNetwork:
+                    'These families load from fonts.googleapis.com at runtime. On a network without access to Google, use an uploaded family instead.',
+                arabicSupport: 'Arabic script',
+                googleArabicTitle: 'Arabic script',
+                googleLatinTitle: 'Latin only',
+                latinOnly: 'Latin only',
+                rtlFallback:
+                    'This family has no Arabic glyphs, so this language will mostly render in Noto Naskh Arabic.',
+                previewOf: 'Preview · {{family}}',
+                previewDefault: 'Preview · built-in default',
+                library: 'Font library',
+                libraryHint:
+                    'Upload a family with the weights you want to use. WOFF2 gives the smallest files; TTF and OTF work too. Only upload fonts you have the right to use.',
+                empty:
+                    'No uploaded fonts yet. The site is using Noto Naskh Arabic.',
+                usedBy: 'Used by: {{languages}}',
+                deleteTitle: 'Delete the font family "{{name}}"?',
+                deleteDescription:
+                    'Its files are removed permanently. A family still assigned to a language cannot be deleted.',
+                delete: 'Delete',
+                upload: 'Upload a font family',
+                uploadHint:
+                    'One file per weight. Regular (400) is required; add 500/600/700 when the family ships them, otherwise the browser synthesises bold text. Maximum 5 MB per file.',
+                familyName: 'Family name',
+                familyNamePlaceholder: 'e.g. B Nazanin',
+                weightFile: 'Weight {{weight}}',
+                uploadButton: 'Upload family',
+                uploading: 'Uploading…',
+            },
         },
         homeSections: {
             title: 'Home Page',

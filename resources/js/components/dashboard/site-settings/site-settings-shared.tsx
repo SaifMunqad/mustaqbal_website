@@ -107,10 +107,59 @@ export type SettingsTranslations = Record<
 >;
 
 /** Props the settings controller sends to the dashboard edit page. */
+export interface FontFileRecord {
+    weight: number;
+    style: string;
+    url: string;
+    format: string;
+}
+
+export interface FontFamilyRecord {
+    id: number;
+    name: string;
+    /** CSS-safe family name used inside @font-face/font-family. */
+    family: string;
+    /** Complete font-family stack including the built-in fallbacks. */
+    stack: string;
+    files: FontFileRecord[];
+    /** Language codes currently using this family. */
+    languages: string[];
+}
+
+export interface GoogleFontRecord {
+    key: string;
+    name: string;
+    /** Complete font-family stack including the built-in fallbacks. */
+    stack: string;
+    /** Whether the family ships Arabic glyphs (only Rubik does today). */
+    arabic: boolean;
+    /** Google Fonts stylesheet for this family alone. */
+    href: string;
+}
+
+export interface LanguageTypographyRecord {
+    id: number;
+    code: string;
+    name: string;
+    dir: 'ltr' | 'rtl';
+    is_active: boolean;
+    font_family_id: number | null;
+    /** Curated Google Font key, mutually exclusive with font_family_id. */
+    google_font: string | null;
+}
+
 export interface SiteSettingsPageProps extends SharedData {
     settings: SiteSettingRecord;
     translations: SettingsTranslations;
     mapsKey?: string | null;
+    /** Uploaded font families available for per-language selection. */
+    fonts: FontFamilyRecord[];
+    /** Every language with the family it currently uses. */
+    typography: LanguageTypographyRecord[];
+    /** Curated free Google Fonts offered as ready-made choices. */
+    googleFonts: GoogleFontRecord[];
+    /** Combined Google Fonts stylesheet used only to render the previews. */
+    googleFontsHref: string;
 }
 
 /**

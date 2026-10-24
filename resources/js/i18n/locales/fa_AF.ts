@@ -1682,6 +1682,48 @@ const faAF = {
                 mapMissingKey:
                     'نقشه تعاملی به کلید Google Maps API نیاز دارد (GOOGLE_MAPS_API_KEY را تنظیم کنید). هنوز هم می‌توانید آدرس embed نقشه را در پایین پیست کنید.',
             },
+            typography: {
+                title: 'تایپوگرافی',
+                description:
+                    'قلم هر زبان را انتخاب کنید. این انتخاب در سایت عمومی و داشبورد اعمال می‌شود؛ زبانی که قلمی ندارد از Noto Naskh Arabic استفاده می‌کند.',
+                inactive: 'غیرفعال',
+                fontFor: 'قلم برای {{language}}',
+                defaultFont: 'پیش‌فرض — Noto Naskh Arabic',
+                groupDefault: 'پیش‌فرض سرور',
+                groupGoogleArabic: 'فونت‌های گوگل — خط عربی',
+                groupGoogleLatin: 'فونت‌های گوگل — فقط لاتین',
+                groupUploaded: 'خانواده‌های بارگذاری‌شده',
+                googleTitle: 'فونت‌های گوگل',
+                googleHint:
+                    'خانواده‌های رایگان با مجوز آزاد که گوگل ارائه می‌کند. گروه خط عربی برای دری، پشتو و عربی است؛ گروه لاتین برای این خطوط به Noto Naskh Arabic برمی‌گردد.',
+                googleNetwork:
+                    'این فونت‌ها در زمان اجرا از fonts.googleapis.com بارگذاری می‌شوند. در شبکه‌ای که به گوگل دسترسی ندارد از خانواده بارگذاری‌شده استفاده کنید.',
+                arabicSupport: 'خط عربی',
+                googleArabicTitle: 'خط عربی',
+                googleLatinTitle: 'فقط لاتین',
+                latinOnly: 'فقط لاتین',
+                rtlFallback:
+                    'این خانواده حروف عربی ندارد، بنابراین این زبان بیشتر با Noto Naskh Arabic نمایش داده می‌شود.',
+                previewOf: 'پیش‌نمایش · {{family}}',
+                previewDefault: 'پیش‌نمایش · قلم پیش‌فرض',
+                library: 'کتابخانه قلم‌ها',
+                libraryHint:
+                    'خانواده‌ای را با وزن‌های مورد نظر بارگذاری کنید. WOFF2 کوچک‌ترین فایل را می‌دهد؛ TTF و OTF نیز پذیرفته می‌شوند. فقط قلم‌هایی را بارگذاری کنید که حق استفاده از آن‌ها را دارید.',
+                empty: 'هنوز قلمی بارگذاری نشده است. سایت از Noto Naskh Arabic استفاده می‌کند.',
+                usedBy: 'استفاده توسط: {{languages}}',
+                deleteTitle: 'خانواده قلم «{{name}}» حذف شود؟',
+                deleteDescription:
+                    'فایل‌های آن برای همیشه حذف می‌شوند. خانواده‌ای که هنوز به یک زبان اختصاص یافته قابل حذف نیست.',
+                delete: 'حذف',
+                upload: 'بارگذاری خانواده قلم',
+                uploadHint:
+                    'یک فایل برای هر وزن. معمولی (400) ضروری است؛ اگر خانواده 500/600/700 دارد آن‌ها را نیز اضافه کنید، در غیر این صورت مرورگر متن بولد را شبیه‌سازی می‌کند. حداکثر 5 MB برای هر فایل.',
+                familyName: 'نام خانواده',
+                familyNamePlaceholder: 'مثلاً B Nazanin',
+                weightFile: 'وزن {{weight}}',
+                uploadButton: 'بارگذاری خانواده',
+                uploading: 'در حال بارگذاری…',
+            },
         },
         homeSections: {
             title: 'صفحه اصلی',
