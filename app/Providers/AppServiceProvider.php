@@ -54,6 +54,14 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($key);
         });
 
+        // Public award verification: every request is a guess at a
+        // (person, award) pair. This caps raw flooding per IP; the adaptive
+        // challenge and per-person pause live in
+        // {@see \App\Support\Awards\VerificationGuard}.
+        RateLimiter::for('award-verification', function (Request $request) {
+            return Limit::perMinute(10)->by((string) $request->ip());
+        });
+
         Gate::policy(Post::class, PostPolicy::class);
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(Article::class, ArticlePolicy::class);

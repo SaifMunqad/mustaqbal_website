@@ -784,6 +784,33 @@ const en = {
         applyOnline: 'Apply Online',
         empty: 'No open positions at the moment. Check back soon!',
     },
+    verify: {
+        title: 'Verify an Award',
+        subtitle:
+            'Enter the person ID and award ID printed on the certificate, diploma or award to confirm that the school issued it.',
+        personId: 'Person ID',
+        personIdPlaceholder: 'e.g. STU-2024-00123',
+        awardId: 'Award ID',
+        awardIdPlaceholder: 'e.g. DIP-2024-000137',
+        submit: 'Verify',
+        hint: 'Both codes are required. They appear on the document issued to the holder.',
+        captchaLabel: 'Quick check',
+        captchaQuestion: 'What is {{question}}?',
+        captchaWrong:
+            'That answer was not correct. Please solve the new check and try again.',
+        blockedTitle: 'Too many attempts',
+        blockedBody:
+            'For security, lookups for this person ID are paused. Try again in {{minutes}} minute(s), or contact the school office.',
+        foundTitle: 'Award verified',
+        foundBody: 'This award is registered and was issued by the school.',
+        notFoundTitle: 'No matching record',
+        notFoundBody:
+            'No award matches that person ID and award ID. Check the codes and try again, or contact the school office.',
+        holder: 'Awarded to',
+        fatherName: 'Father name',
+        awardedAt: 'Awarded on',
+        contactNote: 'Only the school can confirm or correct award records.',
+    },
     footer: {
         school: 'School',
         support: 'Support',
@@ -792,6 +819,7 @@ const en = {
         phoneMain: 'Main line',
         phoneSecondary: 'Support line',
         email: 'Email',
+        verify: 'Verify an Award',
         privacyPolicy: 'Privacy Policy',
         terms: 'Terms & Conditions',
         rights: 'All rights reserved.',
@@ -848,6 +876,12 @@ const en = {
             schedule: 'Schedule',
             type: 'Type',
             visibility: 'Visibility',
+            personId: 'Person ID',
+            awardId: 'Award ID',
+            fullName: 'Full name',
+            fatherName: 'Father name',
+            awardedAt: 'Awarded on',
+            searchAwards: 'Search person, award ID or name',
             empty: 'No records found.',
         },
         form: {
@@ -890,6 +924,7 @@ const en = {
             jobs: 'Jobs',
             pages: 'Pages',
             about: 'About',
+            awards: 'Awards & Certificates',
             contactPage: 'Contact Page',
             users: 'Users',
             books: 'Books',
@@ -922,6 +957,69 @@ const en = {
             newCategory: 'New Category',
             newLanguage: 'New Language',
             newJob: 'New Job',
+            newAward: 'New Award',
+        },
+        awards: {
+            title: 'Awards & Certificates',
+            createTitle: 'Register Award',
+            editTitle: 'Edit Award',
+            importTitle: 'Import Awards',
+            created: 'Award registered.',
+            updated: 'Award updated.',
+            deleteTitle: 'Delete this award record?',
+            deleteDescription:
+                'Its codes will stop verifying on the public page. Use this only for entries added by mistake; a real award that must be withdrawn should be kept in the register.',
+            form: {
+                personId: 'Person ID',
+                personIdPlaceholder: 'e.g. STU-2024-00123',
+                personIdHint:
+                    'Exactly as printed on the certificate or in the student record.',
+                awardId: 'Award ID',
+                awardIdPlaceholder: 'e.g. DIP-2024-000137',
+                awardIdHint: 'Each person can hold a given award ID once.',
+                fullName: 'Full name',
+                fullNamePlaceholder: 'Holder name as printed',
+                fatherName: 'Father name',
+                fatherNamePlaceholder: 'Optional',
+                awardedAt: 'Awarded on',
+                awardedAtHint:
+                    'A Hijri Shamsi date is accepted; it is stored in the Gregorian calendar.',
+                save: 'Register award',
+                update: 'Save changes',
+                delete: 'Delete award',
+            },
+            import: {
+                title: 'Import Awards',
+                description:
+                    'Upload the spreadsheet prepared by the school. The file is read in your browser and is never uploaded.',
+                hint: 'First sheet only. The header row must include Person ID, Award ID, Full name and Awarded on, plus optionally Father name. Dates may be written as 2025-01-15 or as a Hijri Shamsi date such as 1403/10/25.',
+                template: 'Download template',
+                limit: 'Maximum {{count}} rows per import.',
+                fields: {
+                    person_id: 'Person ID',
+                    award_id: 'Award ID',
+                    full_name: 'Full name',
+                    father_name: 'Father name',
+                    awarded_at: 'Awarded on',
+                },
+                missingColumns:
+                    'These columns could not be found in the header row: {{columns}}. Rename them and choose the file again.',
+                ready: '{{count}} row(s) ready to import.',
+                skippedCodes:
+                    '{{count}} row(s) skipped because the person ID or award ID was empty.',
+                skippedDates:
+                    '{{count}} row(s) skipped because the date could not be read.',
+                skippedOverLimit:
+                    '{{count}} row(s) skipped because they exceed the per-import limit.',
+                upsertNote:
+                    'Rows that already exist (same person ID and award ID) are updated instead of duplicated.',
+                previewLimited: 'Previewing the first {{count}} rows.',
+                submit: 'Import {{count}} row(s)',
+                submitting: 'Importing…',
+                progress: 'Uploading: {{value}}%',
+                imported: 'Awards imported.',
+                failed: 'Could not import the file.',
+            },
         },
         articles: {
             title: 'Articles',
@@ -1727,6 +1825,11 @@ const en = {
             'WhatsApp campaign queued for {{count}} recipients.',
         noFailedRecipients: 'There are no failed recipients to retry.',
         reSentFailed: 'Re-sent {{count}} failed recipient(s).',
+        awardCreated: 'Award registered.',
+        awardUpdated: 'Award updated.',
+        awardDeleted: 'Award record deleted.',
+        awardsImported:
+            'Import finished: {{created}} created, {{updated}} updated, {{skipped}} duplicate row(s) merged.',
     },
 };
 

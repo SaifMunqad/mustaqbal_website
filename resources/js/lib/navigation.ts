@@ -155,6 +155,11 @@ export const footerSections: FooterSection[] = [
         key: 'support',
         titleKey: 'footer.support',
         links: [
+            {
+                key: 'verify',
+                labelKey: 'footer.verify',
+                href: '/school/verify',
+            },
             { key: 'contact', labelKey: 'navigation.contact', href: '/school/contact' },
             // Phone/email are driven by the shared Site Settings contact
             // details rather than hard-coded numbers, so the footer stays in

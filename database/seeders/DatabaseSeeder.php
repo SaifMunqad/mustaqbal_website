@@ -245,6 +245,10 @@ class DatabaseSeeder extends Seeder
         // Job postings: 20 active positions and 5 closed ones for the careers portal.
         $this->call(JobSeeder::class);
 
+        // Award register behind the public verification page: diplomas,
+        // certificates and honors issued to named holders.
+        $this->call(AwardSeeder::class);
+
         // Recognition showcase: top students, teachers and an employee of the
         // month. Runs before the home layout so the curated recognition section
         // resolves to real honors instead of an empty group.

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AwardVerificationController;
 use App\Http\Controllers\BookstoreController;
 use App\Http\Controllers\SchoolArticleController;
 use App\Http\Controllers\SchoolEventController;
@@ -27,6 +28,15 @@ Route::prefix('school')->group(function () {
 
     Route::get('/articles', [SchoolArticleController::class, 'index'])->name('school.articles');
     Route::get('/articles/{article:slug}', [SchoolArticleController::class, 'show'])->name('school.articles.show');
+
+    // Public award verification. The lookup is a POST so the codes never
+    // appear in a URL, history entry or access log; the request rate is capped
+    // per IP because every submission is a guess at a (person, award) pair.
+    Route::get('/verify', [AwardVerificationController::class, 'index'])
+        ->name('school.verify');
+    Route::post('/verify', [AwardVerificationController::class, 'lookup'])
+        ->middleware('throttle:award-verification')
+        ->name('school.verify.lookup');
 });
 
 Route::prefix('store')->name('store.')->group(function () {

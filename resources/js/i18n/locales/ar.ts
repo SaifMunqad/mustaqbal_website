@@ -25,6 +25,7 @@ const ar = {
         enroll: 'التسجيل',
         jobs: 'الوظائف',
         contact: 'اتصل بنا',
+        verify: 'تصديق الجائزة',
         dashboard: 'لوحة التحكم',
     },
     navigationDescriptions: {
@@ -37,6 +38,7 @@ const ar = {
         enroll: 'اكمل بيانات تسجيل الطالب',
         jobs: 'شاهد الوظائف الشاغرة وقدم طلبك',
         contact: 'تواصل مع فريقنا',
+        verify: 'تأكيد الشهادة أو الدبلوم أو الجائزة',
     },
     home: {
         title: 'مرحبا بكم في مدرستي',
@@ -294,6 +296,7 @@ const ar = {
         phoneMain: 'الرقم الرئيسي',
         phoneSecondary: 'رقم الدعم',
         email: 'البريد',
+        verify: 'تصديق الجائزة',
         privacyPolicy: 'سياسة الخصوصية',
         terms: 'الشروط والاحكام',
         rights: 'جميع الحقوق محفوظة.',

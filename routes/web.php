@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Dashboard\DashboardAboutController;
 use App\Http\Controllers\Dashboard\DashboardArticleController;
+use App\Http\Controllers\Dashboard\DashboardAwardController;
 use App\Http\Controllers\Dashboard\DashboardBookCategoryController;
 use App\Http\Controllers\Dashboard\DashboardBookController;
 use App\Http\Controllers\Dashboard\DashboardContactController;
@@ -183,6 +184,20 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
         Route::get('/{job}/edit', [DashboardJobController::class, 'edit'])->name('edit');
         Route::put('/{job}', [DashboardJobController::class, 'update'])->name('update');
         Route::delete('/{job}', [DashboardJobController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('awards')->name('dashboard.awards.')->middleware('role:management')->group(function () {
+        Route::get('/', [DashboardAwardController::class, 'index'])->name('index');
+        Route::get('/create', [DashboardAwardController::class, 'create'])->name('create');
+        Route::post('/', [DashboardAwardController::class, 'store'])->name('store');
+        // Spreadsheet import: the browser parses the file and posts the rows.
+        Route::get('/import', [DashboardAwardController::class, 'import'])->name('import');
+        Route::post('/bulk', [DashboardAwardController::class, 'bulkImport'])->name('bulk');
+        Route::get('/{award}/edit', [DashboardAwardController::class, 'edit'])->name('edit');
+        Route::put('/{award}', [DashboardAwardController::class, 'update'])->name('update');
+        Route::delete('/{award}', [DashboardAwardController::class, 'destroy'])
+            ->middleware('role:admin')
+            ->name('destroy');
     });
 
     Route::prefix('home-sections')->name('dashboard.home-sections.')->middleware('role:management')->group(function () {

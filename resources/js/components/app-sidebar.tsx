@@ -12,6 +12,7 @@ import {
 import { type NavGroup, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import {
+    Award,
     Briefcase,
     CalendarDays,
     FileText,
@@ -110,6 +111,11 @@ export function AppSidebar() {
                               title: t('dashboard.tabs.jobs'),
                               href: '/dashboard/jobs',
                               icon: Briefcase,
+                          },
+                          {
+                              title: t('dashboard.tabs.awards'),
+                              href: '/dashboard/awards',
+                              icon: Award,
                           },
                       ]
                     : []),
