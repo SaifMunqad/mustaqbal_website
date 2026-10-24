@@ -1,5 +1,14 @@
-import type { HomeFeature, HomeStat, TintDepth } from '@/types';
-import { type ReactNode } from 'react';
+import type {
+    TranslatableField,
+    TranslationValues,
+} from '@/components/language-tabs-editor';
+import type {
+    HomeFeature,
+    HomeStat,
+    LanguageOption,
+    SharedData,
+    TintDepth,
+} from '@/types';
 
 // Shared control styling for the inline repeatable stats/features editors, kept
 // consistent with the plain TextField look used elsewhere on this page.
@@ -80,19 +89,129 @@ export function buildEmbedUrl(lat: number, lng: number, zoom: number): string {
     return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`;
 }
 
-export function Group({
-    title,
-    children,
-}: {
-    title: string;
-    children: ReactNode;
-}) {
-    return (
-        <fieldset className="grid gap-3 rounded-xl border p-4">
-            <legend className="px-1 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                {title}
-            </legend>
-            {children}
-        </fieldset>
-    );
+/** Existing translations keyed by `code -> field -> value`, sent by the controller. */
+export type SettingsTranslations = Record<
+    string,
+    {
+        brand_name?: string;
+        brand_short_name?: string;
+        tagline?: string;
+        home_title?: string;
+        home_subtitle?: string;
+        home_cta_primary?: string;
+        home_cta_secondary?: string;
+        footer_text?: string;
+        home_stats?: HomeStat[];
+        home_features?: HomeFeature[];
+    }
+>;
+
+/** Props the settings controller sends to the dashboard edit page. */
+export interface SiteSettingsPageProps extends SharedData {
+    settings: SiteSettingRecord;
+    translations: SettingsTranslations;
+    mapsKey?: string | null;
+}
+
+/**
+ * A save scope on the settings page. Sections are validated and persisted one at
+ * a time, so this list mirrors DashboardSiteSettingController::SECTIONS.
+ */
+export type SettingsSectionKey =
+    | 'identity'
+    | 'appearance'
+    | 'home'
+    | 'contact'
+    | 'social';
+
+export const SETTINGS_SECTION_KEYS: SettingsSectionKey[] = [
+    'identity',
+    'appearance',
+    'home',
+    'contact',
+    'social',
+];
+
+/** Section heading copy, shared by the tab strip and the panel header. */
+export const SECTION_COPY: Record<
+    SettingsSectionKey,
+    { titleKey: string; descriptionKey: string }
+> = {
+    identity: {
+        titleKey: 'dashboard.settings.form.brandingTitle',
+        descriptionKey: 'dashboard.settings.form.identityDescription',
+    },
+    appearance: {
+        titleKey: 'dashboard.settings.form.appearanceTitle',
+        descriptionKey: 'dashboard.settings.form.appearanceDescription',
+    },
+    home: {
+        titleKey: 'dashboard.settings.form.homePageTitle',
+        descriptionKey: 'dashboard.settings.form.homeDescription',
+    },
+    contact: {
+        titleKey: 'dashboard.settings.form.contactTitle',
+        descriptionKey: 'dashboard.settings.form.contactDescription',
+    },
+    social: {
+        titleKey: 'dashboard.settings.form.socialTitle',
+        descriptionKey: 'dashboard.settings.form.socialDescription',
+    },
+};
+
+/**
+ * Seed the scalar tabs editor from saved translations, falling back to the
+ * parent (default-language) values for the default language so the editor shows
+ * the current English copy before any translation row exists.
+ */
+export function seedScalars(
+    available: LanguageOption[],
+    translations: SettingsTranslations,
+    settings: SiteSettingRecord,
+    defaultCode: string,
+    scalarFields: TranslatableField[],
+): TranslationValues {
+    const fields = scalarFields.map((field) => field.name);
+    const out: TranslationValues = {};
+
+    for (const language of available) {
+        const saved = translations[language.code] ?? {};
+        const isDefault = language.code === defaultCode;
+
+        out[language.code] = {};
+        for (const field of fields) {
+            const savedValue =
+                saved[field as keyof SettingsTranslations[string]];
+            const fallback = isDefault
+                ? (settings[field as keyof SiteSettingRecord] ?? '')
+                : '';
+            out[language.code][field] =
+                typeof savedValue === 'string'
+                    ? savedValue
+                    : String(fallback ?? '');
+        }
+    }
+
+    return out;
+}
+
+/**
+ * Seed a localized list per language, falling back to the parent's default list
+ * when that language has no saved rows yet.
+ */
+export function seedLists<T extends HomeStat | HomeFeature>(
+    available: LanguageOption[],
+    translations: SettingsTranslations,
+    settings: SiteSettingRecord,
+    key: 'home_stats' | 'home_features',
+): Record<string, T[]> {
+    const fallback = (settings[key] ?? []) as T[];
+    const out: Record<string, T[]> = {};
+
+    for (const language of available) {
+        out[language.code] =
+            (translations[language.code]?.[key] as T[] | undefined) ?? fallback;
+    }
+
+    return out;
 }

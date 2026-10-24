@@ -1586,12 +1586,24 @@ const en = {
                 featureIconValues: 'Values (heart)',
                 featureIconFacilities: 'Facilities (building)',
                 featureIconClasses: 'Classes (graduation)',
-                localizedTitle: 'Localized content (per language)',
-                localizedDescription:
-                    'Brand name, tagline, home hero copy and footer text are edited for each language. The default language is required and other languages fall back to it when left blank.',
                 brandingTitle: 'Branding',
-                brandingDescription:
-                    'Brand assets are shared across every language.',
+                identityDescription:
+                    'Logo and brand wording. The text fields are translated per language; the default language is required and the other languages fall back to it when left blank.',
+                appearanceTitle: 'Appearance',
+                appearanceDescription:
+                    'One brand color drives the whole public site: buttons, links, section bands, cards, borders and the dark-mode twin. The page background stays white or dark gray.',
+                homeDescription:
+                    'Hero copy, quick stats and the feature grid. Text and lists are translated per language.',
+                contactDescription:
+                    'Where visitors can reach the school. Shared across every language.',
+                socialDescription:
+                    'Links shown in the public footer and contact page.',
+                saveSection: 'Save changes',
+                saving: 'Saving…',
+                saved: 'Saved',
+                unsaved: 'Unsaved changes',
+                unsavedConfirm: 'You have unsaved changes. Leave this page?',
+                errorsHeading: 'Please fix the following:',
                 logoLabel: 'Logo (PNG)',
                 logoHint:
                     'Shown in the public nav bar, footer and dashboard sidebar. The browser tab icon (favicon) is generated automatically from this logo.',
@@ -1646,7 +1658,6 @@ const en = {
                 twitter: 'Twitter / X',
                 youtube: 'YouTube',
                 whatsapp: 'WhatsApp (number)',
-                save: 'Save settings',
                 brandName: 'Brand name',
                 shortName: 'Short name',
                 tagline: 'Tagline',

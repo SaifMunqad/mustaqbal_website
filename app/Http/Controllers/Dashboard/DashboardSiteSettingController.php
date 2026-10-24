@@ -54,6 +54,34 @@ class DashboardSiteSettingController extends Controller
     private const LIST_FIELDS = ['home_stats', 'home_features'];
 
     /**
+     * Editable sections of the settings page. Each entry lists the fields saved
+     * (and validated) together, so the dashboard can persist one section without
+     * resubmitting every other field on the page.
+     *
+     * @var array<string, list<string>>
+     */
+    private const SECTIONS = [
+        'identity' => [
+            'logo_url', 'reverse_logo_url',
+            'brand_name', 'brand_short_name', 'tagline', 'footer_text',
+        ],
+        'appearance' => ['brand_color', 'accent_color', 'tint_depth'],
+        'home' => [
+            'home_hero_image',
+            'home_title', 'home_subtitle', 'home_cta_primary', 'home_cta_secondary',
+            'home_stats', 'home_features',
+        ],
+        'contact' => [
+            'contact_email', 'contact_phone_primary', 'contact_phone_secondary',
+            'address', 'map_latitude', 'map_longitude', 'map_zoom', 'map_embed_url',
+        ],
+        'social' => [
+            'social_facebook', 'social_instagram', 'social_twitter',
+            'social_youtube', 'social_whatsapp',
+        ],
+    ];
+
+    /**
      * Branding colors are free-form hex on purpose (any school color), so they
      * are validated by shape and then normalized to lowercase.
      *
@@ -75,28 +103,36 @@ class DashboardSiteSettingController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
-        $validated = $request->validate($this->rules());
+        $section = $this->resolveSection($request);
+        $validated = $request->validate($this->rules($section));
 
         $setting = SiteSetting::resolved();
         $previousLogo = $setting->logo_url;
 
-        // Non-localized columns live on the parent row only.
-        $setting->update($this->normalized(Arr::except($validated, ['translations'])));
+        // Non-localized columns live on the parent row only. `section` is just a
+        // routing hint for partial saves and is never persisted.
+        $setting->update($this->normalized(Arr::except($validated, ['translations', 'section'])));
 
         // The logo is the single source of truth for every system icon: rebuild
         // the favicon set whenever it changes (or the assets are missing), and
         // clear them entirely when the logo is removed so the fallback returns.
-        $newLogo = $setting->logo_url;
-        if (filled($newLogo)) {
-            if ($newLogo !== $previousLogo || ! $this->favicons->exists()) {
-                $this->favicons->regenerate($newLogo);
+        // Only a save that carries the logo may trigger this, so editing an
+        // unrelated section never rewrites the icon set.
+        if ($section === null || in_array('logo_url', self::SECTIONS[$section], true)) {
+            $newLogo = $setting->logo_url;
+            if (filled($newLogo)) {
+                if ($newLogo !== $previousLogo || ! $this->favicons->exists()) {
+                    $this->favicons->regenerate($newLogo);
+                }
+            } elseif (filled($previousLogo)) {
+                $this->favicons->clear();
             }
-        } elseif (filled($previousLogo)) {
-            $this->favicons->clear();
         }
 
-        // Full per-language payload: localized scalars + the JSON lists.
-        $payload = $this->cleanedPayload($request);
+        // Per-language payload: localized scalars + the JSON lists, limited to
+        // the submitted section so a partial save cannot clear fields the admin
+        // never saw.
+        $payload = $this->cleanedPayload($request, $section);
         $default = Language::defaultCode();
 
         // Mirror the default language back onto the parent (source of truth).
@@ -131,9 +167,20 @@ class DashboardSiteSettingController extends Controller
     }
 
     /**
+     * The section this request saves. A missing or unknown name means "the whole
+     * form", which keeps single-payload clients (and older callers) working.
+     */
+    private function resolveSection(Request $request): ?string
+    {
+        $section = $request->input('section');
+
+        return is_string($section) && isset(self::SECTIONS[$section]) ? $section : null;
+    }
+
+    /**
      * @return array<string, mixed>
      */
-    private function rules(): array
+    private function rules(?string $section = null): array
     {
         $codes = collect(Language::activeList())->pluck('code')->all();
         $default = Language::defaultCode();
@@ -173,7 +220,12 @@ class DashboardSiteSettingController extends Controller
             $localizedRules["translations.$code.home_features.*.description"] = ['nullable', 'string', 'max:500'];
         }
 
-        return array_merge([
+        $rules = array_merge([
+            // Optional section name: when present only that section's fields are
+            // validated and persisted, so one save never blocks on (or clears)
+            // another section's fields. Absent means "validate the whole form".
+            'section' => ['nullable', Rule::in(array_keys(self::SECTIONS))],
+
             // Brand assets (shared across languages). The favicon is derived
             // automatically from the logo (see FaviconService) and no longer
             // uploaded separately.
@@ -204,6 +256,42 @@ class DashboardSiteSettingController extends Controller
             'social_youtube' => ['nullable', 'url', 'max:2048'],
             'social_whatsapp' => ['nullable', 'string', 'max:255'],
         ], $localizedRules);
+
+        return $section === null ? $rules : $this->onlySection($rules, $section);
+    }
+
+    /**
+     * Reduce the full rule set to one section's fields. `translations.*` keys are
+     * matched on the localized field name, and the `translations` container rules
+     * only apply when the section actually carries localized fields.
+     *
+     * @param  array<string, mixed>  $rules
+     * @return array<string, mixed>
+     */
+    private function onlySection(array $rules, string $section): array
+    {
+        $fields = self::SECTIONS[$section];
+        $localized = array_intersect($fields, [...self::LOCALIZED, ...self::LIST_FIELDS]);
+
+        return array_filter(
+            $rules,
+            static function (string $key) use ($fields, $localized): bool {
+                if ($key === 'section') {
+                    return true;
+                }
+
+                if (! str_starts_with($key, 'translations')) {
+                    return in_array($key, $fields, true);
+                }
+
+                $parts = explode('.', $key);
+
+                return count($parts) < 3
+                    ? $localized !== []
+                    : in_array($parts[2], $fields, true);
+            },
+            ARRAY_FILTER_USE_KEY,
+        );
     }
 
     /**
@@ -230,9 +318,19 @@ class DashboardSiteSettingController extends Controller
      *
      * @return array<string, array<string, mixed>>
      */
-    private function cleanedPayload(Request $request): array
+    private function cleanedPayload(Request $request, ?string $section = null): array
     {
-        return TranslationPayload::extract($request, [...self::LOCALIZED, ...self::LIST_FIELDS]);
+        $fields = [...self::LOCALIZED, ...self::LIST_FIELDS];
+
+        if ($section !== null) {
+            $fields = array_values(array_intersect($fields, self::SECTIONS[$section]));
+        }
+
+        if ($fields === []) {
+            return [];
+        }
+
+        return TranslationPayload::extract($request, $fields);
     }
 
     /**
