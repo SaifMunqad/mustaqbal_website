@@ -636,6 +636,7 @@ export function PageBuilderEditor() {
                             editingLang={editingLang}
                             rtl={dir === 'rtl'}
                             editingId={editingEditorId}
+                            availableItems={availableItems}
                             onEdit={setEditingEditorId}
                             onRemove={removeDraft}
                             onToggleActive={toggleActive}
@@ -849,6 +850,7 @@ function SortableBlocks({
     editingLang,
     rtl,
     editingId,
+    availableItems,
     onEdit,
     onRemove,
     onToggleActive,
@@ -858,6 +860,7 @@ function SortableBlocks({
     editingLang: string;
     rtl: boolean;
     editingId: number | null;
+    availableItems: Record<string, { id: number; label: string }[]>;
     onEdit: (id: number) => void;
     onRemove: (id: number) => void;
     onToggleActive: (id: number) => void;
@@ -891,6 +894,7 @@ function SortableBlocks({
                             editingLang={editingLang}
                             rtl={rtl}
                             isEditing={editingId === draft.editorId}
+                            available={availableItems[draft.section_type] ?? []}
                             onEdit={onEdit}
                             onRemove={onRemove}
                             onToggleActive={onToggleActive}
@@ -908,6 +912,7 @@ function SortableBlock({
     editingLang,
     rtl,
     isEditing,
+    available,
     onEdit,
     onRemove,
     onToggleActive,
@@ -917,6 +922,7 @@ function SortableBlock({
     editingLang: string;
     rtl: boolean;
     isEditing: boolean;
+    available: { id: number; label: string }[];
     onEdit: (id: number) => void;
     onRemove: (id: number) => void;
     onToggleActive: (id: number) => void;
@@ -1018,6 +1024,7 @@ function SortableBlock({
                         draft,
                         editingLang,
                         draft.id === null && !hasContent(draft, editingLang),
+                        available,
                     )}
                     rtl={rtl}
                 />
@@ -1099,6 +1106,7 @@ function draftToRenderBlock(
     draft: SectionDraft,
     lang: string,
     placeholder = false,
+    available: { id: number; label: string }[] = [],
 ): RenderBlock {
     const t = draft.translations[lang] ?? {};
     const group = draft.list_group;
@@ -1198,8 +1206,35 @@ function draftToRenderBlock(
         return { ...base, stats: list.map((r) => ({ value: r.value, label: r.title })) };
     }
 
-    // Sample cards so curated rails preview with content instead of a bare title.
-    if (placeholder && draft.kind === 'curated') {
+    // Curated rails (articles / books / posts / events / programs / jobs) draw
+    // their cards from other content. The editor only stores the chosen item IDs
+    // (`draft.items`) and can't load the full live records, so render one card
+    // per selection using its title (resolved from `availableItems`) over a
+    // neutral cover — instead of the bare heading the canvas showed before.
+    if (draft.kind === 'curated' && draft.component === 'cards' && draft.items.length > 0) {
+        const labelFor = new Map(available.map((a) => [a.id, a.label]));
+        const sampleImage = placeholderImage();
+        const subtitle = i18n.t(
+            `enums.sectionType.${draft.section_type}`,
+            draft.type_label,
+        );
+
+        return {
+            ...base,
+            items: draft.items.map((it) => ({
+                id: it.id,
+                title: labelFor.get(it.id) ?? subtitle,
+                subtitle,
+                image: sampleImage,
+                url: '#',
+                dir: 'ltr',
+            })) as never,
+        };
+    }
+
+    // Curated rails with nothing selected yet (new or existing) preview with
+    // sample cards so the grid shows what to pin instead of a bare heading.
+    if (draft.kind === 'curated' && draft.component === 'cards' && draft.items.length === 0) {
         const sampleImage = placeholderImage();
         const subtitle = i18n.t(
             'dashboard.homeSections.visual.sample.recognizedHighlight',
