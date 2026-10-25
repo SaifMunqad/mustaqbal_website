@@ -4,6 +4,7 @@ use App\Http\Controllers\AwardVerificationController;
 use App\Http\Controllers\BookstoreController;
 use App\Http\Controllers\SchoolArticleController;
 use App\Http\Controllers\SchoolEventController;
+use App\Http\Controllers\SchoolJobApplyController;
 use App\Http\Controllers\SchoolJobController;
 use App\Http\Controllers\SchoolPageController;
 use App\Http\Controllers\SearchController;
@@ -22,6 +23,12 @@ Route::prefix('school')->group(function () {
     Route::get('/events', [SchoolEventController::class, 'index'])->name('school.events');
     Route::get('/events/{event:slug}', [SchoolEventController::class, 'show'])->name('school.events.show');
     Route::get('/jobs', [SchoolJobController::class, 'index'])->name('school.jobs');
+    // Public application portal. Guests apply with their own contact details; a
+    // logged-in applicant is linked to their account when one exists.
+    Route::get('/jobs/{job:slug}/apply', [SchoolJobApplyController::class, 'create'])->name('school.jobs.apply');
+    Route::post('/jobs/{job:slug}/apply', [SchoolJobApplyController::class, 'store'])
+        ->middleware('throttle:public-forms')
+        ->name('school.jobs.apply.store');
     Route::get('/enroll', [SchoolPageController::class, 'enrollment'])->name('school.enroll');
     Route::get('/enroll/resend-email', [SchoolPageController::class, 'resendEnrollmentEmail'])
         ->name('school.enroll.resend-email');

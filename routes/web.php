@@ -18,6 +18,7 @@ use App\Http\Controllers\Dashboard\DashboardProgramController;
 use App\Http\Controllers\Dashboard\DashboardSiteSettingController;
 use App\Http\Controllers\Dashboard\DashboardUserController;
 use App\Http\Controllers\Dashboard\EmailCampaignController;
+use App\Http\Controllers\Dashboard\JobApplicationController;
 use App\Http\Controllers\Dashboard\UploadController;
 use App\Http\Controllers\Dashboard\WhatsAppCampaignController;
 use App\Http\Controllers\Dashboard\WhatsAppSettingController;
@@ -194,9 +195,19 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
         Route::get('/', [DashboardJobController::class, 'index'])->name('index');
         Route::get('/create', [DashboardJobController::class, 'create'])->name('create');
         Route::post('/', [DashboardJobController::class, 'store'])->name('store');
+        // Applications are matched before the "{job}" wildcard so the literal
+        // "applications" segment is never mistaken for a job id.
+        Route::get('/applications', [JobApplicationController::class, 'index'])->name('applications.index');
+        Route::get('/{job}/applications', [JobApplicationController::class, 'index'])->name('applications.job');
         Route::get('/{job}/edit', [DashboardJobController::class, 'edit'])->name('edit');
         Route::put('/{job}', [DashboardJobController::class, 'update'])->name('update');
         Route::delete('/{job}', [DashboardJobController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('applications')->name('dashboard.applications.')->middleware('role:management')->group(function () {
+        Route::get('/{application}', [JobApplicationController::class, 'show'])->name('show');
+        Route::put('/{application}/status', [JobApplicationController::class, 'updateStatus'])->name('status.update');
+        Route::get('/documents/{document}/download', [JobApplicationController::class, 'downloadDocument'])->name('documents.download');
     });
 
     Route::prefix('awards')->name('dashboard.awards.')->middleware('role:management')->group(function () {

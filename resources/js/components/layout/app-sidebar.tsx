@@ -27,6 +27,7 @@ import {
     FileText,
     Globe,
     Home,
+    Inbox,
     Info,
     LayoutGrid,
     Library,
@@ -120,6 +121,11 @@ export function AppSidebar() {
                               title: t('dashboard.tabs.jobs'),
                               href: '/dashboard/jobs',
                               icon: Briefcase,
+                          },
+                          {
+                              title: t('dashboard.tabs.jobApplications'),
+                              href: '/dashboard/jobs/applications',
+                              icon: Inbox,
                           },
                           {
                               title: t('dashboard.tabs.awards'),

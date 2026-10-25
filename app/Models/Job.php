@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Support\Translation\HasTranslations;
 
 class Job extends Model
@@ -75,6 +76,16 @@ class Job extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Candidate applications received through the public apply portal.
+     *
+     * @return HasMany<JobApplication>
+     */
+    public function applications(): HasMany
+    {
+        return $this->hasMany(JobApplication::class, 'job_id');
     }
 
     /**

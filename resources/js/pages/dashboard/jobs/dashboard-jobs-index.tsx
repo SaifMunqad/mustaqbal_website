@@ -98,6 +98,9 @@ export default function DashboardJobsIndex() {
             header: t('dashboard.table.actions'),
             cell: (row) => (
                 <div className="flex flex-wrap gap-3">
+                    <Link href={`/dashboard/jobs/${row.id}/applications`} className="text-blue-600 underline">
+                        {t('dashboard.tabs.jobApplications')}
+                    </Link>
                     <Link href={`/dashboard/jobs/${row.id}/edit`} className="text-blue-600 underline">
                         {t('dashboard.table.edit')}
                     </Link>

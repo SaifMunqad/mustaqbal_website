@@ -5,16 +5,19 @@
  * in place to reveal the description and application details instead of routing
  * away. Also used by the homepage "latest jobs" block and the dashboard preview,
  * so all three stay identical.
+ *
+ * Applying goes through the on-site application portal by default; a job that
+ * still points at an external form (`application_url`) keeps that link instead.
  */
 import {
     AcademicCapIcon,
     BriefcaseIcon,
     CalendarDaysIcon,
     ClockIcon,
-    EnvelopeIcon,
     MapPinIcon,
+    PaperAirplaneIcon,
 } from '@heroicons/react/24/outline';
-import { useState } from 'react';
+import { Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
 export interface Job {
@@ -60,12 +63,10 @@ const categoryStyles: Record<
 
 /**
  * Shared job posting card. Used by the public jobs listing and the home-page
- * "latest jobs" block so both read identically. Email reveal is local state, so
- * each card toggles independently.
+ * "latest jobs" block so both read identically.
  */
 export default function JobCard({ job }: { job: Job }) {
     const { t } = useTranslation();
-    const [showEmail, setShowEmail] = useState(false);
     const categoryMeta = job.category ? categoryStyles[job.category] : null;
 
     return (
@@ -131,52 +132,37 @@ export default function JobCard({ job }: { job: Job }) {
                 </div>
             ) : null}
 
-            {job.application_email || job.application_url || job.deadline ? (
-                <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex flex-wrap items-center gap-3">
-                        {job.application_email ? (
-                            showEmail ? (
-                                <a
-                                    href={`mailto:${job.application_email}`}
-                                    className="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2 text-sm font-medium text-brand-fg transition hover:bg-brand-hover"
-                                >
-                                    <EnvelopeIcon className="size-4" />
-                                    {job.application_email}
-                                </a>
-                            ) : (
-                                <button
-                                    type="button"
-                                    onClick={() => setShowEmail(true)}
-                                    className="inline-flex items-center gap-2 rounded-xl border border-brand-border bg-brand-soft px-4 py-2 text-sm font-medium text-brand-ink transition hover:bg-brand-soft-strong dark:bg-brand-deep/30 dark:hover:bg-brand-deep/50"
-                                >
-                                    <EnvelopeIcon className="size-4" />
-                                    {t('jobs.showEmail')}
-                                </button>
-                            )
-                        ) : null}
-
-                        {job.application_url ? (
-                            <a
-                                href={job.application_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700"
-                            >
-                                {t('jobs.applyOnline')}
-                            </a>
-                        ) : null}
-                    </div>
-
-                    {job.deadline ? (
-                        <span className="ms-auto inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
-                            <CalendarDaysIcon className="size-4" />
-                            <span>
-                                {t('jobs.deadline')}: {job.deadline}
-                            </span>
-                        </span>
-                    ) : null}
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center gap-3">
+                    {job.application_url ? (
+                        <a
+                            href={job.application_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700"
+                        >
+                            {t('jobs.applyOnline')}
+                        </a>
+                    ) : (
+                        <Link
+                            href={`/school/jobs/${job.slug}/apply`}
+                            className="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2 text-sm font-medium text-brand-fg transition hover:bg-brand-hover"
+                        >
+                            <PaperAirplaneIcon className="size-4" />
+                            {t('jobs.apply.button')}
+                        </Link>
+                    )}
                 </div>
-            ) : null}
+
+                {job.deadline ? (
+                    <span className="ms-auto inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+                        <CalendarDaysIcon className="size-4" />
+                        <span>
+                            {t('jobs.deadline')}: {job.deadline}
+                        </span>
+                    </span>
+                ) : null}
+            </div>
         </article>
     );
 }
