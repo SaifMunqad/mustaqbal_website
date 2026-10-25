@@ -297,15 +297,15 @@ export function ToastProvider({
                                       <div
                                           key={toastItem.id}
                                           className={cn(
-                                              'pointer-events-auto flex w-full items-start gap-3 rounded-full border px-4 py-3 shadow-lg backdrop-blur transition-transform duration-300 ease-out',
+                                              'pointer-events-auto flex w-auto max-w-full items-center gap-3 rounded-full border px-4 py-3 shadow-lg backdrop-blur transition-transform duration-300 ease-out',
                                               variantStyles[toastItem.variant],
                                               toastItem.state === 'visible'
                                                   ? 'translate-y-0'
                                                   : '-translate-y-[200%]',
                                           )}
                                       >
-                                          <Icon className="mt-0.5 size-5 shrink-0" />
-                                          <div className="min-w-0 flex-1">
+                                          <Icon className="size-5 shrink-0" />
+                                          <div className="min-w-0 text-center">
                                               <p className="text-sm leading-tight font-semibold">
                                                   {toastItem.title}
                                               </p>
