@@ -942,11 +942,21 @@ function SortableBlock({
                 isDragging ? 'z-10 opacity-60' : ''
             } ${isEditing ? 'outline-blue-500' : 'hover:outline-blue-300'}`}
         >
-            {/* Toolbar: always visible and stacked ABOVE the block's own layers.
-                Hero/split-hero paint their copy (and links) at z-10 right under
-                this bar, which used to swallow every click on these buttons.
-                z-30 here keeps drag/edit/hide/remove reachable on every block. */}
-            <div className="absolute -top-3 z-30 flex items-center gap-1 rounded-lg border border-border bg-background px-1 py-0.5 shadow-sm transition focus-within:ring-2 focus-within:ring-blue-400 ltr:left-2 rtl:right-2">
+            {/* Toolbar: reveals on block hover (Tailwind `group-hover`) to keep the
+                canvas clean, staying visible while editing or focused so the
+                buttons remain reachable. It's stacked ABOVE the block's own
+                layers because hero/split-hero paint their copy (and links) at
+                z-10 right under this bar, which used to swallow every click.
+                z-30 here keeps drag/edit/hide/remove reachable on every block.
+                `pointer-events-none` while hidden stops the invisible bar from
+                stealing clicks; `group-hover`/`focus-within` re-enable it. */}
+            <div
+                className={`absolute -top-3 z-30 flex items-center gap-1 rounded-lg border border-border bg-background/75 px-1 py-0.5 shadow-sm backdrop-blur-sm transition focus-within:ring-2 focus-within:ring-blue-400 ltr:left-2 rtl:right-2 ${
+                    isEditing
+                        ? ''
+                        : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 focus-within:pointer-events-auto focus-within:opacity-100'
+                }`}
+            >
                 <button
                     type="button"
                     {...attributes}
