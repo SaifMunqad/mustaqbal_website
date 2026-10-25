@@ -24,6 +24,17 @@ const en = {
             phonesHint:
                 'Upload a spreadsheet and the phone column is detected automatically from its first sheet. Numbers may be separated by commas, spaces, or newlines and should include the country code. The file is analysed in your browser only — it is never uploaded.',
         },
+        chipInput: {
+            addMore: 'Add another…',
+            count: '{{total}} selected',
+            edit: 'Edit {{value}}',
+            remove: 'Remove {{value}}',
+            clearAll: 'Clear all',
+            invalidEmail: '“{{value}}” is not a valid email address.',
+            invalidPhone:
+                '“{{value}}” is not a valid phone number — include the country code (7–15 digits).',
+            duplicate: '“{{value}}” is already in the list.',
+        },
     },
     editor: {
         heading1: 'Heading 1',
@@ -760,6 +771,13 @@ const en = {
             sent: 'Sent',
             failed: 'Failed',
         },
+        jobApplicationStatus: {
+            pending: 'Pending',
+            read: 'Read',
+            selected: 'Selected',
+            rejected: 'Rejected',
+            queued: 'Queued',
+        },
     },
     jobs: {
         employmentType: {
@@ -778,6 +796,34 @@ const en = {
         showEmail: 'Show Email',
         applyOnline: 'Apply Online',
         empty: 'No open positions at the moment. Check back soon!',
+        apply: {
+            title: 'Apply',
+            button: 'Apply now',
+            formTitle: 'Apply for {{job}}',
+            requiredNote: 'Fields marked with * are required.',
+            personalInfo: 'Personal information',
+            experienceInfo: 'Job experience',
+            documentsInfo: 'Documents',
+            documentsHint:
+                'Attach your CV and any supporting files. Up to {{max}} per file.',
+            noDocumentsYet: 'No files selected yet.',
+            removeDocument: 'Remove document',
+            submitting: 'Submitting…',
+            submit: 'Submit application',
+            experiencePlaceholder:
+                'Describe any related teaching or school experience.',
+            fields: {
+                firstName: 'First name',
+                lastName: 'Last name',
+                fatherName: 'Father name',
+                email: 'Email',
+                phone: 'Phone',
+                city: 'City',
+                address: 'Address',
+                experience: 'Related job experience',
+                coverLetter: 'Cover letter',
+            },
+        },
     },
     verify: {
         title: 'Verify an Award',
@@ -917,6 +963,7 @@ const en = {
             whatsappSettings: 'WhatsApp API',
             programs: 'Programs',
             jobs: 'Jobs',
+            jobApplications: 'Applied',
             pages: 'Pages',
             about: 'About',
             awards: 'Awards & Certificates',
@@ -1188,7 +1235,7 @@ const en = {
                 application: 'Application',
                 applicationEmail: 'Application email',
                 applicationEmailPlaceholder: 'hr@school.com',
-                applicationEmailHint: 'Shown as a button on the public listing',
+                applicationEmailHint: 'For internal reference; candidates now apply through the jobs portal',
                 applicationUrl: 'Application URL',
                 applicationUrlPlaceholder: 'https://forms.google.com/...',
                 applicationUrlHint: 'External form link (optional)',
@@ -1201,6 +1248,38 @@ const en = {
                 deleteDescription: 'Delete "{{name}}"? This cannot be undone.',
                 save: 'Save job',
                 update: 'Update job',
+            },
+        },
+        jobApplications: {
+            title: 'Applied',
+            subtitle: 'Candidates who applied through the jobs portal.',
+            searchPlaceholder: 'Search name, father name, email or phone',
+            allJobs: 'All jobs',
+            allStatuses: 'All statuses',
+            appliedFor: 'Applied for',
+            documents: 'Documents',
+            noDocuments: 'No documents attached.',
+            download: 'Download',
+            submittedOn: 'Submitted on',
+            back: 'Back to applications',
+            markStatus: 'Mark as',
+            statusUpdated: 'Status updated.',
+            emailSelected: 'Email all selected',
+            empty: 'No applications yet.',
+            personalInfo: 'Personal information',
+            experience: 'Job experience',
+            coverLetter: 'Cover letter',
+            noCoverLetter: 'No cover letter provided.',
+            fields: {
+                candidate: 'Candidate',
+                firstName: 'First name',
+                lastName: 'Last name',
+                fatherName: 'Father name',
+                email: 'Email',
+                phone: 'Phone',
+                city: 'City',
+                address: 'Address',
+                status: 'Status',
             },
         },
         contacts: {
@@ -1271,20 +1350,28 @@ const en = {
                 duplicatesRemoved: '{{count}} duplicates removed',
                 invalidSkipped: '{{count}} invalid skipped',
                 importNote:
-                    '{{notes}} — the email list below is filled, ready to send.',
+                    '{{notes}} — the addresses were added to the list above.',
+                addedToList: '{{count}} added to the list',
+                alreadyListed: '{{count}} already in the list',
                 recipients: 'Recipients',
                 recipientsHint:
                     'Each recipient receives the message as an independent, personal email — never a group or BCC send.',
                 allUsers: 'All active users ({{count}})',
                 allContacts: 'All contact emails ({{count}})',
                 usersContacts: 'Users + contacts, deduplicated',
+                selectedApplicants: 'Selected job applicants ({{count}})',
+                selectedApplicantsHint: 'Send only to applicants marked as selected.',
+                allSelectedJobs: 'All selected applicants',
+                filterByJob: 'Filter by job',
                 customList: 'Custom email list (paste or import below)',
-                emailList: 'Email list',
+                emailList: 'Email addresses',
                 emailListHint:
-                    'One email per line (or separated by commas/spaces), or import them from an Excel/CSV file above.',
+                    'Type an address and press Enter, or paste a whole column at once. Click a chip to put it back in the field for editing, or its × to remove it.',
                 subject: 'Subject',
                 subjectPlaceholder: 'Eid Mubarak — school closure notice',
                 message: 'Message',
+                messageHint:
+                    'Formatted message: bold, lists, links, tables and images are supported. Every recipient gets it as a personal, well-formatted email.',
                 messagePlaceholder:
                     'Write the announcement exactly as your families should read it…',
                 sendingNotice:
@@ -1323,7 +1410,9 @@ const en = {
                 duplicatesRemoved: '{{count}} duplicates removed',
                 invalidSkipped: '{{count}} invalid skipped',
                 importNote:
-                    '{{notes}} — the list below is filled, ready to send.',
+                    '{{notes}} — the numbers were added to the list above.',
+                addedToList: '{{count}} added to the list',
+                alreadyListed: '{{count}} already in the list',
                 notConfiguredTitle: 'WhatsApp is not configured',
                 notConfiguredBody:
                     'Before you can send a campaign, add your WhatsApp Business Cloud API credentials (access token and phone number id). You can enter them yourself on the settings screen — they are stored encrypted.',
@@ -1333,9 +1422,9 @@ const en = {
                     'Each recipient receives the message as an independent WhatsApp message. Numbers must include a country code.',
                 allContacts: 'All contact numbers ({{count}})',
                 customList: 'Custom number list (paste or import below)',
-                numberList: 'Number list',
+                numberList: 'Phone numbers',
                 numberListHint:
-                    'One number per line (or separated by commas/spaces), including the country code, or import them from an Excel/CSV file above.',
+                    'Type a number and press Enter, or paste a whole column at once. Include the country code. Click a chip to put it back in the field for editing, or its × to remove it.',
                 messageType: 'Message type',
                 messageTypeHint:
                     'Cold bulk outreach must use an approved template. Free text only reaches people who messaged you in the last 24 hours.',
@@ -1344,7 +1433,8 @@ const en = {
                 message: 'Message',
                 messagePlaceholder:
                     'Write the announcement exactly as your families should read it…',
-                messageHint: 'Plain WhatsApp text (up to 4096 characters).',
+                messageHint:
+                    'Formatted message. Bold, italic, strikethrough, lists and links are converted to WhatsApp formatting; images, tables and headings are flattened to plain text. Maximum 4096 characters after conversion.',
                 templateName: 'Template name',
                 templateNamePlaceholder: 'order_confirmation',
                 templateNameHint:
@@ -1564,8 +1654,11 @@ const en = {
             hint: 'The default language is used whenever content has no translation in the selected language. Disabled languages are hidden from the public switcher.',
             created: 'Language added.',
             updated: 'Language updated.',
-            codePlaceholder: 'ug',
-            namePlaceholder: 'Uyghur',
+            searchLanguage: 'Search languages…',
+            selectLanguage: 'Choose a language…',
+            selectLanguageHint:
+                'Search the catalog and pick a language — its code and text direction are filled in automatically.',
+            noLanguageFound: 'No language matches your search.',
             deleteTitle: 'Delete "{{name}}" ({{code}})?',
             deleteDescription: 'This cannot be undone.',
         },
@@ -1871,6 +1964,9 @@ const en = {
         jobCreated: 'Job created.',
         jobUpdated: 'Job updated.',
         jobDeleted: 'Job deleted.',
+        jobApplicationReceived:
+            'Application received for {{job}}. Thank you!',
+        jobApplicationStatusUpdated: 'Application status updated.',
         postCreated: 'Post created successfully.',
         postUpdated: 'Post updated successfully.',
         categoryCreated: 'Category created.',
