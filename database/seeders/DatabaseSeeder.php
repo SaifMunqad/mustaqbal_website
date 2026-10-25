@@ -52,9 +52,9 @@ class DatabaseSeeder extends Seeder
             ->keyBy('code');
 
         // Localize the global site settings for the secondary languages so the
-        // public home page renders translated hero/stats/features on a fresh
-        // seed. Guarded to only run once so reseeding never overwrites
-        // admin-edited translations. Languages must already exist (above).
+        // shared brand tagline and footer text read translated on a fresh seed.
+        // Guarded to only run once so reseeding never overwrites admin-edited
+        // translations. Languages must already exist (above).
         $siteSettings = SiteSetting::current();
         if ($siteSettings->exists && $siteSettings->translations()->count() === 0) {
             LocalizedContent::apply($siteSettings->translations(), LocalizedContent::siteSettingDefaults());
@@ -77,11 +77,10 @@ class DatabaseSeeder extends Seeder
         // ensures the account.
         EnsureAdminAccount::handle(force: true);
 
-        // Rich, sectioned About page (story, stats, mission & vision, values,
-        // highlights, goals, leadership message, FAQ). Idempotent and kept in a
-        // dedicated seeder so it is easy to extend.
-        $this->call(AboutPageSeeder::class);
-
+        // The About and Contact pages are authored as page-builder blocks (their
+        // seeders run last); their `site_pages` rows only carry the publish flag
+        // and the SEO title, and the Programs page still reads its own intro copy
+        // from here because it has no builder layout.
         $programsPage = SitePage::updateOrCreate(
             ['slug' => 'programs'],
             [
@@ -97,12 +96,6 @@ class DatabaseSeeder extends Seeder
         $contactPage = SitePage::updateOrCreate(
             ['slug' => 'contact'],
             [
-                'content' => [
-                    'phone_numbers' => ['+93 700 000 001', '+93 799 000 001'],
-                    'email' => 'info@myschool.example',
-                    'address' => 'Kart-e-Char, Kabul, Afghanistan',
-                    'map_embed_url' => 'https://maps.google.com/maps?q=Kabul%20Afghanistan&t=&z=13&ie=UTF8&iwloc=&output=embed',
-                ],
                 'is_published' => true,
             ],
         );
@@ -263,23 +256,18 @@ class DatabaseSeeder extends Seeder
         // resolves to real honors instead of an empty group.
         $this->call(RecognitionSeeder::class);
 
-        // Home page layout: authored banner/announcement blocks plus curated
-        // sections wired to the articles/events/recognition seeded above, so the
-        // home page is populated on a fresh seed instead of showing nothing.
-        $this->call(HomeSectionSeeder::class);
+        // Home page layout: hero, the localized stats/feature rails, authored
+        // banner and announcement bands, and curated rails wired to the
+        // articles/events/recognition seeded above, so the home page is populated
+        // on a fresh seed instead of showing nothing.
+        $this->call(HomePageBuilderSeeder::class);
 
-        // Mirror the seeded home layout into the normalized page builder so the
-        // visual editor (which reads the builder) matches the public page. Runs
-        // last, after SiteSettings + HomeSectionSeeder have written their data.
-        $this->call(PageBuilderSeeder::class);
-
-        // Mirror the seeded About page (site_pages) into builder blocks so the
-        // unified editor opens populated on a fresh seed.
+        // Author the About page straight into the builder blocks the unified
+        // editor reads, so a fresh seed opens a populated canvas.
         $this->call(AboutPageBuilderSeeder::class);
 
-        // Mirror the seeded Contact page (site_pages) into builder blocks so the
-        // contact page opens with the current design (intro, form, details, map)
-        // instead of an empty canvas. Never runs automatically outside seeding.
+        // Same for the Contact page: intro, inquiry form, details column and map
+        // as ordinary editable blocks.
         $this->call(ContactPageBuilderSeeder::class);
     }
 }
