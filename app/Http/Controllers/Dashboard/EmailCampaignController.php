@@ -4,18 +4,24 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Enums\EmailCampaignStatus;
 use App\Enums\EmailDeliveryStatus;
+use App\Enums\JobApplicationStatus;
 use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
 use App\Jobs\SendBulkAnnouncement;
 use App\Models\Contact;
 use App\Models\EmailCampaign;
+use App\Models\Job;
+use App\Models\JobApplication;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Stevebauman\Purify\Facades\Purify;
 
 class EmailCampaignController extends Controller
 {
@@ -24,7 +30,7 @@ class EmailCampaignController extends Controller
      *
      * @var list<string>
      */
-    public const SOURCES = ['users', 'contacts', 'users_contacts', 'custom'];
+    public const SOURCES = ['users', 'contacts', 'users_contacts', 'custom', 'selected_applicants'];
 
     public function index(): Response
     {
@@ -40,6 +46,12 @@ class EmailCampaignController extends Controller
 
     public function create(Request $request): Response
     {
+        $requestedSource = in_array($request->query('recipient_source'), self::SOURCES, true)
+            ? $request->query('recipient_source')
+            : '';
+
+        $requestedJobId = $request->integer('job_id') ?: null;
+
         return Inertia::render('dashboard/email-campaigns/dashboard-email-campaigns-create', [
             'counts' => [
                 'users' => User::query()
@@ -47,7 +59,16 @@ class EmailCampaignController extends Controller
                     ->whereKeyNot($request->user()->id)
                     ->count(),
                 'contacts' => Contact::query()->distinct('email')->count('email'),
+                'selected_applicants' => $this->selectedApplicantsQuery()->count(),
             ],
+            'jobs' => Job::query()
+                ->with('translations.language')
+                ->orderByDesc('created_at')
+                ->get(['id'])
+                ->map(fn (Job $job): array => ['id' => $job->id, 'title' => $job->title])
+                ->values(),
+            'initialSource' => $requestedSource,
+            'initialJobFilter' => $requestedJobId,
         ]);
     }
 
@@ -55,12 +76,17 @@ class EmailCampaignController extends Controller
     {
         $validated = $request->validate([
             'subject' => ['required', 'string', 'max:255'],
-            'body' => ['required', 'string', 'max:20000'],
+            'body' => ['required', 'string', 'max:100000'],
             'recipient_source' => ['required', 'in:'.implode(',', self::SOURCES)],
             'custom_emails' => ['nullable', 'required_if:recipient_source,custom', 'string', 'max:100000'],
+            'job_filter' => ['nullable', 'integer', Rule::exists('job_postings', 'id')],
         ]);
 
-        $recipients = $this->resolveRecipients($validated['recipient_source'], $validated['custom_emails'] ?? null, $request->user()->id);
+        // The body comes from the rich-text editor; strip anything unsafe before
+        // it is stored, because the mail view renders it as raw HTML.
+        $validated['body'] = Purify::clean($validated['body']);
+
+        $recipients = $this->resolveRecipients($validated['recipient_source'], $validated['custom_emails'] ?? null, $request->user()->id, $validated['job_filter'] ?? null);
 
         if ($recipients->isEmpty()) {
             return back()->with('error', 'flash.noValidRecipients');
@@ -102,6 +128,7 @@ class EmailCampaignController extends Controller
 
         return Inertia::render('dashboard/email-campaigns/dashboard-email-campaigns-show', [
             'campaign' => $emailCampaign,
+            'bodyHtml' => $emailCampaign->bodyHtml(),
             'recipients' => $emailCampaign->recipients()
                 ->orderByRaw("case when status = 'failed' then 0 else 1 end")
                 ->orderBy('id')
@@ -142,7 +169,7 @@ class EmailCampaignController extends Controller
      *
      * @return Collection<int, array{name: string|null, email: string}>
      */
-    private function resolveRecipients(string $source, ?string $customEmails, ?int $excludeUserId = null): Collection
+    private function resolveRecipients(string $source, ?string $customEmails, ?int $excludeUserId = null, ?int $jobFilter = null): Collection
     {
         $recipients = collect();
 
@@ -164,6 +191,17 @@ class EmailCampaignController extends Controller
             );
         }
 
+        if ($source === 'selected_applicants') {
+            $recipients = $recipients->concat(
+                $this->selectedApplicantsQuery($jobFilter)
+                    ->get(['first_name', 'last_name', 'email'])
+                    ->map(fn (JobApplication $application): array => [
+                        'name' => trim("{$application->first_name} {$application->last_name}"),
+                        'email' => $application->email,
+                    ])
+            );
+        }
+
         if ($source === 'custom') {
             foreach (preg_split('/[\r\n,;]+/', (string) $customEmails) ?: [] as $email) {
                 $email = strtolower(trim($email));
@@ -178,5 +216,15 @@ class EmailCampaignController extends Controller
             ->unique(fn (array $recipient): string => strtolower($recipient['email']))
             ->filter(fn (array $recipient): bool => filter_var($recipient['email'], FILTER_VALIDATE_EMAIL) !== false)
             ->values();
+    }
+
+    /**
+     * Applicants marked as selected, optionally narrowed to one job posting.
+     */
+    private function selectedApplicantsQuery(?int $jobFilter = null): Builder
+    {
+        return JobApplication::query()
+            ->where('status', JobApplicationStatus::Selected->value)
+            ->when($jobFilter, fn ($query) => $query->where('job_id', $jobFilter));
     }
 }

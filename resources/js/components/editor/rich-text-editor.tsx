@@ -1,3 +1,12 @@
+/**
+ * TipTap-based rich text editor used by every admin content form.
+ *
+ * Bundles the extensions the content model relies on (images, links, underline,
+ * alignment, placeholders, embedded charts), imports `.docx` files through
+ * mammoth, and exposes the serialized HTML to the surrounding Inertia form. The
+ * toolbar lives in `editor-toolbar.tsx` and the chart form in
+ * `editor-chart-panel.tsx`.
+ */
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
@@ -27,6 +36,11 @@ interface RichTextEditorProps {
     placeholder?: string;
     /** Writing direction for the editable area, from the article's language. */
     dir?: 'rtl' | 'ltr';
+    /**
+     * Chart blocks need Chart.js and therefore never render in an email or a
+     * WhatsApp message. Turn them off for those editors.
+     */
+    allowChart?: boolean;
     className?: string;
 }
 
@@ -36,6 +50,7 @@ export default function RichTextEditor({
     onChange,
     placeholder,
     dir = 'ltr',
+    allowChart = true,
     className,
 }: RichTextEditorProps) {
     const { t } = useTranslation();
@@ -78,7 +93,7 @@ export default function RichTextEditor({
             TextAlign.configure({
                 types: ['heading', 'paragraph'],
             }),
-            Chart,
+            ...(allowChart ? [Chart] : []),
         ],
         content: value || '',
         onUpdate: ({ editor: instance }) => {
@@ -211,13 +226,15 @@ export default function RichTextEditor({
                 >
                     <PhotoIcon className="size-4" />
                 </ToolButton>
-                <ToolButton
-                    onClick={() => setChartOpen((open) => !open)}
-                    title={t('editor.insertChart')}
-                    active={chartOpen}
-                >
-                    <TableCellsIcon className="size-4" />
-                </ToolButton>
+                {allowChart ? (
+                    <ToolButton
+                        onClick={() => setChartOpen((open) => !open)}
+                        title={t('editor.insertChart')}
+                        active={chartOpen}
+                    >
+                        <TableCellsIcon className="size-4" />
+                    </ToolButton>
+                ) : null}
                 <ToolButton
                     onClick={() => docxInputRef.current?.click()}
                     title={t('editor.importWord')}
@@ -230,7 +247,7 @@ export default function RichTextEditor({
                 ) : null}
             </div>
 
-            {chartOpen ? (
+            {allowChart && chartOpen ? (
                 <EditorChartPanel
                     chart={chart}
                     onChange={setChart}

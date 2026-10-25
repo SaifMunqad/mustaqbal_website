@@ -1,3 +1,9 @@
+/**
+ * WhatsApp campaign detail and delivery report.
+ *
+ * Displays the stored message exactly as it is sent, along with each recipient's
+ * delivery state; the pending count is derived from the totals.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { DataTable, DataTableColumn } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -39,8 +45,10 @@ const statusStyles: Record<string, string> = {
 
 export default function DashboardWhatsAppCampaignsShow() {
     const { t } = useTranslation();
-    const { campaign, recipients } = usePage<{
+    const { campaign, messageText, recipients } = usePage<{
         campaign: Campaign;
+        /** The stored body flattened to the exact WhatsApp markup that is sent. */
+        messageText: string;
         recipients: { data: Recipient[] };
     }>().props;
 
@@ -177,7 +185,7 @@ export default function DashboardWhatsAppCampaignsShow() {
                             )}
                         </>
                     ) : (
-                        campaign.message
+                        messageText
                     )}
                 </div>
 

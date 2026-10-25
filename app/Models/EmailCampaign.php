@@ -45,6 +45,21 @@ class EmailCampaign extends Model
         return $this->sent_count + $this->failed_count >= $this->total_count;
     }
 
+    /**
+     * Body for rendering: sanitized editor HTML, or escaped-and-broken plain
+     * text for campaigns created before the rich-text editor existed.
+     */
+    public function bodyHtml(): string
+    {
+        $body = (string) $this->body;
+
+        if (preg_match('/<[a-z][^>]*>/i', $body) === 1) {
+            return $body;
+        }
+
+        return nl2br(e($body));
+    }
+
     public function markCompletedIfDone(): void
     {
         $this->refresh(['sent_count', 'failed_count', 'total_count']);

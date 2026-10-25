@@ -4,9 +4,10 @@ namespace App\Services;
 
 use App\Models\WhatsAppCampaign;
 use App\Models\WhatsAppSetting;
-use RuntimeException;
+use App\Support\WhatsApp\WhatsAppMarkup;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use RuntimeException;
 
 /**
  * Thin wrapper around the WhatsApp Business (Meta) Cloud API used by the bulk
@@ -146,7 +147,7 @@ class WhatsAppService
             );
         }
 
-        return $this->sendText($to, (string) $campaign->message);
+        return $this->sendText($to, WhatsAppMarkup::fromHtml($campaign->message));
     }
 
     /**

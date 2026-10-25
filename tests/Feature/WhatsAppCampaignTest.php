@@ -101,6 +101,30 @@ class WhatsAppCampaignTest extends TestCase
         $this->assertSame('93799000111', $campaign->recipients()->value('phone'));
     }
 
+    public function test_html_message_is_sanitized_and_sent_as_whatsapp_markup(): void
+    {
+        $this->configure();
+        Http::fake([
+            'graph.facebook.com/*' => Http::response(['messages' => [['id' => 'wamid.HTML']]], 200),
+        ]);
+
+        $this->actingAs($this->admin())
+            ->post(route('dashboard.whatsapp-campaigns.store'), [
+                'recipient_source' => 'custom',
+                'custom_numbers' => '+93700123456',
+                'mode' => 'text',
+                'message' => '<p>Hello <strong>families</strong></p><script>alert(1)</script>',
+            ])
+            ->assertSessionHasNoErrors();
+
+        $campaign = WhatsAppCampaign::query()->firstOrFail();
+
+        // Stored as sanitized rich text, sent as WhatsApp markup.
+        $this->assertStringContainsString('<strong>families</strong>', $campaign->message);
+        $this->assertStringNotContainsString('<script>', $campaign->message);
+        Http::assertSent(fn ($request) => ($request['text']['body'] ?? null) === 'Hello *families*');
+    }
+
     public function test_send_job_delivers_and_completes_campaign(): void
     {
         $this->configure();

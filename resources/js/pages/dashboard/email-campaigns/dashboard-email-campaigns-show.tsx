@@ -1,4 +1,11 @@
+/**
+ * Email campaign detail and delivery report.
+ *
+ * Shows the message as sent plus per-recipient delivery state, with the pending
+ * count derived from the totals rather than stored separately.
+ */
 import DashboardPage from '@/components/dashboard/dashboard-page';
+import ArticleBody from '@/components/editor/article-body';
 import { DataTable, DataTableColumn } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import campaigns from '@/routes/dashboard/email-campaigns';
@@ -36,8 +43,10 @@ const statusStyles: Record<string, string> = {
 
 export default function DashboardEmailCampaignsShow() {
     const { t } = useTranslation();
-    const { campaign, recipients } = usePage<{
+    const { campaign, bodyHtml, recipients } = usePage<{
         campaign: Campaign;
+        /** Server-sanitized body HTML (plain text is escaped and line-broken). */
+        bodyHtml: string;
         recipients: { data: Recipient[] };
     }>().props;
 
@@ -146,9 +155,10 @@ export default function DashboardEmailCampaignsShow() {
                     </div>
                 </div>
 
-                <div className="rounded-lg bg-slate-50 p-3 text-sm whitespace-pre-line dark:bg-slate-800">
-                    {campaign.body}
-                </div>
+                <ArticleBody
+                    body={bodyHtml}
+                    className="rounded-lg bg-slate-50 p-3 text-sm dark:bg-slate-800"
+                />
 
                 {campaign.failed_count > 0 && (
                     <Form {...campaigns.retry.form(campaign.id)} className="w-fit">

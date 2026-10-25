@@ -9,12 +9,15 @@ use App\Jobs\SendWhatsAppMessage;
 use App\Models\Contact;
 use App\Models\WhatsAppCampaign;
 use App\Services\WhatsAppService;
+use App\Support\WhatsApp\WhatsAppMarkup;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use Stevebauman\Purify\Facades\Purify;
 
 class WhatsAppCampaignController extends Controller
 {
@@ -62,11 +65,15 @@ class WhatsAppCampaignController extends Controller
             'recipient_source' => ['required', 'in:'.implode(',', self::SOURCES)],
             'custom_numbers' => ['nullable', 'required_if:recipient_source,custom', 'string', 'max:100000'],
             'mode' => ['required', 'in:text,template'],
-            'message' => ['nullable', 'required_if:mode,text', 'string', 'max:4096'],
+            'message' => ['nullable', 'required_if:mode,text', 'string', 'max:100000'],
             'template_name' => ['nullable', 'required_if:mode,template', 'string', 'max:255'],
             'template_language' => ['nullable', 'required_if:mode,template', 'string', 'max:16'],
             'template_variables' => ['nullable', 'string', 'max:2000'],
         ]);
+
+        if ($validated['mode'] === 'text') {
+            $validated['message'] = $this->prepareMessage((string) ($validated['message'] ?? ''));
+        }
 
         $recipients = $this->resolveRecipients(
             $validated['recipient_source'],
@@ -118,6 +125,8 @@ class WhatsAppCampaignController extends Controller
 
         return Inertia::render('dashboard/whatsapp-campaigns/dashboard-whatsapp-campaigns-show', [
             'campaign' => $whatsappCampaign,
+            // Exactly the text WhatsApp will receive (HTML flattened to markup).
+            'messageText' => WhatsAppMarkup::fromHtml($whatsappCampaign->message),
             'recipients' => $whatsappCampaign->recipients()
                 ->orderByRaw("case when status = 'failed' then 0 else 1 end")
                 ->orderBy('id')
@@ -151,6 +160,30 @@ class WhatsAppCampaignController extends Controller
         $failed->each(fn ($recipient) => SendWhatsAppMessage::dispatch($recipient->id));
 
         return back()->with('success', ['title' => 'flash.reSentFailed', 'params' => ['count' => $failed->count()]]);
+    }
+
+    /**
+     * Sanitize the editor HTML and make sure its WhatsApp rendering fits in a
+     * single Cloud API text message (4096 characters).
+     */
+    private function prepareMessage(string $html): string
+    {
+        $clean = Purify::clean($html);
+        $length = mb_strlen(WhatsAppMarkup::fromHtml($clean));
+
+        if ($length === 0) {
+            throw ValidationException::withMessages([
+                'message' => __('The message is empty once rendered as WhatsApp text. Add some text next to any images.'),
+            ]);
+        }
+
+        if ($length > 4096) {
+            throw ValidationException::withMessages([
+                'message' => __('The message is too long for WhatsApp: :count characters after formatting (maximum 4096).', ['count' => $length]),
+            ]);
+        }
+
+        return $clean;
     }
 
     /**
