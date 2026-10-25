@@ -9,7 +9,7 @@ use App\Models\Page;
 use App\Models\PageSection;
 use App\Models\SitePage;
 use App\Models\User;
-use App\Support\Home\ContactPageBackfill;
+use Database\Seeders\ContactPageBuilderSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
@@ -17,8 +17,7 @@ use Tests\TestCase;
 /**
  * Covers the Contact page on the unified page builder: it is the third builder
  * page, offers the same block catalog as Home and About, saves through the same
- * writer, and only adopts the builder layout once blocks exist (the seeder-only
- * backfill reproduces the legacy design).
+ * writer, and is seeded as ordinary blocks (intro hero, form, details, map).
  */
 class ContactPageBuilderTest extends TestCase
 {
@@ -45,8 +44,6 @@ class ContactPageBuilderTest extends TestCase
 
     public function test_contact_editor_renders_the_shared_catalog(): void
     {
-        $this->contactPage();
-
         $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
             ->get(route('dashboard.pages.contact'))
             ->assertOk()
@@ -114,8 +111,8 @@ class ContactPageBuilderTest extends TestCase
 
     public function test_public_contact_renders_the_builder_layout(): void
     {
-        $this->contactPage();
-        ContactPageBackfill::run();
+        $this->seed(ContactPageBuilderSeeder::class);
+        $this->publishedContactPage();
 
         $this->get(route('school.contact'))
             ->assertOk()
@@ -130,25 +127,24 @@ class ContactPageBuilderTest extends TestCase
             );
     }
 
-    public function test_public_contact_falls_back_to_legacy_content_without_blocks(): void
+    public function test_public_contact_renders_nothing_but_the_title_without_a_layout(): void
     {
-        $this->contactPage();
+        $this->publishedContactPage();
 
-        // No backfill and no saved layout: the view keeps the legacy composition.
+        // Nothing authored yet: the page still resolves and keeps the published
+        // title, so an empty builder never breaks the public route.
         $this->get(route('school.contact'))
             ->assertOk()
             ->assertInertia(fn (Assert $p) => $p
                 ->component('school/contact/school-contact')
                 ->where('blocks', [])
-                ->where('page.slug', 'contact')
+                ->where('title', 'Contact My School')
             );
     }
 
-    public function test_contact_backfill_maps_the_current_design_once(): void
+    public function test_contact_seeder_authors_the_current_design_once(): void
     {
-        $this->contactPage();
-
-        ContactPageBackfill::run();
+        $this->seed(ContactPageBuilderSeeder::class);
 
         $page = Page::query()->where('key', 'contact')->firstOrFail();
 
@@ -174,13 +170,13 @@ class ContactPageBuilderTest extends TestCase
             $hero->translations()->where('language_id', $this->en->id)->value('heading'),
         );
         $this->assertSame(
-            'زموږ سره اړیکه',
+            'د زما ښوونځي سره اړیکه',
             $hero->translations()->where('language_id', $this->ps->id)->value('heading'),
         );
 
-        // Idempotent: re-running never duplicates the layout.
+        // Idempotent: reseeding never duplicates the layout.
         $count = PageSection::query()->count();
-        ContactPageBackfill::run();
+        $this->seed(ContactPageBuilderSeeder::class);
         $this->assertSame($count, PageSection::query()->count());
     }
 
@@ -197,26 +193,16 @@ class ContactPageBuilderTest extends TestCase
     }
 
     /**
-     * The seeded contact page: localized title, no authored body (the legacy
-     * view keeps contact details in Site Settings).
+     * The publishing row the public screen reads for its SEO title fallback.
      */
-    private function contactPage(): SitePage
+    private function publishedContactPage(): SitePage
     {
         $page = SitePage::query()->create([
             'slug' => 'contact',
-            'content' => [
-                'email' => 'info@example.test',
-                'address' => 'Kabul',
-            ],
             'is_published' => true,
         ]);
 
         $page->syncDefaultTranslation(['title' => 'Contact My School']);
-
-        $page->translations()->create([
-            'language_id' => $this->ps->id,
-            'title' => 'زموږ سره اړیکه',
-        ]);
 
         return $page;
     }

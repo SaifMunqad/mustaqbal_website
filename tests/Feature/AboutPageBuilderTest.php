@@ -9,7 +9,6 @@ use App\Models\Page;
 use App\Models\PageSection;
 use App\Models\SitePage;
 use App\Models\User;
-use App\Support\Home\AboutPageBackfill;
 use App\Support\Home\BlockRegistry;
 use Database\Seeders\AboutPageBuilderSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,9 +16,9 @@ use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 /**
- * Covers the About page on the normalized page builder: the palette is scoped,
- * the legacy site_pages content is backfilled into blocks once, rich text is
- * sanitized, and the public About page renders the saved layout.
+ * Covers the About page on the normalized page builder: the seeder authors the
+ * layout straight into blocks, the palette is shared across every builder page,
+ * rich text is sanitized on save, and the public page renders the saved layout.
  */
 class AboutPageBuilderTest extends TestCase
 {
@@ -44,11 +43,9 @@ class AboutPageBuilderTest extends TestCase
         app()->setLocale('en');
     }
 
-    public function test_about_backfill_maps_every_legacy_block_and_is_idempotent(): void
+    public function test_seeded_about_layout_authors_every_block_and_is_idempotent(): void
     {
-        $this->legacyAboutPage();
-
-        AboutPageBackfill::run();
+        $this->seed(AboutPageBuilderSeeder::class);
 
         $page = Page::query()->where('key', 'about')->firstOrFail();
         $sections = PageSection::query()
@@ -60,6 +57,8 @@ class AboutPageBuilderTest extends TestCase
         $this->assertSame([
             'hero',
             'rich_text',
+            'rich_text',
+            'rich_text',
             'stats',
             'icon_cards',
             'testimonials',
@@ -67,69 +66,49 @@ class AboutPageBuilderTest extends TestCase
             'testimonials',
             'testimonials',
             'faqs',
-            'video_embed',
         ], $sections->map(fn (PageSection $s): string => $s->section_type->value)->all());
 
         $hero = $sections[0];
-        $this->assertSame('/storage/hero.jpg', $hero->image_path);
         $this->assertSame('/school/enroll', $hero->cta_url);
         $this->assertSame('/school/contact', $hero->config['cta_secondary_url']);
-        $this->assertSame('About us', $hero->translations->firstWhere('language.code', 'en')->heading);
-        $this->assertSame('EN intro', $hero->translations->firstWhere('language.code', 'en')->body);
-        $this->assertSame('زموږ په اړه', $hero->translations->firstWhere('language.code', 'ps')->heading);
+        $this->assertStringStartsWith('https://images.unsplash.com/', (string) $hero->image_path);
+        $this->assertSame('About My School', $hero->translations->firstWhere('language.code', 'en')->heading);
+        $this->assertStringStartsWith('My School is a community learning centre', (string) $hero->translations->firstWhere('language.code', 'en')->body);
+        $this->assertSame('د زما ښوونځي په اړه', $hero->translations->firstWhere('language.code', 'ps')->heading);
 
         // The story keeps its rich HTML per language.
         $story = $sections[1];
-        $this->assertStringContainsString('<p>EN story</p>', $story->translations->firstWhere('language.code', 'en')->body);
-        $this->assertStringContainsString('<p>PS story</p>', $story->translations->firstWhere('language.code', 'ps')->body);
+        $this->assertStringContainsString('founded on a simple belief', (string) $story->translations->firstWhere('language.code', 'en')->body);
+        $this->assertStringContainsString('<p>', (string) $story->translations->firstWhere('language.code', 'ps')->body);
 
-        // Stats map value/label onto the shared stats list.
-        $stat = $sections[2]->listItems->firstWhere('language.code', 'en');
-        $this->assertSame('100+', $stat->value);
-        $this->assertSame('Students', $stat->title);
+        // Mission and vision are their own authored blocks.
+        $this->assertSame('Mission', $sections[2]->translations->firstWhere('language.code', 'en')->heading);
+        $this->assertSame('Vision', $sections[3]->translations->firstWhere('language.code', 'en')->heading);
+
+        // Stats carry value + label on the shared stats list.
+        $stat = $sections[4]->listItems->firstWhere('language.code', 'en');
+        $this->assertSame('1,200+', $stat->value);
+        $this->assertSame('Students taught', $stat->title);
 
         // Values keep their icon keys.
-        $value = $sections[3]->listItems->firstWhere('language.code', 'en');
-        $this->assertSame('Knowledge', $value->title);
+        $value = $sections[5]->listItems->firstWhere('language.code', 'en');
+        $this->assertSame('Knowledge first', $value->title);
         $this->assertSame('book-open', $value->icon);
 
         // The leadership message keeps author name, role and image.
-        $message = $sections[5]->listItems->firstWhere('language.code', 'en');
-        $this->assertSame('Principal', $message->title);
-        $this->assertSame('Lead', $message->value);
-        $this->assertSame('Welcome', $message->description);
-        $this->assertSame('/storage/p.jpg', $message->image_path);
+        $message = $sections[7]->listItems->firstWhere('language.code', 'en');
+        $this->assertSame('School Administration', $message->title);
+        $this->assertSame('Principal & Management Team', $message->value);
+        $this->assertStringStartsWith('https://images.unsplash.com/', (string) $message->image_path);
 
-        // The video embed is lifted out of the pasted iframe.
-        $this->assertSame(
-            'https://www.youtube.com/embed/abc',
-            $sections[9]->config['video_url'],
-        );
-
-        // Idempotent: re-running never duplicates or clobbers.
+        // Idempotent: reseeding never duplicates or clobbers.
         $count = PageSection::query()->count();
-        AboutPageBackfill::run();
+        $this->seed(AboutPageBuilderSeeder::class);
         $this->assertSame($count, PageSection::query()->count());
-    }
-
-    public function test_about_builder_seeder_mirrors_the_legacy_page_idempotently(): void
-    {
-        $this->legacyAboutPage();
-
-        $this->seed(AboutPageBuilderSeeder::class);
-
-        $page = Page::query()->where('key', 'about')->firstOrFail();
-        $this->assertSame(10, PageSection::query()->where('page_id', $page->id)->count());
-
-        // Seeding again must not duplicate or clobber the layout.
-        $this->seed(AboutPageBuilderSeeder::class);
-        $this->assertSame(10, PageSection::query()->where('page_id', $page->id)->count());
     }
 
     public function test_about_builder_offers_the_shared_catalog(): void
     {
-        $this->legacyAboutPage();
-
         $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
             ->get(route('dashboard.pages.about'))
             ->assertOk()
@@ -153,7 +132,7 @@ class AboutPageBuilderTest extends TestCase
     public function test_builder_save_persists_the_about_layout(): void
     {
         $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
-            ->put(route('dashboard.about.visual.save'), [
+            ->put(route('dashboard.pages.about.save'), [
                 'sections' => [
                     [
                         'id' => null,
@@ -191,7 +170,7 @@ class AboutPageBuilderTest extends TestCase
     public function test_a_live_rail_can_be_saved_on_about(): void
     {
         $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
-            ->put(route('dashboard.about.visual.save'), [
+            ->put(route('dashboard.pages.about.save'), [
                 'sections' => [
                     [
                         'id' => null,
@@ -206,33 +185,33 @@ class AboutPageBuilderTest extends TestCase
         $this->assertDatabaseHas('page_sections', ['section_type' => 'jobs', 'limit' => 2]);
     }
 
-    public function test_public_about_renders_the_saved_builder_layout(): void
+    public function test_public_about_renders_the_seeded_builder_layout(): void
     {
-        $this->legacyAboutPage();
-        AboutPageBackfill::run();
+        $this->seed(AboutPageBuilderSeeder::class);
+        $this->publishedAboutPage();
 
         $this->get(route('school.about'))
             ->assertOk()
             ->assertInertia(fn (Assert $p) => $p
                 ->component('school/about/school-about')
-                ->has('blocks', 10)
+                ->has('blocks', 11)
                 ->where('blocks.0.component', 'hero')
-                ->where('blocks.0.hero.title', 'About us')
+                ->where('blocks.0.hero.title', 'About My School')
             );
     }
 
-    public function test_public_about_falls_back_to_legacy_content_without_blocks(): void
+    public function test_public_about_renders_nothing_but_the_title_when_no_layout_is_authored(): void
     {
-        $this->legacyAboutPage();
+        $this->publishedAboutPage();
 
-        // No backfill: the builder has no active blocks, so the view keeps the
-        // legacy site_pages composition (blocks is an empty list).
+        // No blocks yet: the page still resolves, and the published title is what
+        // the document head falls back to until an admin composes a layout.
         $this->get(route('school.about'))
             ->assertOk()
             ->assertInertia(fn (Assert $p) => $p
                 ->component('school/about/school-about')
                 ->where('blocks', [])
-                ->where('page.slug', 'about')
+                ->where('title', 'About My School')
             );
     }
 
@@ -249,56 +228,16 @@ class AboutPageBuilderTest extends TestCase
     }
 
     /**
-     * Seed a representative legacy About page: default sections on the parent
-     * content column, Pashto sections on its translation row.
+     * The publishing row the public screen reads for its SEO title fallback.
      */
-    private function legacyAboutPage(): SitePage
+    private function publishedAboutPage(): SitePage
     {
         $page = SitePage::query()->create([
             'slug' => 'about',
-            'hero_image' => '/storage/hero.jpg',
             'is_published' => true,
-            'content' => [
-                'intro' => 'EN intro',
-                'mission' => 'EN mission',
-                'stats' => [['value' => '100+', 'label' => 'Students']],
-                'values' => [['icon' => 'book-open', 'title' => 'Knowledge', 'text' => 'First']],
-                'highlights' => [['title' => 'Teachers', 'text' => 'Caring']],
-                'goals' => ['Grow'],
-                'main_points' => ['Safe'],
-                'message' => [
-                    'text' => 'Welcome',
-                    'author_name' => 'Principal',
-                    'author_role' => 'Lead',
-                    'author_image' => '/storage/p.jpg',
-                ],
-                'faq' => [['question' => 'Q?', 'answer' => 'A.']],
-                'video_embed' => '<iframe src="https://www.youtube.com/embed/abc"></iframe>',
-            ],
         ]);
 
-        $page->syncDefaultTranslation(['title' => 'About us', 'body' => '<p>EN story</p>']);
-
-        $page->translations()->create([
-            'language_id' => $this->ps->id,
-            'title' => 'زموږ په اړه',
-            'body' => '<p>PS story</p>',
-            'content' => [
-                'intro' => 'PS intro',
-                'stats' => [['value' => '۱۰۰+', 'label' => 'زده کوونکي']],
-                'values' => [['icon' => 'book-open', 'title' => 'پوهه', 'text' => 'لومړی']],
-                'highlights' => [['title' => 'ښوونکي', 'text' => 'مهربان']],
-                'goals' => ['ودې'],
-                'main_points' => ['خوندي'],
-                'message' => [
-                    'text' => 'ښه راغلاست',
-                    'author_name' => 'مدیر',
-                    'author_role' => 'مشر',
-                    'author_image' => '/storage/p.jpg',
-                ],
-                'faq' => [['question' => 'پوښتنه؟', 'answer' => 'ځواب.']],
-            ],
-        ]);
+        $page->syncDefaultTranslation(['title' => 'About My School']);
 
         return $page;
     }

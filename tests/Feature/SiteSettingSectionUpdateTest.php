@@ -35,14 +35,14 @@ class SiteSettingSectionUpdateTest extends TestCase
         $setting = SiteSetting::query()->create([
             ...SiteSetting::defaults(),
             'tagline' => 'Original tagline',
-            'home_title' => 'Original home title',
+            'footer_text' => 'All rights reserved.',
             'brand_color' => '#1e3a8a',
         ]);
 
         $ps = Language::query()->where('code', 'ps')->firstOrFail();
         $setting->translations()->create([
             'language_id' => $ps->id,
-            'home_title' => 'د زما ښوونځي سرلیک',
+            'tagline' => 'د زما ښوونځی شعار',
         ]);
 
         $this->actingAs($this->managementUser())
@@ -59,11 +59,11 @@ class SiteSettingSectionUpdateTest extends TestCase
 
         // Untouched sections keep their stored values.
         $this->assertSame('Original tagline', $setting->tagline);
-        $this->assertSame('Original home title', $setting->home_title);
+        $this->assertSame('All rights reserved.', $setting->footer_text);
         $this->assertSame('#1e3a8a', $setting->brand_color);
         $this->assertSame(
-            'د زما ښوونځي سرلیک',
-            $setting->translations->firstWhere('language.code', 'ps')->home_title,
+            'د زما ښوونځی شعار',
+            $setting->translations->firstWhere('language.code', 'ps')->tagline,
         );
     }
 
@@ -110,13 +110,13 @@ class SiteSettingSectionUpdateTest extends TestCase
                 'section' => 'appearance',
                 'brand_color' => '#16a34a',
                 'translations' => [
-                    'en' => ['home_title' => 'Injected title'],
+                    'en' => ['brand_name' => 'Injected name'],
                 ],
             ])
             ->assertSessionHasNoErrors();
 
-        // `home` is not the submitted section, so its fields are ignored.
-        $this->assertNotSame('Injected title', $setting->fresh()->home_title);
+        // `identity` is not the submitted section, so its fields are ignored.
+        $this->assertNotSame('Injected name', $setting->fresh()->brand_name);
     }
 
     public function test_unknown_sections_are_rejected(): void
@@ -125,6 +125,20 @@ class SiteSettingSectionUpdateTest extends TestCase
 
         $this->actingAs($this->managementUser())
             ->put('/dashboard/site-settings', ['section' => 'bogus'])
+            ->assertSessionHasErrors(['section']);
+    }
+
+    public function test_the_retired_home_section_is_no_longer_a_valid_save_scope(): void
+    {
+        SiteSetting::query()->create(SiteSetting::defaults());
+
+        // The home layout is composed in the page builder, so the settings page
+        // must not accept a `home` section payload any more.
+        $this->actingAs($this->managementUser())
+            ->put('/dashboard/site-settings', [
+                'section' => 'home',
+                'home_title' => 'Legacy write',
+            ])
             ->assertSessionHasErrors(['section']);
     }
 

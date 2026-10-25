@@ -6,7 +6,6 @@ use App\Enums\EmailCampaignStatus;
 use App\Enums\EmailDeliveryStatus;
 use App\Enums\EventAudience;
 use App\Enums\EventStatus;
-use App\Enums\HomeSectionType;
 use App\Enums\JobApplicationStatus;
 use App\Enums\PostType;
 use App\Enums\SectionType;
@@ -32,7 +31,6 @@ class EnumTranslationKeysTest extends TestCase
     {
         return [
             PostType::class,
-            HomeSectionType::class,
             SectionType::class,
             EventAudience::class,
             EventStatus::class,

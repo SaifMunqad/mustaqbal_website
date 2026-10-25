@@ -32,18 +32,18 @@ class TranslationFallbackTest extends TestCase
     {
         $ps = Language::where('code', 'ps')->first();
 
-        // A persisted row. Seed an explicit English home_stats value on the
-        // parent columns so the assertion below checks the fallback chain
-        // itself, not any demo defaults (Site Setting ships these lists empty).
+        // A persisted row. Seed an explicit English tagline on the parent columns
+        // so the assertion below checks the fallback chain itself, not any demo
+        // defaults.
         $setting = SiteSetting::resolved();
-        $setting->update(['home_stats' => [['value' => '1,200+', 'label' => 'Students']]]);
+        $setting->update(['tagline' => 'Building tomorrow']);
 
         // Only a Pashto row exists — exactly what the dashboard update produces,
         // since the default language is mirrored onto the parent, not stored as a row.
         $setting->translations()->create([
             'language_id' => $ps->id,
             'brand_name' => 'زما ښوونځی',
-            'home_stats' => [['value' => '۱۲۰۰+', 'label' => 'زده‌کوونکي']],
+            'tagline' => 'سبا جوړول',
         ]);
 
         $setting->load('translations.language');
@@ -51,11 +51,12 @@ class TranslationFallbackTest extends TestCase
         // English (default) visitor resolves from the parent, NOT the Pashto row.
         app()->setLocale('en');
         $this->assertSame('My School', $setting->translated('brand_name'));
-        $this->assertSame('Students', $setting->translated('home_stats')[0]['label']);
+        $this->assertSame('Building tomorrow', $setting->translated('tagline'));
 
         // Pashto visitor still gets the Pashto row.
         app()->setLocale('ps');
         $this->assertSame('زما ښوونځی', $setting->translated('brand_name'));
+        $this->assertSame('سبا جوړول', $setting->translated('tagline'));
     }
 
     public function test_shared_settings_do_not_bleed_for_the_default_locale(): void

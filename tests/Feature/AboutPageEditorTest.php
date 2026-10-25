@@ -12,7 +12,7 @@ use Tests\TestCase;
 
 /**
  * Covers the About page dashboard surfaces after the builder cutover:
- * `/dashboard/about` only owns publishing, while `/dashboard/about/visual`
+ * `/dashboard/about` only owns publishing, while `/dashboard/pages/about`
  * serves the unified page builder for the `about` page key.
  */
 class AboutPageEditorTest extends TestCase
@@ -52,12 +52,12 @@ class AboutPageEditorTest extends TestCase
         $this->assertSame('about', $page->slug);
     }
 
-    public function test_visual_editor_renders_the_about_builder_for_management(): void
+    public function test_builder_renders_the_about_page_for_management(): void
     {
         $page = $this->aboutPage();
 
         $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
-            ->get(route('dashboard.about.visual'))
+            ->get(route('dashboard.pages.about'))
             ->assertOk()
             ->assertInertia(fn (Assert $p) => $p
                 ->component('dashboard/page-builder/dashboard-page-builder-about')
@@ -75,12 +75,12 @@ class AboutPageEditorTest extends TestCase
         $this->assertSame('about', $page->refresh()->slug);
     }
 
-    public function test_visual_editor_is_management_only(): void
+    public function test_builder_is_management_only(): void
     {
         $this->aboutPage();
 
         $this->actingAs(User::factory()->create(['role' => UserRole::Family->value]))
-            ->get(route('dashboard.about.visual'))
+            ->get(route('dashboard.pages.about'))
             ->assertForbidden();
     }
 

@@ -14,7 +14,8 @@ use Tests\TestCase;
  * Covers the translatable Site Settings layer: the public `toShared()` payload
  * resolves the reader's language (falling back to the English parent column), and
  * the dashboard update flow mirrors the default language onto the parent while
- * writing a translation row per other language.
+ * writing a translation row per other language. Only global branding, tagline and
+ * footer text are settings — page content lives in the page builder.
  */
 class SiteSettingTranslationTest extends TestCase
 {
@@ -44,7 +45,13 @@ class SiteSettingTranslationTest extends TestCase
         $shared = SiteSetting::current()->toShared();
 
         // No Dari rows yet: the reader still gets the English source of truth.
-        $this->assertSame('Welcome to My School', $shared['home']['title']);
+        $this->assertSame('Building tomorrow with quality education', $shared['tagline']);
+
+        // The home hero / stats / features are builder blocks now, so they are no
+        // longer part of the shared settings payload.
+        $this->assertArrayNotHasKey('home', $shared);
+        $this->assertArrayNotHasKey('stats', $shared);
+        $this->assertArrayNotHasKey('features', $shared);
     }
 
     public function test_to_shared_returns_the_active_language_copy(): void
@@ -54,16 +61,16 @@ class SiteSettingTranslationTest extends TestCase
 
         $setting->translations()->create([
             'language_id' => $ps->id,
-            'home_title' => 'د زما ښوونځي ته ښه راغلاست',
-            'home_stats' => [['value' => '1,200+', 'label' => 'زده‌کوونکي']],
+            'tagline' => 'د کیفیت‌لرونکې زده‌کړې سره سبا جوړول',
+            'footer_text' => 'ټول حقونه خوندي دي.',
         ]);
 
         app()->setLocale('ps');
 
         $shared = $setting->fresh(['translations.language'])->toShared();
 
-        $this->assertSame('د زما ښوونځي ته ښه راغلاست', $shared['home']['title']);
-        $this->assertSame('زده‌کوونکي', $shared['stats'][0]['label']);
+        $this->assertSame('د کیفیت‌لرونکې زده‌کړې سره سبا جوړول', $shared['tagline']);
+        $this->assertSame('ټول حقونه خوندي دي.', $shared['footer_text']);
     }
 
     public function test_update_mirrors_default_and_writes_a_row_per_language(): void
@@ -75,24 +82,15 @@ class SiteSettingTranslationTest extends TestCase
                 'en' => [
                     'brand_name' => 'My School',
                     'brand_short_name' => 'My School',
-                    'home_title' => 'Welcome to My School',
                     'tagline' => 'Building tomorrow',
-                    'home_stats' => [
-                        ['value' => '900', 'label' => 'Students'],
-                    ],
+                    'footer_text' => 'All rights reserved.',
                 ],
                 'ps' => [
                     'brand_name' => 'د زما ښوونځی',
-                    'home_title' => 'ښه راغلاست',
-                    'home_stats' => [
-                        ['value' => '900', 'label' => 'زده‌کوونکي'],
-                    ],
+                    'tagline' => 'سبا جوړول',
                 ],
                 'fa_AF' => [
-                    'home_title' => 'خوش آمدید',
-                    'home_stats' => [
-                        ['value' => '900', 'label' => 'دانش‌آموزان'],
-                    ],
+                    'tagline' => 'فردا سازی',
                 ],
             ],
         ]);
@@ -105,24 +103,22 @@ class SiteSettingTranslationTest extends TestCase
         // Default language mirrored onto the parent row.
         $this->assertSame('My School', $setting->brand_name);
         $this->assertSame('My School', $setting->brand_short_name);
-        $this->assertSame('Welcome to My School', $setting->home_title);
         $this->assertSame('Building tomorrow', $setting->tagline);
-        $this->assertSame('Students', $setting->home_stats[0]['label']);
+        $this->assertSame('All rights reserved.', $setting->footer_text);
 
         // Secondary languages persisted as translation rows.
         $byCode = $setting->translations()->with('language')->get()
             ->keyBy(fn ($t) => $t->language->code);
 
         $this->assertSame('د زما ښوونځی', $byCode['ps']->brand_name);
-        $this->assertSame('ښه راغلاست', $byCode['ps']->home_title);
-        $this->assertSame('زده‌کوونکي', $byCode['ps']->home_stats[0]['label']);
-        $this->assertSame('خوش آمدید', $byCode['fa_AF']->home_title);
+        $this->assertSame('سبا جوړول', $byCode['ps']->tagline);
+        $this->assertSame('فردا سازی', $byCode['fa_AF']->tagline);
 
         // Default language is NOT duplicated as a translation row (parent is the source).
         $this->assertNull($byCode['en'] ?? null);
     }
 
-    public function test_update_drops_empty_list_rows(): void
+    public function test_update_drops_a_language_whose_fields_are_all_blank(): void
     {
         $this->actingAs($this->managementUser());
 
@@ -131,16 +127,20 @@ class SiteSettingTranslationTest extends TestCase
                 'en' => [
                     'brand_name' => 'My School',
                     'brand_short_name' => 'My School',
-                    'home_title' => 'Welcome',
-                    'home_stats' => [
-                        ['value' => '900', 'label' => 'Students'],
-                        ['value' => '', 'label' => ''],
-                    ],
+                    'tagline' => 'Building tomorrow',
+                ],
+                'ps' => [
+                    'brand_name' => '',
+                    'tagline' => '   ',
                 ],
             ],
         ])->assertSessionHasNoErrors();
 
-        $this->assertCount(1, SiteSetting::current()->home_stats);
+        // Blank values are never written as rows, so Pashto keeps falling back to
+        // the parent instead of rendering an empty tagline.
+        $this->assertNull(
+            SiteSetting::current()->translations()->whereHas('language', fn ($q) => $q->where('code', 'ps'))->first()
+        );
     }
 
     private function managementUser(): User

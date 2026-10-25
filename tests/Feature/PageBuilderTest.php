@@ -12,11 +12,9 @@ use App\Models\SectionListItem;
 use App\Support\Home\BlockRegistry;
 use App\Support\Home\PageSections;
 use App\Support\Home\PageLayoutWriter;
-use App\Support\Home\PageBuilderBackfill;
-use App\Models\SiteSetting;
 use App\Models\User;
+use Database\Seeders\HomePageBuilderSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
@@ -231,42 +229,33 @@ class PageBuilderTest extends TestCase
         $this->assertSame(2, PageSection::where('section_type', 'articles')->count());
     }
 
-    public function test_backfill_migrates_legacy_and_site_content_idempotently(): void
+    public function test_seeded_home_layout_populates_the_builder_idempotently(): void
     {
-        $site = SiteSetting::resolved();
-        $site->update([
-            'home_title' => 'Welcome',
-            'home_subtitle' => 'Subtitle',
-            'home_features' => [['icon' => 'shield', 'title' => 'Safe', 'description' => 'Desc']],
-        ]);
-
-        // A legacy curated section with authored text.
-        DB::table('home_sections')->insertGetId([
-            'section_type' => 'articles',
-            'config' => json_encode(['item_ids' => [], 'tone' => 'blue']),
-            'limit' => 3,
-            'sort_order' => 0,
-            'is_active' => 1,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        PageBuilderBackfill::run();
+        $this->seed(HomePageBuilderSeeder::class);
 
         $types = PageSection::ordered()->pluck('section_type')->map(fn ($t) => $t->value)->all();
-        $this->assertContains('hero', $types);
+
+        // The seeded page opens with the full composition an admin would build by
+        // hand: hero, the localized rails, the authored bands and curated rails.
+        $this->assertSame('hero', $types[0]);
         $this->assertContains('features', $types);
-        $this->assertContains('articles', $types);
+        $this->assertContains('stats', $types);
+        $this->assertContains('banner', $types);
+        $this->assertContains('announcement', $types);
+        $this->assertContains('programs', $types);
+        $this->assertContains('jobs', $types);
 
-        // Hero copy carried over as a localized translation row.
-        $this->assertDatabaseHas('page_section_translations', ['heading' => 'Welcome', 'body' => 'Subtitle']);
+        // Hero copy is authored on the block's own translation rows, not on the
+        // Site Settings columns.
+        $this->assertDatabaseHas('page_section_translations', [
+            'heading' => 'Welcome to My School',
+            'language_id' => $this->en->id,
+        ]);
+        $this->assertDatabaseHas('section_list_items', ['item_group' => 'features', 'icon' => 'faculty']);
 
-        // Features list rows carried over from SiteSettings JSON.
-        $this->assertDatabaseHas('section_list_items', ['item_group' => 'features', 'title' => 'Safe', 'icon' => 'shield']);
-
-        // Idempotent: re-running adds nothing.
+        // Idempotent: reseeding never duplicates or clobbers the curated layout.
         $count = PageSection::count();
-        PageBuilderBackfill::run();
+        $this->seed(HomePageBuilderSeeder::class);
         $this->assertSame($count, PageSection::count());
     }
 
@@ -292,6 +281,28 @@ class PageBuilderTest extends TestCase
         $this->assertSame('list', $blocks[0]['component']);
         $this->assertSame('What families say', $blocks[0]['text']['heading']);
         $this->assertSame('Wonderful school.', $blocks[0]['list'][0]['description']);
+    }
+
+    public function test_seeded_home_page_renders_every_band_on_the_public_route(): void
+    {
+        $this->seed(HomePageBuilderSeeder::class);
+
+        // The seeded layout is the live layout: the public home renders every
+        // authored band, with no fallback template left behind. The three card
+        // rails (articles / events / recognition) hide themselves because this
+        // fixture seeds no such content — the builder's empty-rail rule.
+        $this->get('/')
+            ->assertOk()
+            ->assertInertia(fn (Assert $p) => $p
+                ->component('welcome')
+                ->has('blocks', 7)
+                ->where('blocks.0.component', 'hero')
+                ->where('blocks.0.hero.title', 'Welcome to My School')
+                ->where('blocks.1.component', 'features')
+                ->where('blocks.2.component', 'stats')
+                ->where('blocks.3.component', 'banner')
+                ->where('blocks.4.component', 'announcement')
+            );
     }
 
     public function test_public_home_renders_builder_blocks_when_present(): void
@@ -331,18 +342,6 @@ class PageBuilderTest extends TestCase
                 ->where('sections.0.section_type', 'hero')
                 ->where('sections.0.translations.en.heading', 'Hi')
                 ->where('sections.0.translations.ps.heading', '')
-            );
-    }
-
-    public function test_legacy_visual_url_serves_the_unified_builder(): void
-    {
-        $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
-            ->get(route('dashboard.home-sections.visual'))
-            ->assertOk()
-            // Consolidated: the legacy URL now renders the full builder feed.
-            ->assertInertia(fn (Assert $p) => $p
-                ->component('dashboard/page-builder/dashboard-page-builder-home')
-                ->has('palette', count(SectionType::cases()))
             );
     }
 
