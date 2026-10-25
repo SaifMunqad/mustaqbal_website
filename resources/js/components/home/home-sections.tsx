@@ -215,7 +215,7 @@ function SectionToolbar({
         <div className="mb-2 flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-brand-border bg-brand-soft/60 px-3 py-1.5 text-xs dark:bg-brand-deep/30">
             <span className="font-semibold text-brand-ink">
                 {t(
-                    `enums.homeSectionType.${section.type}`,
+                    `enums.sectionType.${section.type}`,
                     section.type_label ?? section.type,
                 )}
             </span>

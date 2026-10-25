@@ -6,7 +6,6 @@ import {
 import { cn } from '@/lib/utils';
 import {
     BadgeCheck,
-    House,
     MapPin,
     Palette,
     Share2,
@@ -17,7 +16,6 @@ import { useTranslation } from 'react-i18next';
 const SECTION_ICONS: Record<SettingsSectionKey, LucideIcon> = {
     identity: BadgeCheck,
     appearance: Palette,
-    home: House,
     contact: MapPin,
     social: Share2,
 };

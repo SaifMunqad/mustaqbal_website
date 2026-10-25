@@ -1,7 +1,6 @@
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import AppearanceSection from '@/components/dashboard/site-settings/sections/appearance-section';
 import ContactSection from '@/components/dashboard/site-settings/sections/contact-section';
-import HomeSection from '@/components/dashboard/site-settings/sections/home-section';
 import IdentitySection from '@/components/dashboard/site-settings/sections/identity-section';
 import SocialSection from '@/components/dashboard/site-settings/sections/social-section';
 import SettingsTabs from '@/components/dashboard/site-settings/settings-tabs';
@@ -15,9 +14,9 @@ import { useTranslation } from 'react-i18next';
 
 /**
  * Site settings, split into one save scope per section (branding, appearance,
- * home, contact, social). Every section is mounted at once so switching tabs
- * keeps drafts, but only the active one is visible and each posts — and is
- * validated — on its own.
+ * contact, social). Every section is mounted at once so switching tabs keeps
+ * drafts, but only the active one is visible and each posts — and is validated —
+ * on its own. Page layouts are not edited here; they belong to the page builder.
  */
 export default function DashboardSiteSettingsEdit() {
     const { t } = useTranslation();
@@ -28,7 +27,6 @@ export default function DashboardSiteSettingsEdit() {
     >(() => ({
         identity: false,
         appearance: false,
-        home: false,
         contact: false,
         social: false,
     }));
@@ -134,10 +132,6 @@ export default function DashboardSiteSettingsEdit() {
             <AppearanceSection
                 active={section === 'appearance'}
                 onDirtyChange={dirtyHandlers.appearance}
-            />
-            <HomeSection
-                active={section === 'home'}
-                onDirtyChange={dirtyHandlers.home}
             />
             <ContactSection
                 active={section === 'contact'}

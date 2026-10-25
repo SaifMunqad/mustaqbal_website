@@ -2,44 +2,7 @@ import type {
     TranslatableField,
     TranslationValues,
 } from '@/components/editor/language-tabs-editor';
-import type {
-    HomeFeature,
-    HomeStat,
-    LanguageOption,
-    SharedData,
-    TintDepth,
-} from '@/types';
-
-// Shared control styling for the inline repeatable stats/features editors, kept
-// consistent with the plain TextField look used elsewhere on this page.
-export const rowInputClass =
-    'w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-gray-900 dark:text-slate-100';
-// Danger-tinted inline row button, used for destructive actions
-// (e.g. removing a quick stat or feature) so it reads as a delete control.
-export const rowRemoveButtonClass =
-    'shrink-0 rounded-md border border-red-300 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40';
-
-// Feature icon keys offered to the admin; must match ICON_MAP in
-// components/home/feature-grid.tsx so the chosen icon actually renders.
-// Labels are i18n keys resolved in the editor.
-export const FEATURE_ICONS: Array<{ value: string; labelKey: string }> = [
-    {
-        value: 'faculty',
-        labelKey: 'dashboard.settings.form.featureIconFaculty',
-    },
-    {
-        value: 'values',
-        labelKey: 'dashboard.settings.form.featureIconValues',
-    },
-    {
-        value: 'facilities',
-        labelKey: 'dashboard.settings.form.featureIconFacilities',
-    },
-    {
-        value: 'classes',
-        labelKey: 'dashboard.settings.form.featureIconClasses',
-    },
-];
+import type { LanguageOption, SharedData, TintDepth } from '@/types';
 
 export interface SiteSettingRecord {
     id?: number;
@@ -51,13 +14,6 @@ export interface SiteSettingRecord {
     accent_color?: string | null;
     tint_depth?: TintDepth | null;
     reverse_logo_url?: string | null;
-    home_title?: string | null;
-    home_subtitle?: string | null;
-    home_cta_primary?: string | null;
-    home_cta_secondary?: string | null;
-    home_hero_image?: string | null;
-    home_stats?: HomeStat[] | null;
-    home_features?: HomeFeature[] | null;
     contact_email?: string | null;
     contact_phone_primary?: string | null;
     contact_phone_secondary?: string | null;
@@ -96,13 +52,7 @@ export type SettingsTranslations = Record<
         brand_name?: string;
         brand_short_name?: string;
         tagline?: string;
-        home_title?: string;
-        home_subtitle?: string;
-        home_cta_primary?: string;
-        home_cta_secondary?: string;
         footer_text?: string;
-        home_stats?: HomeStat[];
-        home_features?: HomeFeature[];
     }
 >;
 
@@ -164,19 +114,18 @@ export interface SiteSettingsPageProps extends SharedData {
 
 /**
  * A save scope on the settings page. Sections are validated and persisted one at
- * a time, so this list mirrors DashboardSiteSettingController::SECTIONS.
+ * a time, so this list mirrors DashboardSiteSettingController::SECTIONS. The
+ * home page is not one of them: its layout is composed in the page builder.
  */
 export type SettingsSectionKey =
     | 'identity'
     | 'appearance'
-    | 'home'
     | 'contact'
     | 'social';
 
 export const SETTINGS_SECTION_KEYS: SettingsSectionKey[] = [
     'identity',
     'appearance',
-    'home',
     'contact',
     'social',
 ];
@@ -193,10 +142,6 @@ export const SECTION_COPY: Record<
     appearance: {
         titleKey: 'dashboard.settings.form.appearanceTitle',
         descriptionKey: 'dashboard.settings.form.appearanceDescription',
-    },
-    home: {
-        titleKey: 'dashboard.settings.form.homePageTitle',
-        descriptionKey: 'dashboard.settings.form.homeDescription',
     },
     contact: {
         titleKey: 'dashboard.settings.form.contactTitle',
@@ -239,27 +184,6 @@ export function seedScalars(
                     ? savedValue
                     : String(fallback ?? '');
         }
-    }
-
-    return out;
-}
-
-/**
- * Seed a localized list per language, falling back to the parent's default list
- * when that language has no saved rows yet.
- */
-export function seedLists<T extends HomeStat | HomeFeature>(
-    available: LanguageOption[],
-    translations: SettingsTranslations,
-    settings: SiteSettingRecord,
-    key: 'home_stats' | 'home_features',
-): Record<string, T[]> {
-    const fallback = (settings[key] ?? []) as T[];
-    const out: Record<string, T[]> = {};
-
-    for (const language of available) {
-        out[language.code] =
-            (translations[language.code]?.[key] as T[] | undefined) ?? fallback;
     }
 
     return out;

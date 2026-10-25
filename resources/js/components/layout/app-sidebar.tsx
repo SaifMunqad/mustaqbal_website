@@ -71,7 +71,7 @@ export function AppSidebar() {
                     ? [
                           {
                               title: t('dashboard.tabs.homePage'),
-                              href: '/dashboard/home-sections',
+                              href: '/dashboard/pages/home',
                               icon: Home,
                           },
                       ]

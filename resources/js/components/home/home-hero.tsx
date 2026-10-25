@@ -1,18 +1,29 @@
 /**
- * Hero banner at the top of the public home page.
+ * Hero banner used by the page builder's hero block.
  *
- * Copy falls back to translated defaults whenever the admin has not filled the
- * corresponding settings field. The image mask mirrors itself for RTL, and fades
- * bottom-up on small screens but horizontally beside the text on wide ones. The
- * `rtl` override exists so the visual editor can preview the language being
- * edited instead of the admin UI's language.
+ * Every field is authored copy from the block's own translation row, so nothing
+ * is read from Site Settings; the built-in wording below only covers a field the
+ * admin left blank. The image mask mirrors itself for RTL, and fades bottom-up
+ * on small screens but horizontally beside the text on wide ones. The `rtl`
+ * override exists so the visual editor can preview the language being edited
+ * instead of the admin UI's language.
  */
-import type { SiteSettings } from '@/types';
 import { Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
+/** The localized copy one builder hero block owns. */
+export interface HeroCopy {
+    title?: string | null;
+    subtitle?: string | null;
+    cta_primary?: string | null;
+    cta_secondary?: string | null;
+    cta_primary_url?: string | null;
+    cta_secondary_url?: string | null;
+    hero_image?: string | null;
+}
+
 interface HomeHeroProps {
-    home: SiteSettings['home'];
+    home: HeroCopy;
     tagline?: string | null;
     /** Override the RTL layout (used by the visual editor so the preview follows
      *  the language being edited rather than the admin UI language). */

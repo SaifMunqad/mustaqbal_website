@@ -23,11 +23,13 @@ export interface NavItem {
     isActive?: boolean;
 }
 
+/** A localized quick-stats row rendered by a builder stats block. */
 export interface HomeStat {
     value: string;
     label: string;
 }
 
+/** A localized feature row rendered by a builder features block. */
 export interface HomeFeature {
     icon?: string | null;
     title: string;
@@ -71,17 +73,6 @@ export interface SiteSettings {
         reverse_logo_url?: string | null;
         palette: BrandPalette;
     };
-    home: {
-        title?: string | null;
-        subtitle?: string | null;
-        cta_primary?: string | null;
-        cta_secondary?: string | null;
-        cta_primary_url?: string | null;
-        cta_secondary_url?: string | null;
-        hero_image?: string | null;
-    };
-    stats?: HomeStat[];
-    features?: HomeFeature[];
     contact?: {
         email?: string | null;
         phone_primary?: string | null;
