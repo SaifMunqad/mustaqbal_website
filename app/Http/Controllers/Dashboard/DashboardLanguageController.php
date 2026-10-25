@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Language;
+use App\Support\Translation\LanguageCatalog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -29,6 +30,9 @@ class DashboardLanguageController extends Controller
 
         return Inertia::render('dashboard/languages/dashboard-languages-index', [
             'languages' => $languages,
+            // Curated catalog minus the languages already configured, so the
+            // create form searches a fixed list instead of free-text code/name.
+            'languageOptions' => LanguageCatalog::available($languages->pluck('code')->all()),
         ]);
     }
 
@@ -36,19 +40,27 @@ class DashboardLanguageController extends Controller
     {
         $validated = $request->validate([
             'code' => ['required', 'string', 'max:10', 'alpha_dash', 'unique:languages,code'],
-            'name' => ['required', 'string', 'max:255'],
-            'dir' => ['required', 'in:ltr,rtl'],
-            'is_active' => ['nullable', 'boolean'],
+            'name' => ['nullable', 'string', 'max:255'],
+            'dir' => ['nullable', 'in:ltr,rtl'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
+        // The picker only offers curated languages, so the catalog is the source
+        // of truth for the display name and text direction. The submitted values
+        // remain a fallback for codes outside the catalog.
+        $option = LanguageCatalog::find($validated['code']);
+
         $language = Language::query()->create([
             'code' => $validated['code'],
-            'name' => $validated['name'],
-            'dir' => $validated['dir'],
-            'is_active' => ! empty($validated['is_active']),
+            'name' => $option['name'] ?? $validated['name'] ?? $validated['code'],
+            'dir' => $option['dir'] ?? $validated['dir'] ?? 'ltr',
+            // A language the admin adds is meant to be usable right away; it can
+            // be switched off later from the row's status toggle.
+            'is_active' => true,
             'is_default' => false,
-            'sort_order' => $validated['sort_order'] ?? 0,
+            // Append new languages below the existing ones instead of jumping to
+            // the top of the ordered list.
+            'sort_order' => $validated['sort_order'] ?? ((int) Language::query()->max('sort_order') + 1),
         ]);
 
         return redirect()
@@ -59,16 +71,19 @@ class DashboardLanguageController extends Controller
     public function update(Request $request, Language $language): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'dir' => ['required', 'in:ltr,rtl'],
             'is_active' => ['nullable', 'boolean'],
             'is_default' => ['nullable', 'boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
         ]);
 
+        // The name and text direction are catalog-derived and stay read-only in
+        // the dashboard, so only the flags and order are taken from the request.
+        // (Re-syncing them also repairs a row whose code predates the catalog.)
+        $option = LanguageCatalog::find($language->code);
+
         $language->update([
-            'name' => $validated['name'],
-            'dir' => $validated['dir'],
+            'name' => $option['name'] ?? $language->name,
+            'dir' => $option['dir'] ?? $language->dir,
             'is_active' => ! empty($validated['is_active']),
             'is_default' => ! empty($validated['is_default']),
             'sort_order' => $validated['sort_order'] ?? $language->sort_order,

@@ -22,8 +22,8 @@ return new class extends Migration
 
         // Dari is the system's default language: created here (not in a seeder)
         // so a freshly migrated database always has the default language row even
-        // before any seeding. Secondary languages (English, Pashto) are added by
-        // the seeder. `fa_AF` is the shared code used across the codebase.
+        // before any seeding. Seeding adds no other languages, so Dari stays the
+        // only locale. `fa_AF` is the shared code used across the codebase.
         DB::table('languages')->insert([
             'code' => 'fa_AF',
             'name' => 'Dari',

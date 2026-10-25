@@ -7,6 +7,7 @@ use App\Enums\EmailDeliveryStatus;
 use App\Enums\EventAudience;
 use App\Enums\EventStatus;
 use App\Enums\HomeSectionType;
+use App\Enums\JobApplicationStatus;
 use App\Enums\PostType;
 use App\Enums\SectionType;
 use App\Enums\UserRole;
@@ -41,6 +42,7 @@ class EnumTranslationKeysTest extends TestCase
             EmailDeliveryStatus::class,
             WhatsAppCampaignStatus::class,
             WhatsAppDeliveryStatus::class,
+            JobApplicationStatus::class,
         ];
     }
 

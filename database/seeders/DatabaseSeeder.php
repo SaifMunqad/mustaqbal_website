@@ -28,29 +28,26 @@ class DatabaseSeeder extends Seeder
             SiteSetting::query()->create(SiteSetting::defaults());
         }
 
-        // Secondary languages are added here. Dari (fa_AF) is already created by
-        // the languages migration as the default (is_default=true), so seeding
-        // never re-creates it or flips the default away from Dari.
-        collect([
-            ['code' => 'en', 'name' => 'English', 'dir' => 'ltr', 'sort_order' => 2],
-            ['code' => 'ps', 'name' => 'Pashto', 'dir' => 'rtl', 'sort_order' => 3],
-        ])->each(function (array $language): void {
-            Language::query()->updateOrCreate(
-                ['code' => $language['code']],
-                [
-                    'name' => $language['name'],
-                    'dir' => $language['dir'],
-                    'is_active' => true,
-                    'is_default' => false,
-                    'sort_order' => $language['sort_order'],
-                ],
-            );
-        });
+        // Dari (fa_AF) is the only language seeded. It is created by the
+        // languages migration as the default (is_default=true); this keeps that
+        // row intact and never adds English or Pashto, so a fresh seed leaves a
+        // Dari-only site. Translations for languages that do not exist are
+        // skipped by the loops below.
+        Language::query()->updateOrCreate(
+            ['code' => 'fa_AF'],
+            [
+                'name' => 'Dari',
+                'dir' => 'rtl',
+                'is_active' => true,
+                'is_default' => true,
+                'sort_order' => 1,
+            ],
+        );
 
-        // Read all three languages (including the migration-created Dari) so the
-        // translation loops below can key rows by language id.
+        // Read the seeded languages so the translation loops below can key rows
+        // by language id. Only Dari is created here; any other language rows
+        // already present in the database are used as-is.
         $languages = Language::query()
-            ->whereIn('code', ['en', 'ps', 'fa_AF'])
             ->get()
             ->keyBy('code');
 
@@ -172,10 +169,16 @@ class DatabaseSeeder extends Seeder
             ];
 
             foreach ($programTranslations as $code => $translation) {
+                $language = $languages->get($code);
+
+                if (! $language) {
+                    continue;
+                }
+
                 ProgramTranslation::query()->updateOrCreate(
                     [
                         'program_id' => $model->id,
-                        'language_id' => $languages[$code]->id,
+                        'language_id' => $language->id,
                     ],
                     $translation,
                 );
@@ -202,10 +205,16 @@ class DatabaseSeeder extends Seeder
 
         foreach ($programTypeTranslations as $type => $translations) {
             foreach ($translations as $code => $label) {
+                $language = $languages->get($code);
+
+                if (! $language) {
+                    continue;
+                }
+
                 ProgramTypeTranslation::query()->updateOrCreate(
                     [
                         'program_type' => $type,
-                        'language_id' => $languages[$code]->id,
+                        'language_id' => $language->id,
                     ],
                     ['label' => $label],
                 );
