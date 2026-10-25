@@ -1793,6 +1793,7 @@ const ps = {
                 useListEditor: 'د لیست سمولوونکی وکاروئ',
                 noBlocks:
                     'تر اوسه کومه برخه نشته. د دې پاڼې د جوړولو لپاره له برخو یوه اضافه کړئ.',
+                missingIn: 'ځای نیونکی · په {{lang}} کې نه دی ښودل شوی:',
                 edit: 'سمول',
                 done: 'بشپړ',
                 actions: {
@@ -1845,6 +1846,7 @@ const ps = {
                     sectionHeading: 'د برخې سرلیک',
                     heading: 'سرلیک',
                     body: 'متن',
+                    items: 'د منځپانګې توکي',
                     buttonLabel: 'د تڼۍ متن',
                     secondaryLink: 'دوهمه اړیکه',
                     videoUrl: 'د ویډیو د ننوتلو URL',
@@ -1871,6 +1873,13 @@ const ps = {
                     amber: 'کهربایي',
                     red: 'سور',
                 },
+                placeholders: {
+                    sectionTitle: '+ د برخې سرلیک',
+                    heading: '+ سرلیک اضافه کړئ',
+                    body: '+ متن اضافه کړئ',
+                    buttonLabel: '+ د تڼۍ متن',
+                    field: '+ اضافه کړئ',
+                },
                 sample: {
                     image: 'انځور',
                     title: 'د برخې سرلیک',
@@ -1884,6 +1893,7 @@ const ps = {
                     featuredStory: 'ټاکلې کیسه',
                     anotherStory: 'بله کیسه',
                     oneMoreStory: 'یوه بله کیسه',
+                    itemN: 'توکی {{n}}',
                     recognizedHighlight: 'د ستاینې ټکی',
                     itemPreview: 'د دې توکي لنډه مخکتنه.',
                 },

@@ -70,6 +70,13 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { ImageUploadField } from '@/components/form/image-upload-field';
 import { HomeBlock, type RenderBlock, type BlockListRow } from '@/components/home/page-block';
+import {
+    hasRowContent,
+    placeholderContent,
+    placeholderImage,
+    previewField,
+    sampleRows,
+} from '@/components/home/preview-placeholders';
 import { ICON_OPTIONS, resolveIcon } from '@/lib/icon-map';
 import type { LanguageOption, SharedData } from '@/types';
 
@@ -1058,46 +1065,8 @@ function hasContent(draft: SectionDraft, lang: string): boolean {
     );
 }
 
-// Preview scaffolding for brand-new, empty blocks: real components rendered with
-// sample text, a neutral default image, and a few placeholder rows so the admin
-// sees the shape immediately and edits over it. Preview-only — never saved.
-const placeholderImage = () =>
-    'data:image/svg+xml;utf8,' +
-    encodeURIComponent(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300">' +
-            '<rect width="100%" height="100%" fill="#e2e8f0"/>' +
-            '<text x="50%" y="50%" font-family="sans-serif" font-size="20" fill="#94a3b8"' +
-            ' text-anchor="middle" dominant-baseline="middle">' +
-            i18n.t('dashboard.homeSections.visual.sample.image') +
-            '</text></svg>',
-    );
-
-const placeholderContent = () => ({
-    title: i18n.t('dashboard.homeSections.visual.sample.title'),
-    heading: i18n.t('dashboard.homeSections.visual.sample.heading'),
-    body: i18n.t('dashboard.homeSections.visual.sample.body'),
-    cta: i18n.t('dashboard.homeSections.visual.sample.cta'),
-    url: '#',
-});
-
-function sampleRows(): BlockListRow[] {
-    const image = placeholderImage();
-    const value = i18n.t('dashboard.homeSections.visual.sample.value');
-    const description = i18n.t('dashboard.homeSections.visual.sample.body');
-
-    return [
-        i18n.t('dashboard.homeSections.visual.sample.firstItem'),
-        i18n.t('dashboard.homeSections.visual.sample.secondItem'),
-        i18n.t('dashboard.homeSections.visual.sample.thirdItem'),
-    ].map((title) => ({
-        value,
-        title,
-        description,
-        icon: 'star',
-        image,
-        url: '#',
-    }));
-}
+// Preview placeholder primitives (image, sample copy, hint rows) now live in
+// '@/components/home/preview-placeholders' so the whole builder shares one system.
 
 // Preview for the canvas. Mirrors PageSections::genericPayload so the editor
 // shows the same component (and the active language's content) the site renders.
@@ -1120,18 +1089,45 @@ function draftToRenderBlock(
         url: r.url ?? '',
     }));
 
-    const fill = (value: string | undefined, sample: string) =>
-        value && value.trim() !== '' ? value : placeholder ? sample : value ?? '';
-
+    // Resolve the localized scalar fields through the shared placeholder system,
+    // so a blank field renders an in-place hint (only for a genuine translation
+    // gap) instead of vanishing — applied uniformly to every block, on every page.
     const sample = placeholderContent();
-    const heading = fill(t.heading, sample.heading);
-    const body = fill(t.body, sample.body);
-    const ctaLabel = fill(t.cta_label, sample.cta);
-    const title = fill(t.title, sample.title);
+    const fieldSamples: Record<'title' | 'heading' | 'body' | 'cta_label', string> = {
+        title: sample.title,
+        heading: sample.heading,
+        body: sample.body,
+        cta_label: sample.cta,
+    };
+    const resolve = (field: 'title' | 'heading' | 'body' | 'cta_label') =>
+        previewField({
+            value: t[field],
+            field,
+            translations: draft.translations,
+            isNew: placeholder,
+            sample: fieldSamples[field],
+        });
+    const heading = resolve('heading');
+    const body = resolve('body');
+    const ctaLabel = resolve('cta_label');
+    const title = resolve('title');
+
     const image = placeholder && !draft.image_path ? placeholderImage() : draft.image_path || null;
     const ctaUrl = draft.cta_url || (placeholder ? sample.url : null);
 
-    if (placeholder && group && list.length === 0) list = sampleRows();
+    // Per-language list rows use the same system: when this language's grid is
+    // empty but another language has rows (or the block is brand new), mirror the
+    // row count with placeholder tiles so the admin sees exactly where items go.
+    if (group && !list.some(hasRowContent)) {
+        let reference = 0;
+        for (const [code, rows] of Object.entries(draft.lists[group] ?? {})) {
+            if (code === lang) continue;
+            const filled = (rows ?? []).filter(hasRowContent).length;
+            if (filled > reference) reference = filled;
+        }
+        if (placeholder && reference === 0) reference = 3;
+        if (reference > 0) list = sampleRows(reference);
+    }
 
     const base: RenderBlock = {
         id: draft.editorId,

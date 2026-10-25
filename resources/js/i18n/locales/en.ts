@@ -1804,6 +1804,7 @@ const en = {
                 useListEditor: 'Use the list editor',
                 noBlocks:
                     'No blocks yet. Add one from the palette to start building this page.',
+                missingIn: 'Placeholder · not set in {{lang}}:',
                 edit: 'Edit',
                 done: 'Done',
                 actions: {
@@ -1856,6 +1857,7 @@ const en = {
                     sectionHeading: 'Section heading',
                     heading: 'Heading',
                     body: 'Body',
+                    items: 'Content items',
                     buttonLabel: 'Button label',
                     secondaryLink: 'Secondary link',
                     videoUrl: 'Video embed URL',
@@ -1882,6 +1884,13 @@ const en = {
                     amber: 'Amber',
                     red: 'Red',
                 },
+                placeholders: {
+                    sectionTitle: '+ Section title',
+                    heading: '+ Add heading',
+                    body: '+ Add body text',
+                    buttonLabel: '+ Button label',
+                    field: '+ Add',
+                },
                 sample: {
                     image: 'Image',
                     title: 'Section title',
@@ -1895,6 +1904,7 @@ const en = {
                     featuredStory: 'Featured story',
                     anotherStory: 'Another story',
                     oneMoreStory: 'One more story',
+                    itemN: 'Item {{n}}',
                     recognizedHighlight: 'Recognized highlight',
                     itemPreview: 'A short preview of this item.',
                 },

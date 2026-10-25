@@ -1807,6 +1807,7 @@ const faAF = {
                 useListEditor: 'استفاده از ویرایشگر فهرست',
                 noBlocks:
                     'هنوز هیچ بخشی وجود ندارد. برای ساختن این صفحه یک بخش از فهرست اضافه کنید.',
+                missingIn: 'جای‌نما · در {{lang}} تنظیم نشده:',
                 edit: 'ویرایش',
                 done: 'انجام شد',
                 actions: {
@@ -1859,6 +1860,7 @@ const faAF = {
                     sectionHeading: 'عنوان بخش',
                     heading: 'عنوان',
                     body: 'متن',
+                    items: 'موارد محتوا',
                     buttonLabel: 'متن دکمه',
                     secondaryLink: 'پیوند دوم',
                     videoUrl: 'URL جاسازی ویدیو',
@@ -1885,6 +1887,13 @@ const faAF = {
                     amber: 'کهربایی',
                     red: 'سرخ',
                 },
+                placeholders: {
+                    sectionTitle: '+ عنوان بخش',
+                    heading: '+ عنوان بنویسید',
+                    body: '+ متن اضافه کنید',
+                    buttonLabel: '+ متن دکمه',
+                    field: '+ اضافه کنید',
+                },
                 sample: {
                     image: 'تصویر',
                     title: 'عنوان بخش',
@@ -1898,6 +1907,7 @@ const faAF = {
                     featuredStory: 'داستان ویژه',
                     anotherStory: 'داستان دیگر',
                     oneMoreStory: 'یک داستان دیگر',
+                    itemN: 'مورد {{n}}',
                     recognizedHighlight: 'نکته برجسته شناخته‌شده',
                     itemPreview: 'پیش‌نمایش کوتاه این مورد.',
                 },

@@ -450,6 +450,7 @@ const ar = {
                 useListEditor: 'استخدام محرّر القائمة',
                 noBlocks:
                     'لا توجد كتل بعد. أضف كتلة من لوحة الكتل لبدء بناء هذه الصفحة.',
+                missingIn: 'عنصر بديل · غير مُعبّأ بـ {{lang}}:',
                 edit: 'تعديل',
                 done: 'تم',
                 actions: {
@@ -502,6 +503,7 @@ const ar = {
                     sectionHeading: 'عنوان القسم',
                     heading: 'العنوان',
                     body: 'النص',
+                    items: 'عناصر المحتوى',
                     buttonLabel: 'نص الزر',
                     secondaryLink: 'الرابط الثانوي',
                     videoUrl: 'رابط تضمين الفيديو',
@@ -527,6 +529,13 @@ const ar = {
                     green: 'أخضر',
                     amber: 'كهرماني',
                     red: 'أحمر',
+                },
+                placeholders: {
+                    sectionTitle: '+ عنوان القسم',
+                    heading: '+ أضف عنوانًا',
+                    body: '+ أضف نصًا',
+                    buttonLabel: '+ نص الزر',
+                    field: '+ أضف',
                 },
             },
         },
