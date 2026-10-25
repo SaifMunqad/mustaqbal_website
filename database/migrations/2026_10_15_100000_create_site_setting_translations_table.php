@@ -27,15 +27,7 @@ return new class extends Migration
             $table->string('brand_short_name')->nullable();
 
             $table->string('tagline')->nullable();
-            $table->string('home_title')->nullable();
-            $table->text('home_subtitle')->nullable();
-            $table->string('home_cta_primary')->nullable();
-            $table->string('home_cta_secondary')->nullable();
             $table->string('footer_text')->nullable();
-            // Localized, admin-curated home lists. Stored per language (values /
-            // icon keys repeat) so each language fully defines its home content.
-            $table->json('home_stats')->nullable();
-            $table->json('home_features')->nullable();
 
             $table->timestamps();
 

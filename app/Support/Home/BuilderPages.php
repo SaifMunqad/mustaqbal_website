@@ -10,6 +10,10 @@ namespace App\Support\Home;
  * where the breadcrumb's parent screen lives. Every builder page offers the
  * exact same block catalog (see {@see \App\Enums\SectionType}), so exposing a
  * new page only means adding an entry here plus its two dashboard routes.
+ *
+ * The builder is the only admin surface for these layouts: there is no legacy
+ * per-section screen to fall back to, so a saved block is exactly what the
+ * visitor sees.
  */
 class BuilderPages
 {
@@ -27,7 +31,7 @@ class BuilderPages
         'home' => [
             'label' => 'Home page',
             'label_key' => 'dashboard.homeSections.title',
-            'index_url' => 'dashboard.home-sections.index',
+            'index_url' => null,
             'component' => 'dashboard/page-builder/dashboard-page-builder-home',
         ],
         'about' => [

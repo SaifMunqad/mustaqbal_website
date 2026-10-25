@@ -12,17 +12,15 @@ class SchoolPageController extends Controller
 {
     public function about(): Response
     {
+        // The About layout lives entirely in the page builder; the published
+        // site_pages row only supplies the SEO title fallback.
         $page = SitePage::query()
-            ->with('translations.language')
             ->where('slug', 'about')
             ->where('is_published', true)
             ->first();
 
         return Inertia::render('school/about/school-about', [
-            'page' => $page,
-            // Authored layout from the unified page builder. Empty until the
-            // backfill/editor has run, in which case the view keeps rendering
-            // the legacy site_pages composition.
+            'title' => $page?->title,
             'blocks' => PageSections::render('about'),
         ]);
     }
@@ -73,17 +71,15 @@ class SchoolPageController extends Controller
 
     public function contact(): Response
     {
+        // Same as About: the blocks own the layout and copy, while the published
+        // row keeps the SEO title and the publish switch meaningful.
         $page = SitePage::query()
-            ->with('translations.language')
             ->where('slug', 'contact')
             ->where('is_published', true)
             ->first();
 
         return Inertia::render('school/contact/school-contact', [
-            'page' => $page,
-            // Authored layout from the unified page builder. Empty until the
-            // contact page has blocks, in which case the view keeps rendering
-            // the legacy site_pages composition.
+            'title' => $page?->title,
             'blocks' => PageSections::render('contact'),
         ]);
     }

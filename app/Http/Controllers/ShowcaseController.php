@@ -4,10 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\PostType;
 use App\Enums\PostVisibility;
-use App\Models\Job;
 use App\Models\Post;
-use App\Models\Program;
-use App\Support\Home\HomeSections;
 use App\Support\Home\PageSections;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -76,88 +73,14 @@ class ShowcaseController extends Controller
         ]);
     }
 
-    /**
-     * Programs for the home-page highlight, resolved in the current locale.
-     * Mirrors SchoolPageController::programs so names/descriptions follow the
-     * active language. Picks a small random sample so the home page surfaces
-     * variety rather than always the same top entries. Degrades to an empty
-     * list if the table isn't ready.
-     *
-     * @return list<array<string, mixed>>
-     */
-    private function featuredPrograms(int $limit = 2): array
-    {
-        $locale = app()->getLocale();
-
-        try {
-            return Program::query()
-                ->with(['translations.language', 'typeTranslations.language'])
-                ->inRandomOrder()
-                ->limit($limit)
-                ->get()
-                ->map(fn (Program $program): array => [
-                    'id' => $program->id,
-                    'name' => $program->translatedName($locale),
-                    'program_type' => $program->program_type,
-                    'program_type_label' => $program->translatedProgramType($locale),
-                    'description' => $program->translatedDescription($locale),
-                    'schedule' => $program->schedule,
-                    'fees' => $program->fees,
-                    'age_recommendation' => $program->age_recommendation,
-                    'classroom_number' => $program->classroom_number,
-                    'available_for_enroll' => $program->available_for_enroll,
-                ])
-                ->all();
-        } catch (\Throwable) {
-            return [];
-        }
-    }
-
-    /**
-     * Active job postings for the home-page "latest jobs" block. Shows a small
-     * random sample (max 2) of the open positions, reusing the same visibility
-     * rules as the public jobs listing and the shared card payload, so a home
-     * card always matches its listing view.
-     *
-     * @return list<array<string, mixed>>
-     */
-    private function featuredJobs(int $limit = 2): array
-    {
-        try {
-            return Job::query()
-                ->with('translations.language')
-                ->active()
-                ->reorder()
-                ->inRandomOrder()
-                ->limit($limit)
-                ->get()
-                ->map(fn (Job $job): array => $job->toCard())
-                ->all();
-        } catch (\Throwable) {
-            return [];
-        }
-    }
-
     public function home(): Response
     {
-        // Admin-curated layout when configured; otherwise fall back to the
-        // legacy recognition showcase so the home page is never empty and the
-        // feature degrades gracefully if home_sections isn't migrated yet.
-        $sections = HomeSections::render();
-
-        // The visual editor writes the normalized builder (page_sections), so the
-        // public home renders that same layout to stay in sync with saved edits.
-        // When the builder has no active blocks the frontend falls back to the
-        // legacy stack above (PageSections degrades to [] if not migrated).
-        $blocks = PageSections::render('home');
-
+        // The whole layout comes from the page builder: every band the admin can
+        // see in the editor is a block, and the editor writes the same store this
+        // reads, so the live page can never drift from what was saved.
         return Inertia::render('welcome', [
             'canRegister' => Features::enabled(Features::registration()),
-            'blocks' => $blocks,
-            'sections' => $sections,
-            'showcase' => $sections === [] ? $this->groups(3) : [],
-            'programs' => $this->featuredPrograms(2),
-            'jobs' => $this->featuredJobs(2),
+            'blocks' => PageSections::render('home'),
         ]);
     }
 }

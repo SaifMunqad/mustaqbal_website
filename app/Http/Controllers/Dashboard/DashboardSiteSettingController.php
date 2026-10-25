@@ -24,8 +24,7 @@ class DashboardSiteSettingController extends Controller
     public function __construct(private readonly FaviconService $favicons) {}
 
     /**
-     * Localized scalar fields edited per language. The home stats/features lists
-     * are localized separately (see {@see LIST_FIELDS}).
+     * Localized scalar fields edited per language.
      *
      * @var list<string>
      */
@@ -33,10 +32,6 @@ class DashboardSiteSettingController extends Controller
         'brand_name',
         'brand_short_name',
         'tagline',
-        'home_title',
-        'home_subtitle',
-        'home_cta_primary',
-        'home_cta_secondary',
         'footer_text',
     ];
 
@@ -49,16 +44,10 @@ class DashboardSiteSettingController extends Controller
     private const REQUIRED_FOR_DEFAULT = ['brand_name', 'brand_short_name'];
 
     /**
-     * Localized JSON list fields (quick-stats bar + feature grid).
-     *
-     * @var list<string>
-     */
-    private const LIST_FIELDS = ['home_stats', 'home_features'];
-
-    /**
      * Editable sections of the settings page. Each entry lists the fields saved
      * (and validated) together, so the dashboard can persist one section without
-     * resubmitting every other field on the page.
+     * resubmitting every other field on the page. The home page layout is not a
+     * settings section: it is composed in the page builder.
      *
      * @var array<string, list<string>>
      */
@@ -68,11 +57,6 @@ class DashboardSiteSettingController extends Controller
             'brand_name', 'brand_short_name', 'tagline', 'footer_text',
         ],
         'appearance' => ['brand_color', 'accent_color', 'tint_depth'],
-        'home' => [
-            'home_hero_image',
-            'home_title', 'home_subtitle', 'home_cta_primary', 'home_cta_secondary',
-            'home_stats', 'home_features',
-        ],
         'contact' => [
             'contact_email', 'contact_phone_primary', 'contact_phone_secondary',
             'address', 'map_latitude', 'map_longitude', 'map_zoom', 'map_embed_url',
@@ -183,9 +167,8 @@ class DashboardSiteSettingController extends Controller
             }
         }
 
-        // Per-language payload: localized scalars + the JSON lists, limited to
-        // the submitted section so a partial save cannot clear fields the admin
-        // never saw.
+        // Per-language payload: localized scalars limited to the submitted
+        // section so a partial save cannot clear fields the admin never saw.
         $payload = $this->cleanedPayload($request, $section);
         $default = Language::defaultCode();
 
@@ -195,11 +178,6 @@ class DashboardSiteSettingController extends Controller
         foreach (self::LOCALIZED as $field) {
             if (array_key_exists($field, $defaults)) {
                 $parentLocalized[$field] = $defaults[$field];
-            }
-        }
-        foreach (self::LIST_FIELDS as $field) {
-            if (array_key_exists($field, $defaults)) {
-                $parentLocalized[$field] = $this->cleanList($field, $defaults[$field]);
             }
         }
         if ($parentLocalized !== []) {
@@ -243,10 +221,6 @@ class DashboardSiteSettingController extends Controller
             'brand_name' => ['string', 'max:255'],
             'brand_short_name' => ['string', 'max:100'],
             'tagline' => ['string', 'max:255'],
-            'home_title' => ['string', 'max:255'],
-            'home_subtitle' => ['string', 'max:2000'],
-            'home_cta_primary' => ['string', 'max:255'],
-            'home_cta_secondary' => ['string', 'max:255'],
             'footer_text' => ['string', 'max:255'],
         ];
 
@@ -264,14 +238,6 @@ class DashboardSiteSettingController extends Controller
                     $isRequiredDefault ? 'required' : 'nullable',
                 ];
             }
-
-            $localizedRules["translations.$code.home_stats"] = ['nullable', 'array'];
-            $localizedRules["translations.$code.home_stats.*.value"] = ['nullable', 'string', 'max:60'];
-            $localizedRules["translations.$code.home_stats.*.label"] = ['nullable', 'string', 'max:120'];
-            $localizedRules["translations.$code.home_features"] = ['nullable', 'array'];
-            $localizedRules["translations.$code.home_features.*.icon"] = ['nullable', 'string', 'max:40'];
-            $localizedRules["translations.$code.home_features.*.title"] = ['nullable', 'string', 'max:120'];
-            $localizedRules["translations.$code.home_features.*.description"] = ['nullable', 'string', 'max:500'];
         }
 
         $rules = array_merge([
@@ -285,7 +251,6 @@ class DashboardSiteSettingController extends Controller
             // uploaded separately.
             'logo_url' => ['nullable', new ImageLocation, 'max:2048'],
             'reverse_logo_url' => ['nullable', new ImageLocation, 'max:2048'],
-            'home_hero_image' => ['nullable', new ImageLocation, 'max:2048'],
 
             // Branding palette inputs. Everything else (mid tones, deep bands,
             // dark-mode twins, ink) is derived by BrandPalette.
@@ -325,7 +290,7 @@ class DashboardSiteSettingController extends Controller
     private function onlySection(array $rules, string $section): array
     {
         $fields = self::SECTIONS[$section];
-        $localized = array_intersect($fields, [...self::LOCALIZED, ...self::LIST_FIELDS]);
+        $localized = array_intersect($fields, self::LOCALIZED);
 
         return array_filter(
             $rules,
@@ -368,13 +333,13 @@ class DashboardSiteSettingController extends Controller
     }
 
     /**
-     * Extract the full localized payload (scalars + lists), keyed by language.
+     * Extract the full localized payload, keyed by language.
      *
      * @return array<string, array<string, mixed>>
      */
     private function cleanedPayload(Request $request, ?string $section = null): array
     {
-        $fields = [...self::LOCALIZED, ...self::LIST_FIELDS];
+        $fields = self::LOCALIZED;
 
         if ($section !== null) {
             $fields = array_values(array_intersect($fields, self::SECTIONS[$section]));
@@ -406,46 +371,18 @@ class DashboardSiteSettingController extends Controller
     }
 
     /**
-     * Clean one language's fields: keep scalars as-is and drop empty list rows.
+     * Clean one language's fields, dropping blanks so an un-authored language
+     * falls back to the parent instead of being stored as an empty row.
      *
      * @param  array<string, mixed>  $fields
      * @return array<string, mixed>
      */
     private function cleanFields(array $fields): array
     {
-        foreach (self::LIST_FIELDS as $list) {
-            if (array_key_exists($list, $fields)) {
-                $fields[$list] = $this->cleanList($list, $fields[$list]);
-            }
-        }
-
         return array_filter(
             $fields,
             static fn ($value): bool => is_array($value) ? $value !== [] : filled($value),
         );
-    }
-
-    /**
-     * Drop fully-empty stats/features rows so blank template rows never render.
-     *
-     * @return list<array<string, mixed>>|null
-     */
-    private function cleanList(string $field, mixed $rows): ?array
-    {
-        if (! is_array($rows)) {
-            return null;
-        }
-
-        return collect($rows)
-            ->filter(function (array $row) use ($field): bool {
-                if ($field === 'home_stats') {
-                    return filled($row['value'] ?? null) || filled($row['label'] ?? null);
-                }
-
-                return filled($row['title'] ?? null) || filled($row['description'] ?? null);
-            })
-            ->values()
-            ->all();
     }
 
     /**
@@ -460,7 +397,7 @@ class DashboardSiteSettingController extends Controller
             ->mapWithKeys(fn ($translation): array => [
                 $translation->language->code => Arr::only(
                     $translation->toArray(),
-                    [...self::LOCALIZED, ...self::LIST_FIELDS],
+                    self::LOCALIZED,
                 ),
             ])
             ->all();

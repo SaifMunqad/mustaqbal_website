@@ -5,10 +5,11 @@ namespace App\Enums;
 /**
  * The canonical block types for the normalized page builder.
  *
- * A superset of the legacy {@see HomeSectionType}: it keeps the existing
- * curated/authored families and adds the previously-hardcoded home blocks (hero,
- * programs, features, stats, jobs) plus a broad catalog of content rails,
- * conversion and layout blocks so admins can compose a rich page from a palette.
+ * Covers the curated/authored content families (articles, events, recognition,
+ * programs, jobs) and every authored band the home page needs (hero, features,
+ * stats, banner, announcement), plus a broad catalog of content rails,
+ * conversion and layout blocks so admins can compose a rich page from one
+ * palette.
  *
  * Each case carries the metadata the builder needs — grid defaults, instance
  * caps, the render component, and which child stores it writes to — so the

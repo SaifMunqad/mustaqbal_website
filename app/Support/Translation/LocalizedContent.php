@@ -539,29 +539,109 @@ class LocalizedContent
     }
 
     // ---------------------------------------------------------------------
-    // Home sections
+    // Page builder — home page
     // ---------------------------------------------------------------------
 
     /**
-     * Localized titles for the curated home sections, keyed by English title.
+     * Localized hero copy for the seeded builder home page, keyed by language
+     * code. The page builder stores its own per-language rows, so the hero no
+     * longer borrows text from the Site Settings columns.
      *
-     * @return array<string, array<string, string>>
+     * @return array<string, array{heading: string, body: string, cta_primary: string, cta_secondary: string, tagline: string}>
      */
-    public static function homeSectionTitles(): array
+    public static function homeHero(): array
     {
         return [
-            'Latest Articles' => ['ps' => 'وروستې لیکنې', 'fa_AF' => 'جدیدترین مقالات'],
-            'Upcoming Events' => ['ps' => 'راتلونکې پېښې', 'fa_AF' => 'رویدادهای آینده'],
-            'Recognition Highlights' => ['ps' => 'د ستاينې ټکي', 'fa_AF' => 'برگزیده‌های تقدیر'],
+            'en' => [
+                'heading' => 'Welcome to My School',
+                'body' => 'A modern Afghan school where students grow with confidence, knowledge, and character.',
+                'cta_primary' => 'Explore Programs',
+                'cta_secondary' => 'Contact Us',
+                'tagline' => 'Building tomorrow with quality education',
+            ],
+            'ps' => [
+                'heading' => 'زما ښوونځی ته ښه راغلاست',
+                'body' => 'یو عصري افغان ښوونځی چې زده‌کوونکي پکې د باور، پوهې او شخصیت سره وده کوي.',
+                'cta_primary' => 'پروګرامونه وګورئ',
+                'cta_secondary' => 'زموږ سره اړیکه',
+                'tagline' => 'د کیفیت‌لرونکې زده‌کړې سره سبا جوړول',
+            ],
+            'fa_AF' => [
+                'heading' => 'به مکتب من خوش آمدید',
+                'body' => 'یک مکتب افغانی مدرن که دانش‌آموزان را با اعتمادبه‌نفس، دانش و شخصیت پرورش می‌دهد.',
+                'cta_primary' => 'دیدن برنامه‌ها',
+                'cta_secondary' => 'تماس با ما',
+                'tagline' => 'ساختن فردا با آموزش باکیفیت',
+            ],
         ];
     }
 
     /**
-     * Localized authored home-section copy, keyed by the English heading.
+     * Localized quick-stats rows for the seeded builder home page.
      *
-     * @return array<string, array<string, string>>
+     * @return array<string, list<array{value: string, label: string}>>
      */
-    public static function homeSectionAuthored(): array
+    public static function homeStats(): array
+    {
+        return [
+            'en' => [
+                ['value' => '1,200+', 'label' => 'Students'],
+                ['value' => '80+', 'label' => 'Teachers'],
+                ['value' => '25+', 'label' => 'Years'],
+                ['value' => '40+', 'label' => 'Subjects'],
+            ],
+            'ps' => [
+                ['value' => '1,200+', 'label' => 'زده‌کوونکي'],
+                ['value' => '80+', 'label' => 'ښوونکي'],
+                ['value' => '25+', 'label' => 'کاله'],
+                ['value' => '40+', 'label' => 'مضامین'],
+            ],
+            'fa_AF' => [
+                ['value' => '1,200+', 'label' => 'دانش‌آموزان'],
+                ['value' => '80+', 'label' => 'معلمان'],
+                ['value' => '25+', 'label' => 'سال'],
+                ['value' => '40+', 'label' => 'مضامین'],
+            ],
+        ];
+    }
+
+    /**
+     * Localized "why families choose us" rows for the seeded builder home page.
+     * Icon keys are shared across languages and resolved in the frontend.
+     *
+     * @return array<string, list<array{icon: string, title: string, description: string}>>
+     */
+    public static function homeFeatures(): array
+    {
+        return [
+            'en' => [
+                ['icon' => 'faculty', 'title' => 'Qualified teachers', 'description' => 'Experienced, committed educators who put every student first.'],
+                ['icon' => 'values', 'title' => 'Values-based learning', 'description' => 'Ethics, confidence and community woven into the daily curriculum.'],
+                ['icon' => 'facilities', 'title' => 'Modern facilities', 'description' => 'Bright classrooms, a library and spaces designed for learning.'],
+                ['icon' => 'classes', 'title' => 'Small classes', 'description' => 'A low student-to-teacher ratio so no learner is left behind.'],
+            ],
+            'ps' => [
+                ['icon' => 'faculty', 'title' => 'ښو کو ښوونکي', 'description' => 'تجربه‌لرونکي او ژمنه‌کار ښوونکي چې هر زده‌کوونکی لومړی ګڼي.'],
+                ['icon' => 'values', 'title' => 'ارزښت‌محوره زده‌کړه', 'description' => 'اخلاق، باور او ټولنه په ورځني نصاب کې ټولې شوې.'],
+                ['icon' => 'facilities', 'title' => 'عصري اسانتیاوې', 'description' => 'روښانه ټولګي، کتابتون او د متمرکزې زده‌کړې فضاګانې.'],
+                ['icon' => 'classes', 'title' => 'کوچني ټولګي', 'description' => 'د زده‌کوونکو او ښوونکو ټیټ نسبت چې څوک شاته پاتې نه‌شي.'],
+            ],
+            'fa_AF' => [
+                ['icon' => 'faculty', 'title' => 'کادر شایسته', 'description' => 'معلمان باتجربه و متعهد که هر دانش‌آموز را در اولویت قرار می‌دهند.'],
+                ['icon' => 'values', 'title' => 'آموزش ارزش‌محور', 'description' => 'اخلاق، اعتمادبه‌نفس و جامعه در برنامه درسی روزانه.'],
+                ['icon' => 'facilities', 'title' => 'امکانات مدرن', 'description' => 'صنف‌های روشن، کتابخانه و فضاهای طراحی‌شده برای یادگیری.'],
+                ['icon' => 'classes', 'title' => 'صنف‌های کوچک', 'description' => 'نسبت کم دانش‌آموز به معلم تا هیچ‌کس عقب نماند.'],
+            ],
+        ];
+    }
+
+    /**
+     * Localized copy for the home page's authored bands (banner + announcement),
+     * keyed by the exact English heading.
+     *
+     * @return array<string, array<string, array{heading: string, body: string, cta_label: string}>>
+     */
+    public static function homeBands(): array
     {
         return [
             'A Bright Future Starts Here' => [
@@ -572,6 +652,21 @@ class LocalizedContent
                 'ps' => ['heading' => 'داخېله اوس پرانه ده', 'body' => 'د نوي سمستر لپاره محدود ځايونه — خپل ماشوم نن ثبت کړئ.', 'cta_label' => 'اوس ثبت کړئ'],
                 'fa_AF' => ['heading' => 'ثبت‌نام اکنون باز است', 'body' => 'ظرفیت محدود برای ترم جدید — همین امروز فرزند خود را ثبت‌نام کنید.', 'cta_label' => 'ثبت‌نام کنید'],
             ],
+        ];
+    }
+
+    /**
+     * Localized titles for the home page's curated content rails, keyed by the
+     * exact English title.
+     *
+     * @return array<string, array<string, string>>
+     */
+    public static function homeRailTitles(): array
+    {
+        return [
+            'Latest Articles' => ['ps' => 'وروستې لیکنې', 'fa_AF' => 'جدیدترین مقالات'],
+            'Upcoming Events' => ['ps' => 'راتلونکې پېښې', 'fa_AF' => 'رویدادهای آینده'],
+            'Recognition Highlights' => ['ps' => 'د ستاينې ټکي', 'fa_AF' => 'برگزیده‌های تقدیر'],
         ];
     }
 
@@ -614,7 +709,7 @@ class LocalizedContent
 
     /**
      * Localized rich-text body for the About page (the English body lives in
-     * {@see \Database\Seeders\AboutPageSeeder}).
+     * {@see \Database\Seeders\AboutPageBuilderSeeder}).
      *
      * @return array<string, string>
      */
@@ -635,10 +730,37 @@ class LocalizedContent
     }
 
     /**
-     * Localized Site Settings content (hero copy, tagline, footer and the home
-     * stats/features lists) mirroring the English defaults in
-     * {@see \App\Models\SiteSetting::defaults()}. Neutral stat values and feature
-     * icon keys are repeated per language; only the text differs.
+     * Localized intro copy for the seeded builder contact page, keyed by language
+     * code.
+     *
+     * @return array<string, array{heading: string, body: string, cta_primary: string}>
+     */
+    public static function contactIntro(): array
+    {
+        return [
+            'en' => [
+                'heading' => 'Contact My School',
+                'body' => 'Questions about programs, admissions or partnerships? Write to us — a member of the team replies within one working day.',
+                'cta_primary' => 'Enroll now',
+            ],
+            'ps' => [
+                'heading' => 'د زما ښوونځي سره اړیکه',
+                'body' => 'د پروګرامونو، داخېلې یا شراکتو په اړه پوښتنې لرئ؟ زموږ سره ولیکئ — د ښوونځي ټیم به په یوه کاري ورځ کې ځواب درکړي.',
+                'cta_primary' => 'اوس ثبت کړئ',
+            ],
+            'fa_AF' => [
+                'heading' => 'تماس با مکتب من',
+                'body' => 'سوال درباره برنامه‌ها، ثبت‌نام یا همکاری دارید؟ با ما بنویسید — تیم مکتب در یک روز کاری پاسخ می‌دهد.',
+                'cta_primary' => 'ثبت‌نام کنید',
+            ],
+        ];
+    }
+
+    /**
+     * Localized Site Settings content (brand tagline and footer text). The home
+     * hero copy and the stats/features lists used to live here; they are authored
+     * as page-builder blocks now (see {@see homeHero()} / {@see homeStats()} /
+     * {@see homeFeatures()}).
      *
      * @return array<string, array<string, mixed>>
      */
@@ -647,43 +769,11 @@ class LocalizedContent
         return [
             'ps' => [
                 'tagline' => 'د کیفیت‌لرونکې زده‌کړې سره سبا جوړول',
-                'home_title' => 'زما ښوونځی ته ښه راغلاست',
-                'home_subtitle' => 'یو عصري افغان ښوونځی چې زده‌کوونکي پکې د باور، پوهې او شخصیت سره وده کوي.',
-                'home_cta_primary' => 'پروګرامونه وګورئ',
-                'home_cta_secondary' => 'زموږ سره اړیکه',
                 'footer_text' => 'ټول حقونه خوندي دي.',
-                'home_stats' => [
-                    ['value' => '1,200+', 'label' => 'زده‌کوونکي'],
-                    ['value' => '80+', 'label' => 'ښوونکي'],
-                    ['value' => '25+', 'label' => 'کاله'],
-                    ['value' => '40+', 'label' => 'مضامین'],
-                ],
-                'home_features' => [
-                    ['icon' => 'faculty', 'title' => 'ښو کو ښوونکي', 'description' => 'تجربه‌لرونکي او ژمنه‌کار ښوونکي چې هر زده‌کوونکی لومړی ګڼي.'],
-                    ['icon' => 'values', 'title' => 'ارزښت‌محوره زده‌کړه', 'description' => 'اخلاق، باور او ټولنه په ورځني نصاب کې ټولې شوې.'],
-                    ['icon' => 'facilities', 'title' => 'عصري اسانتیاوې', 'description' => 'روښانه ټولګي، کتابتون او د متمرکزې زده‌کړې فضاګانې.'],
-                    ['icon' => 'classes', 'title' => 'کوچني ټولګي', 'description' => 'د زده‌کوونکو او ښوونکو ټیټ نسبت چې څوک شاته پاتې نه‌شي.'],
-                ],
             ],
             'fa_AF' => [
                 'tagline' => 'ساختن فردا با آموزش باکیفیت',
-                'home_title' => 'به مکتب من خوش آمدید',
-                'home_subtitle' => 'یک مکتب افغانی مدرن که دانش‌آموزان را با اعتمادبه‌نفس، دانش و شخصیت پرورش می‌دهد.',
-                'home_cta_primary' => 'دیدن برنامه‌ها',
-                'home_cta_secondary' => 'تماس با ما',
                 'footer_text' => 'تمام حقوق محفوظ است.',
-                'home_stats' => [
-                    ['value' => '1,200+', 'label' => 'دانش‌آموزان'],
-                    ['value' => '80+', 'label' => 'معلمان'],
-                    ['value' => '25+', 'label' => 'سال'],
-                    ['value' => '40+', 'label' => 'مضامین'],
-                ],
-                'home_features' => [
-                    ['icon' => 'faculty', 'title' => 'کادر شایسته', 'description' => 'معلمان باتجربه و متعهد که هر دانش‌آموز را در اولویت قرار می‌دهند.'],
-                    ['icon' => 'values', 'title' => 'آموزش ارزش‌محور', 'description' => 'اخلاق، اعتمادبه‌نفس و جامعه در برنامه درسی روزانه.'],
-                    ['icon' => 'facilities', 'title' => 'امکانات مدرن', 'description' => 'صنف‌های روشن، کتابخانه و فضاهای طراحی‌شده برای یادگیری.'],
-                    ['icon' => 'classes', 'title' => 'صنف‌های کوچک', 'description' => 'نسبت کم دانش‌آموز به معلم تا هیچ‌کس عقب نماند.'],
-                ],
             ],
         ];
     }

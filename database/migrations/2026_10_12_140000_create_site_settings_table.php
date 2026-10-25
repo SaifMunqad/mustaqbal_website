@@ -19,17 +19,6 @@ return new class extends Migration
             // Browser tab icon uploaded from Site Settings (falls back to /favicon.ico).
             $table->string('favicon_url')->nullable();
 
-            // Home / hero section
-            $table->string('home_title')->nullable();
-            $table->text('home_subtitle')->nullable();
-            $table->string('home_cta_primary')->nullable();
-            $table->string('home_cta_secondary')->nullable();
-            $table->string('home_hero_image')->nullable();
-            // Admin-editable home lists stored as JSON arrays on the single row:
-            // the quick-stats bar and the "why choose us" feature grid.
-            $table->json('home_stats')->nullable();
-            $table->json('home_features')->nullable();
-
             // Contact details
             $table->string('contact_email')->nullable();
             $table->string('contact_phone_primary')->nullable();

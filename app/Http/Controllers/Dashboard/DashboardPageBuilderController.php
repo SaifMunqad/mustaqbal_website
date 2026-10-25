@@ -114,10 +114,9 @@ class DashboardPageBuilderController extends Controller
 
         PageLayoutWriter::save($pageKey, $validated['sections']);
 
-        return back()->with(
-            'success',
-            BuilderPages::label($pageKey).' saved.',
-        );
+        // A translated flash key rather than the English page label, so the toast
+        // follows the admin's UI language.
+        return back()->with('success', 'flash.pageSaved');
     }
 
     /**

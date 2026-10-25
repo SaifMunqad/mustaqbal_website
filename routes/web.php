@@ -8,7 +8,6 @@ use App\Http\Controllers\Dashboard\DashboardBookController;
 use App\Http\Controllers\Dashboard\DashboardContactController;
 use App\Http\Controllers\Dashboard\DashboardEventController;
 use App\Http\Controllers\Dashboard\DashboardFontController;
-use App\Http\Controllers\Dashboard\DashboardHomeSectionController;
 use App\Http\Controllers\Dashboard\DashboardJobController;
 use App\Http\Controllers\Dashboard\DashboardLanguageController;
 use App\Http\Controllers\Dashboard\DashboardMessageController;
@@ -159,14 +158,6 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
 
     Route::prefix('about')->name('dashboard.about.')->middleware('role:management')->group(function () {
         Route::get('/', [DashboardAboutController::class, 'edit'])->name('edit');
-        // The About page is authored in the unified page builder; the legacy
-        // URL is kept so existing links and bookmarks keep working.
-        Route::get('/visual', [DashboardPageBuilderController::class, 'visual'])
-            ->defaults('page', 'about')
-            ->name('visual');
-        Route::put('/visual', [DashboardPageBuilderController::class, 'save'])
-            ->defaults('page', 'about')
-            ->name('visual.save');
         Route::put('/', [DashboardAboutController::class, 'update'])->name('update');
     });
 
@@ -224,23 +215,9 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
             ->name('destroy');
     });
 
-    Route::prefix('home-sections')->name('dashboard.home-sections.')->middleware('role:management')->group(function () {
-        Route::get('/', [DashboardHomeSectionController::class, 'index'])->name('index');
-        // The visual editor now serves the unified page builder (full block
-        // catalog, generic renderers, categorized palette). The legacy
-        // saveLayout/reorder routes below still operate on home_sections.
-        Route::get('/visual', [DashboardPageBuilderController::class, 'visual'])->name('visual');
-        Route::put('/visual', [DashboardHomeSectionController::class, 'saveLayout'])->name('visual.save');
-        Route::get('/create', [DashboardHomeSectionController::class, 'create'])->name('create');
-        Route::post('/', [DashboardHomeSectionController::class, 'store'])->name('store');
-        Route::put('/reorder', [DashboardHomeSectionController::class, 'reorder'])->name('reorder');
-        Route::get('/{homeSection}/edit', [DashboardHomeSectionController::class, 'edit'])->name('edit');
-        Route::put('/{homeSection}', [DashboardHomeSectionController::class, 'update'])->name('update');
-        Route::delete('/{homeSection}', [DashboardHomeSectionController::class, 'destroy'])->name('destroy');
-    });
-
     // Normalized page builder. Every page key in App\Support\Home\BuilderPages
-    // offers the same block catalog and shares this editor.
+    // offers the same block catalog and shares this editor, so the builder is the
+    // only admin surface for composing the home, about and contact layouts.
     Route::prefix('pages')->name('dashboard.pages.')->middleware('role:management')->group(function () {
         Route::get('/home', [DashboardPageBuilderController::class, 'visual'])->name('home');
         Route::put('/home', [DashboardPageBuilderController::class, 'save'])->name('home.save');

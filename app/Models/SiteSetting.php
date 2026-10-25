@@ -9,15 +9,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 /**
- * Single-row store for global, DB-driven site content (branding, home hero,
- * contact details and social links). Shared with the frontend on every request
- * so names, descriptions and images come from the database instead of being
- * hard-coded in the UI.
+ * Single-row store for global, DB-driven site content (branding, contact details
+ * and social links). Shared with the frontend on every request so names,
+ * descriptions and images come from the database instead of being hard-coded in
+ * the UI.
  *
- * The brand name/short name, hero copy, tagline, footer text and the home
- * stats/features lists are localized via `site_setting_translations` (see
- * {@see HasTranslations}); the parent row keeps the default-language values as
- * the fallback source of truth.
+ * The brand name/short name, tagline and footer text are localized via
+ * `site_setting_translations` (see {@see HasTranslations}); the parent row keeps
+ * the default-language values as the fallback source of truth. Page layouts —
+ * including the home hero, stats and feature rails — are not stored here: they
+ * are page-builder blocks.
  */
 class SiteSetting extends Model
 {
@@ -33,13 +34,6 @@ class SiteSetting extends Model
         'accent_color',
         'tint_depth',
         'reverse_logo_url',
-        'home_title',
-        'home_subtitle',
-        'home_cta_primary',
-        'home_cta_secondary',
-        'home_hero_image',
-        'home_stats',
-        'home_features',
         'contact_email',
         'contact_phone_primary',
         'contact_phone_secondary',
@@ -56,14 +50,6 @@ class SiteSetting extends Model
         'footer_text',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'home_stats' => 'array',
-            'home_features' => 'array',
-        ];
-    }
-
     /**
      * @return list<string>
      */
@@ -73,13 +59,7 @@ class SiteSetting extends Model
             'brand_name',
             'brand_short_name',
             'tagline',
-            'home_title',
-            'home_subtitle',
-            'home_cta_primary',
-            'home_cta_secondary',
             'footer_text',
-            'home_stats',
-            'home_features',
         ];
     }
 
@@ -95,15 +75,6 @@ class SiteSetting extends Model
             'brand_name' => 'My School',
             'brand_short_name' => 'My School',
             'tagline' => 'Building tomorrow with quality education',
-            'home_title' => 'Welcome to My School',
-            'home_subtitle' => 'A modern Afghan school where students grow with confidence, knowledge, and character.',
-            'home_cta_primary' => 'Explore Programs',
-            'home_cta_secondary' => 'Contact Us',
-            // Stats and "why families choose" features are curated, real content.
-            // Ship them empty so the home page hides those sections until an admin
-            // enters genuine data, rather than presenting fabricated demo figures.
-            'home_stats' => [],
-            'home_features' => [],
             'contact_email' => 'info@myschool.example',
             'contact_phone_primary' => '+93 700 000 001',
             'contact_phone_secondary' => '+93 799 000 001',
@@ -156,15 +127,6 @@ class SiteSetting extends Model
                 'reverse_logo_url' => $this->reverse_logo_url,
                 'palette' => $this->palette(),
             ],
-            'home' => [
-                'title' => $this->translated('home_title'),
-                'subtitle' => $this->translated('home_subtitle'),
-                'cta_primary' => $this->translated('home_cta_primary'),
-                'cta_secondary' => $this->translated('home_cta_secondary'),
-                'hero_image' => $this->home_hero_image,
-            ],
-            'stats' => $this->translated('home_stats') ?? [],
-            'features' => $this->translated('home_features') ?? [],
             'contact' => [
                 'email' => $this->contact_email,
                 'phone_primary' => $this->contact_phone_primary,

@@ -32,7 +32,7 @@ class DashboardAboutController extends Controller
                 'slug' => $page->slug,
                 'is_published' => $page->is_published,
             ],
-            'visualUrl' => route('dashboard.about.visual'),
+            'visualUrl' => route('dashboard.pages.about'),
         ]);
     }
 

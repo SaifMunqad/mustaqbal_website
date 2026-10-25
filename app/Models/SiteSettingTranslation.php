@@ -16,22 +16,8 @@ class SiteSettingTranslation extends Model
         'brand_name',
         'brand_short_name',
         'tagline',
-        'home_title',
-        'home_subtitle',
-        'home_cta_primary',
-        'home_cta_secondary',
         'footer_text',
-        'home_stats',
-        'home_features',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'home_stats' => 'array',
-            'home_features' => 'array',
-        ];
-    }
 
     public function siteSetting(): BelongsTo
     {
