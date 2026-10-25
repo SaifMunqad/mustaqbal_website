@@ -731,13 +731,6 @@ const ps = {
         end: 'تاسو د لیست پای ته رسېدلي یاست.',
     },
     enums: {
-        homeSectionType: {
-            banner: 'بنر',
-            announcement: 'اعلان',
-            recognition: 'غوره والی',
-            articles: 'مقالې',
-            events: 'پېښې',
-        },
         postType: {
             news: 'خبرونه',
             job: 'دنده',
@@ -1658,26 +1651,12 @@ const ps = {
             editTitle: 'د سایت تنظیمات',
             updated: 'د سایت تنظیمات تازه شول.',
             form: {
-                statsTitle: 'چټکې شمېرنې',
-                statsAdd: 'شمېرنه اضافه کول',
-                statsValuePlaceholder: '1,200+',
-                statsLabelPlaceholder: 'زده کوونکي',
-                featuresTitle: 'ولې موږ غوره کوو (ځانګړتیاوې)',
-                featuresAdd: 'ځانګړتیا اضافه کول',
-                featureTitlePlaceholder: 'د ځانګړتیا سرلیک',
-                featureDescriptionPlaceholder: 'لنډ توضیحات',
-                featureIconFaculty: 'ښوونکي (خلک)',
-                featureIconValues: 'ارزښتونه (زړه)',
-                featureIconFacilities: 'تاسیسات (ودانۍ)',
-                featureIconClasses: 'ټولګي (فارغ التحصیلي)',
                 brandingTitle: 'برانډینګ',
                 identityDescription:
                     'لوګو او د برانډ متن. متني برخې د هرې ژبې لپاره ژباړل کیږي؛ هوډه ژبه اړینه ده او نورې ژبې چې خالي پاتې شي هغې ته راګرځي.',
                 appearanceTitle: 'ښکاره بڼه',
                 appearanceDescription:
                     'همدا یو رنګ ټول عام ویب‌سایټ رنګوي: تڼۍ، لینکونه، د برخو پټې، کارتونه، څنډې او د تیارې موډ نسخه. د پاڼې شالید سپین یا تیاره خړ پاتې کیږي.',
-                homeDescription:
-                    'د کورنۍ پاڼې سرلیک، چټکې شمېرنې او د ځانګړتیاوو شبکه. متن او لیستونه د هرې ژبې لپاره ژباړل کیږي.',
                 contactDescription:
                     'چې میلمه څنګه له ښوونځي سره اړیکه ونیسي. په ټولو ژبو کې ګډ دی.',
                 socialDescription:
@@ -1724,9 +1703,6 @@ const ps = {
                 contrastOnPage: 'پر پاڼه برانډ متن: {{ratio}}:1',
                 contrastPass: 'د WCAG AA معیار پوره کوي',
                 contrastWarn: 'په ځینو اندازو کې کم کنټراسټ',
-                homePageTitle: 'کورنۍ پاڼه',
-                heroImageUrl: 'د سرلیک انځور URL',
-                heroImagePlaceholder: 'https://...',
                 contactTitle: 'د اړیکې جزئیات',
                 email: 'ایمیل',
                 primaryPhone: 'لومړنی ټیلیفون',
@@ -1745,10 +1721,6 @@ const ps = {
                 brandName: 'د برانډ نوم',
                 shortName: 'لنډ نوم',
                 tagline: 'ټګ‌لاین',
-                homeTitle: 'د کورنۍ پاڼې سرلیک',
-                homeSubtitle: 'د کورنۍ پاڼې فرعي سرلیک',
-                primaryCta: 'لومړنی CTA',
-                secondaryCta: 'دوهم CTA',
                 footerText: 'د فوټر متن',
                 mapLoadError:
                     'Google Maps پورته نشو. ډاډه شئ چې API کیلي سمه ده او Maps JavaScript API او Places API فعال دي.',
@@ -1804,12 +1776,6 @@ const ps = {
         },
         homeSections: {
             title: 'کورنۍ پاڼه',
-            createTitle: 'د کورنۍ پاڼې برخه اضافه کول',
-            editTitle: 'د کورنۍ پاڼې برخه سمول',
-            add: 'برخه اضافه کول',
-            save: 'بدلونونه خوندي کړئ',
-            created: 'د کورنۍ پاڼې برخه اضافه شوه.',
-            updated: 'د کورنۍ پاڼې برخه تازه شوه.',
             visual: {
                 editLanguage: 'د سمولو ژبه',
                 fallbackNote:
@@ -1944,11 +1910,6 @@ const ps = {
         messageCreated: 'پیغام جوړ شو.',
         messageAnswered: 'ځواب ثبت شو او لیږوونکي ته ایمیل شو.',
         messageUpdated: 'پیغام تازه شو.',
-        homeSectionAdded: 'د کورنۍ پاڼې برخه اضافه شوه.',
-        homeSectionUpdated: 'د کورنۍ پاڼې برخه تازه شوه.',
-        homeSectionRemoved: 'د کورنۍ پاڼې برخه لرې شوه.',
-        homePageSaved: 'کورنۍ پاڼه خوندي شوه.',
-        homeOrderSaved: 'د کورنۍ پاڼې ترتیب خوندي شو.',
         jobCreated: 'دنده جوړه شوه.',
         jobUpdated: 'دنده تازه شوه.',
         jobDeleted: 'دنده حذف شوه.',

@@ -733,13 +733,6 @@ const faAF = {
         end: 'به پایان فهرست رسیدید.',
     },
     enums: {
-        homeSectionType: {
-            banner: 'بنر',
-            announcement: 'اعلان',
-            recognition: 'افتخارات برجسته',
-            articles: 'مقالات',
-            events: 'پېښه‌ها',
-        },
         postType: {
             news: 'خبر',
             job: 'وظیفه',
@@ -1670,26 +1663,12 @@ const faAF = {
             editTitle: 'تنظیمات سایت',
             updated: 'تنظیمات سایت به‌روزرسانی شد.',
             form: {
-                statsTitle: 'آمار سریع',
-                statsAdd: 'افزودن آمار',
-                statsValuePlaceholder: '1,200+',
-                statsLabelPlaceholder: 'شاگردان',
-                featuresTitle: 'چرا ما را انتخاب می‌کنند (ویژگی‌ها)',
-                featuresAdd: 'افزودن ویژگی',
-                featureTitlePlaceholder: 'عنوان ویژگی',
-                featureDescriptionPlaceholder: 'توضیحات کوتاه',
-                featureIconFaculty: 'معلمان (افراد)',
-                featureIconValues: 'ارزش‌ها (قلب)',
-                featureIconFacilities: 'تاسیسات (ساختمان)',
-                featureIconClasses: 'صنوف (فارغ‌التحصیلی)',
                 brandingTitle: 'برندینگ',
                 identityDescription:
                     'لوگو و نوشتهٔ برند. فیلدهای متنی برای هر زبان ترجمه می‌شوند؛ زبان پیش‌فرض الزامی است و زبان‌های دیگر در صورت خالی بودن به آن برمی‌گردند.',
                 appearanceTitle: 'ظاهر',
                 appearanceDescription:
                     'همین یک رنگ تمام سایت عمومی را رنگ می‌زند: دکمه‌ها، لینک‌ها، نوار بخش‌ها، کارت‌ها، حاشیه‌ها و نسخه حالت تاریک. پس‌زمینه صفحه سفید یا خاکستری تیره باقی می‌ماند.',
-                homeDescription:
-                    'متن سرصفحه، آمار سریع و شبکه ویژگی‌ها. متن و فهرست‌ها برای هر زبان ترجمه می‌شوند.',
                 contactDescription:
                     'راه‌های تماس بازدیدکنندگان با مکتب. بین همه زبان‌ها مشترک است.',
                 socialDescription:
@@ -1737,9 +1716,6 @@ const faAF = {
                 contrastOnPage: 'متن برند روی صفحه: {{ratio}}:1',
                 contrastPass: 'مطابق WCAG AA',
                 contrastWarn: 'در برخی اندازه‌ها کنتراست کم است',
-                homePageTitle: 'صفحه اصلی',
-                heroImageUrl: 'آدرس تصویر سرصفحه',
-                heroImagePlaceholder: 'https://...',
                 contactTitle: 'جزئیات تماس',
                 email: 'ایمیل',
                 primaryPhone: 'شماره تیلیفون اصلی',
@@ -1758,10 +1734,6 @@ const faAF = {
                 brandName: 'نام برند',
                 shortName: 'نام کوتاه',
                 tagline: 'شعار',
-                homeTitle: 'عنوان صفحه اصلی',
-                homeSubtitle: 'زیرعنوان صفحه اصلی',
-                primaryCta: 'CTA اصلی',
-                secondaryCta: 'CTA دوم',
                 footerText: 'متن فوتر',
                 mapLoadError:
                     'Google Maps بارگذاری نشد. مطمئن شوید که کلید API معتبر است و Maps JavaScript API و Places API فعال هستند.',
@@ -1818,12 +1790,6 @@ const faAF = {
         },
         homeSections: {
             title: 'صفحه اصلی',
-            createTitle: 'افزودن بخش صفحه اصلی',
-            editTitle: 'ویرایش بخش صفحه اصلی',
-            add: 'افزودن بخش',
-            save: 'ذخیره تغییرات',
-            created: 'بخش صفحه اصلی اضافه شد.',
-            updated: 'بخش صفحه اصلی به‌روزرسانی شد.',
             visual: {
                 editLanguage: 'زبان ویرایش',
                 fallbackNote:
@@ -1958,11 +1924,6 @@ const faAF = {
         messageCreated: 'پیام ایجاد شد.',
         messageAnswered: 'پاسخ ثبت شد و به فرستنده ایمیل گردید.',
         messageUpdated: 'پیام به‌روزرسانی شد.',
-        homeSectionAdded: 'بخش صفحه اصلی اضافه شد.',
-        homeSectionUpdated: 'بخش صفحه اصلی به‌روزرسانی شد.',
-        homeSectionRemoved: 'بخش صفحه اصلی حذف شد.',
-        homePageSaved: 'صفحه اصلی ذخیره شد.',
-        homeOrderSaved: 'ترتیب صفحه اصلی ذخیره شد.',
         jobCreated: 'وظیفه ایجاد شد.',
         jobUpdated: 'وظیفه به‌روزرسانی شد.',
         jobDeleted: 'وظیفه حذف شد.',

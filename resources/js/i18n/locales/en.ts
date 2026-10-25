@@ -693,13 +693,6 @@ const en = {
             active: 'Active',
             suspended: 'Suspended',
         },
-        homeSectionType: {
-            banner: 'Banner',
-            announcement: 'Announcement',
-            recognition: 'Recognition highlights',
-            articles: 'Articles',
-            events: 'Events',
-        },
         // Fixed labels for the page-builder palette. These name block types and
         // palette groups only — authored content is never resolved through i18n.
         sectionType: {
@@ -1667,26 +1660,12 @@ const en = {
             editTitle: 'Site Settings',
             updated: 'Site settings updated successfully.',
             form: {
-                statsTitle: 'Quick stats',
-                statsAdd: 'Add stat',
-                statsValuePlaceholder: '1,200+',
-                statsLabelPlaceholder: 'Students',
-                featuresTitle: 'Why choose us (features)',
-                featuresAdd: 'Add feature',
-                featureTitlePlaceholder: 'Feature title',
-                featureDescriptionPlaceholder: 'Short description',
-                featureIconFaculty: 'Faculty (people)',
-                featureIconValues: 'Values (heart)',
-                featureIconFacilities: 'Facilities (building)',
-                featureIconClasses: 'Classes (graduation)',
                 brandingTitle: 'Branding',
                 identityDescription:
                     'Logo and brand wording. The text fields are translated per language; the default language is required and the other languages fall back to it when left blank.',
                 appearanceTitle: 'Appearance',
                 appearanceDescription:
                     'One brand color drives the whole public site: buttons, links, section bands, cards, borders and the dark-mode twin. The page background stays white or dark gray.',
-                homeDescription:
-                    'Hero copy, quick stats and the feature grid. Text and lists are translated per language.',
                 contactDescription:
                     'Where visitors can reach the school. Shared across every language.',
                 socialDescription:
@@ -1733,9 +1712,6 @@ const en = {
                 contrastOnPage: 'Brand text on page: {{ratio}}:1',
                 contrastPass: 'Meets WCAG AA',
                 contrastWarn: 'Low contrast at some sizes',
-                homePageTitle: 'Home page',
-                heroImageUrl: 'Hero image URL',
-                heroImagePlaceholder: 'https://...',
                 contactTitle: 'Contact details',
                 email: 'Email',
                 primaryPhone: 'Primary phone',
@@ -1754,10 +1730,6 @@ const en = {
                 brandName: 'Brand name',
                 shortName: 'Short name',
                 tagline: 'Tagline',
-                homeTitle: 'Home title',
-                homeSubtitle: 'Home subtitle',
-                primaryCta: 'Primary CTA',
-                secondaryCta: 'Secondary CTA',
                 footerText: 'Footer text',
                 mapLoadError:
                     'Google Maps failed to load. Check that the API key is valid and that the Maps JavaScript API and Places API are enabled.',
@@ -1815,12 +1787,6 @@ const en = {
         },
         homeSections: {
             title: 'Home Page',
-            createTitle: 'Add Home Section',
-            editTitle: 'Edit Home Section',
-            add: 'Add section',
-            save: 'Save changes',
-            created: 'Home section added.',
-            updated: 'Home section updated.',
             visual: {
                 editLanguage: 'Editing language',
                 fallbackNote:
@@ -1956,11 +1922,6 @@ const en = {
         messageCreated: 'Message created successfully.',
         messageAnswered: 'Answer recorded and emailed to the sender.',
         messageUpdated: 'Message updated successfully.',
-        homeSectionAdded: 'Home section added.',
-        homeSectionUpdated: 'Home section updated.',
-        homeSectionRemoved: 'Home section removed.',
-        homePageSaved: 'Home page saved.',
-        homeOrderSaved: 'Home page order saved.',
         jobCreated: 'Job created.',
         jobUpdated: 'Job updated.',
         jobDeleted: 'Job deleted.',

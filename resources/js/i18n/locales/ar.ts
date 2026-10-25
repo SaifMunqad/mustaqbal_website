@@ -239,13 +239,6 @@ const ar = {
         end: 'لقد وصلت إلى نهاية القائمة.',
     },
     enums: {
-        homeSectionType: {
-            banner: 'لافتة',
-            announcement: 'إعلان',
-            recognition: 'أبرز التكريمات',
-            articles: 'المقالات',
-            events: 'الفعاليات',
-        },
         // تسميات ثابتة لصندوق أدوات مُنشئ الصفحات. تخص أنواع الأقسام
         // ومجموعاتها فقط، ولا تُستخدم أبداً لترجمة المحتوى الذي يكتبه المدير.
         sectionType: {
@@ -443,9 +436,6 @@ const ar = {
         },
         homeSections: {
             title: 'الصفحة الرئيسية',
-            createTitle: 'إضافة قسم للرئيسية',
-            editTitle: 'تعديل قسم الصفحة الرئيسية',
-            add: 'إضافة قسم',
             visual: {
                 editLanguage: 'لغة التحرير',
                 fallbackNote:
