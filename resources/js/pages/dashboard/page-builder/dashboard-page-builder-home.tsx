@@ -10,7 +10,7 @@ import AppLayout from '@/layouts/app-layout';
 import type { FormDataConvertible } from '@inertiajs/core';
 import { Head, router, usePage } from '@inertiajs/react';
 import i18n from '@/i18n';
-import { createElement, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     DndContext,
@@ -77,7 +77,7 @@ import {
     previewField,
     sampleRows,
 } from '@/components/home/preview-placeholders';
-import { ICON_OPTIONS, resolveIcon } from '@/lib/icon-map';
+import IconPicker from '@/components/dashboard/builder/icon-picker';
 import type { LanguageOption, SharedData } from '@/types';
 
 // ---------------------------------------------------------------------------
@@ -1268,12 +1268,12 @@ function draftToRenderBlock(
 const IMAGE_COMPONENTS = new Set(['hero', 'banner', 'media_text']);
 
 // List groups whose rows render an image (avatars, logo marks, gallery shots).
+// Social rows switched from uploaded logos to picker brand glyphs (`icon`).
 const IMAGE_LIST_GROUPS = new Set([
     'team',
     'testimonials',
     'partners',
     'gallery',
-    'social',
 ]);
 
 // Which row inputs each list group's renderer actually paints. Anything else is
@@ -1286,16 +1286,12 @@ const ROW_FIELDS: Record<string, string[]> = {
     partners: ['title', 'image', 'url'],
     gallery: ['title', 'image'],
     faqs: ['title', 'description'],
-    social: ['title', 'image', 'url'],
+    social: ['title', 'icon', 'url'],
     contact: ['title', 'value', 'url'],
 };
 
 const rowShows = (group: string, field: string): boolean =>
     ROW_FIELDS[group]?.includes(field) ?? true;
-
-// List groups whose rows render a Lucide icon, and the groups that only make
-// sense with one (features / icon cards).
-const ICON_LIST_GROUPS = new Set(['features']);
 
 // Grid/list blocks whose track count is admin-tunable, mapped to the track
 // count their renderer uses when nothing is chosen.
@@ -1316,15 +1312,6 @@ const CTA_LABEL_COMPONENTS = new Set([...CTA_COMPONENTS, 'newsletter']);
 // Blocks whose renderer actually paints the stored tone, with its default.
 const TONE_COMPONENTS = new Set(['cta']);
 const TONES = ['default', 'blue', 'green', 'amber', 'red'] as const;
-
-function RowIcon({ name }: { name: string }) {
-    // createElement keeps the resolved component out of render scope, so the
-    // hooks lint rule does not read this lookup as defining a component.
-    return createElement(resolveIcon(name), {
-        className: 'size-4',
-        'aria-hidden': true,
-    });
-}
 
 /** Small icon-only control used by the row headers in the block panel. */
 function RowAction({
@@ -1951,40 +1938,16 @@ function BlockEditorSheet({
                                                 }
                                             />
                                         ) : null}
-                                        {ICON_LIST_GROUPS.has(group) ? (
-                                            <div className="flex items-center gap-2">
-                                                <Select
-                                                    value={row.icon || 'sparkles'}
-                                                    onValueChange={(value) =>
-                                                        set('icon', value)
-                                                    }
-                                                >
-                                                    <SelectTrigger className="flex-1">
-                                                        <SelectValue
-                                                            placeholder={t(
-                                                                'dashboard.homeSections.visual.list.iconPlaceholder',
-                                                                'Icon',
-                                                            )}
-                                                        />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {ICON_OPTIONS.map((option) => (
-                                                            <SelectItem
-                                                                key={option.value}
-                                                                value={option.value}
-                                                            >
-                                                                {t(
-                                                                    `enums.icon.${option.value}`,
-                                                                    option.label,
-                                                                )}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
-                                                <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
-                                                    <RowIcon name={row.icon} />
-                                                </span>
-                                            </div>
+                                        {rowShows(group, 'icon') ? (
+                                            <IconPicker
+                                                value={row.icon}
+                                                onChange={(key) => set('icon', key)}
+                                                sets={
+                                                    group === 'social'
+                                                        ? ['social']
+                                                        : undefined
+                                                }
+                                            />
                                         ) : null}
                                         {IMAGE_LIST_GROUPS.has(group) ? (
                                             <ImageUploadField

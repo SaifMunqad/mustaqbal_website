@@ -3,13 +3,13 @@ import { ChevronDown, ExternalLink, Quote as QuoteIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import ArticleBody from '@/components/editor/article-body';
+import BlockIcon from '@/components/home/block-icon';
 import type { BlockListRow, RenderBlock } from '@/components/home/page-block';
 import ContactInfoPanel from '@/components/school/contact/contact-info-panel';
 import ContactMessageForm from '@/components/school/contact/contact-message-form';
 import ContactSuccessCard from '@/components/school/contact/contact-success-card';
 import Reveal from '@/components/ui/reveal';
 import { gridCols, masonryCols } from '@/lib/grid-cols';
-import { resolveIcon } from '@/lib/icon-map';
 import type { SharedData } from '@/types';
 
 /**
@@ -226,22 +226,29 @@ export function SocialLinks({ block }: BlockProps) {
                 </h2>
             ) : null}
             <div className="flex flex-wrap justify-center gap-3">
-                {items.map((item, i) => (
-                    <a
-                        key={i}
-                        href={item.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-border hover:text-brand-ink dark:text-slate-200"
-                    >
-                        {item.image ? (
-                            <img src={item.image} alt="" className="size-4" />
-                        ) : (
-                            <ExternalLink className="size-4" />
-                        )}
-                        {item.title}
-                    </a>
-                ))}
+                {items.map((item, i) => {
+                    // Admin-picked brand glyph (see the picker's social set);
+                    // rows predating it (or uploading a custom logo image) keep
+                    // the old image / external-link treatment.
+                    return (
+                        <a
+                            key={i}
+                            href={item.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-border hover:text-brand-ink dark:text-slate-200"
+                        >
+                            {item.icon ? (
+                                <BlockIcon iconKey={item.icon} className="size-4" />
+                            ) : item.image ? (
+                                <img src={item.image} alt="" className="size-4" />
+                            ) : (
+                                <ExternalLink className="size-4" />
+                            )}
+                            {item.title}
+                        </a>
+                    );
+                })}
             </div>
         </section>
     );
@@ -616,8 +623,6 @@ export function IconCards({ block }: BlockProps) {
             <BlockHeading heading={heading} body={body} />
             <div className={`grid gap-5 ${gridColsFor(block, 3)}`}>
                 {items.map((item, index) => {
-                    const Icon = resolveIcon(item.icon);
-
                     return (
                         <Reveal
                             key={`${item.title}-${index}`}
@@ -628,7 +633,10 @@ export function IconCards({ block }: BlockProps) {
                                 <div
                                     className={`flex size-12 items-center justify-center rounded-xl ${accents[index % accents.length]}`}
                                 >
-                                    <Icon className="size-6" aria-hidden />
+                                    <BlockIcon
+                                        iconKey={item.icon}
+                                        className="size-6"
+                                    />
                                 </div>
                                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
                                     {item.title}

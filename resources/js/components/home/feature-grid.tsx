@@ -1,6 +1,6 @@
 import Reveal from '@/components/ui/reveal';
+import BlockIcon from '@/components/home/block-icon';
 import { gridCols } from '@/lib/grid-cols';
-import { resolveIcon } from '@/lib/icon-map';
 import type { HomeFeature } from '@/types';
 import { useTranslation } from 'react-i18next';
 
@@ -48,8 +48,6 @@ export default function FeatureGrid({
 
             <div className={`grid gap-5 ${gridCols(columns, 4)}`}>
                 {items.map((feature, index) => {
-                    const Icon = resolveIcon(feature.icon);
-
                     return (
                         <Reveal
                             key={`${feature.title}-${index}`}
@@ -60,7 +58,10 @@ export default function FeatureGrid({
                                 <div
                                     className={`flex size-12 items-center justify-center rounded-xl ${ACCENTS[index % ACCENTS.length]}`}
                                 >
-                                    <Icon className="size-6" aria-hidden />
+                                    <BlockIcon
+                                        iconKey={feature.icon}
+                                        className="size-6"
+                                    />
                                 </div>
                                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
                                     {feature.title}
