@@ -16,8 +16,16 @@ return new class extends Migration
             $table->string('brand_short_name');
             $table->string('tagline')->nullable();
             $table->string('logo_url')->nullable();
-            // Browser tab icon uploaded from Site Settings (falls back to /favicon.ico).
-            $table->string('favicon_url')->nullable();
+            // Branding colors for the public site. The page background is deliberately
+            // absent: it stays frozen in app.css and these colors only paint the layers
+            // above it. See App\Support\Theme\BrandPalette for the derived palette.
+            $table->string('brand_color', 7)->nullable();
+            // Optional second brand color; the palette auto-derives one when null.
+            $table->string('accent_color', 7)->nullable();
+            // How strongly sections/cards are tinted: subtle | medium | bold.
+            $table->string('tint_depth', 10)->default('subtle');
+            // Light-on-dark logo for inverted bands and the colored footer.
+            $table->string('reverse_logo_url')->nullable();
 
             // Contact details
             $table->string('contact_email')->nullable();

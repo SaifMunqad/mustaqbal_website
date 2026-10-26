@@ -14,6 +14,15 @@ return new class extends Migration
             $table->string('code', 10)->unique();
             $table->string('name');
             $table->string('dir', 3)->default('ltr');
+            // Per-language typeface. Nullable: a language without a family falls back to
+            // the built-in stack in `resources/css/app.css`. Indexed but deliberately
+            // without a foreign key: SQLite cannot add one to an existing table, and the
+            // dashboard already refuses to delete a family a language still uses.
+            $table->unsignedBigInteger('font_family_id')->nullable()->index();
+            // A language can point at one of the curated Google Fonts instead of an
+            // uploaded family. The two columns are mutually exclusive: assigning one
+            // clears the other (see DashboardFontController).
+            $table->string('google_font', 40)->nullable()->index();
             $table->boolean('is_active')->default(true);
             $table->boolean('is_default')->default(false);
             $table->unsignedInteger('sort_order')->default(0);
@@ -41,6 +50,13 @@ return new class extends Migration
             $table->foreignId('language_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->text('description');
+            // Per-language schedule, age band and classroom label. The parent `programs`
+            // row keeps holding the default-language values as the source of truth
+            // (mirror pattern), so these are nullable and empty values fall back to the
+            // parent at read time.
+            $table->string('schedule')->nullable();
+            $table->string('age_recommendation')->nullable();
+            $table->string('classroom_number')->nullable();
             $table->timestamps();
 
             $table->unique(['program_id', 'language_id']);
