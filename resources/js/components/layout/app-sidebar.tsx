@@ -26,12 +26,11 @@ import {
     CalendarDays,
     FileText,
     Globe,
+    GraduationCap,
     Home,
-    Inbox,
     Info,
     LayoutGrid,
     Library,
-    Mail,
     MessageSquare,
     Newspaper,
     Phone,
@@ -123,11 +122,6 @@ export function AppSidebar() {
                               icon: Briefcase,
                           },
                           {
-                              title: t('dashboard.tabs.jobApplications'),
-                              href: '/dashboard/jobs/applications',
-                              icon: Inbox,
-                          },
-                          {
                               title: t('dashboard.tabs.awards'),
                               href: '/dashboard/awards',
                               icon: Award,
@@ -140,15 +134,19 @@ export function AppSidebar() {
             titleKey: 'dashboard.sidebar.community',
             items: [
                 {
-                    title: t('dashboard.tabs.contacts'),
-                    href: '/dashboard/contacts',
-                    icon: Mail,
-                },
-                {
                     title: t('dashboard.tabs.messages'),
                     href: '/dashboard/messages',
                     icon: MessageSquare,
                 },
+                ...(canManageUsers
+                    ? [
+                          {
+                              title: t('dashboard.tabs.enrollments'),
+                              href: '/dashboard/enrollments',
+                              icon: GraduationCap,
+                          },
+                      ]
+                    : []),
             ],
         },
         {

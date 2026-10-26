@@ -5,26 +5,28 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ResendEnrollmentEmailRequest;
 use App\Http\Requests\StoreEnrollmentRequest;
 use App\Models\Enrollment;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Str;
 
 class EnrollmentController extends Controller
 {
-    public function store(StoreEnrollmentRequest $request): JsonResponse
+    /**
+     * Store a public enrollment enquiry. Submitted through an Inertia form, so a
+     * validation failure redirects back with the error bag (surfaced inline) and
+     * a success redirects back with a flash notification.
+     */
+    public function store(StoreEnrollmentRequest $request): RedirectResponse
     {
-        $enrollment = Enrollment::query()->create([
+        Enrollment::query()->create([
             ...$request->validated(),
             'email_verification_token' => Str::random(60),
             'last_email_sent_at' => now(),
         ]);
 
-        return response()->json([
-            'id' => $enrollment->id,
-            'message' => 'Enrollment submitted. Verification email has been queued.',
-        ], 201);
+        return back()->with('success', 'flash.enrollmentSubmitted');
     }
 
-    public function resendEmail(ResendEnrollmentEmailRequest $request): JsonResponse
+    public function resendEmail(ResendEnrollmentEmailRequest $request): RedirectResponse
     {
         $enrollment = Enrollment::query()
             ->where('email', $request->string('email')->toString())
@@ -32,16 +34,15 @@ class EnrollmentController extends Controller
             ->latest()
             ->first();
 
-        abort_if(! $enrollment, 404, 'Enrollment record not found.');
+        if (! $enrollment) {
+            return back()->with('error', 'flash.enrollmentResendFailed');
+        }
 
         $enrollment->update([
             'email_verification_token' => Str::random(60),
             'last_email_sent_at' => now(),
         ]);
 
-        return response()->json([
-            'message' => 'Verification email was resent successfully.',
-        ]);
+        return back()->with('success', 'flash.enrollmentResent');
     }
 }
-

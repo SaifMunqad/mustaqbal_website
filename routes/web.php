@@ -6,6 +6,7 @@ use App\Http\Controllers\Dashboard\DashboardAwardController;
 use App\Http\Controllers\Dashboard\DashboardBookCategoryController;
 use App\Http\Controllers\Dashboard\DashboardBookController;
 use App\Http\Controllers\Dashboard\DashboardContactController;
+use App\Http\Controllers\Dashboard\DashboardEnrollmentController;
 use App\Http\Controllers\Dashboard\DashboardEventController;
 use App\Http\Controllers\Dashboard\DashboardFontController;
 use App\Http\Controllers\Dashboard\DashboardJobController;
@@ -113,6 +114,15 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
         Route::post('/{message}/answers', [DashboardMessageController::class, 'storeAnswer'])
             ->middleware('role:management')
             ->name('answers.store');
+    });
+
+    // Enrollment enquiries from the public /school/enroll form: admins and
+    // management read each submission, reply to the guardian, and triage status.
+    Route::prefix('enrollments')->name('dashboard.enrollments.')->middleware('role:management')->group(function () {
+        Route::get('/', [DashboardEnrollmentController::class, 'index'])->name('index');
+        Route::get('/{enrollment}', [DashboardEnrollmentController::class, 'show'])->name('show');
+        Route::put('/{enrollment}/status', [DashboardEnrollmentController::class, 'updateStatus'])->name('status.update');
+        Route::post('/{enrollment}/replies', [DashboardEnrollmentController::class, 'storeReply'])->name('replies.store');
     });
 
     Route::prefix('email-campaigns')->name('dashboard.email-campaigns.')->middleware('role:admin')->group(function () {
