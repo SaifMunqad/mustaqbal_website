@@ -18,6 +18,7 @@ use App\Http\Controllers\Dashboard\DashboardSiteSettingController;
 use App\Http\Controllers\Dashboard\DashboardUserController;
 use App\Http\Controllers\Dashboard\EmailCampaignController;
 use App\Http\Controllers\Dashboard\JobApplicationController;
+use App\Http\Controllers\Dashboard\MailLogController;
 use App\Http\Controllers\Dashboard\UploadController;
 use App\Http\Controllers\Dashboard\WhatsAppCampaignController;
 use App\Http\Controllers\Dashboard\WhatsAppSettingController;
@@ -234,6 +235,14 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('dashboard')->group(fu
             ->defaults('page', 'contact')
             ->name('contact.save');
     });
+});
+
+// Unified outbound mail inbox. Reachable from the dashboard but mounted at the
+// literal `/mails` path. Read-only; management and admin only (admins pass every
+// role gate). Sourced from the mail-event listeners, so it lists campaign,
+// transactional and system mail alike.
+Route::middleware(['auth', 'verified', 'active', 'role:management'])->prefix('mails')->name('dashboard.mails.')->group(function () {
+    Route::get('/', [MailLogController::class, 'index'])->name('index');
 });
 
 require __DIR__.'/customer-web.php';

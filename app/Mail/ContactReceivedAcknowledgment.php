@@ -3,10 +3,12 @@
 namespace App\Mail;
 
 use App\Models\Message;
+use App\Support\Mail\MailSource;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Headers;
 use Illuminate\Queue\SerializesModels;
 
 /**
@@ -32,12 +34,22 @@ class ContactReceivedAcknowledgment extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.contact-received',
+            // Plain HTML view so the branded <x-mail.layout> shell (logo, school
+            // name, © footer) renders; the markdown layout would strip it.
+            view: 'mail.contact-received',
             with: [
                 'name' => $this->message->sender_name,
                 'subject' => $this->message->subject,
             ],
         );
+    }
+
+    /**
+     * Tag the message so the unified mail log can label its origin.
+     */
+    public function headers(): Headers
+    {
+        return new Headers(text: [MailSource::HEADER => 'Contact Acknowledgment']);
     }
 
     /**

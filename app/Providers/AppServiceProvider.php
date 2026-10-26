@@ -12,6 +12,7 @@ use App\Policies\EventPolicy;
 use App\Policies\PostPolicy;
 use App\Policies\UserPolicy;
 use App\Support\Admin\EnsureAdminAccount;
+use App\Support\Mail\MailLogRegistry;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -31,6 +32,11 @@ class AppServiceProvider extends ServiceProvider
         // Icon generation runs on the GD driver (always available here); bound as
         // a stateless manager so FaviconService can resolve it via the container.
         $this->app->singleton(ImageManager::class, fn (): ImageManager => new ImageManager(new Driver));
+
+        // Per-process bridge that links a MessageSending row to its MessageSent
+        // update so the unified mail log can mark delivery. Singleton, not a
+        // session, because both events fire within one send call.
+        $this->app->singleton(MailLogRegistry::class);
     }
 
     /**

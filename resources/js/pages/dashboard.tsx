@@ -8,16 +8,18 @@
  */
 import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import {
     BookOpen,
     Briefcase,
     CalendarDays,
+    ChevronRight,
     FileText,
     Library,
     Mail,
+    Mails,
     MessageSquare,
     Newspaper,
     Plus,
@@ -77,8 +79,10 @@ const quickActions: QuickAction[] = [
 
 export default function Dashboard() {
     const { t, i18n } = useTranslation();
-    const { stats } = usePage<{ stats: OverviewStats }>().props;
+    const { stats, auth } = usePage<{ stats: OverviewStats } & SharedData>().props;
     const isRtl = i18n.dir() === 'rtl';
+    // The unified mail inbox is management/admin only (mirrors the /mails route).
+    const canViewMails = ['admin', 'management'].includes(auth.user?.role ?? '');
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: t('dashboard.title'), href: '/dashboard' },
@@ -116,6 +120,30 @@ export default function Dashboard() {
                         <h2 className="text-lg font-semibold">{t('dashboard.quickActions')}</h2>
                     </div>
                     <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {canViewMails && (
+                            <Button asChild variant="outline" className="justify-start gap-3 py-7">
+                                <Link href="/mails" prefetch>
+                                    <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-300">
+                                        <Mails className="size-5" />
+                                    </span>
+                                    <span className="flex-1 text-left rtl:text-right">
+                                        {t('dashboard.tabs.mails')}
+                                    </span>
+                                    <ChevronRight className="size-4 text-slate-400 rtl:rotate-180" />
+                                </Link>
+                            </Button>
+                        )}
+                        <Button asChild variant="outline" className="justify-start gap-3 py-7">
+                            <Link href="/dashboard/contacts" prefetch>
+                                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-300">
+                                    <Mail className="size-5" />
+                                </span>
+                                <span className="flex-1 text-left rtl:text-right">
+                                    {t('dashboard.tabs.contacts')}
+                                </span>
+                                <ChevronRight className="size-4 text-slate-400 rtl:rotate-180" />
+                            </Link>
+                        </Button>
                         {quickActions.map(({ href, labelKey, icon: Icon }) => (
                             <Button key={href} asChild variant="outline" className="justify-start gap-3 py-7">
                                 <Link href={href} >

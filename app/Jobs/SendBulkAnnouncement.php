@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Enums\EmailDeliveryStatus;
 use App\Mail\BulkAnnouncement;
 use App\Models\EmailCampaignRecipient;
+use App\Models\MailLog;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Mail;
@@ -56,5 +57,20 @@ class SendBulkAnnouncement implements ShouldQueue
         ]);
         $recipient->campaign->increment('failed_count');
         $recipient->campaign->markCompletedIfDone();
+
+        // Reflect the failure in the unified mail log: the send attempt created a
+        // pending row (via MessageSending) that never reached MessageSent, so mark
+        // the newest matching one failed with the same reason.
+        MailLog::query()
+            ->where('status', EmailDeliveryStatus::Pending)
+            ->where('recipients', $recipient->email)
+            ->where('subject', $recipient->campaign->subject)
+            ->latest('id')
+            ->limit(1)
+            ->get()
+            ->each(fn (MailLog $log) => $log->update([
+                'status' => EmailDeliveryStatus::Failed,
+                'error' => mb_substr($exception->getMessage(), 0, 1000),
+            ]));
     }
 }

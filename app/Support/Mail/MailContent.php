@@ -46,8 +46,16 @@ final class MailContent
      */
     public static function html(EmailCampaign $campaign): string
     {
-        $html = $campaign->bodyHtml();
+        return self::richHtml($campaign->bodyHtml());
+    }
 
+    /**
+     * Prepare any rich-text body for an email: drop the empty paragraphs the
+     * editor leaves behind and rewrite app-relative asset paths to absolute URLs
+     * so inline images render in mail clients.
+     */
+    public static function richHtml(string $html): string
+    {
         // Empty paragraphs left behind by the editor add dead vertical space in
         // mail clients that honour them.
         $html = preg_replace('#<p>(?:\s|&nbsp;|<br\s*/?>)*</p>#i', '', $html) ?? $html;

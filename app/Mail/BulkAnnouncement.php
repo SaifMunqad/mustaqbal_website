@@ -5,11 +5,13 @@ namespace App\Mail;
 use App\Models\EmailCampaign;
 use App\Models\EmailCampaignRecipient;
 use App\Support\Mail\MailContent;
+use App\Support\Mail\MailSource;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Headers;
 use Illuminate\Queue\SerializesModels;
 
 /**
@@ -63,6 +65,14 @@ class BulkAnnouncement extends Mailable
                 'direction' => MailContent::direction($bodyHtml),
             ],
         );
+    }
+
+    /**
+     * Tag the message so the unified mail log can label its origin.
+     */
+    public function headers(): Headers
+    {
+        return new Headers(text: [MailSource::HEADER => 'Bulk Email']);
     }
 
     /**
