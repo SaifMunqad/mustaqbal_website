@@ -41,10 +41,7 @@ import {
     EyeOff,
     GripVertical,
     Menu,
-    Monitor,
     Plus,
-    Smartphone,
-    Tablet,
     Trash2,
     X,
 } from 'lucide-react';
@@ -180,8 +177,6 @@ interface BuilderProps {
     [key: string]: unknown;
 }
 
-type PreviewDevice = 'desktop' | 'tablet' | 'mobile';
-
 // ---------------------------------------------------------------------------
 // Draft helpers
 // ---------------------------------------------------------------------------
@@ -232,19 +227,10 @@ function defaultSpans(component: string): { lg: number; md: number; sm: number }
     return { lg: 12, md: 12, sm: 12 };
 }
 
-function spanBucket(device: PreviewDevice): 'sm' | 'md' | 'lg' {
-    return device === 'mobile' ? 'sm' : device === 'tablet' ? 'md' : 'lg';
-}
-
-function spanFor(draft: SectionDraft, device: PreviewDevice): number {
-    const stored =
-        device === 'mobile'
-            ? draft.span_sm
-            : device === 'tablet'
-              ? draft.span_md
-              : draft.span_lg;
-
-    return stored ?? defaultSpans(draft.component)[spanBucket(device)];
+// Preview always renders the desktop (lg) layout; responsive tablet/mobile
+// preview switches were removed, so a block's span derives from its lg value.
+function spanFor(draft: SectionDraft): number {
+    return draft.span_lg ?? defaultSpans(draft.component).lg;
 }
 
 export function PageBuilderEditor() {
@@ -260,7 +246,6 @@ export function PageBuilderEditor() {
     );
     const [editingLang, setEditingLang] = useState<string>(defaultLanguage);
     const [dirty, setDirty] = useState(false);
-    const [device, setDevice] = useState<PreviewDevice>('desktop');
     const [activeId, setActiveId] = useState<string | null>(null);
     const [dragOption, setDragOption] = useState<PaletteOption | null>(null);
     const [editingEditorId, setEditingEditorId] = useState<number | null>(null);
@@ -497,30 +482,6 @@ export function PageBuilderEditor() {
                             </Select>
                         </div>
 
-                        <div className="flex items-center gap-1">
-                            {(['desktop', 'tablet', 'mobile'] as PreviewDevice[]).map((d) => {
-                                const Icon =
-                                    d === 'desktop'
-                                        ? Monitor
-                                        : d === 'tablet'
-                                          ? Tablet
-                                          : Smartphone;
-                                return (
-                                    <Button
-                                        key={d}
-                                        size="sm"
-                                        variant={device === d ? 'default' : 'ghost'}
-                                        type="button"
-                                        title={d}
-                                        aria-label={d}
-                                        onClick={() => setDevice(d)}
-                                    >
-                                        <Icon className="size-4" />
-                                    </Button>
-                                );
-                            })}
-                        </div>
-
                         {/* Opens the palette as a drawer on small screens. */}
                         <Button
                             size="sm"
@@ -625,12 +586,6 @@ export function PageBuilderEditor() {
                         dir={dir}
                         className="mx-auto w-full p-2 transition-all lg:order-first"
                         style={{
-                            maxWidth:
-                                device === 'mobile'
-                                    ? '375px'
-                                    : device === 'tablet'
-                                      ? '768px'
-                                      : '100%',
                             fontFamily:
                                 dir === 'rtl'
                                     ? 'var(--app-font-rtl)'
@@ -639,7 +594,6 @@ export function PageBuilderEditor() {
                     >
                         <SortableBlocks
                             drafts={drafts}
-                            device={device}
                             editingLang={editingLang}
                             rtl={dir === 'rtl'}
                             editingId={editingEditorId}
@@ -853,7 +807,6 @@ function BlockSkeleton({ component }: { component: string }) {
 
 function SortableBlocks({
     drafts,
-    device,
     editingLang,
     rtl,
     editingId,
@@ -863,7 +816,6 @@ function SortableBlocks({
     onToggleActive,
 }: {
     drafts: SectionDraft[];
-    device: PreviewDevice;
     editingLang: string;
     rtl: boolean;
     editingId: number | null;
@@ -897,7 +849,6 @@ function SortableBlocks({
                         <SortableBlock
                             key={draft.key}
                             draft={draft}
-                            device={device}
                             editingLang={editingLang}
                             rtl={rtl}
                             isEditing={editingId === draft.editorId}
@@ -915,7 +866,6 @@ function SortableBlocks({
 
 function SortableBlock({
     draft,
-    device,
     editingLang,
     rtl,
     isEditing,
@@ -925,7 +875,6 @@ function SortableBlock({
     onToggleActive,
 }: {
     draft: SectionDraft;
-    device: PreviewDevice;
     editingLang: string;
     rtl: boolean;
     isEditing: boolean;
@@ -941,7 +890,7 @@ function SortableBlock({
     const style: React.CSSProperties = {
         transform: CSS.Transform.toString(transform),
         transition,
-        gridColumn: `span ${spanFor(draft, device)}`,
+        gridColumn: `span ${spanFor(draft)}`,
         minWidth: 0,
     };
 
