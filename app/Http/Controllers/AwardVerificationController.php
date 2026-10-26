@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AwardLookupRequest;
 use App\Models\Award;
 use App\Support\Awards\VerificationGuard;
 use Illuminate\Http\Request;
@@ -30,13 +31,9 @@ class AwardVerificationController extends Controller
      * cost of guessing: after a few failures a human-check challenge is added,
      * and continued guessing for one person ID pauses that code entirely.
      */
-    public function lookup(Request $request): Response
+    public function lookup(AwardLookupRequest $request): Response
     {
-        $validated = $request->validate([
-            'person_id' => ['required', 'string', 'max:64'],
-            'award_id' => ['required', 'string', 'max:64'],
-            'captcha_answer' => ['nullable', 'string', 'max:10'],
-        ]);
+        $validated = $request->validated();
 
         $personId = trim((string) $validated['person_id']);
         $awardId = trim((string) $validated['award_id']);
