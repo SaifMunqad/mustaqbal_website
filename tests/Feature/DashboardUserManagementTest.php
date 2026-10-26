@@ -97,7 +97,7 @@ class DashboardUserManagementTest extends TestCase
         $admin = User::factory()->create(['role' => UserRole::Admin->value]);
 
         $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
-            ->put(route('dashboard.users.update', $admin), [
+            ->patch(route('dashboard.users.update', $admin), [
                 'name' => 'Hacked',
                 'email' => $admin->email,
                 'role' => UserRole::Teacher->value,
