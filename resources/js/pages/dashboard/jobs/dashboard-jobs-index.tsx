@@ -3,6 +3,7 @@
  */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import ResourceFilterBar from '@/components/dashboard/resource-filter-bar';
+import { Button } from '@/components/ui/button';
 import { DataTable, DataTableColumn } from '@/components/ui/table';
 import { Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
@@ -114,6 +115,11 @@ export default function DashboardJobsIndex() {
             titleKey="dashboard.jobs.title"
             createHref="/dashboard/jobs/create"
             createLabelKey="dashboard.actions.newJob"
+            actions={
+                <Button asChild variant="outline" size="sm">
+                    <Link href="/dashboard/jobs/applications">{t('dashboard.tabs.jobApplications')}</Link>
+                </Button>
+            }
         >
             <ResourceFilterBar
                 search={search}
