@@ -18,6 +18,9 @@ return new class extends Migration
             $table->date('date_of_birth');
             $table->text('address');
             $table->text('notes')->nullable();
+            // Workflow status an admin/employee assigns to triage each enquiry
+            // (new / reviewed / messaged / accepted / rejected / on_hold).
+            $table->string('status', 30)->default('new')->index();
             $table->boolean('prefers_email_updates')->default(true);
             $table->timestamp('last_email_sent_at')->nullable();
             $table->timestamp('email_verified_at')->nullable();
