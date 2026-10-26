@@ -13,11 +13,16 @@ return [
     |
     | See: https://inertiajs.com/server-side-rendering
     |
+    | `enabled` is env-driven so a host where the Node SSR daemon is unhealthy
+    | can fall back to client-side rendering (Inertia already degrades
+    | gracefully when the engine refuses or errors) without a code deploy:
+    | set INERTIA_SSR_ENABLED=false and clear the config cache.
+    |
     */
 
     'ssr' => [
-        'enabled' => true,
-        'url' => 'http://127.0.0.1:13714',
+        'enabled' => env('INERTIA_SSR_ENABLED', true),
+        'url' => env('INERTIA_SSR_URL', 'http://127.0.0.1:13714'),
         // 'bundle' => base_path('bootstrap/ssr/ssr.mjs'),
 
     ],
