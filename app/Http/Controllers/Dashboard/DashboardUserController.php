@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Dashboard;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\StoreUserRequest;
+use App\Http\Requests\Dashboard\UpdateUserRequest;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -63,17 +64,9 @@ class DashboardUserController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreUserRequest $request): RedirectResponse
     {
-        $this->authorize('create', User::class);
-
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique(User::class)],
-            'role' => ['required', 'string', Rule::in($this->assignableRoleValues($request->user()))],
-            'status' => ['nullable', 'string', Rule::in(UserStatus::values())],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-        ]);
+        $validated = $request->validated();
 
         $passwordSetManually = filled($validated['password'] ?? null);
         $status = $validated['status'] ?? UserStatus::Active->value;
@@ -125,19 +118,9 @@ class DashboardUserController extends Controller
         ]);
     }
 
-    public function update(Request $request, User $user): RedirectResponse
+    public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        $this->authorize('update', $user);
-
-        $assignable = $this->assignableRoleValues($request->user());
-
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique(User::class)->ignore($user)],
-            'role' => ['required', 'string', Rule::in($assignable)],
-            'status' => ['required', 'string', Rule::in(UserStatus::values())],
-            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-        ]);
+        $validated = $request->validated();
 
         if ($user->is($request->user()) && $validated['status'] === UserStatus::Suspended->value) {
             return back()->withErrors(['status' => 'You cannot suspend your own account.']);

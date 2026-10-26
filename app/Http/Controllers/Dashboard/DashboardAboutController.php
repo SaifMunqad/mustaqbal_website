@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\UpdateAboutPageRequest;
 use App\Models\SitePage;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -36,12 +36,8 @@ class DashboardAboutController extends Controller
         ]);
     }
 
-    public function update(Request $request): RedirectResponse
+    public function update(UpdateAboutPageRequest $request): RedirectResponse
     {
-        $request->validate([
-            'is_published' => ['nullable', 'boolean'],
-        ]);
-
         $this->page()->update([
             'is_published' => (bool) $request->input('is_published'),
         ]);

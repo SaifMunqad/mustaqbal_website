@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\AssignLanguageFontRequest;
+use App\Http\Requests\Dashboard\StoreFontRequest;
 use App\Models\Font;
 use App\Models\Language;
-use App\Support\Rules\FontFile;
 use App\Support\Typography\GoogleFonts;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -31,13 +31,9 @@ class DashboardFontController extends Controller
      * public URL is stable and the browser cache is busted only through the
      * `?v=` stamp {@see Font::publicUrl()} adds.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(StoreFontRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:80'],
-            'files' => ['required', 'array'],
-            'files.*' => ['nullable', 'file', 'max:5120', new FontFile],
-        ]);
+        $validated = $request->validated();
 
         $uploaded = array_filter(
             $validated['files'] ?? [],
@@ -118,11 +114,9 @@ class DashboardFontController extends Controller
      * value: `default`, `google:{key}` or `font:{id}`. Assigning one kind clears
      * the other column.
      */
-    public function assign(Request $request, Language $language): RedirectResponse
+    public function assign(AssignLanguageFontRequest $request, Language $language): RedirectResponse
     {
-        $validated = $request->validate([
-            'selection' => ['required', 'string', 'max:64'],
-        ]);
+        $validated = $request->validated();
 
         $selection = $validated['selection'];
 

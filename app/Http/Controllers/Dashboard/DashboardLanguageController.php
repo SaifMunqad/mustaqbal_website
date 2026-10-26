@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\ReorderLanguagesRequest;
+use App\Http\Requests\Dashboard\StoreLanguageRequest;
+use App\Http\Requests\Dashboard\UpdateLanguageRequest;
 use App\Models\Language;
 use App\Support\Translation\LanguageCatalog;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -36,14 +38,9 @@ class DashboardLanguageController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreLanguageRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'code' => ['required', 'string', 'max:10', 'alpha_dash', 'unique:languages,code'],
-            'name' => ['nullable', 'string', 'max:255'],
-            'dir' => ['nullable', 'in:ltr,rtl'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-        ]);
+        $validated = $request->validated();
 
         // The picker only offers curated languages, so the catalog is the source
         // of truth for the display name and text direction. The submitted values
@@ -68,13 +65,9 @@ class DashboardLanguageController extends Controller
             ->with('toast', ['variant' => 'success', 'title' => "Language {$language->name} created."]);
     }
 
-    public function update(Request $request, Language $language): RedirectResponse
+    public function update(UpdateLanguageRequest $request, Language $language): RedirectResponse
     {
-        $validated = $request->validate([
-            'is_active' => ['nullable', 'boolean'],
-            'is_default' => ['nullable', 'boolean'],
-            'sort_order' => ['nullable', 'integer', 'min:0'],
-        ]);
+        $validated = $request->validated();
 
         // The name and text direction are catalog-derived and stay read-only in
         // the dashboard, so only the flags and order are taken from the request.
@@ -96,12 +89,9 @@ class DashboardLanguageController extends Controller
             ->with('toast', ['variant' => 'success', 'title' => 'Language updated.']);
     }
 
-    public function reorder(Request $request): RedirectResponse
+    public function reorder(ReorderLanguagesRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'order' => ['required', 'array'],
-            'order.*' => ['required', 'integer', 'exists:languages,id'],
-        ]);
+        $validated = $request->validated();
 
         foreach ($validated['order'] as $index => $id) {
             Language::query()->whereKey($id)->update(['sort_order' => $index]);
