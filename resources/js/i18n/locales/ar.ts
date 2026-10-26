@@ -297,6 +297,21 @@ const ar = {
     dashboard: {
         title: 'لوحة التحكم',
         quickActions: 'إجراءات سريعة',
+        iconPicker: {
+            pick: 'اختر أيقونة',
+            title: 'اختر أيقونة',
+            clear: 'إزالة الأيقونة',
+            search: 'ابحث عن الأيقونات…',
+            all: 'الكل',
+            loading: 'جارٍ تحميل الأيقونات…',
+            empty: 'لا توجد أيقونات مطابقة.',
+            showMore: 'عرض المزيد (بقي {{count}})',
+            sets: {
+                outline: 'Heroicons خطية',
+                solid: 'Heroicons ممتلئة',
+                social: 'أيقونات التواصل',
+            },
+        },
         sidebar: {
             platform: 'المنصة',
             overview: 'نظرة عامة',

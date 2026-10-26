@@ -858,6 +858,21 @@ const ps = {
     dashboard: {
         title: 'ډشبورډ',
         quickActions: 'چټک کارونه',
+        iconPicker: {
+            pick: 'آیکون وټاکئ',
+            title: 'آیکون وټاکئ',
+            clear: 'آیکون لرې کړئ',
+            search: 'آیکونونه وپلټئ…',
+            all: 'ټول',
+            loading: 'آیکونونه پورې کېږي…',
+            empty: 'سمون آیکون نشته.',
+            showMore: 'نور وښیې ({{count}} پاتې)',
+            sets: {
+                outline: 'Heroicons کرښه‌ییز',
+                solid: 'Heroicons ډک',
+                social: 'ټولنیز آیکونونه',
+            },
+        },
         formError: 'مهرباني وکړئ ښودل شوې ساحې سمې کړئ.',
         table: {
             actions: 'عملونه',

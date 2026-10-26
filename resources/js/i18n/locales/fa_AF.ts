@@ -860,6 +860,21 @@ const faAF = {
     dashboard: {
         title: 'داشبورد',
         quickActions: 'اقدامات سريع',
+        iconPicker: {
+            pick: 'انتخاب آیکون',
+            title: 'انتخاب آیکون',
+            clear: 'حذف آیکون',
+            search: 'جستجوی آیکون‌ها…',
+            all: 'همه',
+            loading: 'بارگذاری آیکون‌ها…',
+            empty: 'آیکونی مطابق یافت نشد.',
+            showMore: 'نمایش بیشتر ({{count}} باقی‌مانده)',
+            sets: {
+                outline: 'Heroicons خطی',
+                solid: 'Heroicons پر',
+                social: 'آیکون‌های اجتماعی',
+            },
+        },
         formError: 'لطفاً فیلدهای مشخص‌شده را اصلاح کنید.',
         table: {
             actions: 'اقدامات',

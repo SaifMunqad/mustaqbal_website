@@ -874,6 +874,21 @@ const en = {
     dashboard: {
         title: 'Dashboard',
         quickActions: 'Quick Actions',
+        iconPicker: {
+            pick: 'Choose an icon',
+            title: 'Choose an icon',
+            clear: 'Clear icon',
+            search: 'Search icons…',
+            all: 'All',
+            loading: 'Loading icons…',
+            empty: 'No icons match.',
+            showMore: 'Show more ({{count}} left)',
+            sets: {
+                outline: 'Heroicons Outline',
+                solid: 'Heroicons Solid',
+                social: 'Social brands',
+            },
+        },
         formError: 'Please fix the highlighted fields.',
         table: {
             actions: 'Actions',
