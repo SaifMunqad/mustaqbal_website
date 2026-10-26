@@ -904,19 +904,21 @@ function SortableBlock({
                 isDragging ? 'z-10 opacity-60' : ''
             } ${isEditing ? 'outline-blue-500' : 'hover:outline-blue-300'}`}
         >
-            {/* Toolbar: reveals on block hover (Tailwind `group-hover`) to keep the
-                canvas clean, staying visible while editing or focused so the
-                buttons remain reachable. It's stacked ABOVE the block's own
-                layers because hero/split-hero paint their copy (and links) at
-                z-10 right under this bar, which used to swallow every click.
-                z-30 here keeps drag/edit/hide/remove reachable on every block.
-                `pointer-events-none` while hidden stops the invisible bar from
-                stealing clicks; `group-hover`/`focus-within` re-enable it. */}
+            {/* Toolbar. Stays visible by default so coarse-pointer (touch) devices
+                — which have no hover — and small (xs) phones can always reach the
+                controls. The clean "reveal on hover" look is re-applied only at
+                >=sm viewports that report a fine pointer (a real mouse), the sole
+                case where hovering actually works. It's stacked ABOVE the block's
+                own layers because hero/split-hero paint their copy (and links) at
+                z-10 right under this bar, which used to swallow every click; z-30
+                here keeps drag/edit/hide/remove reachable on every block. While
+                hidden the bar uses `pointer-events-none` so it can't steal clicks;
+                `group-hover`/`focus-within` re-enable it (pointer-fine only). */}
             <div
                 className={`absolute -top-3 z-30 flex items-center gap-1 rounded-lg border border-border bg-background/75 px-1 py-0.5 shadow-sm backdrop-blur-sm transition focus-within:ring-2 focus-within:ring-blue-400 ltr:left-2 rtl:right-2 ${
                     isEditing
                         ? ''
-                        : 'pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 focus-within:pointer-events-auto focus-within:opacity-100'
+                        : 'pointer-events-auto opacity-100 sm:pointer-fine:pointer-events-none sm:pointer-fine:opacity-0 sm:pointer-fine:group-hover:pointer-events-auto sm:pointer-fine:group-hover:opacity-100 sm:pointer-fine:focus-within:pointer-events-auto sm:pointer-fine:focus-within:opacity-100'
                 }`}
             >
                 <button
