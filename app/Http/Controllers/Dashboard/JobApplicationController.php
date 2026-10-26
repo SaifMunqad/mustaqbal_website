@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Enums\JobApplicationStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\UpdateJobApplicationStatusRequest;
 use App\Models\Job;
 use App\Models\JobApplication;
 use App\Models\JobApplicationDocument;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -88,11 +88,9 @@ class JobApplicationController extends Controller
         ]);
     }
 
-    public function updateStatus(Request $request, JobApplication $application): RedirectResponse
+    public function updateStatus(UpdateJobApplicationStatusRequest $request, JobApplication $application): RedirectResponse
     {
-        $validated = $request->validate([
-            'status' => ['required', Rule::in(JobApplicationStatus::values())],
-        ]);
+        $validated = $request->validated();
 
         $application->update(['status' => JobApplicationStatus::from($validated['status'])]);
 

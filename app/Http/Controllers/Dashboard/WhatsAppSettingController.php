@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\UpdateWhatsAppSettingRequest;
 use App\Models\WhatsAppSetting;
 use App\Services\WhatsAppService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -28,15 +28,9 @@ class WhatsAppSettingController extends Controller
         ]);
     }
 
-    public function update(Request $request, WhatsAppService $whatsapp): RedirectResponse
+    public function update(UpdateWhatsAppSettingRequest $request, WhatsAppService $whatsapp): RedirectResponse
     {
-        $validated = $request->validate([
-            'access_token' => ['nullable', 'string', 'max:2048'],
-            'phone_number_id' => ['nullable', 'string', 'max:64'],
-            'business_account_id' => ['nullable', 'string', 'max:64'],
-            'graph_version' => ['nullable', 'string', 'max:16'],
-            'is_active' => ['boolean'],
-        ]);
+        $validated = $request->validated();
 
         $setting = WhatsAppSetting::resolved();
 

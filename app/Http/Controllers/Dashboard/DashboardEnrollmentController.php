@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Enums\EnrollmentStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\StoreEnrollmentReplyRequest;
+use App\Http\Requests\Dashboard\UpdateEnrollmentStatusRequest;
 use App\Mail\EnrollmentAnswerReply;
 use App\Models\Enrollment;
 use App\Models\EnrollmentReply;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Stevebauman\Purify\Facades\Purify;
@@ -81,11 +82,9 @@ class DashboardEnrollmentController extends Controller
         ]);
     }
 
-    public function updateStatus(Request $request, Enrollment $enrollment): RedirectResponse
+    public function updateStatus(UpdateEnrollmentStatusRequest $request, Enrollment $enrollment): RedirectResponse
     {
-        $validated = $request->validate([
-            'status' => ['required', Rule::in(EnrollmentStatus::values())],
-        ]);
+        $validated = $request->validated();
 
         $enrollment->update(['status' => EnrollmentStatus::from($validated['status'])]);
 
@@ -97,12 +96,9 @@ class DashboardEnrollmentController extends Controller
      * Sending the reply also moves the enquiry to "messaged" so it is easy to
      * spot which families are still awaiting contact.
      */
-    public function storeReply(Request $request, Enrollment $enrollment): RedirectResponse
+    public function storeReply(StoreEnrollmentReplyRequest $request, Enrollment $enrollment): RedirectResponse
     {
-        $validated = $request->validate([
-            'subject' => ['nullable', 'string', 'max:255'],
-            'body' => ['required', 'string', 'max:20000'],
-        ]);
+        $validated = $request->validated();
 
         // The body arrives as TipTap HTML; sanitize before storing so what is
         // saved (and later emailed) can never carry unsafe markup.

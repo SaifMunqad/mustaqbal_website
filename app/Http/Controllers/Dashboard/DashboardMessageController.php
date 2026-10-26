@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\StoreMessageAnswerRequest;
+use App\Http\Requests\Dashboard\StoreMessageRequest;
+use App\Http\Requests\Dashboard\UpdateMessageRequest;
 use App\Mail\ContactAnswerReply;
 use App\Models\Conversation;
 use App\Models\Message;
@@ -50,14 +53,9 @@ class DashboardMessageController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreMessageRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'conversation_id' => ['required', 'exists:conversations,id'],
-            'user_id' => ['required', 'exists:users,id'],
-            'body' => ['required', 'string', 'max:2000'],
-            'read_at' => ['nullable', 'date'],
-        ]);
+        $validated = $request->validated();
 
         Message::query()->create($validated);
 
@@ -93,11 +91,9 @@ class DashboardMessageController extends Controller
     /**
      * Record a reply against a contact inquiry and email it back to the visitor.
      */
-    public function storeAnswer(Request $request, Message $message): RedirectResponse
+    public function storeAnswer(StoreMessageAnswerRequest $request, Message $message): RedirectResponse
     {
-        $validated = $request->validate([
-            'body' => ['required', 'string', 'max:5000'],
-        ]);
+        $validated = $request->validated();
 
         $answer = $message->answers()->create([
             'user_id' => $request->user()->id,
@@ -116,14 +112,9 @@ class DashboardMessageController extends Controller
             ->with('success', 'flash.messageAnswered');
     }
 
-    public function update(Request $request, Message $message): RedirectResponse
+    public function update(UpdateMessageRequest $request, Message $message): RedirectResponse
     {
-        $validated = $request->validate([
-            'conversation_id' => ['required', 'exists:conversations,id'],
-            'user_id' => ['required', 'exists:users,id'],
-            'body' => ['required', 'string', 'max:2000'],
-            'read_at' => ['nullable', 'date'],
-        ]);
+        $validated = $request->validated();
 
         $message->update($validated);
 

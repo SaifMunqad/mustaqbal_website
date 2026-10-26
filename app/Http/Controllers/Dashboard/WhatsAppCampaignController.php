@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Enums\WhatsAppCampaignStatus;
 use App\Enums\WhatsAppDeliveryStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\StoreWhatsAppCampaignRequest;
 use App\Jobs\SendWhatsAppMessage;
 use App\Models\Contact;
 use App\Models\WhatsAppCampaign;
@@ -53,7 +54,7 @@ class WhatsAppCampaignController extends Controller
         ]);
     }
 
-    public function store(Request $request, WhatsAppService $whatsapp): RedirectResponse
+    public function store(StoreWhatsAppCampaignRequest $request, WhatsAppService $whatsapp): RedirectResponse
     {
         if (! $whatsapp->isConfigured()) {
             return redirect()
@@ -61,15 +62,7 @@ class WhatsAppCampaignController extends Controller
                 ->with('error', 'flash.whatsappNotConfigured');
         }
 
-        $validated = $request->validate([
-            'recipient_source' => ['required', 'in:'.implode(',', self::SOURCES)],
-            'custom_numbers' => ['nullable', 'required_if:recipient_source,custom', 'string', 'max:100000'],
-            'mode' => ['required', 'in:text,template'],
-            'message' => ['nullable', 'required_if:mode,text', 'string', 'max:100000'],
-            'template_name' => ['nullable', 'required_if:mode,template', 'string', 'max:255'],
-            'template_language' => ['nullable', 'required_if:mode,template', 'string', 'max:16'],
-            'template_variables' => ['nullable', 'string', 'max:2000'],
-        ]);
+        $validated = $request->validated();
 
         if ($validated['mode'] === 'text') {
             $validated['message'] = $this->prepareMessage((string) ($validated['message'] ?? ''));

@@ -7,6 +7,7 @@ use App\Enums\EmailDeliveryStatus;
 use App\Enums\JobApplicationStatus;
 use App\Enums\UserStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\StoreEmailCampaignRequest;
 use App\Jobs\SendBulkAnnouncement;
 use App\Models\Contact;
 use App\Models\EmailCampaign;
@@ -18,7 +19,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Stevebauman\Purify\Facades\Purify;
@@ -72,15 +72,9 @@ class EmailCampaignController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreEmailCampaignRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'subject' => ['required', 'string', 'max:255'],
-            'body' => ['required', 'string', 'max:100000'],
-            'recipient_source' => ['required', 'in:'.implode(',', self::SOURCES)],
-            'custom_emails' => ['nullable', 'required_if:recipient_source,custom', 'string', 'max:100000'],
-            'job_filter' => ['nullable', 'integer', Rule::exists('job_postings', 'id')],
-        ]);
+        $validated = $request->validated();
 
         // The body comes from the rich-text editor; strip anything unsafe before
         // it is stored, because the mail view renders it as raw HTML.

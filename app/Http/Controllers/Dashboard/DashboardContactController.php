@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\StoreContactRequest;
+use App\Http\Requests\Dashboard\UpdateContactRequest;
 use App\Models\Contact;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -25,15 +26,9 @@ class DashboardContactController extends Controller
         return Inertia::render('dashboard/contacts/dashboard-contacts-create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreContactRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50'],
-            'subject' => ['nullable', 'string', 'max:255'],
-            'message' => ['required', 'string', 'max:5000'],
-        ]);
+        $validated = $request->validated();
 
         Contact::query()->create($validated);
 
@@ -49,16 +44,9 @@ class DashboardContactController extends Controller
         ]);
     }
 
-    public function update(Request $request, Contact $contact): RedirectResponse
+    public function update(UpdateContactRequest $request, Contact $contact): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50'],
-            'subject' => ['nullable', 'string', 'max:255'],
-            'message' => ['required', 'string', 'max:5000'],
-            'resolved_at' => ['nullable', 'date'],
-        ]);
+        $validated = $request->validated();
 
         $contact->update($validated);
 
