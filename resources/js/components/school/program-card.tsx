@@ -105,7 +105,7 @@ export default function ProgramCard({ program }: { program: Program }) {
         <article
             className={cn(
                 'group relative flex h-full flex-col overflow-hidden rounded-2xl border border-brand-border bg-brand-soft shadow-sm transition',
-                'hover:-translate-y-0.5 hover:shadow-md dark:bg-gray-900',
+                'hover:-translate-y-0.5 hover:shadow-md',
                 accent.ring,
             )}
         >
@@ -138,7 +138,7 @@ export default function ProgramCard({ program }: { program: Program }) {
                     {program.description}
                 </p>
 
-                <div className="mt-auto space-y-2 border-t border-slate-100 pt-4 dark:border-slate-800">
+                <div className="mt-auto space-y-2 border-t border-slate-100 pt-4 dark:border-white/10">
                     <MetaRow
                         icon={CalendarDays}
                         label={t('programs.schedule')}

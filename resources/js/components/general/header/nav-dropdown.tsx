@@ -51,7 +51,7 @@ export default function NavDropdown({
     return (
         <div
             ref={dropdownRef}
-            className="absolute start-0 z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-brand-border/50 bg-white/95 p-2 shadow-xl backdrop-blur-xl"
+            className="absolute start-0 z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-brand-border/50 bg-white/95 p-2 text-gray-800 shadow-xl backdrop-blur-xl dark:bg-[#121212]/95 dark:text-gray-200"
         >
             <div className="p-1">
                 {items.map((item) => {
@@ -73,7 +73,7 @@ export default function NavDropdown({
                                 className={`rounded-lg p-2 ${
                                     isActive
                                         ? 'bg-brand-soft-strong dark:bg-brand-deep/40'
-                                        : 'bg-brand-soft group-hover:bg-slate-200 dark:group-hover:bg-gray-700'
+                                        : 'bg-brand-soft group-hover:bg-slate-200 dark:group-hover:bg-gray-700/80'
                                 }`}
                             >
                                 <Icon

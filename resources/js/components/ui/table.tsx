@@ -87,7 +87,7 @@ export function DataTable<T>({
     };
 
     return (
-        <div className="overflow-hidden rounded-xl border">
+        <div className="scrollbar-thin overflow-x-auto rounded-xl border">
             <table className="w-full text-sm">
                 <thead className="bg-slate-100 dark:bg-slate-800">
                     <tr>

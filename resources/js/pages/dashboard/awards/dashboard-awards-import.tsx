@@ -132,7 +132,7 @@ export default function DashboardAwardsImport() {
                         </div>
 
                         {preview.length > 0 ? (
-                            <div className="overflow-x-auto rounded-xl border">
+                            <div className="scrollbar-thin overflow-x-auto rounded-xl border">
                                 <table className="w-full text-sm">
                                     <thead className="bg-slate-100 dark:bg-slate-800">
                                         <tr>

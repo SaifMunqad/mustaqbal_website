@@ -92,7 +92,7 @@ export default function LanguageSwitcher({
             </button>
 
             {isOpen && (
-                <div className="absolute end-0 z-50 mt-2 min-w-44 overflow-hidden rounded-xl border border-brand-border/50 bg-white/95 p-1 shadow-xl backdrop-blur-xl">
+                <div className="absolute end-0 z-50 mt-2 min-w-44 overflow-hidden rounded-xl border border-brand-border/50 bg-white/95 p-1 text-gray-800 shadow-xl backdrop-blur-xl dark:bg-[#121212]/95 dark:text-gray-200">
                     {available.map((option) => {
                         const isActive = i18n.language === option.code;
 

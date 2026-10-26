@@ -162,7 +162,7 @@ function SchoolPrograms() {
             <section className="p-6 md:p-10">
                 <Reveal direction="fade" defaultInView>
                     <div className="inline-flex items-center gap-2 rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold tracking-wide text-slate-600 uppercase dark:text-slate-300">
-                        <span className="size-1.5 rounded-full bg-indigo-500" />
+                        <span className="size-1.5 rounded-full bg-brand" />
                         {t('programs.badge')}
                     </div>
                     <h1 className="mt-3 text-3xl font-bold text-slate-900 md:text-4xl dark:text-white">

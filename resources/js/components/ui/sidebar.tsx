@@ -372,9 +372,27 @@ function SidebarSeparator({
   )
 }
 
+// Preserves the dashboard sidebar's scroll position across Inertia
+// navigations. The layout is not persisted, so the sidebar subtree (including
+// this scroll container) remounts on every page visit and its scrollTop would
+// otherwise reset to 0 — jarring when the user just clicked an item lower down
+// the list. A module-level value survives those remounts within the SPA session.
+let sidebarContentScrollTop = 0
+
 function SidebarContent({ className, ...props }: React.ComponentProps<"div">) {
+  const ref = React.useRef<HTMLDivElement>(null)
+
+  // Restore before paint so the sidebar never visibly flashes back to the top.
+  React.useLayoutEffect(() => {
+    if (ref.current) ref.current.scrollTop = sidebarContentScrollTop
+  }, [])
+
   return (
     <div
+      ref={ref}
+      onScroll={(event) => {
+        sidebarContentScrollTop = event.currentTarget.scrollTop
+      }}
       data-slot="sidebar-content"
       data-sidebar="content"
       className={cn(

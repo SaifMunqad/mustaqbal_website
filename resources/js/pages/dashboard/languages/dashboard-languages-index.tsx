@@ -155,7 +155,7 @@ export default function DashboardLanguagesIndex() {
                 <p>{t('dashboard.languages.dragHint')}</p>
             </div>
 
-            <div className="overflow-x-auto rounded-2xl border border-border">
+            <div className="scrollbar-thin overflow-x-auto rounded-2xl border border-border">
                 <table className="w-full text-sm">
                     <thead className="bg-muted/50 text-start">
                         <tr>
