@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Enums\EventAudience;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\StoreEventRequest;
+use App\Http\Requests\Dashboard\UpdateEventRequest;
 use App\Models\Event;
-use App\Support\Rules\ImageLocation;
 use App\Support\Translation\TranslationPayload;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -54,12 +54,8 @@ class DashboardEventController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreEventRequest $request): RedirectResponse
     {
-        $this->authorize('create', Event::class);
-
-        $request->validate($this->rules());
-
         $payload = TranslationPayload::extract($request, self::TRANSLATED);
         $defaultTitle = TranslationPayload::defaultAttributes($payload)['title'] ?? '';
 
@@ -97,12 +93,8 @@ class DashboardEventController extends Controller
         ]);
     }
 
-    public function update(Request $request, Event $event): RedirectResponse
+    public function update(UpdateEventRequest $request, Event $event): RedirectResponse
     {
-        $this->authorize('update', $event);
-
-        $request->validate($this->rules());
-
         $canPublish = $request->user()->can('publish', Event::class);
 
         $event->update([
@@ -138,30 +130,6 @@ class DashboardEventController extends Controller
     private function parentFields(): array
     {
         return ['cover_image', 'images', 'start_at', 'end_at', 'audience', 'is_cancelled', 'is_published'];
-    }
-
-    /**
-     * Parent-field rules combined with every active language's localized fields.
-     *
-     * @return array<string, mixed>
-     */
-    private function rules(): array
-    {
-        return array_merge([
-            'cover_image' => ['nullable', new ImageLocation, 'max:2048'],
-            'images' => ['nullable', 'array'],
-            'images.*' => ['nullable', new ImageLocation, 'max:2048'],
-            'start_at' => ['required', 'date'],
-            'end_at' => ['nullable', 'date', 'after_or_equal:start_at'],
-            'audience' => ['required', Rule::in(EventAudience::values())],
-            'is_cancelled' => ['nullable', 'boolean'],
-            'is_published' => ['nullable', 'boolean'],
-        ], TranslationPayload::rules(self::TRANSLATED, [
-            'title' => ['string', 'max:255'],
-            'excerpt' => ['string', 'max:1000'],
-            'body' => ['string'],
-            'location' => ['string', 'max:255'],
-        ], ['title']));
     }
 
     /**

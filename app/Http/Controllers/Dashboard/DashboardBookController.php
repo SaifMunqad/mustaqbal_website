@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\StoreBookRequest;
+use App\Http\Requests\Dashboard\UpdateBookRequest;
 use App\Models\Book;
 use App\Models\BookCategory;
-use App\Support\Rules\ImageLocation;
 use App\Support\Translation\TranslationPayload;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -56,10 +57,8 @@ class DashboardBookController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreBookRequest $request): RedirectResponse
     {
-        $request->validate($this->rules());
-
         $payload = TranslationPayload::extract($request, self::TRANSLATED);
         $defaultTitle = TranslationPayload::defaultAttributes($payload)['title'] ?? '';
 
@@ -100,10 +99,8 @@ class DashboardBookController extends Controller
         ]);
     }
 
-    public function update(Request $request, Book $book): RedirectResponse
+    public function update(UpdateBookRequest $request, Book $book): RedirectResponse
     {
-        $request->validate($this->rules());
-
         $previousFile = $book->file_path;
         $previousThumb = $book->thumbnail_path;
 
@@ -172,28 +169,6 @@ class DashboardBookController extends Controller
     private function parentFields(): array
     {
         return ['author', 'published_year', 'isbn', 'book_category_id', 'file_path', 'thumbnail_path'];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function rules(): array
-    {
-        return array_merge([
-            'author' => ['nullable', 'string', 'max:255'],
-            'published_year' => ['nullable', 'integer', 'min:1000', 'max:2100'],
-            'isbn' => ['nullable', 'string', 'max:64'],
-            'images' => ['nullable', 'array'],
-            'images.*' => ['nullable', new ImageLocation, 'max:2048'],
-            'book_category_id' => ['nullable', 'exists:book_categories,id'],
-            // Populated by the PDF uploader; stored as disk-relative paths.
-            'file_path' => ['nullable', 'string', 'max:2048'],
-            'thumbnail_path' => ['nullable', 'string', 'max:2048'],
-        ], TranslationPayload::rules(self::TRANSLATED, [
-            'title' => ['string', 'max:255'],
-            'publisher' => ['string', 'max:255'],
-            'description' => ['string', 'max:5000'],
-        ], ['title']));
     }
 
     private function uniqueSlug(string $title): string

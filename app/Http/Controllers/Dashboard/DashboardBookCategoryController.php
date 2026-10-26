@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\StoreBookCategoryRequest;
+use App\Http\Requests\Dashboard\UpdateBookCategoryRequest;
 use App\Models\BookCategory;
 use App\Support\Translation\TranslationPayload;
 use Illuminate\Http\RedirectResponse;
@@ -45,9 +47,9 @@ class DashboardBookCategoryController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreBookCategoryRequest $request): RedirectResponse
     {
-        $validated = $this->validateCategory($request);
+        $validated = $request->validated();
 
         $category = BookCategory::query()->create([
             'name' => $validated['name'],
@@ -83,9 +85,9 @@ class DashboardBookCategoryController extends Controller
         ]);
     }
 
-    public function update(Request $request, BookCategory $category): RedirectResponse
+    public function update(UpdateBookCategoryRequest $request, BookCategory $category): RedirectResponse
     {
-        $validated = $this->validateCategory($request);
+        $validated = $request->validated();
 
         $category->update(['name' => $validated['name']]);
 
@@ -103,13 +105,6 @@ class DashboardBookCategoryController extends Controller
         return redirect()
             ->route('dashboard.categories.index')
             ->with('success', 'flash.categoryDeleted');
-    }
-
-    private function validateCategory(Request $request): array
-    {
-        return $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-        ]);
     }
 
     /**

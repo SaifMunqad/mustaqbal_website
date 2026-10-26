@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\BulkImportAwardsRequest;
+use App\Http\Requests\Dashboard\StoreAwardRequest;
+use App\Http\Requests\Dashboard\UpdateAwardRequest;
 use App\Models\Award;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -43,11 +45,9 @@ class DashboardAwardController extends Controller
         return Inertia::render('dashboard/awards/dashboard-awards-create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreAwardRequest $request): RedirectResponse
     {
-        $this->normalizeCodes($request);
-
-        $validated = $request->validate($this->rules($request));
+        $validated = $request->validated();
 
         Award::query()->create($validated);
 
@@ -63,11 +63,9 @@ class DashboardAwardController extends Controller
         ]);
     }
 
-    public function update(Request $request, Award $award): RedirectResponse
+    public function update(UpdateAwardRequest $request, Award $award): RedirectResponse
     {
-        $this->normalizeCodes($request);
-
-        $validated = $request->validate($this->rules($request, $award));
+        $validated = $request->validated();
 
         $award->update($validated);
 
@@ -99,16 +97,9 @@ class DashboardAwardController extends Controller
      * re-importing a corrected sheet fixes existing awards instead of
      * duplicating them.
      */
-    public function bulkImport(Request $request): RedirectResponse
+    public function bulkImport(BulkImportAwardsRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'rows' => ['required', 'array', 'min:1', 'max:'.self::MAX_IMPORT_ROWS],
-            'rows.*.person_id' => ['required', 'string', 'max:64'],
-            'rows.*.award_id' => ['required', 'string', 'max:64'],
-            'rows.*.full_name' => ['required', 'string', 'max:100'],
-            'rows.*.father_name' => ['nullable', 'string', 'max:100'],
-            'rows.*.awarded_at' => ['required', 'date_format:Y-m-d'],
-        ]);
+        $validated = $request->validated();
 
         $summary = $this->upsertRows($validated['rows']);
 
@@ -184,40 +175,5 @@ class DashboardAwardController extends Controller
         });
 
         return ['created' => $created, 'updated' => $updated, 'skipped' => $skipped];
-    }
-
-    /**
-     * Spreadsheet values frequently arrive padded with spaces; trim them before
-     * validation so the unique-pair check compares the stored value.
-     */
-    private function normalizeCodes(Request $request): void
-    {
-        $request->merge(array_map(
-            static fn (mixed $value): mixed => is_string($value) ? trim($value) : $value,
-            $request->only(['person_id', 'award_id', 'full_name', 'father_name']),
-        ) + $request->only(['awarded_at']));
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function rules(Request $request, ?Award $award = null): array
-    {
-        $uniquePair = Rule::unique('awards')
-            ->where(fn ($query) => $query
-                ->where('person_id', (string) $request->input('person_id'))
-                ->where('award_id', (string) $request->input('award_id')));
-
-        if ($award !== null) {
-            $uniquePair->ignore($award->getKey());
-        }
-
-        return [
-            'person_id' => ['required', 'string', 'max:64'],
-            'award_id' => ['required', 'string', 'max:64', $uniquePair],
-            'full_name' => ['required', 'string', 'max:100'],
-            'father_name' => ['nullable', 'string', 'max:100'],
-            'awarded_at' => ['required', 'date'],
-        ];
     }
 }

@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\StoreJobRequest;
+use App\Http\Requests\Dashboard\UpdateJobRequest;
 use App\Models\Job;
 use App\Support\Translation\TranslationPayload;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -55,10 +56,8 @@ class DashboardJobController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreJobRequest $request): RedirectResponse
     {
-        $request->validate($this->rules());
-
         $payload = TranslationPayload::extract($request, self::TRANSLATED);
         $defaultTitle = TranslationPayload::defaultAttributes($payload)['title'] ?? '';
 
@@ -88,10 +87,8 @@ class DashboardJobController extends Controller
         ]);
     }
 
-    public function update(Request $request, Job $job): RedirectResponse
+    public function update(UpdateJobRequest $request, Job $job): RedirectResponse
     {
-        $request->validate($this->rules());
-
         $job->update([
             ...Arr::only($request->only($this->parentFields()), $this->parentFields()),
             'is_active' => (bool) $request->input('is_active'),
@@ -127,27 +124,6 @@ class DashboardJobController extends Controller
             'deadline',
             'is_active',
         ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function rules(): array
-    {
-        return array_merge([
-            'category' => ['nullable', Rule::in(['school', 'course', 'islamic_madrasa'])],
-            'employment_type' => ['required', Rule::in(['full_time', 'part_time', 'contract'])],
-            'working_hours' => ['nullable', 'string', 'max:255'],
-            'application_email' => ['nullable', 'email', 'max:255'],
-            'application_url' => ['nullable', 'url', 'max:500'],
-            'deadline' => ['nullable', 'date'],
-            'is_active' => ['nullable', 'boolean'],
-        ], TranslationPayload::rules(self::TRANSLATED, [
-            'title' => ['string', 'max:255'],
-            'department' => ['string', 'max:255'],
-            'description' => ['string'],
-            'requirements' => ['string'],
-        ], ['title', 'description']));
     }
 
     private function employmentTypeOptions(): array

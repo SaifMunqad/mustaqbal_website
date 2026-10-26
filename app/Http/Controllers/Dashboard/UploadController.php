@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\StoreBookPdfRequest;
+use App\Http\Requests\Dashboard\StoreUploadRequest;
 use App\Services\PdfThumbnailService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -22,16 +23,9 @@ class UploadController extends Controller
      * can continue to validate cover/gallery/logo/favicon values as plain URLs.
      * Favicon `.ico` files are allowed alongside standard images.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreUploadRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'image' => [
-                'required',
-                'file',
-                'max:5120',
-                'mimetypes:image/*,image/vnd.microsoft.icon,image/x-icon,image/x-ico',
-            ],
-        ]);
+        $validated = $request->validated();
 
         $path = $validated['image']->store('uploads', 'public');
 
@@ -54,11 +48,9 @@ class UploadController extends Controller
      * them as hidden fields (mirroring the image uploader) rather than sending
      * a second multipart request when the book is saved.
      */
-    public function pdf(Request $request): JsonResponse
+    public function pdf(StoreBookPdfRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'file' => ['required', 'file', 'mimes:pdf', 'max:20480'],
-        ]);
+        $validated = $request->validated();
 
         $path = $validated['file']->store('books/pdfs', 'public');
 

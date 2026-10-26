@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\StoreProgramRequest;
+use App\Http\Requests\Dashboard\UpdateProgramRequest;
 use App\Models\Language;
 use App\Models\Program;
 use App\Support\Translation\TranslationPayload;
@@ -51,10 +53,8 @@ class DashboardProgramController extends Controller
         return Inertia::render('dashboard/programs/dashboard-programs-create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreProgramRequest $request): RedirectResponse
     {
-        $request->validate($this->rules());
-
         $payload = $this->normalizedPayload($request);
         $defaults = TranslationPayload::defaultAttributes($payload);
 
@@ -84,10 +84,8 @@ class DashboardProgramController extends Controller
         ]);
     }
 
-    public function update(Request $request, Program $program): RedirectResponse
+    public function update(UpdateProgramRequest $request, Program $program): RedirectResponse
     {
-        $request->validate($this->rules());
-
         $payload = $this->normalizedPayload($request);
         $defaults = TranslationPayload::defaultAttributes($payload);
 
@@ -139,25 +137,6 @@ class DashboardProgramController extends Controller
             'available_for_enroll' => ! empty($request->input('available_for_enroll')),
             'display_order' => $request->input('display_order', 0),
         ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function rules(): array
-    {
-        return array_merge([
-            'program_type' => ['required', 'in:school,courses,islamic_madrasa'],
-            'fees' => ['required', 'numeric', 'min:0'],
-            'available_for_enroll' => ['nullable', 'boolean'],
-            'display_order' => ['nullable', 'integer', 'min:0'],
-        ], TranslationPayload::rules(self::TRANSLATED, [
-            'name' => ['string', 'max:255'],
-            'description' => ['string'],
-            'schedule' => ['string', 'max:255'],
-            'age_recommendation' => ['string', 'max:255'],
-            'classroom_number' => ['string', 'max:100'],
-        ], ['name', 'description', 'schedule', 'age_recommendation']));
     }
 
     /**

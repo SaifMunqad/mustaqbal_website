@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Dashboard\StoreArticleRequest;
+use App\Http\Requests\Dashboard\UpdateArticleRequest;
 use App\Models\Article;
-use App\Support\Rules\ImageLocation;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -40,25 +40,9 @@ class DashboardArticleController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreArticleRequest $request): RedirectResponse
     {
-        $this->authorize('create', Article::class);
-
-        $request->merge([
-            'images' => array_values(array_filter($request->input('images', []), static fn ($image) => filled($image))),
-        ]);
-
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'writer_name' => ['nullable', 'string', 'max:255'],
-            'language' => ['nullable', 'string', 'max:10'],
-            'excerpt' => ['nullable', 'string', 'max:1000'],
-            'body' => ['required', 'string'],
-            'cover_image' => ['nullable', new ImageLocation, 'max:2048'],
-            'images' => ['nullable', 'array'],
-            'images.*' => ['nullable', new ImageLocation, 'max:2048'],
-            'is_published' => ['nullable', 'boolean'],
-        ]);
+        $validated = $request->validated();
 
         $validated['body'] = Purify::clean($validated['body']);
 
@@ -85,25 +69,9 @@ class DashboardArticleController extends Controller
         ]);
     }
 
-    public function update(Request $request, Article $article): RedirectResponse
+    public function update(UpdateArticleRequest $request, Article $article): RedirectResponse
     {
-        $this->authorize('update', $article);
-
-        $request->merge([
-            'images' => array_values(array_filter($request->input('images', []), static fn ($image) => filled($image))),
-        ]);
-
-        $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'writer_name' => ['nullable', 'string', 'max:255'],
-            'language' => ['nullable', 'string', 'max:10'],
-            'excerpt' => ['nullable', 'string', 'max:1000'],
-            'body' => ['required', 'string'],
-            'cover_image' => ['nullable', new ImageLocation, 'max:2048'],
-            'images' => ['nullable', 'array'],
-            'images.*' => ['nullable', new ImageLocation, 'max:2048'],
-            'is_published' => ['nullable', 'boolean'],
-        ]);
+        $validated = $request->validated();
 
         $validated['body'] = Purify::clean($validated['body']);
 
