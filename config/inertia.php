@@ -4,31 +4,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Server Side Rendering
-    |--------------------------------------------------------------------------
-    |
-    | These options configures if and how Inertia uses Server Side Rendering
-    | to pre-render each initial request made to your application's pages
-    | so that server rendered HTML is delivered for the user's browser.
-    |
-    | See: https://inertiajs.com/server-side-rendering
-    |
-    | `enabled` is env-driven so a host where the Node SSR daemon is unhealthy
-    | can fall back to client-side rendering (Inertia already degrades
-    | gracefully when the engine refuses or errors) without a code deploy:
-    | set INERTIA_SSR_ENABLED=false and clear the config cache.
-    |
-    */
-
-    'ssr' => [
-        'enabled' => env('INERTIA_SSR_ENABLED', true),
-        'url' => env('INERTIA_SSR_URL', 'http://127.0.0.1:13714'),
-        // 'bundle' => base_path('bootstrap/ssr/ssr.mjs'),
-
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Testing
     |--------------------------------------------------------------------------
     |

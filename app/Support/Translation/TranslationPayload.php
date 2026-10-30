@@ -5,7 +5,6 @@ namespace App\Support\Translation;
 use App\Models\Language;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * Normalizes the per-language content payload submitted by the shared admin
@@ -49,9 +48,13 @@ class TranslationPayload
             }
         }
 
-        // Accept only active language codes as keys under `translations`.
+        // `translations` must be an array of per-language arrays. Only the active
+        // language codes are enumerated as field rules above, and `extract()`
+        // drops any other code, so unknown keys are simply ignored here. Each
+        // value must itself be an array (never validate the array against `in`,
+        // which would wrongly reject every language with "selected ... is invalid").
         $out['translations'] = ['array'];
-        $out['translations.*'] = ['array', Rule::in($codes)];
+        $out['translations.*'] = ['array'];
 
         return $out;
     }

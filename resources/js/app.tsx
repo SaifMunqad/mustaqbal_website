@@ -5,9 +5,9 @@ import '../css/app.css';
 import '@fontsource/carlito/400.css';
 import '@fontsource/carlito/700.css';
 
+import { ToastProvider, type FlashProps } from '@/components/feedback/toast';
 import '@/i18n';
 import { bootstrapLanguage } from '@/i18n';
-import { ToastProvider, type FlashProps } from '@/components/feedback/toast';
 import type { SharedData, SiteSettings } from '@/types';
 import { createInertiaApp, router } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
@@ -37,7 +37,8 @@ function toRelativeUrl(url: string): string {
 
 function applyFavicon(faviconUrl?: string | null) {
     const href = faviconUrl ? toRelativeUrl(faviconUrl) : '/favicon.ico';
-    const existing = document.querySelector<HTMLLinkElement>("link[rel='icon']");
+    const existing =
+        document.querySelector<HTMLLinkElement>("link[rel='icon']");
 
     if (existing) {
         existing.href = href;
@@ -68,7 +69,9 @@ createInertiaApp({
 
         const root = createRoot(el);
 
-        const initialFlash = (props.initialPage.props as { flash?: FlashProps | null }).flash;
+        const initialFlash = (
+            props.initialPage.props as { flash?: FlashProps | null }
+        ).flash;
 
         root.render(
             <StrictMode>
