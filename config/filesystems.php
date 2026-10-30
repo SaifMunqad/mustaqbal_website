@@ -33,7 +33,11 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // Do not serve the private disk. The framework mounts a serve route
+            // at the disk's URL path; with no `url` this would default to
+            // `/storage` and expose the private disk (shadowing the public one),
+            // which is why `/storage/uploads/x.jpg` failed to resolve.
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],
@@ -43,6 +47,10 @@ return [
             'root' => storage_path('app/public'),
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
+            // Serve `/storage/{path}` straight from this disk so uploaded
+            // images resolve even when the `public/storage` symlink is not
+            // exposed by the web server (e.g. behind Octane / nginx).
+            'serve' => true,
             'throw' => false,
             'report' => false,
         ],

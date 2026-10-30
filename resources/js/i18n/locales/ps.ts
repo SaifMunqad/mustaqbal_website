@@ -102,6 +102,7 @@ const ps = {
         uploadFailed: 'اپلوډ ناکام شو.',
         uploadNoImage: 'اپلوډ بریالی شو خو هیڅ انځور بیرته راونه‌ګرځېد.',
         uploadNoFile: 'اپلوډ بریالی شو خو د فایل هیڅ مسیر بیرته راونه‌ګرځېد.',
+        notRoutable: 'انځور اپلوډ شو خو د هغه URL نشي پرانیستل کیدای. په سرور کې «php artisan storage:link» وچلوئ بیا هڅه وکړئ.',
         imageSet: 'انځور ټاکل شوی',
         noImageYet: 'تر اوسه انځور نشته',
         coverAlt: 'د کتاب پوښ',

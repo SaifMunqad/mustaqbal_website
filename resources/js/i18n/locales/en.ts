@@ -102,6 +102,7 @@ const en = {
         uploadFailed: 'Upload failed.',
         uploadNoImage: 'Upload succeeded but no image was returned.',
         uploadNoFile: 'Upload succeeded but no file path was returned.',
+        notRoutable: 'The image was uploaded but its URL cannot be opened. Run “php artisan storage:link” on the server, then try again.',
         imageSet: 'Image set',
         noImageYet: 'No image yet',
         coverAlt: 'Book cover',

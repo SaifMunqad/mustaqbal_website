@@ -29,6 +29,15 @@ class UploadController extends Controller
 
         $path = $validated['image']->store('uploads', 'public');
 
+        // Re-check the file actually landed on the public disk before telling the
+        // client the upload succeeded, so a silently failed write is surfaced here
+        // instead of becoming a broken /storage URL later.
+        if (! Storage::disk('public')->exists($path)) {
+            return response()->json([
+                'message' => 'The image was uploaded but could not be stored.',
+            ], 500);
+        }
+
         // Return an app-relative URL (e.g. /storage/uploads/x.jpg) instead of an
         // APP_URL-based absolute one, so the asset resolves correctly no matter
         // which host, port or scheme the site is being served from.

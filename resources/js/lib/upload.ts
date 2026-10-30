@@ -24,6 +24,35 @@ export interface ImageUploadResult {
 }
 
 /**
+ * Confirm a freshly returned image URL is actually reachable from the browser.
+ * The file can sit on the disk yet be un-openable when the `public/storage`
+ * symlink is not served, so we load it as an image (with a cache-busting probe
+ * parameter) and only treat the upload as successful once it decodes.
+ */
+function probeRoutable(url: string, timeoutMs = 15000): Promise<boolean> {
+    return new Promise((resolve) => {
+        const image = new Image();
+        let settled = false;
+
+        const finish = (ok: boolean) => {
+            if (settled) return;
+            settled = true;
+            image.onload = null;
+            image.onerror = null;
+            window.clearTimeout(timer);
+            resolve(ok);
+        };
+
+        const timer = window.setTimeout(() => finish(false), timeoutMs);
+        image.onload = () => finish(true);
+        image.onerror = () => finish(false);
+
+        const separator = url.includes('?') ? '&' : '?';
+        image.src = `${url}${separator}probe=${Date.now()}`;
+    });
+}
+
+/**
  * Upload an image and resolve both its public URL (for preview) and its
  * disk-relative path (for storage). Used when a book's image can be replaced
  * with any uploaded picture, keeping the path alongside the auto-generated
@@ -51,6 +80,12 @@ export async function uploadImageDetailed(file: File): Promise<ImageUploadResult
     const data = (await response.json()) as ImageUploadResult;
     if (!data.url || !data.path) {
         throw new Error(i18n.t('media.uploadNoImage'));
+    }
+
+    // Re-check: the stored image must actually open at its public URL before we
+    // hand it back, otherwise the form would persist a link that renders broken.
+    if (!(await probeRoutable(data.url))) {
+        throw new Error(i18n.t('media.notRoutable'));
     }
 
     return data;
