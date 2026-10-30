@@ -25,6 +25,10 @@ interface DateTypeSwitcherProps {
 /**
  * Date-type picker styled after the header's language switcher: a compact
  * trigger that opens a check-marked menu, with click-outside dismissal.
+ *
+ * Every color is a brand token (`brand`, `brand-ink`, `brand-soft`, …) fed by
+ * the admin's saved branding palette, so the control inherits the school's
+ * brand color automatically on both the public navbar and the dashboard.
  */
 export default function DateTypeSwitcher({
     value,
@@ -72,13 +76,17 @@ export default function DateTypeSwitcher({
                 aria-expanded={isOpen}
                 aria-label={t('events.dateType')}
                 title={t('events.dateType')}
-                className="inline-flex items-center gap-2 rounded-xl border border-brand-border/70 bg-white/70 px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-brand-soft dark:border-brand-border/60 dark:text-slate-200 dark:hover:bg-gray-900"
+                className={cn(
+                    'inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold shadow-sm transition-all duration-200',
+                    'border-brand-border bg-brand-soft text-brand-ink hover:border-brand hover:bg-brand-soft-strong',
+                    isOpen && 'border-brand ring-2 ring-brand/25',
+                )}
             >
-                <CalendarDaysIcon className="size-5 text-brand-ink" />
+                <CalendarDaysIcon className="size-5 text-brand" />
                 <span>{t(current.labelKey)}</span>
                 <ChevronDownIcon
                     className={cn(
-                        'size-4 transition-transform',
+                        'size-4 text-brand-ink/70 transition-transform duration-200',
                         isOpen && 'rotate-180',
                     )}
                 />
@@ -88,7 +96,7 @@ export default function DateTypeSwitcher({
                 <div
                     role="listbox"
                     aria-label={t('events.dateType')}
-                    className="absolute end-0 z-50 mt-2 min-w-44 overflow-hidden rounded-xl border border-brand-border/50 bg-white/95 p-1 shadow-xl backdrop-blur-xl"
+                    className="absolute end-0 z-50 mt-2 min-w-48 overflow-hidden rounded-xl border border-brand-border bg-white p-1 text-gray-800 shadow-xl dark:bg-[#121212] dark:text-gray-100"
                 >
                     {DATE_TYPE_OPTIONS.map((option) => {
                         const isActive = option.value === value;
@@ -103,12 +111,14 @@ export default function DateTypeSwitcher({
                                 className={cn(
                                     'flex w-full items-center justify-between rounded-lg px-3 py-2 text-start text-sm transition-colors',
                                     isActive
-                                        ? 'bg-brand-soft text-brand-ink'
-                                        : 'hover:bg-brand-soft/80 dark:hover:bg-gray-800/40',
+                                        ? 'bg-brand font-semibold text-brand-fg'
+                                        : 'text-gray-700 hover:bg-brand-soft hover:text-brand-ink dark:text-gray-200 dark:hover:bg-gray-800/60',
                                 )}
                             >
                                 <span>{t(option.labelKey)}</span>
-                                {isActive && <CheckIcon className="h-4 w-4" />}
+                                {isActive && (
+                                    <CheckIcon className="size-4 text-brand-fg" />
+                                )}
                             </button>
                         );
                     })}
