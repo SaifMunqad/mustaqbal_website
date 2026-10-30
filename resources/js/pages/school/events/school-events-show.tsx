@@ -53,14 +53,22 @@ function splitParagraphs(body?: string | null): string[] {
 function EventParagraphs({ paragraphs }: { paragraphs: string[] }) {
     return (
         <div className="space-y-3">
-            {paragraphs.map((paragraph, index) => (
-                <p
-                    key={`${index}-paragraph`}
-                    className="text-sm leading-7 whitespace-pre-wrap text-slate-700 dark:text-slate-300"
-                >
-                    {paragraph}
-                </p>
-            ))}
+            {paragraphs.map((paragraph, index) =>
+                /<[a-z][\s\S]*>/i.test(paragraph) ? (
+                    <div
+                        key={`${index}-paragraph`}
+                        className="space-y-3 text-sm leading-7 text-slate-700 [&_strong]:font-semibold [&_p]:whitespace-pre-wrap dark:text-slate-300"
+                        dangerouslySetInnerHTML={{ __html: paragraph }}
+                    />
+                ) : (
+                    <p
+                        key={`${index}-paragraph`}
+                        className="text-sm leading-7 whitespace-pre-wrap text-slate-700 dark:text-slate-300"
+                    >
+                        {paragraph}
+                    </p>
+                ),
+            )}
         </div>
     );
 }
@@ -167,13 +175,11 @@ function SchoolEventsShow() {
                             ) : null}
 
                             {coverImage ? (
-                                <div className="relative min-h-64 w-full overflow-hidden rounded-2xl">
-                                    <img
-                                        src={coverImage}
-                                        alt={event.title}
-                                        className="absolute inset-0 size-full object-cover"
-                                    />
-                                </div>
+                                <img
+                                    src={coverImage}
+                                    alt={event.title}
+                                    className="h-auto w-full rounded-2xl"
+                                />
                             ) : null}
                         </section>
                     </Reveal>
@@ -187,7 +193,7 @@ function SchoolEventsShow() {
                                     key={`${index}-${image}`}
                                     src={image}
                                     alt={`${event.title} ${index + 1}`}
-                                    className="h-48 w-full rounded-2xl object-cover"
+                                    className="h-auto w-full rounded-2xl"
                                 />
                             ))}
                         </div>

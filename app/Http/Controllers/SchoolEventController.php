@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use Mews\Purifier\Facades\Purifier as Purify;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -49,7 +50,9 @@ class SchoolEventController extends Controller
             ->get();
 
         return Inertia::render('school/events/school-events-show', [
-            'event' => $event,
+            'event' => array_replace($event->toArray(), [
+                'body' => Purify::clean($event->body ?? ''),
+            ]),
             'related' => $related,
         ]);
     }
