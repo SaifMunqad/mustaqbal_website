@@ -6,6 +6,7 @@
 import BookCard, { BookCardData } from '@/components/store/book-card';
 import MediaCard, { MediaCardData } from '@/components/store/media-card';
 import Reveal from '@/components/ui/reveal';
+import { useDateFormatter } from '@/hooks/use-date-formatter';
 import MainLayout from '@/layouts/app/main-layout';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { Head, router, usePage } from '@inertiajs/react';
@@ -62,21 +63,11 @@ function Section({
 
 function SchoolSearch() {
     const { q, isSearch, results } = usePage<SchoolSearchProps>().props;
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const [term, setTerm] = useState(q);
 
-    const locale = i18n.language === 'fa_AF' ? 'fa-AF' : i18n.language;
-
-    const formatDate = (value?: string | null) => {
-        if (!value) return null;
-        try {
-            return new Intl.DateTimeFormat(locale, {
-                dateStyle: 'medium',
-            }).format(new Date(value));
-        } catch {
-            return null;
-        }
-    };
+    // Follows the browser-stored calendar preference (Afghan Solar Hijri default).
+    const formatDate = useDateFormatter({}, '');
 
     const toMedia = (item: ArticleItem | EventItem): MediaCardData => ({
         id: item.id,

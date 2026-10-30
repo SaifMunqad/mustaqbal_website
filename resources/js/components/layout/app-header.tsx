@@ -9,8 +9,10 @@
  * supported alternative and still carries the starter-kit repository/docs links
  * declared at the top of this file.
  */
+import DateTypeSwitcher from '@/components/general/events/date-type-switcher';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { Icon } from '@/components/layout/icon';
+import { UserMenuContent } from '@/components/layout/user-menu-content';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -37,14 +39,14 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { UserMenuContent } from '@/components/layout/user-menu-content';
+import { useDateType } from '@/hooks/use-date-type';
 import { useInitials } from '@/hooks/use-initials';
 import { cn, isSameUrl, resolveUrl } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { useTranslation } from 'react-i18next';
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import AppLogo from './app-logo';
 import AppLogoIcon from './app-logo-icon';
 
@@ -82,6 +84,8 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     const { t, i18n } = useTranslation();
     const sheetSide = i18n.dir() === 'rtl' ? 'right' : 'left';
     const getInitials = useInitials();
+    // Calendar preference shared with every date on the dashboard.
+    const { dateType, setDateType } = useDateType();
     return (
         <>
             <div className="border-b border-sidebar-border/80">
@@ -123,7 +127,9 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                             className="h-5 w-5"
                                                         />
                                                     )}
-                                                    <span>{t(item.titleKey)}</span>
+                                                    <span>
+                                                        {t(item.titleKey)}
+                                                    </span>
                                                 </Link>
                                             ))}
                                         </div>
@@ -143,7 +149,9 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                             className="h-5 w-5"
                                                         />
                                                     )}
-                                                    <span>{t(item.titleKey)}</span>
+                                                    <span>
+                                                        {t(item.titleKey)}
+                                                    </span>
                                                 </a>
                                             ))}
                                         </div>
@@ -190,7 +198,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                             {t(item.titleKey)}
                                         </Link>
                                         {isSameUrl(page.url, item.href) && (
-                                            <div className="absolute bottom-0 start-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"></div>
+                                            <div className="absolute start-0 bottom-0 h-0.5 w-full translate-y-px bg-black dark:bg-white"></div>
                                         )}
                                     </NavigationMenuItem>
                                 ))}
@@ -199,6 +207,10 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                     </div>
 
                     <div className="ms-auto flex items-center gap-2">
+                        <DateTypeSwitcher
+                            value={dateType}
+                            onChange={setDateType}
+                        />
                         <div className="relative flex items-center gap-1">
                             <Button
                                 variant="ghost"

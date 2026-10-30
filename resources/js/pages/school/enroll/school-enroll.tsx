@@ -83,7 +83,6 @@ function SchoolEnroll() {
                                     <DateField
                                         label={t('enroll.dateOfBirth')}
                                         name="date_of_birth"
-                                        calendar="persian"
                                         error={errors.date_of_birth}
                                         required
                                     />
@@ -136,7 +135,9 @@ function SchoolEnroll() {
                                         <TextAreaField
                                             label={t('enroll.notes')}
                                             name="notes"
-                                            placeholder={t('enroll.notesOptional')}
+                                            placeholder={t(
+                                                'enroll.notesOptional',
+                                            )}
                                             error={errors.notes}
                                         />
                                     </FullWidth>

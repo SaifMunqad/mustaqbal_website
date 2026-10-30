@@ -5,8 +5,8 @@
  * `shapeForIndex`, deliberately deterministic rather than random so the server
  * and client render identical markup and hydration never mismatches.
  */
+import { useDateFormatter } from '@/hooks/use-date-formatter';
 import { Link } from '@inertiajs/react';
-import { useTranslation } from 'react-i18next';
 
 export interface HomeCard {
     id: number;
@@ -47,24 +47,6 @@ export function shapeForSeed(seed: number): string {
     return CARD_SHAPES[(hash >>> 0) % CARD_SHAPES.length];
 }
 
-function useDateFormatter() {
-    const { i18n } = useTranslation();
-    const locale = i18n.language === 'fa_AF' ? 'fa-AF' : i18n.language;
-
-    return (value?: string | null) => {
-        if (!value) {
-            return null;
-        }
-        try {
-            return new Intl.DateTimeFormat(locale, {
-                dateStyle: 'medium',
-            }).format(new Date(value));
-        } catch {
-            return null;
-        }
-    };
-}
-
 /**
  * Shared image-cover card used on the home page and the articles listing. The
  * image fills the whole card as a cover background; the subtitle is pinned to
@@ -78,8 +60,10 @@ export default function HomeCardItem({
     card: HomeCard;
     shapeClass: string;
 }) {
-    const formatDate = useDateFormatter();
-    const date = formatDate(card.date);
+    // Follows the browser-stored calendar preference (Afghan Solar Hijri default);
+    // cards without a date render no badge at all.
+    const format = useDateFormatter();
+    const date = card.date ? format(card.date) : null;
     const rtl = card.dir === 'rtl';
 
     // The image fills the whole card as a cover background; the text and CTA

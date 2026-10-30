@@ -8,13 +8,16 @@
  * pending so the queue's progress is visible without a manual reload.
  */
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import ResourceFilterBar, { filterSelectClass } from '@/components/dashboard/resource-filter-bar';
+import ResourceFilterBar, {
+    filterSelectClass,
+} from '@/components/dashboard/resource-filter-bar';
 import { Button } from '@/components/ui/button';
 import { DataTable, DataTableColumn } from '@/components/ui/table';
+import { useDateFormatter } from '@/hooks/use-date-formatter';
 import { router, usePage } from '@inertiajs/react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface MailRow {
     id: number;
@@ -48,7 +51,8 @@ interface MailIndexProps {
 const statusStyles: Record<string, string> = {
     sent: 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300',
     failed: 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300',
-    pending: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
+    pending:
+        'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
 };
 
 const STATUS_TABS = ['all', 'pending', 'sent', 'failed'] as const;
@@ -67,7 +71,10 @@ export default function DashboardMailsIndex() {
             return;
         }
 
-        const interval = setInterval(() => router.reload({ only: ['logs', 'counts'] }), 5000);
+        const interval = setInterval(
+            () => router.reload({ only: ['logs', 'counts'] }),
+            5000,
+        );
 
         return () => clearInterval(interval);
     }, [hasPending]);
@@ -96,16 +103,25 @@ export default function DashboardMailsIndex() {
         goTo(buildParams({ status: tab }));
     };
 
-    const sourceLabel = (row: MailRow) => row.source ?? t('dashboard.mails.system');
+    const sourceLabel = (row: MailRow) =>
+        row.source ?? t('dashboard.mails.system');
+
+    // Follows the browser-stored calendar preference (Afghan Solar Hijri default).
+    const formatDateTime = useDateFormatter({ timeStyle: 'short' });
 
     const when = (row: MailRow) => {
         const stamp = row.sent_at ?? row.created_at;
 
-        return new Date(stamp).toLocaleString();
+        return formatDateTime(stamp);
     };
 
     const columns: DataTableColumn<MailRow>[] = [
-        { key: 'id', header: '#', cell: (row) => row.id, sortValue: (row) => row.id },
+        {
+            key: 'id',
+            header: '#',
+            cell: (row) => row.id,
+            sortValue: (row) => row.id,
+        },
         {
             key: 'source',
             header: t('dashboard.mails.source'),
@@ -154,7 +170,9 @@ export default function DashboardMailsIndex() {
             titleKey="dashboard.mails.title"
             breadcrumbs={[{ title: t('dashboard.title'), href: '/dashboard' }]}
         >
-            <p className="text-sm text-muted-foreground">{t('dashboard.mails.subtitle')}</p>
+            <p className="text-sm text-muted-foreground">
+                {t('dashboard.mails.subtitle')}
+            </p>
 
             <div className="flex flex-wrap gap-2">
                 {STATUS_TABS.map((tab) => {
@@ -169,7 +187,9 @@ export default function DashboardMailsIndex() {
                             onClick={() => selectTab(tab)}
                         >
                             {t(`dashboard.mails.tabs.${tab}`)}
-                            <span className="ms-1.5 text-xs opacity-70">{counts[tab]}</span>
+                            <span className="ms-1.5 text-xs opacity-70">
+                                {counts[tab]}
+                            </span>
                         </Button>
                     );
                 })}
@@ -187,9 +207,15 @@ export default function DashboardMailsIndex() {
                     className={filterSelectClass}
                 >
                     <option value="">{t('dashboard.mails.tabs.all')}</option>
-                    <option value="pending">{t('dashboard.mails.tabs.pending')}</option>
-                    <option value="sent">{t('dashboard.mails.tabs.sent')}</option>
-                    <option value="failed">{t('dashboard.mails.tabs.failed')}</option>
+                    <option value="pending">
+                        {t('dashboard.mails.tabs.pending')}
+                    </option>
+                    <option value="sent">
+                        {t('dashboard.mails.tabs.sent')}
+                    </option>
+                    <option value="failed">
+                        {t('dashboard.mails.tabs.failed')}
+                    </option>
                 </select>
             </ResourceFilterBar>
 
@@ -219,7 +245,11 @@ export default function DashboardMailsIndex() {
                         disabled={!logs.prev_page_url}
                         onClick={() =>
                             logs.prev_page_url &&
-                            router.get(logs.prev_page_url, {}, { preserveState: true })
+                            router.get(
+                                logs.prev_page_url,
+                                {},
+                                { preserveState: true },
+                            )
                         }
                     >
                         <ChevronLeft className="size-4 rtl:rotate-180" />
@@ -237,7 +267,11 @@ export default function DashboardMailsIndex() {
                         disabled={!logs.next_page_url}
                         onClick={() =>
                             logs.next_page_url &&
-                            router.get(logs.next_page_url, {}, { preserveState: true })
+                            router.get(
+                                logs.next_page_url,
+                                {},
+                                { preserveState: true },
+                            )
                         }
                     >
                         <ChevronRight className="size-4 rtl:rotate-180" />

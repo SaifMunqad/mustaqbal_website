@@ -41,7 +41,6 @@ function SchoolEnrollResendEmail() {
                                 <DateField
                                     label={t('enroll.dateOfBirth')}
                                     name="date_of_birth"
-                                    calendar="islamic"
                                     error={errors.date_of_birth}
                                     required
                                 />

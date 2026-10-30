@@ -11,16 +11,18 @@ import persian_en from 'react-date-object/locales/persian_en';
 import persian_fa from 'react-date-object/locales/persian_fa';
 
 /**
- * Date types the visitor can pick on the public events pages. `gregorian` is
- * used for formatting through `Intl`, the other two rely on `react-date-object`
- * so the month grid and the printed dates share one calendar.
+ * Date types the whole system can render dates in. `gregorian` is used for
+ * formatting through `Intl`, the other two rely on `react-date-object` so the
+ * month grid and the printed dates share one calendar.
  */
 export type DateType = 'gregorian' | 'solar' | 'lunar';
 
 /** localStorage key that keeps the visitor's choice across reloads/visits. */
 export const DATE_TYPE_STORAGE_KEY = 'school.dateType';
 
-export const DEFAULT_DATE_TYPE: DateType = 'gregorian';
+// The audience is Afghan: dates read in the Solar Hijri calendar (حمل، ثور،
+// جوزا…) unless the visitor explicitly picks another calendar in the switcher.
+export const DEFAULT_DATE_TYPE: DateType = 'solar';
 
 export const DATE_TYPES: DateType[] = ['gregorian', 'solar', 'lunar'];
 
@@ -150,29 +152,6 @@ export function getDateTypeConfig(
     return { calendar: gregorian, locale: gregorian_en };
 }
 
-/**
- * Read the browser/OS calendar preference so the first visit starts on the
- * date type the visitor already uses elsewhere (`Intl` reports e.g. `gregory`,
- * `persian` or `islamic-umalqura`).
- */
-export function detectSystemDateType(): DateType {
-    if (typeof Intl === 'undefined') {
-        return DEFAULT_DATE_TYPE;
-    }
-
-    const calendar = new Intl.DateTimeFormat().resolvedOptions().calendar ?? '';
-
-    if (calendar.startsWith('persian')) {
-        return 'solar';
-    }
-
-    if (calendar.startsWith('islamic')) {
-        return 'lunar';
-    }
-
-    return 'gregorian';
-}
-
 /** Map the i18n language code to the BCP-47 tag `Intl` understands. */
 export function intlLocale(language?: string): string {
     return language === 'fa_AF' ? 'fa-AF' : (language ?? 'en');
@@ -209,8 +188,8 @@ export function dateTypeKey(
     return toCalendarDate(date, dateType, language).format('YYYY-MM-DD');
 }
 
-interface FormatDateOptions {
-    dateStyle?: 'medium' | 'full';
+export interface FormatDateOptions {
+    dateStyle?: 'medium' | 'long' | 'full';
     timeStyle?: 'short';
 }
 
@@ -235,7 +214,10 @@ export function formatDate(
 
     if (dateType === 'gregorian') {
         try {
+            // `fa-AF`/`fa` default to the Persian calendar in `Intl`, so pin
+            // the calendar explicitly: choosing Gregorian must show Gregorian.
             return new Intl.DateTimeFormat(intlLocale(language), {
+                calendar: 'gregory',
                 dateStyle,
                 timeStyle,
             }).format(date);

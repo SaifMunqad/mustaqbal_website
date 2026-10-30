@@ -3,9 +3,9 @@
  *
  * Every field wraps a shadcn primitive in the same label + hint + error layout,
  * so create/edit screens stay visually aligned without repeating markup. The date
- * fields translate between the admin's chosen calendar (Persian or Islamic) and
- * the Gregorian `YYYY-MM-DD` string the server expects, which keeps the stored
- * values calendar-agnostic.
+ * fields follow the browser-stored date-type preference (Afghan Solar Hijri by
+ * default) and translate to the Gregorian `YYYY-MM-DD` string the server expects,
+ * which keeps the stored values calendar-agnostic.
  *
  * Exports the individual `*Field` components plus the `FieldWrapper` shell.
  */
@@ -20,35 +20,20 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { useDateType } from '@/hooks/use-date-type';
+import { getDateTypeConfig } from '@/lib/date-type';
 import { cn } from '@/lib/utils';
 import { ComponentProps, ReactNode, useMemo, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import DateObject from 'react-date-object';
-import arabic from 'react-date-object/calendars/arabic';
 import gregorian from 'react-date-object/calendars/gregorian';
-import persian from 'react-date-object/calendars/persian';
-import arabic_ar from 'react-date-object/locales/arabic_ar';
 import gregorian_en from 'react-date-object/locales/gregorian_en';
-import persian_fa from 'react-date-object/locales/persian_fa';
+import { useTranslation } from 'react-i18next';
 import DatePicker from 'react-multi-date-picker';
+import TimePicker from 'react-multi-date-picker/plugins/time_picker';
 
-type CalendarKind = 'persian' | 'islamic';
-
-const calendarConfig: Record<
-    CalendarKind,
-    { calendar: typeof persian; locale: typeof persian_fa; placeholder: string }
-> = {
-    persian: {
-        calendar: persian,
-        locale: persian_fa,
-        placeholder: 'YYYY/MM/DD',
-    },
-    islamic: {
-        calendar: arabic,
-        locale: arabic_ar,
-        placeholder: 'YYYY/MM/DD',
-    },
-};
+// Picker input/display format; the digits follow the selected calendar's locale.
+const PICKER_FORMAT = 'YYYY/MM/DD';
+const DATE_TIME_PICKER_FORMAT = 'YYYY/MM/DD HH:mm';
 
 const toGregorianValue = (date?: DateObject | null): string => {
     if (!date) {
@@ -60,9 +45,25 @@ const toGregorianValue = (date?: DateObject | null): string => {
         .format('YYYY-MM-DD');
 };
 
+/** Serialized form a datetime field submits, e.g. `2026-04-14T12:30`. */
+const toGregorianDateTimeValue = (date?: DateObject | null): string => {
+    if (!date) {
+        return '';
+    }
+
+    return new DateObject(date)
+        .convert(gregorian, gregorian_en)
+        .format('YYYY-MM-DDTHH:mm');
+};
+
+/**
+ * Parse a stored Gregorian string (`YYYY-MM-DD` or `YYYY-MM-DDTHH:mm`) into a
+ * DateObject projected onto the requested calendar.
+ */
 const fromGregorianValue = (
-    value?: string | null,
-    calendarKind: CalendarKind = 'persian',
+    value: string | null | undefined,
+    calendar: typeof gregorian = gregorian,
+    locale: typeof gregorian_en = gregorian_en,
 ): DateObject | null => {
     if (!value) {
         return null;
@@ -72,10 +73,7 @@ const fromGregorianValue = (
         date: value,
         calendar: gregorian,
         locale: gregorian_en,
-    }).convert(
-        calendarConfig[calendarKind].calendar,
-        calendarConfig[calendarKind].locale,
-    );
+    }).convert(calendar, locale);
 };
 
 interface FieldWrapperProps {
@@ -208,8 +206,7 @@ function SelectField({
                 <SelectTrigger id={name}>
                     <SelectValue
                         placeholder={
-                            placeholder ??
-                            t('dashboard.form.selectPlaceholder')
+                            placeholder ?? t('dashboard.form.selectPlaceholder')
                         }
                     />
                 </SelectTrigger>
@@ -274,7 +271,6 @@ function CheckboxField({
 interface DateFieldProps {
     label: string;
     name: string;
-    calendar?: CalendarKind;
     value?: string | null;
     defaultValue?: string | null;
     error?: string;
@@ -284,10 +280,15 @@ interface DateFieldProps {
     onValueChange?: (value: string) => void;
 }
 
-function DateField({
+/**
+ * Calendar-aware date (optionally date-time) picker driven by the shared
+ * date-type preference. The visible value follows the selected calendar; the
+ * submitted hidden input always carries the calendar-agnostic Gregorian value.
+ */
+function CalendarField({
     label,
     name,
-    calendar = 'persian',
+    withTime = false,
     value,
     defaultValue,
     error,
@@ -295,27 +296,46 @@ function DateField({
     required,
     className,
     onValueChange,
-}: DateFieldProps) {
+}: DateFieldProps & { withTime?: boolean }) {
+    const { dateType } = useDateType();
+    const { i18n } = useTranslation();
+    const { calendar, locale } = getDateTypeConfig(dateType, i18n.language);
+
     const [selected, setSelected] = useState<DateObject | null>(
-        fromGregorianValue(value ?? defaultValue ?? null, calendar),
+        fromGregorianValue(value ?? defaultValue ?? null, calendar, locale),
     );
 
-    // Keep the picker in sync when the controlled value or calendar changes,
-    // adjusting state during render (instead of an effect) per React's
-    // derived-state guidance. Only controlled values (value !== undefined)
-    // re-sync, matching the previous effect behaviour.
-    const [syncKey, setSyncKey] = useState({ value, calendar });
-    if (syncKey.value !== value || syncKey.calendar !== calendar) {
-        setSyncKey({ value, calendar });
+    // Keep the picker in sync when the controlled value, the stored preference
+    // or the UI language change, adjusting state during render (instead of an
+    // effect) per React's derived-state guidance. Uncontrolled fields re-project
+    // their current selection onto the new calendar instead of re-reading props.
+    const [syncKey, setSyncKey] = useState({
+        value,
+        dateType,
+        language: i18n.language,
+    });
+    if (
+        syncKey.value !== value ||
+        syncKey.dateType !== dateType ||
+        syncKey.language !== i18n.language
+    ) {
+        setSyncKey({ value, dateType, language: i18n.language });
+
         if (value !== undefined) {
-            setSelected(fromGregorianValue(value, calendar));
+            setSelected(fromGregorianValue(value, calendar, locale));
+        } else {
+            setSelected((prev) =>
+                prev ? new DateObject(prev).convert(calendar, locale) : prev,
+            );
         }
     }
 
-    const config = calendarConfig[calendar];
-    const gregorianValue = useMemo(
-        () => toGregorianValue(selected),
-        [selected],
+    const submittedValue = useMemo(
+        () =>
+            withTime
+                ? toGregorianDateTimeValue(selected)
+                : toGregorianValue(selected),
+        [selected, withTime],
     );
 
     return (
@@ -333,12 +353,29 @@ function DateField({
                             ? (nextValue[0] ?? null)
                             : nextValue;
                         setSelected(normalized ?? null);
-                        onValueChange?.(toGregorianValue(normalized ?? null));
+                        onValueChange?.(
+                            withTime
+                                ? toGregorianDateTimeValue(normalized ?? null)
+                                : toGregorianValue(normalized ?? null),
+                        );
                     }}
-                    calendar={config.calendar}
-                    locale={config.locale}
-                    format={config.placeholder}
-                    placeholder={config.placeholder}
+                    calendar={calendar}
+                    locale={locale}
+                    format={withTime ? DATE_TIME_PICKER_FORMAT : PICKER_FORMAT}
+                    placeholder={
+                        withTime ? DATE_TIME_PICKER_FORMAT : PICKER_FORMAT
+                    }
+                    plugins={
+                        withTime
+                            ? [
+                                  <TimePicker
+                                      key="time-picker"
+                                      position="bottom"
+                                      hideSeconds
+                                  />,
+                              ]
+                            : []
+                    }
                     className="w-full"
                     inputClass="border-input focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive flex h-10 w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none transition-[color,box-shadow] focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                     containerClassName="w-full"
@@ -346,7 +383,7 @@ function DateField({
                 <input
                     type="hidden"
                     name={name}
-                    value={gregorianValue}
+                    value={submittedValue}
                     required={required}
                 />
             </div>
@@ -354,9 +391,19 @@ function DateField({
     );
 }
 
+function DateField(props: DateFieldProps) {
+    return <CalendarField {...props} />;
+}
+
+/** Date + time variant; submits `YYYY-MM-DDTHH:mm`, the datetime-local shape. */
+function DateTimeField(props: DateFieldProps) {
+    return <CalendarField {...props} withTime />;
+}
+
 export {
     CheckboxField,
     DateField,
+    DateTimeField,
     FieldWrapper,
     SelectField,
     TextAreaField,

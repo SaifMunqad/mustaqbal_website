@@ -6,6 +6,7 @@
  * state (`blocked`, attempts left) rather than letting the form fail silently.
  */
 import Reveal from '@/components/ui/reveal';
+import { useDateFormatter } from '@/hooks/use-date-formatter';
 import MainLayout from '@/layouts/app/main-layout';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { CheckCircle2, ShieldCheck, XCircle } from 'lucide-react';
@@ -46,7 +47,7 @@ function SchoolVerify() {
         blocked,
         retryAfterMinutes,
     } = usePage<SchoolVerifyProps>().props;
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
 
     // Submitted over POST so the codes never end up in a URL, in browser
     // history, or in the referrer sent to third parties.
@@ -67,22 +68,7 @@ function SchoolVerify() {
         });
     };
 
-    const formatDate = (value?: string | null) => {
-        if (!value) {
-            return '-';
-        }
-
-        try {
-            return new Intl.DateTimeFormat(
-                i18n.language === 'fa_AF' ? 'fa-AF' : i18n.language,
-                {
-                    dateStyle: 'long',
-                },
-            ).format(new Date(value));
-        } catch {
-            return value;
-        }
-    };
+    const formatDate = useDateFormatter({ dateStyle: 'long' });
 
     return (
         <>

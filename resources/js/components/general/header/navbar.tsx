@@ -7,12 +7,14 @@
  * element doubles as the click-outside container so tapping the toggle cannot be
  * mistaken for an outside click.
  */
+import DateTypeSwitcher from '@/components/general/events/date-type-switcher';
 import LanguageSwitcher from '@/components/general/header/language-switcher';
 import NavIconButton from '@/components/general/header/nav-icon-button';
 import NavbarBrand from '@/components/general/header/navbar-brand';
 import NavbarDesktop from '@/components/general/header/navbar-desktop';
 import NavbarMobile from '@/components/general/header/navbar-mobile';
 import { navTextButtonClass } from '@/components/general/header/navbar-styles';
+import { useDateType } from '@/hooks/use-date-type';
 import { navigationItems } from '@/lib/navigation';
 import type { SharedData } from '@/types';
 import {
@@ -29,6 +31,9 @@ const MENU_EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
 
 export default function Navbar() {
     const { t } = useTranslation();
+    // System-wide calendar preference (Solar Hijri by default), persisted in
+    // localStorage; changing it re-renders every date on the page immediately.
+    const { dateType, setDateType } = useDateType();
     const page = usePage<SharedData>();
     const { url, props } = page;
     const { auth } = props;
@@ -129,6 +134,10 @@ export default function Navbar() {
                                 {t('navigation.dashboard')}
                             </Link>
                         )}
+                        <DateTypeSwitcher
+                            value={dateType}
+                            onChange={setDateType}
+                        />
                         <LanguageSwitcher />
                     </div>
                 </div>
@@ -140,6 +149,7 @@ export default function Navbar() {
                     >
                         <MagnifyingGlassIcon className="h-5 w-5" />
                     </NavIconButton>
+                    <DateTypeSwitcher value={dateType} onChange={setDateType} />
                     <LanguageSwitcher />
                     <button
                         type="button"

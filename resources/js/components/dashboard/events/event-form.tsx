@@ -1,3 +1,20 @@
+import LanguageTabsEditor, {
+    type TranslatableField,
+    type TranslationValues,
+} from '@/components/editor/language-tabs-editor';
+import ConfirmDialog from '@/components/form/confirm-dialog';
+import {
+    CheckboxField,
+    DateTimeField,
+    SelectField,
+} from '@/components/form/form-fields';
+import FormSection from '@/components/form/form-section';
+import {
+    GalleryUploadField,
+    ImageUploadField,
+} from '@/components/form/image-upload-field';
+import StickyFormFooter from '@/components/form/sticky-form-footer';
+import { Button } from '@/components/ui/button';
 import {
     CalendarIcon,
     DocumentTextIcon,
@@ -7,19 +24,6 @@ import {
 import { Form, router } from '@inertiajs/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CheckboxField, SelectField, TextField } from '@/components/form/form-fields';
-import ConfirmDialog from '@/components/form/confirm-dialog';
-import FormSection from '@/components/form/form-section';
-import {
-    GalleryUploadField,
-    ImageUploadField,
-} from '@/components/form/image-upload-field';
-import StickyFormFooter from '@/components/form/sticky-form-footer';
-import LanguageTabsEditor, {
-    type TranslatableField,
-    type TranslationValues,
-} from '@/components/editor/language-tabs-editor';
-import { Button } from '@/components/ui/button';
 
 export type { TranslationValues } from '@/components/editor/language-tabs-editor';
 
@@ -171,7 +175,11 @@ export default function EventForm({
                                     name="images"
                                     images={images}
                                     onChange={setImages}
-                                    error={errors.images ? String(errors.images) : undefined}
+                                    error={
+                                        errors.images
+                                            ? String(errors.images)
+                                            : undefined
+                                    }
                                 />
                             </FormSection>
                         </div>
@@ -181,27 +189,29 @@ export default function EventForm({
                                 title={t('dashboard.events.form.schedule')}
                                 icon={<CalendarIcon className="size-5" />}
                             >
-                                <TextField
-                                    label={t(
-                                        'dashboard.events.form.startsAt',
-                                    )}
+                                <DateTimeField
+                                    label={t('dashboard.events.form.startsAt')}
                                     name="start_at"
-                                    type="datetime-local"
                                     required
-                                    defaultValue={event ? toDateTimeInput(event.start_at) : ''}
+                                    defaultValue={
+                                        event
+                                            ? toDateTimeInput(event.start_at)
+                                            : ''
+                                    }
                                     error={errors.start_at}
                                 />
-                                <TextField
+                                <DateTimeField
                                     label={t('dashboard.events.form.endsAt')}
                                     name="end_at"
-                                    type="datetime-local"
-                                    defaultValue={event ? toDateTimeInput(event.end_at) : ''}
+                                    defaultValue={
+                                        event
+                                            ? toDateTimeInput(event.end_at)
+                                            : ''
+                                    }
                                     error={errors.end_at}
                                 />
                                 <SelectField
-                                    label={t(
-                                        'dashboard.events.form.audience',
-                                    )}
+                                    label={t('dashboard.events.form.audience')}
                                     name="audience"
                                     required
                                     defaultValue={event?.audience ?? 'public'}
@@ -227,15 +237,11 @@ export default function EventForm({
                                     />
                                 ) : isEdit ? null : (
                                     <p className="text-sm text-muted-foreground">
-                                        {t(
-                                            'dashboard.events.form.draftNotice',
-                                        )}
+                                        {t('dashboard.events.form.draftNotice')}
                                     </p>
                                 )}
                                 <CheckboxField
-                                    label={t(
-                                        'dashboard.events.form.cancelled',
-                                    )}
+                                    label={t('dashboard.events.form.cancelled')}
                                     name="is_cancelled"
                                     value="1"
                                     defaultChecked={event?.is_cancelled}
@@ -251,9 +257,7 @@ export default function EventForm({
                     >
                         {isEdit && canDelete && event ? (
                             <ConfirmDialog
-                                title={t(
-                                    'dashboard.events.form.deleteTitle',
-                                )}
+                                title={t('dashboard.events.form.deleteTitle')}
                                 description={t(
                                     'dashboard.events.form.deleteDescription',
                                     { name: event.title },

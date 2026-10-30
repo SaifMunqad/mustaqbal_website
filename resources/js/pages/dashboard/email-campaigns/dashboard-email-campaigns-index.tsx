@@ -4,6 +4,7 @@
  */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { DataTable, DataTableColumn } from '@/components/ui/table';
+import { useDateFormatter } from '@/hooks/use-date-formatter';
 import campaigns from '@/routes/dashboard/email-campaigns';
 import { Link, usePage } from '@inertiajs/react';
 
@@ -27,15 +28,27 @@ const sourceLabels: Record<string, string> = {
 };
 
 export default function DashboardEmailCampaignsIndex() {
-    const { campaigns: pageCampaigns } = usePage<{ campaigns: { data: Campaign[] } }>().props;
+    const { campaigns: pageCampaigns } = usePage<{
+        campaigns: { data: Campaign[] };
+    }>().props;
+    // Follows the browser-stored calendar preference (Afghan Solar Hijri default).
+    const formatDate = useDateFormatter();
 
     const columns: DataTableColumn<Campaign>[] = [
-        { key: 'id', header: '#', cell: (campaign) => campaign.id, sortValue: (campaign) => campaign.id },
+        {
+            key: 'id',
+            header: '#',
+            cell: (campaign) => campaign.id,
+            sortValue: (campaign) => campaign.id,
+        },
         {
             key: 'subject',
             header: 'Subject',
             cell: (campaign) => (
-                <Link href={campaigns.show.url(campaign.id)} className="text-blue-600 underline">
+                <Link
+                    href={campaigns.show.url(campaign.id)}
+                    className="text-blue-600 underline"
+                >
                     {campaign.subject}
                 </Link>
             ),
@@ -44,13 +57,16 @@ export default function DashboardEmailCampaignsIndex() {
         {
             key: 'recipient_source',
             header: 'Recipients',
-            cell: (campaign) => sourceLabels[campaign.recipient_source] ?? campaign.recipient_source,
+            cell: (campaign) =>
+                sourceLabels[campaign.recipient_source] ??
+                campaign.recipient_source,
             sortValue: (campaign) => campaign.recipient_source,
         },
         {
             key: 'progress',
             header: 'Progress',
-            cell: (campaign) => `${campaign.sent_count}/${campaign.total_count} sent`,
+            cell: (campaign) =>
+                `${campaign.sent_count}/${campaign.total_count} sent`,
             sortValue: (campaign) => campaign.sent_count,
         },
         {
@@ -62,13 +78,14 @@ export default function DashboardEmailCampaignsIndex() {
         {
             key: 'status',
             header: 'Status',
-            cell: (campaign) => (campaign.status === 'completed' ? 'Completed' : 'Sending'),
+            cell: (campaign) =>
+                campaign.status === 'completed' ? 'Completed' : 'Sending',
             sortValue: (campaign) => campaign.status,
         },
         {
             key: 'created_at',
             header: 'Created',
-            cell: (campaign) => new Date(campaign.created_at).toLocaleDateString(),
+            cell: (campaign) => formatDate(campaign.created_at),
             sortValue: (campaign) => campaign.created_at,
         },
         {

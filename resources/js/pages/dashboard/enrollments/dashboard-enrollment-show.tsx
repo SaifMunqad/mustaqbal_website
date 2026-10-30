@@ -9,10 +9,11 @@
  */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { filterSelectClass } from '@/components/dashboard/resource-filter-bar';
-import { TextField } from '@/components/form/form-fields';
 import RichTextEditor from '@/components/editor/rich-text-editor';
-import { Button } from '@/components/ui/button';
 import { useFormToast } from '@/components/feedback/use-form-toast';
+import { TextField } from '@/components/form/form-fields';
+import { Button } from '@/components/ui/button';
+import { useDateFormatter } from '@/hooks/use-date-formatter';
 import { Link, router, useForm, usePage } from '@inertiajs/react';
 import { FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -64,9 +65,6 @@ interface ReplyForm {
     body: string;
 }
 
-const formatDateTime = (value?: string | null): string =>
-    value ? new Date(value).toLocaleString() : '';
-
 function Detail({ label, value }: { label: string; value?: string | null }) {
     if (!value) {
         return null;
@@ -81,6 +79,9 @@ function Detail({ label, value }: { label: string; value?: string | null }) {
 export default function DashboardEnrollmentShow() {
     const { enrollment, statuses } = usePage<EnrollmentShowProps>().props;
     const { t } = useTranslation();
+    // Follow the browser-stored calendar preference (Afghan Solar Hijri default).
+    const formatDate = useDateFormatter({}, '');
+    const formatDateTime = useDateFormatter({ timeStyle: 'short' }, '');
     const [status, setStatus] = useState(enrollment.status);
     const [dir, setDir] = useState<'rtl' | 'ltr'>('ltr');
     // The server flashes the success toast, so only failures are handled here.
@@ -126,7 +127,7 @@ export default function DashboardEnrollmentShow() {
                         </h2>
                         <span className="text-sm text-muted-foreground">
                             {t('dashboard.enrollments.submittedOn')}:{' '}
-                            {new Date(enrollment.created_at).toLocaleDateString()}
+                            {formatDate(enrollment.created_at)}
                         </span>
                     </div>
 
@@ -139,8 +140,14 @@ export default function DashboardEnrollmentShow() {
                             value={enrollment.grade}
                         />
                         <Detail
-                            label={t('dashboard.enrollments.fields.dateOfBirth')}
-                            value={enrollment.date_of_birth}
+                            label={t(
+                                'dashboard.enrollments.fields.dateOfBirth',
+                            )}
+                            value={
+                                enrollment.date_of_birth
+                                    ? formatDate(enrollment.date_of_birth)
+                                    : null
+                            }
                         />
                     </div>
 
@@ -149,7 +156,9 @@ export default function DashboardEnrollmentShow() {
                             {t('dashboard.enrollments.sections.guardian')}
                         </h3>
                         <Detail
-                            label={t('dashboard.enrollments.fields.guardianName')}
+                            label={t(
+                                'dashboard.enrollments.fields.guardianName',
+                            )}
                             value={enrollment.guardian_name}
                         />
                         <Detail
@@ -175,7 +184,8 @@ export default function DashboardEnrollmentShow() {
                             {enrollment.address}
                         </p>
                         <p className="text-sm whitespace-pre-line text-muted-foreground">
-                            {enrollment.notes || t('dashboard.enrollments.show.noNotes')}
+                            {enrollment.notes ||
+                                t('dashboard.enrollments.show.noNotes')}
                         </p>
                     </div>
 
@@ -224,14 +234,16 @@ export default function DashboardEnrollmentShow() {
                                         ) : null}
                                         {/* Stored body is sanitized TipTap HTML. */}
                                         <div
-                                            className="text-sm [&_h1]:mb-2 [&_h1]:text-lg [&_h1]:font-bold [&_h2]:mb-2 [&_h2]:text-base [&_h2]:font-bold [&_h3]:mb-1 [&_h3]:font-semibold [&_p]:mb-2 [&_ul]:list-disc [&_ul]:ps-5 [&_ol]:list-decimal [&_ol]:ps-5 [&_a]:text-blue-600 [&_a]:underline"
+                                            className="text-sm [&_a]:text-blue-600 [&_a]:underline [&_h1]:mb-2 [&_h1]:text-lg [&_h1]:font-bold [&_h2]:mb-2 [&_h2]:text-base [&_h2]:font-bold [&_h3]:mb-1 [&_h3]:font-semibold [&_ol]:list-decimal [&_ol]:ps-5 [&_p]:mb-2 [&_ul]:list-disc [&_ul]:ps-5"
                                             dangerouslySetInnerHTML={{
                                                 __html: reply.body,
                                             }}
                                         />
                                         <p className="mt-1 text-xs text-slate-500">
                                             {reply.author?.name ??
-                                                t('dashboard.enrollments.show.management')}{' '}
+                                                t(
+                                                    'dashboard.enrollments.show.management',
+                                                )}{' '}
                                             · {formatDateTime(reply.replied_at)}
                                         </p>
                                     </li>
@@ -271,23 +283,37 @@ export default function DashboardEnrollmentShow() {
                                 {/* Writing direction toggle for the editor. */}
                                 <div className="flex items-center gap-1">
                                     <span className="text-xs text-muted-foreground">
-                                        {t('dashboard.enrollments.show.direction')}
+                                        {t(
+                                            'dashboard.enrollments.show.direction',
+                                        )}
                                     </span>
                                     <Button
                                         type="button"
                                         size="sm"
-                                        variant={dir === 'ltr' ? 'default' : 'outline'}
+                                        variant={
+                                            dir === 'ltr'
+                                                ? 'default'
+                                                : 'outline'
+                                        }
                                         onClick={() => setDir('ltr')}
                                     >
-                                        {t('dashboard.enrollments.show.directionLTR')}
+                                        {t(
+                                            'dashboard.enrollments.show.directionLTR',
+                                        )}
                                     </Button>
                                     <Button
                                         type="button"
                                         size="sm"
-                                        variant={dir === 'rtl' ? 'default' : 'outline'}
+                                        variant={
+                                            dir === 'rtl'
+                                                ? 'default'
+                                                : 'outline'
+                                        }
                                         onClick={() => setDir('rtl')}
                                     >
-                                        {t('dashboard.enrollments.show.directionRTL')}
+                                        {t(
+                                            'dashboard.enrollments.show.directionRTL',
+                                        )}
                                     </Button>
                                 </div>
                             </div>

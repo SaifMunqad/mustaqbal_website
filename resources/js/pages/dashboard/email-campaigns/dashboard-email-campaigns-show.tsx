@@ -6,8 +6,9 @@
  */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import ArticleBody from '@/components/editor/article-body';
-import { DataTable, DataTableColumn } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import { DataTable, DataTableColumn } from '@/components/ui/table';
+import { useDateFormatter } from '@/hooks/use-date-formatter';
 import campaigns from '@/routes/dashboard/email-campaigns';
 import { Form, Link, router, usePage } from '@inertiajs/react';
 import { useEffect } from 'react';
@@ -38,11 +39,14 @@ interface Recipient {
 const statusStyles: Record<string, string> = {
     sent: 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300',
     failed: 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300',
-    pending: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
+    pending:
+        'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
 };
 
 export default function DashboardEmailCampaignsShow() {
     const { t } = useTranslation();
+    // Follows the browser-stored calendar preference (Afghan Solar Hijri default).
+    const formatDateTime = useDateFormatter({ timeStyle: 'short' });
     const { campaign, bodyHtml, recipients } = usePage<{
         campaign: Campaign;
         /** Server-sanitized body HTML (plain text is escaped and line-broken). */
@@ -50,9 +54,15 @@ export default function DashboardEmailCampaignsShow() {
         recipients: { data: Recipient[] };
     }>().props;
 
-    const pending = Math.max(0, campaign.total_count - campaign.sent_count - campaign.failed_count);
+    const pending = Math.max(
+        0,
+        campaign.total_count - campaign.sent_count - campaign.failed_count,
+    );
     const processed = campaign.sent_count + campaign.failed_count;
-    const percent = campaign.total_count > 0 ? Math.round((processed / campaign.total_count) * 100) : 0;
+    const percent =
+        campaign.total_count > 0
+            ? Math.round((processed / campaign.total_count) * 100)
+            : 0;
 
     // Keep the page fresh while the queue is still working through recipients.
     useEffect(() => {
@@ -68,19 +78,31 @@ export default function DashboardEmailCampaignsShow() {
     }, [pending]);
 
     const columns: DataTableColumn<Recipient>[] = [
-        { key: 'id', header: '#', cell: (recipient) => recipient.id, sortValue: (recipient) => recipient.id },
+        {
+            key: 'id',
+            header: '#',
+            cell: (recipient) => recipient.id,
+            sortValue: (recipient) => recipient.id,
+        },
         {
             key: 'name',
             header: t('dashboard.table.name'),
             cell: (recipient) => recipient.name ?? '-',
             sortValue: (recipient) => recipient.name ?? '',
         },
-        { key: 'email', header: t('dashboard.table.email'), cell: (recipient) => recipient.email, sortValue: (recipient) => recipient.email },
+        {
+            key: 'email',
+            header: t('dashboard.table.email'),
+            cell: (recipient) => recipient.email,
+            sortValue: (recipient) => recipient.email,
+        },
         {
             key: 'status',
             header: t('dashboard.table.status'),
             cell: (recipient) => (
-                <span className={`rounded-full px-2 py-0.5 text-xs capitalize ${statusStyles[recipient.status] ?? ''}`}>
+                <span
+                    className={`rounded-full px-2 py-0.5 text-xs capitalize ${statusStyles[recipient.status] ?? ''}`}
+                >
                     {recipient.status}
                 </span>
             ),
@@ -89,13 +111,15 @@ export default function DashboardEmailCampaignsShow() {
         {
             key: 'sent_at',
             header: t('dashboard.emailCampaigns.show.sentAt'),
-            cell: (recipient) => (recipient.sent_at ? new Date(recipient.sent_at).toLocaleString() : '-'),
+            cell: (recipient) =>
+                recipient.sent_at ? formatDateTime(recipient.sent_at) : '-',
             sortValue: (recipient) => recipient.sent_at ?? '',
         },
         {
             key: 'error',
             header: t('dashboard.emailCampaigns.show.error'),
-            cell: (recipient) => (recipient.error ? recipient.error.slice(0, 60) : '-'),
+            cell: (recipient) =>
+                recipient.error ? recipient.error.slice(0, 60) : '-',
             sortValue: (recipient) => recipient.error ?? '',
         },
     ];
@@ -113,7 +137,9 @@ export default function DashboardEmailCampaignsShow() {
         >
             <div className="space-y-4 rounded-xl border p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                    <h2 className="text-lg font-semibold">{campaign.subject}</h2>
+                    <h2 className="text-lg font-semibold">
+                        {campaign.subject}
+                    </h2>
                     <span className="rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-800 dark:bg-blue-950 dark:text-blue-300">
                         {campaign.status === 'completed'
                             ? t('dashboard.emailCampaigns.show.completed')
@@ -126,7 +152,7 @@ export default function DashboardEmailCampaignsShow() {
                         name:
                             campaign.creator?.name ??
                             t('dashboard.emailCampaigns.show.unknown'),
-                        date: new Date(campaign.created_at).toLocaleString(),
+                        date: formatDateTime(campaign.created_at),
                     })}
                 </p>
 
@@ -161,8 +187,15 @@ export default function DashboardEmailCampaignsShow() {
                 />
 
                 {campaign.failed_count > 0 && (
-                    <Form {...campaigns.retry.form(campaign.id)} className="w-fit">
-                        <Button type="submit" variant="outline" className="border-red-300 text-red-600">
+                    <Form
+                        {...campaigns.retry.form(campaign.id)}
+                        className="w-fit"
+                    >
+                        <Button
+                            type="submit"
+                            variant="outline"
+                            className="border-red-300 text-red-600"
+                        >
                             {t('dashboard.emailCampaigns.show.retry', {
                                 count: campaign.failed_count,
                             })}
@@ -176,7 +209,10 @@ export default function DashboardEmailCampaignsShow() {
                     <h3 className="font-semibold">
                         {t('dashboard.emailCampaigns.show.recipients')}
                     </h3>
-                    <Link href={campaigns.create.url()} className="text-sm text-blue-600 underline">
+                    <Link
+                        href={campaigns.create.url()}
+                        className="text-sm text-blue-600 underline"
+                    >
                         {t('dashboard.emailCampaigns.new')}
                     </Link>
                 </div>

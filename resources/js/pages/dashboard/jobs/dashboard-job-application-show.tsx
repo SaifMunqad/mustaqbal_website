@@ -7,8 +7,9 @@
  * the server side, before this page ever renders.
  */
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import { Button } from '@/components/ui/button';
 import { filterSelectClass } from '@/components/dashboard/resource-filter-bar';
+import { Button } from '@/components/ui/button';
+import { useDateFormatter } from '@/hooks/use-date-formatter';
 import { Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -62,6 +63,8 @@ function formatBytes(bytes: number): string {
 export default function DashboardJobApplicationShow() {
     const { application, statuses } = usePage<JobApplicationShowProps>().props;
     const { t } = useTranslation();
+    // Follows the browser-stored calendar preference (Afghan Solar Hijri default).
+    const formatDate = useDateFormatter();
     const [status, setStatus] = useState(application.status);
 
     return (
@@ -77,7 +80,9 @@ export default function DashboardJobApplicationShow() {
             ]}
             actions={
                 <Button asChild size="sm" variant="outline">
-                    <Link href={`/dashboard/jobs/${application.job_id}/applications`}>
+                    <Link
+                        href={`/dashboard/jobs/${application.job_id}/applications`}
+                    >
                         {t('dashboard.jobApplications.back')}
                     </Link>
                 </Button>
@@ -86,39 +91,60 @@ export default function DashboardJobApplicationShow() {
             <div className="grid gap-4 lg:grid-cols-2">
                 <div className="space-y-4 rounded-xl border p-4">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                        <h2 className="text-lg font-bold">{application.full_name}</h2>
+                        <h2 className="text-lg font-bold">
+                            {application.full_name}
+                        </h2>
                         <span className="text-sm text-muted-foreground">
                             {t('dashboard.jobApplications.submittedOn')}:{' '}
-                            {new Date(application.created_at).toLocaleDateString()}
+                            {formatDate(application.created_at)}
                         </span>
                     </div>
 
                     <div className="grid gap-2 text-sm">
                         <p>
-                            <span className="font-medium">{t('dashboard.jobApplications.appliedFor')}:</span>{' '}
+                            <span className="font-medium">
+                                {t('dashboard.jobApplications.appliedFor')}:
+                            </span>{' '}
                             {application.job_title ?? '-'}
                         </p>
                         <p>
-                            <span className="font-medium">{t('dashboard.jobApplications.fields.fatherName')}:</span>{' '}
+                            <span className="font-medium">
+                                {t(
+                                    'dashboard.jobApplications.fields.fatherName',
+                                )}
+                                :
+                            </span>{' '}
                             {application.father_name}
                         </p>
                         <p>
-                            <span className="font-medium">{t('dashboard.jobApplications.fields.email')}:</span>{' '}
+                            <span className="font-medium">
+                                {t('dashboard.jobApplications.fields.email')}:
+                            </span>{' '}
                             {application.email}
                         </p>
                         <p>
-                            <span className="font-medium">{t('dashboard.jobApplications.fields.phone')}:</span>{' '}
+                            <span className="font-medium">
+                                {t('dashboard.jobApplications.fields.phone')}:
+                            </span>{' '}
                             {application.phone}
                         </p>
                         {application.city ? (
                             <p>
-                                <span className="font-medium">{t('dashboard.jobApplications.fields.city')}:</span>{' '}
+                                <span className="font-medium">
+                                    {t('dashboard.jobApplications.fields.city')}
+                                    :
+                                </span>{' '}
                                 {application.city}
                             </p>
                         ) : null}
                         {application.address ? (
                             <p>
-                                <span className="font-medium">{t('dashboard.jobApplications.fields.address')}:</span>{' '}
+                                <span className="font-medium">
+                                    {t(
+                                        'dashboard.jobApplications.fields.address',
+                                    )}
+                                    :
+                                </span>{' '}
                                 {application.address}
                             </p>
                         ) : null}
@@ -170,7 +196,8 @@ export default function DashboardJobApplicationShow() {
                             {t('dashboard.jobApplications.coverLetter')}
                         </h3>
                         <p className="mt-1 text-sm whitespace-pre-line">
-                            {application.cover_letter || t('dashboard.jobApplications.noCoverLetter')}
+                            {application.cover_letter ||
+                                t('dashboard.jobApplications.noCoverLetter')}
                         </p>
                     </div>
 
@@ -185,8 +212,13 @@ export default function DashboardJobApplicationShow() {
                         ) : (
                             <ul className="mt-2 space-y-2">
                                 {application.documents.map((document) => (
-                                    <li key={document.id} className="flex items-center justify-between gap-3 text-sm">
-                                        <span className="truncate">{document.original_name}</span>
+                                    <li
+                                        key={document.id}
+                                        className="flex items-center justify-between gap-3 text-sm"
+                                    >
+                                        <span className="truncate">
+                                            {document.original_name}
+                                        </span>
                                         <span className="flex shrink-0 items-center gap-3">
                                             <span className="text-xs text-muted-foreground">
                                                 {formatBytes(document.size)}
@@ -195,7 +227,9 @@ export default function DashboardJobApplicationShow() {
                                                 href={`/dashboard/applications/documents/${document.id}/download`}
                                                 className="text-blue-600 underline"
                                             >
-                                                {t('dashboard.jobApplications.download')}
+                                                {t(
+                                                    'dashboard.jobApplications.download',
+                                                )}
                                             </a>
                                         </span>
                                     </li>

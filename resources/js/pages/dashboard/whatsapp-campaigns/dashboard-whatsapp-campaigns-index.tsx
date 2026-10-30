@@ -6,12 +6,13 @@
  * cannot send.
  */
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import { DataTable, DataTableColumn } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import { DataTable, DataTableColumn } from '@/components/ui/table';
+import { useDateFormatter } from '@/hooks/use-date-formatter';
 import campaigns from '@/routes/dashboard/whatsapp-campaigns';
 import settings from '@/routes/dashboard/whatsapp-settings';
-import { AlertTriangle } from 'lucide-react';
 import { Link, usePage } from '@inertiajs/react';
+import { AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface Campaign {
@@ -26,31 +27,41 @@ interface Campaign {
     status: string;
     created_at: string;
     creator?: { name: string } | null;
-};
+}
 
 export default function DashboardWhatsAppCampaignsIndex() {
     const { t } = useTranslation();
+    // Follows the browser-stored calendar preference (Afghan Solar Hijri default).
+    const formatDate = useDateFormatter();
     const { campaigns: pageCampaigns, configured } = usePage<{
         campaigns: { data: Campaign[] };
         configured: boolean;
     }>().props;
 
     const columns: DataTableColumn<Campaign>[] = [
-        { key: 'id', header: '#', cell: (campaign) => campaign.id, sortValue: (campaign) => campaign.id },
+        {
+            key: 'id',
+            header: '#',
+            cell: (campaign) => campaign.id,
+            sortValue: (campaign) => campaign.id,
+        },
         {
             key: 'content',
             header: t('dashboard.whatsappCampaigns.table.message'),
             cell: (campaign) => (
-                <Link href={campaigns.show.url(campaign.id)} className="text-blue-600 underline">
+                <Link
+                    href={campaigns.show.url(campaign.id)}
+                    className="text-blue-600 underline"
+                >
                     {campaign.mode === 'template'
-                        ? t(
-                              'dashboard.whatsappCampaigns.table.templateLabel',
-                              { name: campaign.template_name },
-                          )
+                        ? t('dashboard.whatsappCampaigns.table.templateLabel', {
+                              name: campaign.template_name,
+                          })
                         : (campaign.message ?? '').slice(0, 48)}
                 </Link>
             ),
-            sortValue: (campaign) => campaign.template_name ?? campaign.message ?? '',
+            sortValue: (campaign) =>
+                campaign.template_name ?? campaign.message ?? '',
         },
         {
             key: 'mode',
@@ -98,7 +109,7 @@ export default function DashboardWhatsAppCampaignsIndex() {
         {
             key: 'created_at',
             header: t('dashboard.whatsappCampaigns.table.created'),
-            cell: (campaign) => new Date(campaign.created_at).toLocaleDateString(),
+            cell: (campaign) => formatDate(campaign.created_at),
             sortValue: (campaign) => campaign.created_at,
         },
         {
@@ -132,7 +143,10 @@ export default function DashboardWhatsAppCampaignsIndex() {
                             )}
                         </span>
                     </div>
-                    <Link href={settings.edit.url()} className="text-sm font-semibold underline">
+                    <Link
+                        href={settings.edit.url()}
+                        className="text-sm font-semibold underline"
+                    >
                         {t('dashboard.whatsappCampaigns.configureNow')}
                     </Link>
                 </div>

@@ -44,6 +44,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // SSR is not used: there is no Node SSR daemon on any host. Force it off
+        // here (not just in config) so it stays disabled even if a stale
+        // `config:cache` still carries `inertia.ssr.enabled = true`. When enabled,
+        // Inertia makes a blocking request to 127.0.0.1:13714 on the first page
+        // load; with no daemon listening that hangs and the web server returns a
+        // 502/504. Disabling renders client-side immediately.
+        config(['inertia.ssr.enabled' => false]);
+
         Schema::defaultStringLength(191);
 
         // Public form submissions are rate limited per IP (per authenticated

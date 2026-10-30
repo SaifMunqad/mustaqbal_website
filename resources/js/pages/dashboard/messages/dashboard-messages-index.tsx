@@ -3,6 +3,7 @@
  */
 import DashboardPage from '@/components/dashboard/dashboard-page';
 import { DataTable, DataTableColumn } from '@/components/ui/table';
+import { useDateFormatter } from '@/hooks/use-date-formatter';
 import { Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,14 +26,14 @@ interface Message {
     answers?: MessageAnswer[];
 }
 
-const formatDate = (value?: string | null): string => {
-    if (!value) return '';
-    return new Date(value).toLocaleDateString();
-};
-
 export default function DashboardMessagesIndex() {
-    const { messages, box } = usePage<{ messages: { data: Message[] }; box: 'incoming' | 'sent' }>().props;
+    const { messages, box } = usePage<{
+        messages: { data: Message[] };
+        box: 'incoming' | 'sent';
+    }>().props;
     const { t } = useTranslation();
+    // Follows the browser-stored calendar preference (Afghan Solar Hijri default).
+    const formatDate = useDateFormatter({}, '');
 
     const boxes: { key: 'incoming' | 'sent'; href: string }[] = [
         { key: 'incoming', href: '/dashboard/messages?box=incoming' },
@@ -40,18 +41,27 @@ export default function DashboardMessagesIndex() {
     ];
 
     const columns: DataTableColumn<Message>[] = [
-        { key: 'id', header: '#', cell: (message) => message.id, sortValue: (message) => message.id },
+        {
+            key: 'id',
+            header: '#',
+            cell: (message) => message.id,
+            sortValue: (message) => message.id,
+        },
         {
             key: 'conversation',
             header: t('dashboard.table.conversation'),
-            cell: (message) => message.conversation?.topic ?? message.subject ?? '-',
-            sortValue: (message) => message.conversation?.topic ?? message.subject ?? '',
+            cell: (message) =>
+                message.conversation?.topic ?? message.subject ?? '-',
+            sortValue: (message) =>
+                message.conversation?.topic ?? message.subject ?? '',
         },
         {
             key: 'author',
             header: t('dashboard.table.author'),
-            cell: (message) => message.author?.name ?? message.sender_name ?? '-',
-            sortValue: (message) => message.author?.name ?? message.sender_name ?? '',
+            cell: (message) =>
+                message.author?.name ?? message.sender_name ?? '-',
+            sortValue: (message) =>
+                message.author?.name ?? message.sender_name ?? '',
         },
         {
             key: 'body',
@@ -76,8 +86,12 @@ export default function DashboardMessagesIndex() {
                 if (!answer) return <span className="text-slate-400">—</span>;
                 return (
                     <div className="space-y-0.5">
-                        <p className="line-clamp-2">{answer.body.slice(0, 80)}</p>
-                        <p className="text-xs text-slate-500">{formatDate(answer.answered_at)}</p>
+                        <p className="line-clamp-2">
+                            {answer.body.slice(0, 80)}
+                        </p>
+                        <p className="text-xs text-slate-500">
+                            {formatDate(answer.answered_at)}
+                        </p>
                     </div>
                 );
             },
@@ -132,4 +146,3 @@ export default function DashboardMessagesIndex() {
         </DashboardPage>
     );
 }
-

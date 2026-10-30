@@ -6,8 +6,11 @@
  * admin/employee can read the enquiry and reply to the guardian.
  */
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import ResourceFilterBar, { filterSelectClass } from '@/components/dashboard/resource-filter-bar';
+import ResourceFilterBar, {
+    filterSelectClass,
+} from '@/components/dashboard/resource-filter-bar';
 import { DataTable, DataTableColumn } from '@/components/ui/table';
+import { useDateFormatter } from '@/hooks/use-date-formatter';
 import { Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -40,14 +43,14 @@ interface EnrollmentsIndexProps {
 const statusStyles: Record<string, string> = {
     new: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200',
     reviewed: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-    messaged: 'bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-200',
-    accepted: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
+    messaged:
+        'bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-200',
+    accepted:
+        'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200',
     rejected: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-    on_hold: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
+    on_hold:
+        'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
 };
-
-const formatDate = (value?: string | null): string =>
-    value ? new Date(value).toLocaleDateString() : '';
 
 export default function DashboardEnrollmentsIndex() {
     const { enrollments, filters, statuses } =
@@ -55,6 +58,9 @@ export default function DashboardEnrollmentsIndex() {
     const { t } = useTranslation();
     const [search, setSearch] = useState(filters.search);
     const [status, setStatus] = useState(filters.status);
+
+    // Follows the browser-stored calendar preference (Afghan Solar Hijri default).
+    const formatDate = useDateFormatter({}, '');
 
     const basePath = '/dashboard/enrollments';
 
@@ -65,15 +71,24 @@ export default function DashboardEnrollmentsIndex() {
         router.get(basePath, params, { preserveState: true, replace: true });
     };
 
-    const statusLabel = (option: StatusOption) => t(option.labelKey, option.label);
+    const statusLabel = (option: StatusOption) =>
+        t(option.labelKey, option.label);
 
     const columns: DataTableColumn<EnrollmentRow>[] = [
-        { key: 'id', header: '#', cell: (row) => row.id, sortValue: (row) => row.id },
+        {
+            key: 'id',
+            header: '#',
+            cell: (row) => row.id,
+            sortValue: (row) => row.id,
+        },
         {
             key: 'student_name',
             header: t('dashboard.enrollments.fields.studentName'),
             cell: (row) => (
-                <Link href={`/dashboard/enrollments/${row.id}`} className="text-blue-600 underline">
+                <Link
+                    href={`/dashboard/enrollments/${row.id}`}
+                    className="text-blue-600 underline"
+                >
                     {row.student_name}
                 </Link>
             ),
@@ -85,9 +100,24 @@ export default function DashboardEnrollmentsIndex() {
             cell: (row) => row.guardian_name,
             sortValue: (row) => row.guardian_name,
         },
-        { key: 'email', header: t('dashboard.enrollments.fields.email'), cell: (row) => row.email, sortValue: (row) => row.email },
-        { key: 'phone', header: t('dashboard.enrollments.fields.phone'), cell: (row) => row.phone, sortValue: (row) => row.phone },
-        { key: 'grade', header: t('dashboard.enrollments.fields.grade'), cell: (row) => row.grade, sortValue: (row) => row.grade },
+        {
+            key: 'email',
+            header: t('dashboard.enrollments.fields.email'),
+            cell: (row) => row.email,
+            sortValue: (row) => row.email,
+        },
+        {
+            key: 'phone',
+            header: t('dashboard.enrollments.fields.phone'),
+            cell: (row) => row.phone,
+            sortValue: (row) => row.phone,
+        },
+        {
+            key: 'grade',
+            header: t('dashboard.enrollments.fields.grade'),
+            cell: (row) => row.grade,
+            sortValue: (row) => row.grade,
+        },
         {
             key: 'replies',
             header: t('dashboard.enrollments.show.replies'),
@@ -104,7 +134,9 @@ export default function DashboardEnrollmentsIndex() {
             key: 'status',
             header: t('dashboard.enrollments.fields.status'),
             cell: (row) => (
-                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusStyles[row.status] ?? statusStyles.new}`}>
+                <span
+                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusStyles[row.status] ?? statusStyles.new}`}
+                >
                     {t(`enums.enrollmentStatus.${row.status}`, row.status)}
                 </span>
             ),
@@ -156,7 +188,9 @@ export default function DashboardEnrollmentsIndex() {
                     onChange={(event) => setStatus(event.target.value)}
                     className={filterSelectClass}
                 >
-                    <option value="">{t('dashboard.enrollments.allStatuses')}</option>
+                    <option value="">
+                        {t('dashboard.enrollments.allStatuses')}
+                    </option>
                     {statuses.map((option) => (
                         <option key={option.value} value={option.value}>
                             {statusLabel(option)}

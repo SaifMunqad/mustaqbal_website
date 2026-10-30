@@ -5,8 +5,9 @@
  * delivery state; the pending count is derived from the totals.
  */
 import DashboardPage from '@/components/dashboard/dashboard-page';
-import { DataTable, DataTableColumn } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import { DataTable, DataTableColumn } from '@/components/ui/table';
+import { useDateFormatter } from '@/hooks/use-date-formatter';
 import campaigns from '@/routes/dashboard/whatsapp-campaigns';
 import { Form, Link, router, usePage } from '@inertiajs/react';
 import { useEffect } from 'react';
@@ -40,11 +41,14 @@ interface Recipient {
 const statusStyles: Record<string, string> = {
     sent: 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300',
     failed: 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300',
-    pending: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
+    pending:
+        'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
 };
 
 export default function DashboardWhatsAppCampaignsShow() {
     const { t } = useTranslation();
+    // Follows the browser-stored calendar preference (Afghan Solar Hijri default).
+    const formatDateTime = useDateFormatter({ timeStyle: 'short' });
     const { campaign, messageText, recipients } = usePage<{
         campaign: Campaign;
         /** The stored body flattened to the exact WhatsApp markup that is sent. */
@@ -52,9 +56,15 @@ export default function DashboardWhatsAppCampaignsShow() {
         recipients: { data: Recipient[] };
     }>().props;
 
-    const pending = Math.max(0, campaign.total_count - campaign.sent_count - campaign.failed_count);
+    const pending = Math.max(
+        0,
+        campaign.total_count - campaign.sent_count - campaign.failed_count,
+    );
     const processed = campaign.sent_count + campaign.failed_count;
-    const percent = campaign.total_count > 0 ? Math.round((processed / campaign.total_count) * 100) : 0;
+    const percent =
+        campaign.total_count > 0
+            ? Math.round((processed / campaign.total_count) * 100)
+            : 0;
 
     // Keep the page fresh while the queue is still working through recipients.
     useEffect(() => {
@@ -70,19 +80,31 @@ export default function DashboardWhatsAppCampaignsShow() {
     }, [pending]);
 
     const columns: DataTableColumn<Recipient>[] = [
-        { key: 'id', header: '#', cell: (recipient) => recipient.id, sortValue: (recipient) => recipient.id },
+        {
+            key: 'id',
+            header: '#',
+            cell: (recipient) => recipient.id,
+            sortValue: (recipient) => recipient.id,
+        },
         {
             key: 'name',
             header: t('dashboard.table.name'),
             cell: (recipient) => recipient.name ?? '-',
             sortValue: (recipient) => recipient.name ?? '',
         },
-        { key: 'phone', header: t('dashboard.whatsappCampaigns.table.number'), cell: (recipient) => recipient.phone, sortValue: (recipient) => recipient.phone },
+        {
+            key: 'phone',
+            header: t('dashboard.whatsappCampaigns.table.number'),
+            cell: (recipient) => recipient.phone,
+            sortValue: (recipient) => recipient.phone,
+        },
         {
             key: 'status',
             header: t('dashboard.table.status'),
             cell: (recipient) => (
-                <span className={`rounded-full px-2 py-0.5 text-xs capitalize ${statusStyles[recipient.status] ?? ''}`}>
+                <span
+                    className={`rounded-full px-2 py-0.5 text-xs capitalize ${statusStyles[recipient.status] ?? ''}`}
+                >
                     {recipient.status}
                 </span>
             ),
@@ -91,13 +113,15 @@ export default function DashboardWhatsAppCampaignsShow() {
         {
             key: 'sent_at',
             header: t('dashboard.emailCampaigns.show.sentAt'),
-            cell: (recipient) => (recipient.sent_at ? new Date(recipient.sent_at).toLocaleString() : '-'),
+            cell: (recipient) =>
+                recipient.sent_at ? formatDateTime(recipient.sent_at) : '-',
             sortValue: (recipient) => recipient.sent_at ?? '',
         },
         {
             key: 'error',
             header: t('dashboard.emailCampaigns.show.error'),
-            cell: (recipient) => (recipient.error ? recipient.error.slice(0, 60) : '-'),
+            cell: (recipient) =>
+                recipient.error ? recipient.error.slice(0, 60) : '-',
             sortValue: (recipient) => recipient.error ?? '',
         },
     ];
@@ -121,9 +145,7 @@ export default function DashboardWhatsAppCampaignsShow() {
                                   'dashboard.whatsappCampaigns.table.templateLabel',
                                   { name: campaign.template_name },
                               )
-                            : t(
-                                  'dashboard.whatsappCampaigns.table.freeText',
-                              )}
+                            : t('dashboard.whatsappCampaigns.table.freeText')}
                     </h2>
                     <span className="rounded-full bg-green-100 px-3 py-1 text-sm text-green-800 dark:bg-green-950 dark:text-green-300">
                         {campaign.status === 'completed'
@@ -137,7 +159,7 @@ export default function DashboardWhatsAppCampaignsShow() {
                         name:
                             campaign.creator?.name ??
                             t('dashboard.emailCampaigns.show.unknown'),
-                        date: new Date(campaign.created_at).toLocaleString(),
+                        date: formatDateTime(campaign.created_at),
                     })}
                 </p>
 
@@ -175,14 +197,15 @@ export default function DashboardWhatsAppCampaignsShow() {
                                 )}{' '}
                                 {campaign.template_language ?? '—'}
                             </p>
-                            {campaign.template_variables && campaign.template_variables.length > 0 && (
-                                <p className="mt-1">
-                                    {t(
-                                        'dashboard.whatsappCampaigns.table.variables',
-                                    )}{' '}
-                                    {campaign.template_variables.join(', ')}
-                                </p>
-                            )}
+                            {campaign.template_variables &&
+                                campaign.template_variables.length > 0 && (
+                                    <p className="mt-1">
+                                        {t(
+                                            'dashboard.whatsappCampaigns.table.variables',
+                                        )}{' '}
+                                        {campaign.template_variables.join(', ')}
+                                    </p>
+                                )}
                         </>
                     ) : (
                         messageText
@@ -190,8 +213,15 @@ export default function DashboardWhatsAppCampaignsShow() {
                 </div>
 
                 {campaign.failed_count > 0 && (
-                    <Form {...campaigns.retry.form(campaign.id)} className="w-fit">
-                        <Button type="submit" variant="outline" className="border-red-300 text-red-600">
+                    <Form
+                        {...campaigns.retry.form(campaign.id)}
+                        className="w-fit"
+                    >
+                        <Button
+                            type="submit"
+                            variant="outline"
+                            className="border-red-300 text-red-600"
+                        >
                             {t('dashboard.emailCampaigns.show.retry', {
                                 count: campaign.failed_count,
                             })}
@@ -205,7 +235,10 @@ export default function DashboardWhatsAppCampaignsShow() {
                     <h3 className="font-semibold">
                         {t('dashboard.emailCampaigns.show.recipients')}
                     </h3>
-                    <Link href={campaigns.create.url()} className="text-sm text-blue-600 underline">
+                    <Link
+                        href={campaigns.create.url()}
+                        className="text-sm text-blue-600 underline"
+                    >
                         {t('dashboard.whatsappCampaigns.new')}
                     </Link>
                 </div>

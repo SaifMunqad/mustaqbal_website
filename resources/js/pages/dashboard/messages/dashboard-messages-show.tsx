@@ -3,9 +3,10 @@
  * answer from the dashboard.
  */
 import DashboardPage from '@/components/dashboard/dashboard-page';
+import { useFormToast } from '@/components/feedback/use-form-toast';
 import { TextAreaField } from '@/components/form/form-fields';
 import { Button } from '@/components/ui/button';
-import { useFormToast } from '@/components/feedback/use-form-toast';
+import { useDateFormatter } from '@/hooks/use-date-formatter';
 import { Form, Link, usePage } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 
@@ -34,13 +35,10 @@ interface Message {
     answers: MessageAnswer[];
 }
 
-const formatDateTime = (value?: string | null): string => {
-    if (!value) return '';
-    return new Date(value).toLocaleString();
-};
-
 export default function DashboardMessagesShow() {
     const { t } = useTranslation();
+    // Follows the browser-stored calendar preference (Afghan Solar Hijri default).
+    const formatDateTime = useDateFormatter({ timeStyle: 'short' }, '');
     const { message } = usePage<{ message: Message }>().props;
     const { onError } = useFormToast(
         t('dashboard.messages.show.answeredToast'),
@@ -108,7 +106,9 @@ export default function DashboardMessagesShow() {
                             </div>
                         ) : null}
                     </dl>
-                    <p className="mt-3 whitespace-pre-line border-t pt-3">{message.body}</p>
+                    <p className="mt-3 border-t pt-3 whitespace-pre-line">
+                        {message.body}
+                    </p>
                 </div>
 
                 <div className="rounded-xl border p-4">
@@ -118,11 +118,18 @@ export default function DashboardMessagesShow() {
                     {message.answers.length ? (
                         <ul className="mt-3 space-y-3">
                             {message.answers.map((answer) => (
-                                <li key={answer.id} className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800">
-                                    <p className="whitespace-pre-line">{answer.body}</p>
+                                <li
+                                    key={answer.id}
+                                    className="rounded-lg bg-slate-50 p-3 dark:bg-slate-800"
+                                >
+                                    <p className="whitespace-pre-line">
+                                        {answer.body}
+                                    </p>
                                     <p className="mt-1 text-xs text-slate-500">
                                         {answer.author?.name ??
-                                            t('dashboard.messages.show.management')}{' '}
+                                            t(
+                                                'dashboard.messages.show.management',
+                                            )}{' '}
                                         · {formatDateTime(answer.answered_at)}
                                     </p>
                                 </li>
@@ -149,7 +156,9 @@ export default function DashboardMessagesShow() {
                         name="body"
                         required
                         className="h-36"
-                        placeholder={t('dashboard.messages.show.replyPlaceholder')}
+                        placeholder={t(
+                            'dashboard.messages.show.replyPlaceholder',
+                        )}
                     />
                     <Button className="w-fit" type="submit">
                         {t('dashboard.messages.show.sendAnswer')}

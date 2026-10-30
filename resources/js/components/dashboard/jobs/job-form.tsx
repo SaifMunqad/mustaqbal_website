@@ -1,3 +1,17 @@
+import LanguageTabsEditor, {
+    type TranslatableField,
+    type TranslationValues,
+} from '@/components/editor/language-tabs-editor';
+import ConfirmDialog from '@/components/form/confirm-dialog';
+import {
+    CheckboxField,
+    DateField,
+    SelectField,
+    TextField,
+} from '@/components/form/form-fields';
+import FormSection from '@/components/form/form-section';
+import StickyFormFooter from '@/components/form/sticky-form-footer';
+import { Button } from '@/components/ui/button';
 import {
     BriefcaseIcon,
     DocumentTextIcon,
@@ -5,15 +19,6 @@ import {
 } from '@heroicons/react/24/outline';
 import { Form, router } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
-import { CheckboxField, SelectField, TextField } from '@/components/form/form-fields';
-import ConfirmDialog from '@/components/form/confirm-dialog';
-import FormSection from '@/components/form/form-section';
-import StickyFormFooter from '@/components/form/sticky-form-footer';
-import LanguageTabsEditor, {
-    type TranslatableField,
-    type TranslationValues,
-} from '@/components/editor/language-tabs-editor';
-import { Button } from '@/components/ui/button';
 
 export type { TranslationValues } from '@/components/editor/language-tabs-editor';
 
@@ -143,18 +148,14 @@ export default function JobForm({
                                 columns={2}
                             >
                                 <SelectField
-                                    label={t(
-                                        'dashboard.jobs.form.category',
-                                    )}
+                                    label={t('dashboard.jobs.form.category')}
                                     name="category"
                                     defaultValue={job?.category ?? ''}
                                     options={categoryOptions}
                                     placeholder={t(
                                         'dashboard.jobs.form.categoryPlaceholder',
                                     )}
-                                    hint={t(
-                                        'dashboard.jobs.form.categoryHint',
-                                    )}
+                                    hint={t('dashboard.jobs.form.categoryHint')}
                                     error={errors.category}
                                 />
                                 <SelectField
@@ -163,7 +164,9 @@ export default function JobForm({
                                     )}
                                     name="employment_type"
                                     required
-                                    defaultValue={job?.employment_type ?? 'full_time'}
+                                    defaultValue={
+                                        job?.employment_type ?? 'full_time'
+                                    }
                                     options={employmentTypeOptions}
                                     error={errors.employment_type}
                                 />
@@ -238,14 +241,11 @@ export default function JobForm({
                                 title={t('dashboard.jobs.form.settings')}
                                 icon={<BriefcaseIcon className="size-5" />}
                             >
-                                <TextField
+                                <DateField
                                     label={t('dashboard.jobs.form.deadline')}
                                     name="deadline"
-                                    type="date"
                                     defaultValue={job?.deadline ?? ''}
-                                    hint={t(
-                                        'dashboard.jobs.form.deadlineHint',
-                                    )}
+                                    hint={t('dashboard.jobs.form.deadlineHint')}
                                     error={errors.deadline}
                                 />
                                 <CheckboxField
