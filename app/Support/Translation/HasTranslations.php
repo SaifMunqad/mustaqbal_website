@@ -29,7 +29,7 @@ trait HasTranslations
      */
     public static function translationClass(): string
     {
-        return static::class . 'Translation';
+        return static::class.'Translation';
     }
 
     /**
