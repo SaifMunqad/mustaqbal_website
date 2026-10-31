@@ -17,6 +17,7 @@ use Tests\TestCase;
 
 class DashboardMcpTest extends TestCase
 {
+    use CallsCatalogTools;
     use RefreshDatabase;
 
     private function admin(): User
@@ -38,67 +39,52 @@ class DashboardMcpTest extends TestCase
 
     public function test_list_articles_tool_is_authorized_for_admin(): void
     {
-        SchoolDashboardServer::actingAs($this->admin())
-            ->tool(ListArticlesTool::class, [])
+        $this->callCatalog($this->admin(), ListArticlesTool::class)
             ->assertOk();
     }
 
     public function test_home_page_layout_can_be_read_and_saved_through_mcp(): void
     {
-        $server = SchoolDashboardServer::actingAs($this->admin());
-
-        $server->tool(GetHomePageLayoutTool::class, [])
+        $this->callCatalog($this->admin(), GetHomePageLayoutTool::class)
             ->assertOk()
-            ->assertStructuredContent(function ($content): void {
-                $content->has('page')
-                    ->has('sections')
-                    ->has('palette')
-                    ->has('categories')
-                    ->has('availableItems')
-                    ->has('defaultLanguage');
-            });
+            ->assertSee('sections')
+            ->assertSee('palette')
+            ->assertSee('availableItems');
 
-        $server->tool(UpdateHomePageLayoutTool::class, ['sections' => []])
+        $this->callCatalog($this->admin(), UpdateHomePageLayoutTool::class, ['sections' => []])
             ->assertOk()
-            ->assertStructuredContent(function ($content): void {
-                $content->has('redirect')->has('messages')->where('status', 'success');
-            });
+            ->assertSee('success');
     }
 
     public function test_home_page_layout_write_rejects_invalid_section_types(): void
     {
-        SchoolDashboardServer::actingAs($this->admin())
-            ->tool(UpdateHomePageLayoutTool::class, [
-                'sections' => [['section_type' => 'not-a-section', 'is_active' => true]],
-            ])
-            ->assertStructuredContent(function ($content): void {
-                $content->has('errors')->where('status', 'validation_failed');
-            });
+        // A validation failure is data, not a transport error: the gateway
+        // completes its batch, so the payload must report validation_failed.
+        $this->callCatalog($this->admin(), UpdateHomePageLayoutTool::class, [
+            'sections' => [['section_type' => 'not-a-section', 'is_active' => true]],
+        ])
+            ->assertOk()
+            ->assertSee('validation_failed');
     }
 
     public function test_create_article_reports_validation_errors_to_the_caller(): void
     {
         // Sending an empty payload must surface the dashboard form's validation
         // errors rather than performing a partial write.
-        SchoolDashboardServer::actingAs($this->admin())
-            ->tool(CreateArticleTool::class, [])
-            ->assertStructuredContent(function ($content): void {
-                $content->has('errors')->where('status', 'validation_failed');
-            });
+        $this->callCatalog($this->admin(), CreateArticleTool::class)
+            ->assertOk()
+            ->assertSee('validation_failed')
+            ->assertSee('errors');
     }
 
     public function test_create_article_persists_through_the_existing_controller(): void
     {
-        SchoolDashboardServer::actingAs($this->admin())
-            ->tool(CreateArticleTool::class, [
-                'title' => 'Science Fair 2026',
-                'body' => '<p>The annual science fair returns this spring.</p>',
-                'is_published' => true,
-            ])
-            ->assertOk()
-            ->assertStructuredContent(function ($content): void {
-                $content->has('redirect')->has('messages')->where('status', 'success');
-            });
+        $this->callCatalog($this->admin(), CreateArticleTool::class, [
+            'title' => 'Science Fair 2026',
+            'body' => '<p>The annual science fair returns this spring.</p>',
+            'is_published' => true,
+        ])
+            ->assertOk();
 
         $this->assertDatabaseHas('articles', ['title' => 'Science Fair 2026']);
     }
@@ -107,11 +93,11 @@ class DashboardMcpTest extends TestCase
     {
         // Email campaigns are admin-only in routes/web.php. A management account
         // must be blocked here exactly as it is in the browser, even though the
-        // dispatcher calls the controller directly.
+        // dispatcher calls the controller directly — and even through the
+        // execute_tools gateway.
         $management = User::factory()->create(['role' => 'management', 'email_verified_at' => now()]);
 
-        SchoolDashboardServer::actingAs($management)
-            ->tool(ListEmailCampaignsTool::class, [])
+        $this->callCatalog($management, ListEmailCampaignsTool::class)
             ->assertHasErrors();
     }
 

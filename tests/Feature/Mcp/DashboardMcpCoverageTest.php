@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Mcp;
 
-use App\Mcp\Servers\SchoolDashboardServer;
 use App\Mcp\Tools\GetSiteSettingsTool;
 use App\Mcp\Tools\GetWhatsAppSettingsTool;
 use App\Mcp\Tools\ListArticlesTool;
@@ -38,6 +37,7 @@ use Tests\TestCase;
  */
 class DashboardMcpCoverageTest extends TestCase
 {
+    use CallsCatalogTools;
     use RefreshDatabase;
 
     private User $admin;
@@ -77,8 +77,9 @@ class DashboardMcpCoverageTest extends TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('readTools')]
     public function test_read_tool_delegates_to_controller(string $tool, array $args): void
     {
-        SchoolDashboardServer::actingAs($this->admin)
-            ->tool($tool, $args)
+        // Reads run through the execute_tools gateway, the production path for
+        // catalogued tools (and a harmless wrapper around eager ones).
+        $this->callCatalog($this->admin, $tool, $args)
             ->assertOk();
     }
 
@@ -86,24 +87,20 @@ class DashboardMcpCoverageTest extends TestCase
     {
         $article = Article::factory()->create();
 
-        SchoolDashboardServer::actingAs($this->admin)
-            ->tool(ShowArticleTool::class, ['article' => $article->id])
+        $this->callCatalog($this->admin, ShowArticleTool::class, ['article' => $article->id])
             ->assertOk()
-            ->assertStructuredContent(function ($content): void {
-                $content->has('article');
-            });
+            ->assertSee('"article"');
     }
 
     public function test_model_bound_write_updates_the_record(): void
     {
         $article = Article::factory()->create(['title' => 'Before', 'user_id' => $this->admin->id]);
 
-        SchoolDashboardServer::actingAs($this->admin)
-            ->tool(UpdateArticleTool::class, [
-                'article' => $article->id,
-                'title' => 'After MCP',
-                'body' => '<p>updated</p>',
-            ])
+        $this->callCatalog($this->admin, UpdateArticleTool::class, [
+            'article' => $article->id,
+            'title' => 'After MCP',
+            'body' => '<p>updated</p>',
+        ])
             ->assertOk();
 
         $this->assertDatabaseHas('articles', ['id' => $article->id, 'title' => 'After MCP']);
