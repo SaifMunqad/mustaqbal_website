@@ -56,8 +56,8 @@ export interface BrandPalette {
 }
 
 export interface SiteSettings {
-    brand_name: string;
-    brand_short_name: string;
+    brand_name?: string | null;
+    brand_short_name?: string | null;
     tagline?: string | null;
     logo_url?: string | null;
     favicon_url?: string | null;
