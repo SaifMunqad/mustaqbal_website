@@ -34,10 +34,32 @@ export default function HomeHero({ home, tagline, rtl }: HomeHeroProps) {
     const { t, i18n } = useTranslation();
     const isRtl = rtl ?? (i18n.dir() === 'rtl' || i18n.language === 'ar');
 
-    const title = home.title || t('home.title');
-    const subtitle = home.subtitle || t('home.subtitle');
-    const primaryLabel = home.cta_primary || t('home.ctaPrimary');
-    const secondaryLabel = home.cta_secondary || t('home.ctaSecondary');
+    const localizedText = (value: unknown): string | undefined => {
+        if (typeof value === 'string') return value || undefined;
+        if (!value || typeof value !== 'object' || Array.isArray(value)) {
+            return undefined;
+        }
+
+        const translations = value as Record<string, unknown>;
+        const language = i18n.language.replace('-', '_');
+        const baseLanguage = language.split('_')[0];
+        const selected =
+            translations[language] ??
+            translations[baseLanguage] ??
+            Object.values(translations).find(
+                (translation): translation is string =>
+                    typeof translation === 'string' && Boolean(translation),
+            );
+
+        return typeof selected === 'string' ? selected || undefined : undefined;
+    };
+
+    const title = localizedText(home.title) || t('home.title');
+    const subtitle = localizedText(home.subtitle) || t('home.subtitle');
+    const primaryLabel = localizedText(home.cta_primary) || t('home.ctaPrimary');
+    const secondaryLabel =
+        localizedText(home.cta_secondary) || t('home.ctaSecondary');
+    const taglineText = localizedText(tagline);
 
     // Direction & responsive mask:
     // - < lg (mobile & tablet): Fades bottom edge into text below
@@ -47,7 +69,7 @@ export default function HomeHero({ home, tagline, rtl }: HomeHeroProps) {
         : '[mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)] [-webkit-mask-image:linear-gradient(to_top,transparent_0%,black_35%,black_100%)] lg:[mask-image:linear-gradient(to_right,transparent_0%,black_35%,black_100%)] lg:[-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_35%,black_100%)]';
 
     const heroImageSrc =
-        home.hero_image ||
+        localizedText(home.hero_image) ||
         'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80';
 
     return (
@@ -96,9 +118,9 @@ export default function HomeHero({ home, tagline, rtl }: HomeHeroProps) {
                     }`}
                 >
                     {/* Top Start: Tagline / Blue Badge */}
-                    {tagline ? (
+                    {taglineText ? (
                         <span className="inline-flex items-center gap-1.5 rounded-md bg-brand px-3.5 py-1.5 text-xs font-bold tracking-wider text-brand-fg uppercase shadow-sm">
-                            {tagline}
+                            {taglineText}
                         </span>
                     ) : null}
 
