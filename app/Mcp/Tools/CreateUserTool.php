@@ -19,4 +19,19 @@ class CreateUserTool extends DashboardTool
 
     /** @var array<int, string> */
     protected array $models = [];
+
+    /**
+     * @return array<string, \Illuminate\JsonSchema\Types\Type>
+     */
+    public function schema(\Illuminate\Contracts\JsonSchema\JsonSchema $schema): array
+    {
+        return [
+            'name' => $schema->string()->description('Display name.')->required(),
+            'email' => $schema->string()->description('Unique login email.')->required(),
+            'role' => $schema->string()->enum(\App\Enums\UserRole::values())->description('Account role; the dashboard only lets you grant roles below your own.')->required(),
+            'status' => $schema->string()->enum(\App\Enums\UserStatus::values())->description('Account status (active by default).'),
+            'password' => $schema->string()->description('Min 8 characters; must be sent as password + password_confirmation in one payload.'),
+            'password_confirmation' => $schema->string()->description('Must match password when a password is set.'),
+        ];
+    }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AuditMcpRequests;
 use App\Mcp\Servers\SchoolDashboardServer;
 use Laravel\Mcp\Facades\Mcp;
 
@@ -17,4 +18,11 @@ use Laravel\Mcp\Facades\Mcp;
 */
 
 Mcp::web('/mcp', SchoolDashboardServer::class)
-    ->middleware(['mcp.auth', 'auth:sanctum']);
+    ->middleware([
+        'mcp.auth',
+        // Budget the endpoint before any dashboard work happens.
+        'throttle:mcp',
+        'auth:sanctum',
+        // Innermost so the acting user is resolved: one audit line per call.
+        AuditMcpRequests::class,
+    ]);
