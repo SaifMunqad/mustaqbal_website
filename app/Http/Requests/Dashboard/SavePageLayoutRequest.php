@@ -23,6 +23,9 @@ class SavePageLayoutRequest extends FormRequest
     {
         return [
             'sections' => ['present', 'array'],
+            // Optional optimistic-lock stamp (see BuilderRevision); the web
+            // editor omits it, programmatic writers send what they read.
+            'expected_revision' => ['nullable', 'string', 'max:64'],
             'sections.*.id' => ['nullable', 'integer', Rule::exists('page_sections', 'id')],
             'sections.*.section_type' => ['required', Rule::in(SectionType::values())],
             'sections.*.zone' => ['nullable', 'string', 'max:40'],

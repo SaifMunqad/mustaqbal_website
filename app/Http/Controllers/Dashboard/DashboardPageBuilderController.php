@@ -10,6 +10,7 @@ use App\Models\Page;
 use App\Models\PageSection;
 use App\Support\Home\BlockRegistry;
 use App\Support\Home\BuilderPages;
+use App\Support\Home\BuilderRevision;
 use App\Support\Home\PageLayoutWriter;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -61,6 +62,7 @@ class DashboardPageBuilderController extends Controller
                 'key' => $pageKey,
                 'label' => BuilderPages::label($pageKey),
                 'label_key' => BuilderPages::labelKey($pageKey),
+                'revision' => BuilderRevision::for($record->id),
                 'save_url' => route("dashboard.pages.{$pageKey}.save"),
                 'visual_url' => route("dashboard.pages.{$pageKey}"),
                 'index_url' => BuilderPages::indexUrl($pageKey),
@@ -78,6 +80,20 @@ class DashboardPageBuilderController extends Controller
         $pageKey = $this->pageKey($page);
 
         $validated = $request->validated();
+
+        // Optimistic lock for programmatic writers: a caller that read the
+        // layout first can send the revision it saw, and a stale revision means
+        // someone else committed since then. The web editor never sends it,
+        // leaving interactive saving exactly as forgiving as before.
+        if (filled($validated['expected_revision'] ?? null)) {
+            $current = BuilderRevision::for(Page::resolve($pageKey)->id);
+
+            if ($validated['expected_revision'] !== $current) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'expected_revision' => "The layout changed since it was read (expected revision {$validated['expected_revision']}, current {$current}). Re-read it with GetPageLayout and re-apply the edit.",
+                ]);
+            }
+        }
 
         PageLayoutWriter::save($pageKey, $validated['sections']);
 
