@@ -47,6 +47,11 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
             href: editAppearance(),
             icon: null,
         },
+        {
+            title: 'API keys',
+            href: '/settings/api',
+            icon: null,
+        },
     ];
 
     const currentPath = window.location.pathname;
