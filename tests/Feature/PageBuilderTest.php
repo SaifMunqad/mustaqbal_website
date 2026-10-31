@@ -9,10 +9,10 @@ use App\Models\Language;
 use App\Models\Page;
 use App\Models\PageSection;
 use App\Models\SectionListItem;
-use App\Support\Home\BlockRegistry;
-use App\Support\Home\PageSections;
-use App\Support\Home\PageLayoutWriter;
 use App\Models\User;
+use App\Support\Home\BlockRegistry;
+use App\Support\Home\PageLayoutWriter;
+use App\Support\Home\PageSections;
 use Database\Seeders\HomePageBuilderSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -364,6 +364,72 @@ class PageBuilderTest extends TestCase
 
         $this->assertDatabaseHas('page_sections', ['section_type' => 'banner', 'span_lg' => 6]);
         $this->assertDatabaseHas('page_section_translations', ['heading' => 'Saved banner']);
+    }
+
+    /**
+     * Data-loss guard: a partial save (one banner) must never wipe sibling
+     * blocks. The endpoint deletes omitted sections only when the caller
+     * explicitly asks for whole-layout replacement via remove_missing.
+     */
+    public function test_builder_save_endpoint_keeps_unmentioned_sections_by_default(): void
+    {
+        $ids = PageLayoutWriter::save('home', [
+            ['id' => null, 'section_type' => 'hero', 'is_active' => true, 'translations' => ['en' => ['heading' => 'Keep me']]],
+            ['id' => null, 'section_type' => 'banner', 'is_active' => true],
+        ]);
+
+        $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
+            ->put(route('dashboard.pages.home.save'), [
+                'sections' => [
+                    ['id' => $ids[1], 'section_type' => 'banner', 'is_active' => true, 'tone' => 'red'],
+                ],
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('page_sections', ['id' => $ids[0], 'section_type' => 'hero']);
+        $this->assertDatabaseHas('page_section_translations', ['page_section_id' => $ids[0], 'heading' => 'Keep me']);
+
+        // The unmentioned block keeps its slot, behind the submitted ones.
+        $ordered = PageSection::query()->where('page_id', Page::resolve('home')->id)->ordered()->pluck('id')->all();
+        $this->assertSame([$ids[1], $ids[0]], array_values($ordered));
+    }
+
+    public function test_builder_save_endpoint_deletes_only_with_explicit_remove_missing(): void
+    {
+        $ids = PageLayoutWriter::save('home', [
+            ['id' => null, 'section_type' => 'hero', 'is_active' => true],
+            ['id' => null, 'section_type' => 'banner', 'is_active' => true],
+        ]);
+
+        // This is what the whole-layout web editor sends: its staged save is
+        // an intentional replace, so dropped blocks really disappear.
+        $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
+            ->put(route('dashboard.pages.home.save'), [
+                'sections' => [
+                    ['id' => $ids[1], 'section_type' => 'banner', 'is_active' => true],
+                ],
+                'remove_missing' => true,
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseMissing('page_sections', ['id' => $ids[0]]);
+        $this->assertDatabaseHas('page_sections', ['id' => $ids[1]]);
+    }
+
+    public function test_builder_save_endpoint_rejects_unknown_translation_language_codes(): void
+    {
+        // Guard against silent data loss: the writer skips codes outside the
+        // active set, so "fa" (instead of the seeded Dari code) must be a
+        // visible validation failure, never a saved-without-text success.
+        $this->actingAs(User::factory()->create(['role' => UserRole::Management->value]))
+            ->put(route('dashboard.pages.home.save'), [
+                'sections' => [
+                    ['id' => null, 'section_type' => 'hero', 'is_active' => true, 'translations' => ['fa' => ['heading' => 'Wrong code']]],
+                ],
+            ])
+            ->assertSessionHasErrors('sections.0.translations');
+
+        $this->assertDatabaseCount('page_sections', 0);
     }
 
     public function test_builder_save_endpoint_persists_row_images_and_links(): void

@@ -95,11 +95,38 @@ class DashboardPageBuilderController extends Controller
             }
         }
 
-        PageLayoutWriter::save($pageKey, $validated['sections']);
+        // Reject payloads carrying codes the writer would silently skip
+        // before anything is persisted.
+        $this->assertKnownTranslationCodes($validated['sections']);
+
+        PageLayoutWriter::save($pageKey, $validated['sections'], null, $request->boolean('remove_missing'));
 
         // A translated flash key rather than the English page label, so the toast
         // follows the admin's UI language.
         return back()->with('success', 'flash.pageSaved');
+    }
+
+    /**
+     * Fail loudly on unknown translation language codes. The writer silently
+     * skips codes outside the active set (and the web editor only ever sends
+     * active codes), but a programmatic caller that guesses "fa" instead of
+     * "fa_AF" would otherwise get a success response while its text vanished.
+     *
+     * @param  array<int, array<string, mixed>>  $sections
+     */
+    private function assertKnownTranslationCodes(array $sections): void
+    {
+        $codes = collect(Language::activeList())->pluck('code')->all();
+
+        foreach ($sections as $index => $section) {
+            foreach (array_keys($section['translations'] ?? []) as $code) {
+                if (! in_array((string) $code, $codes, true)) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        "sections.{$index}.translations" => "Unknown language code [{$code}]. Use one of the active codes: ".implode(', ', $codes).'.',
+                    ]);
+                }
+            }
+        }
     }
 
     /**

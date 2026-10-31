@@ -14,6 +14,7 @@ use App\Mcp\Tools\ListBuilderPagesTool;
 use App\Mcp\Tools\RemovePageSectionTool;
 use App\Mcp\Tools\ReorderPageSectionsTool;
 use App\Mcp\Tools\UpdateAboutPageTool;
+use App\Mcp\Tools\UpdatePageLayoutTool;
 use App\Mcp\Tools\UpdatePageSectionTool;
 use App\Mcp\Tools\UpdateWhatsAppSettingsTool;
 use App\Mcp\Tools\UploadFontTool;
@@ -168,6 +169,75 @@ class PageBuilderMcpTest extends TestCase
 
         $this->assertDatabaseMissing('page_sections', ['id' => $hero->id]);
         $this->assertDatabaseHas('page_sections', ['id' => $stats->id]);
+    }
+
+    /**
+     * The reported data-loss scenario at the MCP layer: an agent submitting
+     * only the block it touched must never delete the rest of the page.
+     */
+    public function test_partial_update_page_layout_keeps_unmentioned_sections(): void
+    {
+        $server = SchoolDashboardServer::actingAs($this->admin);
+
+        $server->tool(AddPageSectionTool::class, [
+            'page' => 'home',
+            'section' => ['section_type' => 'hero', 'translations' => ['en' => ['title' => 'Survivor']]],
+        ])->assertOk();
+
+        $server->tool(AddPageSectionTool::class, [
+            'page' => 'home',
+            'section' => ['section_type' => 'banner'],
+        ])->assertOk();
+
+        $banner = PageSection::query()->where('section_type', 'banner')->firstOrFail();
+
+        // A partial layout: just the banner, restyled.
+        $server->tool(UpdatePageLayoutTool::class, [
+            'page' => 'home',
+            'sections' => [['id' => $banner->id, 'section_type' => 'banner', 'is_active' => true, 'tone' => 'green']],
+        ])->assertOk();
+
+        $this->assertDatabaseHas('page_sections', ['id' => $banner->id, 'tone' => 'green']);
+        $this->assertDatabaseHas('page_sections', ['section_type' => 'hero']);
+        $this->assertSame(2, PageSection::query()->count());
+    }
+
+    public function test_remove_missing_true_still_replaces_the_whole_layout(): void
+    {
+        $server = SchoolDashboardServer::actingAs($this->admin);
+
+        $server->tool(AddPageSectionTool::class, ['page' => 'home', 'section' => ['section_type' => 'hero']])
+            ->assertOk();
+        $server->tool(AddPageSectionTool::class, ['page' => 'home', 'section' => ['section_type' => 'banner']])
+            ->assertOk();
+
+        $banner = PageSection::query()->where('section_type', 'banner')->firstOrFail();
+
+        $server->tool(UpdatePageLayoutTool::class, [
+            'page' => 'home',
+            'sections' => [['id' => $banner->id, 'section_type' => 'banner', 'is_active' => true]],
+            'remove_missing' => true,
+        ])->assertOk();
+
+        $this->assertDatabaseMissing('page_sections', ['section_type' => 'hero']);
+        $this->assertDatabaseHas('page_sections', ['id' => $banner->id]);
+    }
+
+    public function test_unknown_translation_codes_fail_loudly_over_mcp(): void
+    {
+        // The MCP surface only knows "en" here; a guessed code must produce a
+        // validation error instead of a success with silently dropped text.
+        SchoolDashboardServer::actingAs($this->admin)
+            ->tool(UpdatePageLayoutTool::class, [
+                'page' => 'home',
+                'sections' => [['section_type' => 'rich_text', 'is_active' => true, 'translations' => ['fa' => ['body' => 'lost text']]]],
+            ])
+            ->assertOk()
+            ->assertStructuredContent(function ($content): void {
+                $content->has('errors')->where('status', 'validation_failed');
+            });
+
+        $this->assertDatabaseCount('page_sections', 0);
     }
 
     public function test_section_tools_reject_unknown_pages_and_ids(): void

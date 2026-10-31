@@ -50,7 +50,11 @@ class PageSectionEditor
             array_splice($sections, max(0, min($position, count($sections))), 0, $moved);
         }
 
-        return $this->commit($page, $sections, $read);
+        // Merge-mode commit without the page lock: a sibling edit since the
+        // read cannot destroy anything here (unknown blocks are kept), so
+        // failing an append because someone else added a block elsewhere
+        // would be false friction.
+        return $this->commit($page, $sections, $read, withRevision: false);
     }
 
     /**
@@ -76,6 +80,9 @@ class PageSectionEditor
 
         $sections[$index] = $this->mergeSection($sections[$index], $patch);
 
+        // The revision stays required here: the patch was computed against the
+        // block as read, so a concurrent edit of the same block must fail
+        // rather than silently win last-write.
         return $this->commit($page, $sections, $read);
     }
 
@@ -97,7 +104,10 @@ class PageSectionEditor
 
         array_splice($sections, $index, 1);
 
-        return $this->commit($page, array_values($sections), $read);
+        // The only catalogued operation that deletes: prune is intentional
+        // here, and the read revision makes a concurrent sibling edit fail
+        // instead of silently dropping their block.
+        return $this->commit($page, array_values($sections), $read, true);
     }
 
     /**
@@ -142,7 +152,7 @@ class PageSectionEditor
             }
         }
 
-        return $this->commit($page, $ordered, $read);
+        return $this->commit($page, $ordered, $read, withRevision: false);
     }
 
     /** Read the page's current draft through the builder controller itself. */
@@ -172,13 +182,16 @@ class PageSectionEditor
     }
 
     /**
-     * Commit a complete draft through the builder controller's save action,
-     * sending the revision the draft was read at so a concurrent edit (human
-     * or another agent) makes this write fail loudly instead of overwriting.
+     * Commit a complete draft through the builder controller's save action.
+     *
+     * Merge mode (the default) makes an omitted sibling block impossible to
+     * destroy, so only operations whose result depends on the exact state
+     * read — a same-block patch, or an intentional delete — send the revision
+     * stamp; the rest avoid spurious "layout changed" retries for agents.
      *
      * @param  array<string, mixed>  $read  the props the draft was read from
      */
-    private function commit(string $page, array $sections, array $read): McpResponse|ResponseFactory
+    private function commit(string $page, array $sections, array $read, bool $removeMissing = false, bool $withRevision = true): McpResponse|ResponseFactory
     {
         $revision = $read['page']['revision'] ?? null;
 
@@ -186,7 +199,8 @@ class PageSectionEditor
             new Request(array_filter([
                 'page' => $page,
                 'sections' => $sections,
-                'expected_revision' => is_string($revision) ? $revision : null,
+                'expected_revision' => $withRevision && is_string($revision) ? $revision : null,
+                'remove_missing' => $removeMissing ? true : null,
             ], static fn (mixed $v): bool => $v !== null)),
             DashboardPageBuilderController::class,
             'save',

@@ -22,6 +22,12 @@ use Stevebauman\Purify\Facades\Purify;
  *
  * Input is a plain, already-validated array (not a Request) so the writer is
  * reusable by any controller and trivially testable.
+ *
+ * `$pruneMissing` decides what happens to blocks absent from the payload:
+ * true (the human editor's whole-layout save) deletes them; false keeps them,
+ * re-appending them after the submitted blocks. Entry points that accept a
+ * possibly-partial layout from programmatic callers must pass false, so an
+ * agent that sends one banner cannot silently wipe the rest of the page.
  */
 class PageLayoutWriter
 {
@@ -29,7 +35,7 @@ class PageLayoutWriter
      * @param  list<array<string, mixed>>  $sections
      * @return list<int> the resulting section ids, in display order
      */
-    public static function save(string $pageKey, array $sections, ?array $siteSettings = null): array
+    public static function save(string $pageKey, array $sections, ?array $siteSettings = null, bool $pruneMissing = true): array
     {
         $page = Page::resolve($pageKey);
         $allowedCodes = collect(Language::activeList())->pluck('code')->all();
@@ -38,7 +44,7 @@ class PageLayoutWriter
 
         $kept = [];
 
-        DB::transaction(function () use ($pageKey, $page, $sections, $allowedCodes, &$kept): void {
+        DB::transaction(function () use ($pageKey, $page, $sections, $allowedCodes, $pruneMissing, &$kept): void {
             foreach (array_values($sections) as $index => $data) {
                 $type = SectionType::from($data['section_type']);
 
@@ -71,11 +77,32 @@ class PageLayoutWriter
                 }
             }
 
-            $removal = PageSection::query()->where('page_id', $page->id);
-            if ($kept !== []) {
-                $removal->whereKeyNot($kept);
+            if ($pruneMissing) {
+                $removal = PageSection::query()->where('page_id', $page->id);
+                if ($kept !== []) {
+                    $removal->whereKeyNot($kept);
+                }
+                $removal->delete();
+            } else {
+                // Merge mode: blocks the payload never mentioned are kept and
+                // renumbered behind the submitted ones, in their old order.
+                // They stay editable and visible — a partial save can only
+                // add, change or reorder, never delete.
+                $rest = PageSection::query()
+                    ->where('page_id', $page->id)
+                    ->whereKeyNot($kept)
+                    ->orderBy('sort_order')
+                    ->orderBy('id')
+                    ->get();
+
+                $next = count($kept);
+
+                foreach ($rest as $section) {
+                    $section->update(['sort_order' => $next]);
+                    $kept[] = $section->id;
+                    $next++;
+                }
             }
-            $removal->delete();
         });
 
         PageSections::flush($pageKey);

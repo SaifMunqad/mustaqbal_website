@@ -26,6 +26,10 @@ class SavePageLayoutRequest extends FormRequest
             // Optional optimistic-lock stamp (see BuilderRevision); the web
             // editor omits it, programmatic writers send what they read.
             'expected_revision' => ['nullable', 'string', 'max:64'],
+            // Destructive mode: sections absent from the payload are kept
+            // (merged behind the submitted ones) unless this is explicitly
+            // true. The whole-layout web editor always sends true.
+            'remove_missing' => ['nullable', 'boolean'],
             'sections.*.id' => ['nullable', 'integer', Rule::exists('page_sections', 'id')],
             'sections.*.section_type' => ['required', Rule::in(SectionType::values())],
             'sections.*.zone' => ['nullable', 'string', 'max:40'],

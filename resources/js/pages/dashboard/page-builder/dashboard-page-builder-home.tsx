@@ -397,6 +397,11 @@ export function PageBuilderEditor() {
         router.put(
             page.save_url,
             {
+                // The editor stages the complete layout, so this save is an
+                // intentional whole replace: blocks dropped in the editor must
+                // actually disappear. Partial (agent) saves omit this flag and
+                // are merged non-destructively server-side.
+                remove_missing: true,
                 sections: drafts.map(
                     (d) => ({
                         id: d.id,
