@@ -13,9 +13,7 @@ use Inertia\Response;
 
 class SearchController extends Controller
 {
-    public function __construct(private readonly PdfThumbnailService $thumbnails)
-    {
-    }
+    public function __construct(private readonly PdfThumbnailService $thumbnails) {}
 
     public function index(Request $request): Response
     {

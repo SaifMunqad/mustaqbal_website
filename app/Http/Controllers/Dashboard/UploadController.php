@@ -12,9 +12,7 @@ use Illuminate\Support\Str;
 
 class UploadController extends Controller
 {
-    public function __construct(private readonly PdfThumbnailService $thumbnails)
-    {
-    }
+    public function __construct(private readonly PdfThumbnailService $thumbnails) {}
 
     /**
      * Store an uploaded image or favicon and return its public URL.

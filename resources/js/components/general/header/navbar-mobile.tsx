@@ -61,10 +61,10 @@ function MobileDropdown({
         <div style={wrapperStyle} aria-hidden={!isOpen}>
             <div className="overflow-hidden">
                 <div
-                    className={`ms-6 mt-2 space-y-1 rounded-xl ${
+                    className={`ms-6 mt-2 space-y-1 rounded-xl backdrop-blur-lg ${
                         isSticky
-                            ? 'bg-white/15 backdrop-blur-lg'
-                            : 'bg-white/10 backdrop-blur-lg dark:bg-gray-800/10'
+                            ? 'bg-brand-soft/80 dark:bg-gray-800/50'
+                            : 'bg-brand-soft/50 dark:bg-gray-800/30'
                     }`}
                 >
                     {items.map((item) => {
@@ -78,15 +78,15 @@ function MobileDropdown({
                                 onClick={onClose}
                                 className={`flex items-center gap-x-3 p-3 transition-all duration-200 ${
                                     isActive
-                                        ? 'bg-white/30 dark:bg-gray-800/30'
-                                        : 'hover:bg-white/20 dark:hover:bg-gray-800/20'
+                                        ? 'bg-brand-soft dark:bg-brand-deep/40'
+                                        : 'hover:bg-brand-soft/70 dark:hover:bg-gray-800/70'
                                 }`}
                             >
                                 <div
                                     className={`rounded-lg p-1.5 ${
                                         isActive
-                                            ? 'bg-white/40 dark:bg-gray-800/40'
-                                            : 'bg-white/20 dark:bg-gray-800/20'
+                                            ? 'bg-brand-soft-strong dark:bg-brand-deep/40'
+                                            : 'bg-brand-soft dark:bg-gray-800/50'
                                     }`}
                                 >
                                     <Icon
@@ -167,7 +167,7 @@ export default function NavbarMobile({
                 */}
                 <div
                     style={{ maxHeight: 'calc(100dvh - 5.5rem)' }}
-                    className="mt-4 overflow-y-auto overscroll-contain rounded-2xl border border-brand-border/50 bg-white/95 backdrop-blur-xl"
+                    className="scrollbar-thin mt-4 overflow-y-auto overscroll-contain rounded-2xl border border-brand-border/50 bg-white/95 text-gray-800 backdrop-blur-xl dark:border-gray-700/60 dark:bg-[#121212]/95 dark:text-gray-200"
                 >
                     <ul className="space-y-1 p-3">
                         {items.map((item) => {
@@ -179,7 +179,7 @@ export default function NavbarMobile({
                             return (
                                 <li
                                     key={item.key}
-                                    className="border-b border-white/10 last:border-0 dark:border-gray-700/10"
+                                    className="border-b border-brand-border/40 last:border-0 dark:border-gray-700/50"
                                 >
                                     <div className="space-y-1">
                                         {item.dropdown ? (
@@ -196,16 +196,16 @@ export default function NavbarMobile({
                                                     }
                                                     className={`flex w-full items-center justify-between rounded-xl p-3 transition-all duration-200 ${
                                                         isActive
-                                                            ? 'bg-white/30 dark:bg-gray-800/30'
-                                                            : 'hover:bg-white/20 dark:hover:bg-gray-800/20'
+                                                            ? 'bg-brand-soft dark:bg-brand-deep/40'
+                                                            : 'hover:bg-brand-soft/70 dark:hover:bg-gray-800/70'
                                                     }`}
                                                 >
                                                     <div className="flex items-center gap-x-3">
                                                         <div
                                                             className={`rounded-lg p-1.5 ${
                                                                 isActive
-                                                                    ? 'bg-white/40 dark:bg-gray-800/40'
-                                                                    : 'bg-white/20 dark:bg-gray-800/20'
+                                                                    ? 'bg-brand-soft-strong dark:bg-brand-deep/40'
+                                                                    : 'bg-brand-soft dark:bg-gray-800/50'
                                                             }`}
                                                         >
                                                             <item.icon
@@ -258,15 +258,15 @@ export default function NavbarMobile({
                                                 }
                                                 className={`flex items-center gap-x-3 rounded-xl p-3 transition-all duration-200 ${
                                                     isActive
-                                                        ? 'bg-white/30 dark:bg-gray-800/30'
-                                                        : 'hover:bg-white/20 dark:hover:bg-gray-800/20'
+                                                        ? 'bg-brand-soft dark:bg-brand-deep/40'
+                                                        : 'hover:bg-brand-soft/70 dark:hover:bg-gray-800/70'
                                                 }`}
                                             >
                                                 <div
                                                     className={`flex items-center gap-x-1 rounded-lg p-1.5 ${
                                                         isActive
-                                                            ? 'bg-white/40 dark:bg-gray-800/40'
-                                                            : 'bg-white/20 dark:bg-gray-800/20'
+                                                            ? 'bg-brand-soft-strong dark:bg-brand-deep/40'
+                                                            : 'bg-brand-soft dark:bg-gray-800/50'
                                                     }`}
                                                 >
                                                     <item.icon
