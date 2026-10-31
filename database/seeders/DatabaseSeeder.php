@@ -53,11 +53,29 @@ class DatabaseSeeder extends Seeder
 
         // Localize the global site settings for the secondary languages so the
         // shared brand tagline and footer text read translated on a fresh seed.
+        // The default language is excluded — its values live on the parent columns.
         // Guarded to only run once so reseeding never overwrites admin-edited
         // translations. Languages must already exist (above).
         $siteSettings = SiteSetting::current();
         if ($siteSettings->exists && $siteSettings->translations()->count() === 0) {
-            LocalizedContent::apply($siteSettings->translations(), LocalizedContent::siteSettingDefaults());
+            $settingDefaults = LocalizedContent::siteSettingDefaults();
+            $defaultCode = Language::defaultCode();
+            $secondary = array_filter(
+                $settingDefaults,
+                static fn (string $code): bool => $code !== $defaultCode,
+                ARRAY_FILTER_USE_KEY,
+            );
+
+            if ($secondary !== []) {
+                LocalizedContent::apply($siteSettings->translations(), $secondary);
+            }
+
+            // Mirror the default-language content onto the parent columns so
+            // the default visitor sees the correct language from the source of truth.
+            $defaultCopy = $settingDefaults[$defaultCode] ?? null;
+            if ($defaultCopy !== null) {
+                $siteSettings->update($defaultCopy);
+            }
         }
 
         $user = User::firstOrCreate(

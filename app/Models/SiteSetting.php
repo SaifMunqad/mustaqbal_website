@@ -104,6 +104,37 @@ class SiteSetting extends Model
     }
 
     /**
+     * Resolve a localized field for the current request locale without leaking
+     * a fallback from a different language. For the default language the parent
+     * column is authoritative. For secondary languages only an explicit
+     * translation row is accepted — when none exists the caller receives null
+     * so the frontend can use its bundled i18n string (which IS in the reader's
+     * language) rather than a wrong-language DB fallback.
+     */
+    public function translatedForCurrentLocale(string $field): ?string
+    {
+        $locale = app()->getLocale();
+        $default = Language::defaultCode();
+
+        // Default language: parent column is the ONLY source (never a row from
+        // another locale, which would bleed a secondary language into the default).
+        if ($locale === $default) {
+            $value = $this->getAttributes()[$field] ?? null;
+
+            return filled($value) ? (string) $value : null;
+        }
+
+        // Secondary language: only use an explicit row for THIS locale.
+        $row = $this->resolveTranslationRow($locale);
+
+        if ($row && $row->language?->code === $locale && filled($row->{$field} ?? null)) {
+            return $row->{$field};
+        }
+
+        return null;
+    }
+
+    /**
      * Shape exposed to the frontend through the Inertia share layer.
      *
      * @return array<string, mixed>
@@ -113,9 +144,9 @@ class SiteSetting extends Model
         $icons = $this->iconAssets();
 
         return [
-            'brand_name' => $this->translated('brand_name'),
-            'brand_short_name' => $this->translated('brand_short_name'),
-            'tagline' => $this->translated('tagline'),
+            'brand_name' => $this->translatedForCurrentLocale('brand_name'),
+            'brand_short_name' => $this->translatedForCurrentLocale('brand_short_name'),
+            'tagline' => $this->translatedForCurrentLocale('tagline'),
             'logo_url' => $this->logo_url,
             'favicon_url' => $icons['ico'] ?? $icons['favicon_32'] ?? null,
             // Branding palette: the admin picks one color (plus an optional
@@ -144,7 +175,7 @@ class SiteSetting extends Model
                 'youtube' => $this->social_youtube,
                 'whatsapp' => $this->social_whatsapp,
             ],
-            'footer_text' => $this->translated('footer_text'),
+            'footer_text' => $this->translatedForCurrentLocale('footer_text'),
         ];
     }
 

@@ -36,7 +36,7 @@ class SiteSettingTranslationTest extends TestCase
         Language::flushCache();
     }
 
-    public function test_to_shared_falls_back_to_english_when_no_translation_exists(): void
+    public function test_to_shared_returns_null_for_secondary_locale_without_a_row(): void
     {
         SiteSetting::query()->create(SiteSetting::defaults());
 
@@ -44,14 +44,31 @@ class SiteSettingTranslationTest extends TestCase
 
         $shared = SiteSetting::current()->toShared();
 
-        // No Dari rows yet: the reader still gets the English source of truth.
-        $this->assertSame('Building tomorrow with quality education', $shared['tagline']);
+        // No Dari rows yet: null is returned so the frontend uses its bundled
+        // i18n text (which IS in Dari) rather than a wrong-language DB fallback.
+        $this->assertNull($shared['tagline']);
+        $this->assertNull($shared['footer_text']);
+        $this->assertNull($shared['brand_name']);
 
         // The home hero / stats / features are builder blocks now, so they are no
         // longer part of the shared settings payload.
         $this->assertArrayNotHasKey('home', $shared);
         $this->assertArrayNotHasKey('stats', $shared);
         $this->assertArrayNotHasKey('features', $shared);
+    }
+
+    public function test_to_shared_resolves_default_locale_from_parent_columns(): void
+    {
+        SiteSetting::query()->create(SiteSetting::defaults());
+
+        app()->setLocale('en');
+
+        $shared = SiteSetting::current()->toShared();
+
+        // Default locale: parent columns are the source of truth.
+        $this->assertSame('Building tomorrow with quality education', $shared['tagline']);
+        $this->assertSame('All rights reserved.', $shared['footer_text']);
+        $this->assertSame('My School', $shared['brand_name']);
     }
 
     public function test_to_shared_returns_the_active_language_copy(): void

@@ -56,6 +56,14 @@ trait HasTranslations
      * on the parent columns, not as a translation row). A null here lets
      * {@see translated()} fall through to the parent column and then the caller's
      * default, which is the correct, language-safe resolution order.
+     *
+     * The default language code is skipped when it appears only as a fallback
+     * (i.e. the requested locale is NOT the default). This prevents a stale
+     * default-language row from bleeding into secondary-locale visitors: the
+     * parent columns are the authoritative source for the default language.
+     * When the requested locale IS the default, the row is still searched —
+     * necessary for models (e.g. SitePage) whose translated fields live only in
+     * translation rows, not on the parent.
      */
     public function resolveTranslationRow(?string $languageCode = null): ?Model
     {
@@ -64,7 +72,18 @@ trait HasTranslations
             ? $this->translations
             : $this->translations()->with('language')->get();
 
-        foreach (Language::fallbackCodes($languageCode ?? app()->getLocale()) as $code) {
+        $preferred = $languageCode ?? app()->getLocale();
+        $default = Language::defaultCode();
+
+        foreach (Language::fallbackCodes($preferred) as $code) {
+            // Skip the default code when it's merely a fallback, not the
+            // requested locale. The parent columns hold the default-language
+            // content for models like SiteSetting; a stray default row must
+            // not serve as a fallback for other locales.
+            if ($code === $default && $code !== $preferred) {
+                continue;
+            }
+
             $match = $translations->firstWhere('language.code', $code);
 
             if ($match) {

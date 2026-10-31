@@ -22,10 +22,14 @@ class TranslationFallbackTest extends TestCase
     {
         parent::setUp();
 
-        Language::flushCache();
-
         $this->language('en', true);
         $this->language('ps', false);
+
+        // Ensure only 'en' is flagged as default; the migration may have
+        // inserted 'fa_AF' as the site default.
+        Language::query()->where('code', 'en')->firstOrFail()->makeDefault();
+
+        Language::flushCache();
     }
 
     public function test_default_locale_uses_parent_value_not_a_secondary_language_row(): void
