@@ -176,10 +176,14 @@ class BookLibrarySeeder extends Seeder
 
     /**
      * Keep text within the WinAnsi/Helvetica range so the PDF stays valid.
+     *
+     * Accepts null because translatable attributes (e.g. `$book->title`) resolve
+     * to null for a locale with no translation row; treat those as empty so a
+     * seed run never aborts mid-PDF.
      */
-    private function sanitize(string $value): string
+    private function sanitize(?string $value): string
     {
-        $value = preg_replace('/\s+/', ' ', $value) ?? '';
+        $value = preg_replace('/\s+/', ' ', (string) $value) ?? '';
 
         return preg_replace('/[^\x20-\x7E]/', '', $value) ?? '';
     }
