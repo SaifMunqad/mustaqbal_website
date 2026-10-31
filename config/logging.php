@@ -73,6 +73,17 @@ return [
             'replace_placeholders' => true,
         ],
 
+        // One structured line per MCP request (see AuditMcpRequests): who, which
+        // tool, error or not. Kept longer than the app log because it is the
+        // forensic trail for anything an agent changed on the dashboard.
+        'mcp_audit' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/mcp-audit.log'),
+            'level' => 'info',
+            'days' => 90,
+            'replace_placeholders' => true,
+        ],
+
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),

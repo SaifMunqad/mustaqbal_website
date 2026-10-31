@@ -44,6 +44,16 @@ use Throwable;
 class DashboardDispatcher
 {
     /**
+     * Middleware the dispatcher can honour: the group names whose infrastructure
+     * is rebuilt manually, the auth guard the acting user is planted into, and
+     * the three gates replayed below. Anything else on a matched route fails
+     * closed, so a future route middleware can never be bypassed silently.
+     *
+     * @var list<string>
+     */
+    private const REPLAYABLE = ['web', 'api', 'auth', 'verified', 'active', 'role'];
+
+    /**
      * @param  array<int, string>  $modelParams  argument names that are route-model bindings
      * @param  array<string, UploadedFile>  $files  in-memory files exposed to the FormRequest (multipart-equivalent)
      */
@@ -65,7 +75,7 @@ class DashboardDispatcher
      * it back through the same controller the browser uses.
      *
      * @param  array<int, string>  $modelParams
-     * @return array<string, mixed>|McpResponse|ResponseFactory  props on success, an error response on failure
+     * @return array<string, mixed>|McpResponse|ResponseFactory props on success, an error response on failure
      */
     public function props(McpRequest $mcpRequest, string $controller, string $action, array $modelParams = []): array|McpResponse|ResponseFactory
     {
@@ -100,7 +110,7 @@ class DashboardDispatcher
         $user = $mcpRequest->user();
 
         if (! $user) {
-            return McpResponse::error('Authentication is required to use the dashboard server.');
+            return $this->failure('unauthenticated', 'Authentication is required to use the dashboard server.');
         }
 
         $arguments = $mcpRequest->all();
@@ -112,6 +122,17 @@ class DashboardDispatcher
                 unset($arguments[$key]);
             }
         }
+
+        // Snapshot the ambient state before overwriting it, so composite tools
+        // (which call the pipeline more than once per MCP request) always start
+        // from a clean slate and the real request state is handed back at the
+        // end instead of leaking.
+        $snapshot = [
+            'request' => app()->bound('request') ? app('request') : null,
+            'driver' => Auth::getDefaultDriver(),
+            'user' => Auth::getUser(),
+            'session' => app()->bound('session.store') ? app('session.store') : null,
+        ];
 
         $request = $this->buildRequest($action, $verb, $arguments, $files);
         $session = $this->installSession($request);
@@ -149,18 +170,69 @@ class DashboardDispatcher
                 'errors' => $exception->errors(),
             ]);
         } catch (\Illuminate\Auth\Access\AuthorizationException $exception) {
-            return McpResponse::error('Permission denied for this action: '.$exception->getMessage());
+            return $this->failure('forbidden', 'Permission denied for this action: '.$exception->getMessage());
         } catch (ModelNotFoundException $exception) {
-            return McpResponse::error('The requested record could not be found.');
+            return $this->failure('not_found', 'The requested record could not be found.');
         } catch (HttpException $exception) {
-            return McpResponse::error($exception->getMessage() !== ''
-                ? $exception->getMessage()
-                : 'This action is not authorized for your role.');
+            return $this->failure(
+                match (true) {
+                    $exception->getStatusCode() === 401 => 'unauthenticated',
+                    $exception->getStatusCode() === 429 => 'throttled',
+                    default => 'forbidden',
+                },
+                $exception->getMessage() !== ''
+                    ? $exception->getMessage()
+                    : 'This action is not authorized for your role.',
+            );
         } catch (Throwable $exception) {
             report($exception);
 
-            return McpResponse::error('The dashboard action failed: '.$exception->getMessage());
+            return $this->failure('failed', 'The dashboard action failed: '.$exception->getMessage());
+        } finally {
+            $this->restore($snapshot);
         }
+    }
+
+    /**
+     * Hand the container and auth manager back the state that was live before
+     * this pipeline ran.
+     *
+     * @param  array<string, mixed>  $snapshot
+     */
+    private function restore(array $snapshot): void
+    {
+        if ($snapshot['request'] instanceof HttpRequest) {
+            app()->instance('request', $snapshot['request']);
+        }
+
+        if ($snapshot['session'] instanceof \Illuminate\Contracts\Session\Session) {
+            app()->instance('session.store', $snapshot['session']);
+            app()->instance(\Illuminate\Contracts\Session\Session::class, $snapshot['session']);
+        }
+
+        // Re-derive the redirector so it binds to the restored session store.
+        app()->forgetInstance('redirect');
+
+        Auth::shouldUse((string) $snapshot['driver']);
+
+        if ($snapshot['user'] instanceof \Illuminate\Contracts\Auth\Authenticatable) {
+            Auth::setUser($snapshot['user']);
+        } else {
+            Auth::forgetUser();
+        }
+    }
+
+    /**
+     * A machine-readable error: the reason code lets an agent branch (retry a
+     * read after not_found, stop after forbidden) instead of parsing prose.
+     */
+    private function failure(string $reason, string $message): McpResponse
+    {
+        return McpResponse::error((string) json_encode([
+            'status' => 'error',
+            'reason' => $reason,
+            'message' => $message,
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
     }
 
     /**
@@ -229,37 +301,48 @@ class DashboardDispatcher
     /**
      * Replay the middleware that protects the matching dashboard route so an MCP
      * caller faces the identical role / verified / active checks as a browser.
+     * Fails closed: an action with no route, or with any middleware beyond the
+     * replayable set (on *every* route that maps to it, not just the first),
+     * is refused rather than silently running ungated.
      *
      * @param  \Illuminate\Contracts\Auth\Authenticatable&object  $user
      */
     private function enforceRouteGuards(string $controller, string $action, HttpRequest $request, object $user): void
     {
-        $route = collect(Route::getRoutes())
-            ->first(fn ($route) => $route->getAction('controller') === $controller.'@'.$action);
+        $matching = collect(Route::getRoutes())
+            ->filter(fn ($route) => $route->getAction('controller') === $controller.'@'.$action);
 
-        if (! $route) {
-            return;
+        if ($matching->isEmpty()) {
+            throw new HttpException(403, 'This dashboard action is not routed, so its guards cannot be replayed over MCP. Use the web dashboard.');
         }
+
+        $middleware = $matching
+            ->flatMap(fn ($route) => $route->gatherMiddleware())
+            ->filter(fn (mixed $m): bool => is_string($m))
+            ->unique()
+            ->values();
 
         $active = $user->isSuspended();
 
-        foreach ($route->gatherMiddleware() as $middleware) {
-            if (! is_string($middleware)) {
-                continue;
+        foreach ($middleware as $item) {
+            $name = explode(':', $item, 2)[0];
+
+            if (! in_array($name, self::REPLAYABLE, true)) {
+                throw new HttpException(403, "This dashboard action is additionally guarded by [{$item}] middleware that the MCP server cannot replay; perform it in the web dashboard.");
             }
 
-            if ($middleware === 'active' && $active) {
+            if ($item === 'active' && $active) {
                 throw new HttpException(403, 'Suspended accounts cannot use the dashboard server.');
             }
 
-            if ($middleware === 'verified'
+            if ($item === 'verified'
                 && $user instanceof MustVerifyEmail
                 && ! $user->hasVerifiedEmail()) {
                 throw new HttpException(403, 'Your account email must be verified to use the dashboard server.');
             }
 
-            if (str_starts_with($middleware, 'role:')) {
-                $roles = explode(':', substr($middleware, strlen('role:')));
+            if (str_starts_with($item, 'role:')) {
+                $roles = explode(':', substr($item, strlen('role:')));
 
                 app(EnsureUserHasRole::class)->handle(
                     $request,

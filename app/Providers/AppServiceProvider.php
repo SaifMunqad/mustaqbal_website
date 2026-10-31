@@ -76,6 +76,14 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(10)->by((string) $request->ip());
         });
 
+        // The MCP server performs real dashboard writes, so it gets a per-IP
+        // budget like any other unauthenticated-entry surface. The limiter runs
+        // before Sanctum resolves, hence keying on the IP alone; bursts of
+        // tool calls from a normal agent session stay far below it.
+        RateLimiter::for('mcp', function (Request $request) {
+            return Limit::perMinute(120)->by((string) $request->ip());
+        });
+
         Gate::policy(Post::class, PostPolicy::class);
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(Article::class, ArticlePolicy::class);
