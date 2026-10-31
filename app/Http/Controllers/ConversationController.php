@@ -58,4 +58,3 @@ class ConversationController extends Controller
         return response()->json($conversation, 201);
     }
 }
-

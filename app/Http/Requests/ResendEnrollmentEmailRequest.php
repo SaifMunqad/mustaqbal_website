@@ -19,4 +19,3 @@ class ResendEnrollmentEmailRequest extends FormRequest
         ];
     }
 }
-

@@ -2,6 +2,4 @@
 
 namespace App\Http\Requests\Dashboard;
 
-class UpdateBookRequest extends StoreBookRequest
-{
-}
+class UpdateBookRequest extends StoreBookRequest {}

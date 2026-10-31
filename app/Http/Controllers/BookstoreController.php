@@ -14,9 +14,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class BookstoreController extends Controller
 {
-    public function __construct(private readonly PdfThumbnailService $thumbnails)
-    {
-    }
+    public function __construct(private readonly PdfThumbnailService $thumbnails) {}
 
     public function index(Request $request): Response
     {
@@ -95,7 +93,7 @@ class BookstoreController extends Controller
 
         return response()
             ->streamDownload(
-                fn () => print(Storage::disk('public')->get($book->file_path)),
+                fn () => print (Storage::disk('public')->get($book->file_path)),
                 $name,
                 ['Content-Type' => 'application/pdf'],
             );

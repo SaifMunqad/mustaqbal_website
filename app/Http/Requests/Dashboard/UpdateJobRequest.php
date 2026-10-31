@@ -2,6 +2,4 @@
 
 namespace App\Http\Requests\Dashboard;
 
-class UpdateJobRequest extends StoreJobRequest
-{
-}
+class UpdateJobRequest extends StoreJobRequest {}

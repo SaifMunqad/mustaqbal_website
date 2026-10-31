@@ -26,4 +26,3 @@ class MessageController extends Controller
         return response()->json($message, 201);
     }
 }
-

@@ -22,4 +22,3 @@ class StoreContactRequest extends FormRequest
         ];
     }
 }
-

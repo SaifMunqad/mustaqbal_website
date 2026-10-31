@@ -3,11 +3,10 @@
 namespace App\Http\Middleware;
 
 use App\Models\Language;
-use App\Support\Flash;
+use App\Models\SiteSetting;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Models\SiteSetting;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware

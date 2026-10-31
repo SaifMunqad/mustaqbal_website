@@ -55,4 +55,3 @@ class DashboardContactController extends Controller
             ->with('success', 'flash.contactUpdated');
     }
 }
-

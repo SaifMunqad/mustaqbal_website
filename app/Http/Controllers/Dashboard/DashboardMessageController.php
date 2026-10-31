@@ -123,4 +123,3 @@ class DashboardMessageController extends Controller
             ->with('success', 'flash.messageUpdated');
     }
 }
-

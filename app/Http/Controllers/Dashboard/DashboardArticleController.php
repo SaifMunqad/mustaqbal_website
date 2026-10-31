@@ -91,4 +91,3 @@ class DashboardArticleController extends Controller
             ->with('success', 'flash.articleUpdated');
     }
 }
-

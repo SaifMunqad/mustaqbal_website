@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
-use Stevebauman\Purify\Facades\Purify;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Stevebauman\Purify\Facades\Purify;
 
 class SchoolEventController extends Controller
 {

@@ -17,18 +17,18 @@ class DashboardLanguageController extends Controller
     public function index(): Response
     {
         $languages = Language::query()
-                             ->orderBy('sort_order')
-                             ->orderBy('name')
-                             ->get()
-                             ->map(fn (Language $language): array => [
-                                 'id' => $language->id,
-                                 'code' => $language->code,
-                                 'name' => $language->name,
-                                 'dir' => $language->dir,
-                                 'is_active' => $language->is_active,
-                                 'is_default' => $language->is_default,
-                                 'sort_order' => $language->sort_order,
-                             ]);
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get()
+            ->map(fn (Language $language): array => [
+                'id' => $language->id,
+                'code' => $language->code,
+                'name' => $language->name,
+                'dir' => $language->dir,
+                'is_active' => $language->is_active,
+                'is_default' => $language->is_default,
+                'sort_order' => $language->sort_order,
+            ]);
 
         return Inertia::render('dashboard/languages/dashboard-languages-index', [
             'languages' => $languages,

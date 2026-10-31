@@ -2,6 +2,4 @@
 
 namespace App\Http\Requests\Dashboard;
 
-class UpdateMessageRequest extends StoreMessageRequest
-{
-}
+class UpdateMessageRequest extends StoreMessageRequest {}

@@ -26,4 +26,3 @@ class StoreEnrollmentRequest extends FormRequest
         ];
     }
 }
-

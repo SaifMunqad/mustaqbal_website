@@ -18,4 +18,3 @@ class StoreCommentRequest extends FormRequest
         ];
     }
 }
-

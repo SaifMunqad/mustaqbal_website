@@ -2,6 +2,4 @@
 
 namespace App\Http\Requests\Dashboard;
 
-class UpdateBookCategoryRequest extends StoreBookCategoryRequest
-{
-}
+class UpdateBookCategoryRequest extends StoreBookCategoryRequest {}

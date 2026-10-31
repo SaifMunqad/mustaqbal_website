@@ -2,6 +2,4 @@
 
 namespace App\Http\Requests\Dashboard;
 
-class UpdateProgramRequest extends StoreProgramRequest
-{
-}
+class UpdateProgramRequest extends StoreProgramRequest {}

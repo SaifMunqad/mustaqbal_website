@@ -21,4 +21,3 @@ class StoreConversationRequest extends FormRequest
         ];
     }
 }
-
