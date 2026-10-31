@@ -127,10 +127,17 @@ class DashboardDispatcher
         // (which call the pipeline more than once per MCP request) always start
         // from a clean slate and the real request state is handed back at the
         // end instead of leaking.
+        //
+        // NOTE: the auth Manager proxies user()/setUser()/forgetUser() to
+        // whatever guard is currently default — a sanctum-driven request would
+        // hit RequestGuard, which has none of those. So we capture the web
+        // guard's in-memory user explicitly instead of playing guard roulette.
+        $webGuard = Auth::guard('web');
+
         $snapshot = [
             'request' => app()->bound('request') ? app('request') : null,
             'driver' => Auth::getDefaultDriver(),
-            'user' => Auth::getUser(),
+            'web_user' => method_exists($webGuard, 'getUser') ? $webGuard->getUser() : null,
             'session' => app()->bound('session.store') ? app('session.store') : null,
         ];
 
@@ -215,10 +222,12 @@ class DashboardDispatcher
 
         Auth::shouldUse((string) $snapshot['driver']);
 
-        if ($snapshot['user'] instanceof \Illuminate\Contracts\Auth\Authenticatable) {
-            Auth::setUser($snapshot['user']);
-        } else {
-            Auth::forgetUser();
+        $web = Auth::guard('web');
+
+        if ($snapshot['web_user'] instanceof \Illuminate\Contracts\Auth\Authenticatable) {
+            $web->setUser($snapshot['web_user']);
+        } elseif (method_exists($web, 'forgetUser')) {
+            $web->forgetUser();
         }
     }
 

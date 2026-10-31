@@ -118,7 +118,9 @@ class McpHardeningTest extends TestCase
 
         $this->assertDatabaseCount('page_sections', 1);
 
-        // The freshly-read revision lets the same write through.
+        // The freshly-read revision lets the same write through — and because
+        // this save intends to empty the page, it opts into destructive
+        // replace explicitly (the safe default would have kept the hero).
         $current = BuilderRevision::for(Page::resolve('home')->id);
 
         SchoolDashboardServer::actingAs($this->admin)
@@ -126,6 +128,7 @@ class McpHardeningTest extends TestCase
                 'page' => 'home',
                 'sections' => [],
                 'expected_revision' => $current,
+                'remove_missing' => true,
             ])
             ->assertOk();
 
@@ -144,6 +147,49 @@ class McpHardeningTest extends TestCase
             ->assertOk();
 
         $this->assertDatabaseHas('page_sections', ['section_type' => 'rich_text']);
+    }
+
+    public function test_eager_tool_over_http_with_a_sanctum_token_succeeds(): void
+    {
+        // Regression: the dispatcher's state snapshot proxied user accessors
+        // through the *current default guard* — under auth:sanctum that is a
+        // RequestGuard, which has none of getUser/setUser/forgetUser. The
+        // actingAs harness always used the session guard, so only a real
+        // bearer-token HTTP call surfaced the failure (found via live curl).
+        $token = $this->admin->createToken('http-e2e')->plainTextToken;
+
+        $this->postJson('/mcp', [
+            'jsonrpc' => '2.0',
+            'id' => 1,
+            'method' => 'tools/call',
+            'params' => ['name' => 'DashboardStats', 'arguments' => []],
+        ], ['Authorization' => 'Bearer '.$token])
+            ->assertOk()
+            ->assertJsonPath('result.isError', false);
+    }
+
+    public function test_catalogued_tools_run_over_http_through_the_execute_gateway(): void
+    {
+        $token = $this->admin->createToken('http-e2e')->plainTextToken;
+
+        // Multi-response tool results (execute_tools batches) are delivered
+        // over the Streamable HTTP transport as SSE frames, so the assertions
+        // run against the streamed body rather than a buffered JSON body.
+        $response = $this->postJson('/mcp', [
+            'jsonrpc' => '2.0',
+            'id' => 1,
+            'method' => 'tools/call',
+            'params' => ['name' => 'execute_tools', 'arguments' => [
+                'calls' => [['name' => 'ListLanguages', 'arguments' => []]],
+            ]],
+        ], ['Authorization' => 'Bearer '.$token]);
+
+        $response->assertOk();
+
+        $stream = $response->streamedContent();
+
+        $this->assertStringContainsString('ListLanguages', $stream);
+        $this->assertStringNotContainsString('"isError":true', $stream);
     }
 
     public function test_mcp_route_is_throttled_and_audited(): void
