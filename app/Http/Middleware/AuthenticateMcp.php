@@ -32,7 +32,10 @@ class AuthenticateMcp
         $guard = app('auth')->guard('api');
 
         if (! $guard->check()) {
-            return response()->json(['message' => 'Unauthenticated.'], 401);
+            $metadataUrl = $request->getSchemeAndHttpHost().'/.well-known/oauth-protected-resource/mcp';
+
+            return response()->json(['message' => 'Unauthenticated.'], 401)
+                ->header('WWW-Authenticate', 'Bearer resource_metadata="'.$metadataUrl.'"');
         }
 
         app('auth')->shouldUse('api');

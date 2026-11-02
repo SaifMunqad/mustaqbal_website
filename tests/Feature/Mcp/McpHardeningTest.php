@@ -48,6 +48,21 @@ class McpHardeningTest extends TestCase
         $this->assertArrayHasKey(PassportServiceProvider::class, app()->getLoadedProviders());
     }
 
+    public function test_oauth_metadata_discovery_is_available_for_mcp(): void
+    {
+        $this->get('/.well-known/oauth-protected-resource/mcp')
+            ->assertOk()
+            ->assertJsonPath('resource', 'http://localhost/mcp')
+            ->assertJsonPath('authorization_servers.0', 'http://localhost');
+
+        $this->get('/.well-known/oauth-authorization-server')
+            ->assertOk()
+            ->assertJsonPath('authorization_endpoint', 'http://localhost/oauth/authorize')
+            ->assertJsonPath('token_endpoint', 'http://localhost/oauth/token')
+            ->assertJsonPath('response_types_supported.0', 'code')
+            ->assertJsonPath('code_challenge_methods_supported.0', 'S256');
+    }
+
     public function test_url_transfer_refuses_private_and_non_http_targets(): void
     {
         $server = SchoolDashboardServer::actingAs($this->admin);

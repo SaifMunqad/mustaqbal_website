@@ -3,7 +3,34 @@
 use App\Http\Middleware\AuditMcpRequests;
 use App\Http\Middleware\AuthenticateMcp;
 use App\Mcp\Servers\SchoolDashboardServer;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Laravel\Mcp\Facades\Mcp;
+
+Route::get('/.well-known/oauth-protected-resource/mcp', function (Request $request) {
+    $origin = $request->getSchemeAndHttpHost();
+
+    return response()->json([
+        'resource' => $origin.'/mcp',
+        'authorization_servers' => [$origin],
+        'bearer_methods_supported' => ['header'],
+    ]);
+});
+
+Route::get('/.well-known/oauth-authorization-server', function (Request $request) {
+    $origin = $request->getSchemeAndHttpHost();
+
+    return response()->json([
+        'issuer' => $origin,
+        'authorization_endpoint' => $origin.'/oauth/authorize',
+        'token_endpoint' => $origin.'/oauth/token',
+        'response_types_supported' => ['code'],
+        'response_modes_supported' => ['query'],
+        'grant_types_supported' => ['authorization_code', 'refresh_token'],
+        'code_challenge_methods_supported' => ['S256'],
+        'token_endpoint_auth_methods_supported' => ['client_secret_post', 'client_secret_basic'],
+    ]);
+});
 
 /*
 |--------------------------------------------------------------------------
