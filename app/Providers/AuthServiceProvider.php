@@ -22,6 +22,9 @@ class AuthServiceProvider extends ServiceProvider
     {
         // Passport v13 auto-registers OAuth routes at /oauth — no manual call needed.
 
+        // Passport v13 is headless by default; bind the authorization consent screen view.
+        Passport::authorizationView('auth.oauth.authorize');
+
         // Enable password grant so clients (e.g., Gemini) can exchange
         // username/password for an access token via POST /oauth/token.
         Passport::enablePasswordGrant();
