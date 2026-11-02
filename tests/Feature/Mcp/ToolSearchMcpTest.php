@@ -10,14 +10,14 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Mcp\Server\Tools\ExecuteTools;
 use Laravel\Mcp\Server\Tools\SearchTools;
 use Laravel\Mcp\Server\Tools\ToolSearch;
+use Laravel\Mcp\Server\Transport\FakeTransporter;
 use ReflectionClass;
 use Tests\TestCase;
 
 /**
- * Covers the dynamic tool-loading surface: the catalogued module tools are
- * reached through the search_tools + execute_tools pair instead of being
- * listed (and paid for in client context) individually, while the core
- * builder/stats tools stay eagerly registered.
+ * Covers environment-dependent catalog loading: local debug exposes module
+ * tools in the paginated list, while other environments use the search
+ * gateway and keep the core builder/stats tools eagerly registered.
  */
 class ToolSearchMcpTest extends TestCase
 {
@@ -54,6 +54,9 @@ class ToolSearchMcpTest extends TestCase
 
     public function test_list_exposes_meta_tools_and_core_but_not_catalogued_modules(): void
     {
+        app()['env'] = 'production';
+        config(['app.debug' => false]);
+
         $items = (new ReflectionClass(\Laravel\Mcp\Server\Testing\TestListResponse::class))
             ->getProperty('items')
             ->getValue(SchoolDashboardServer::actingAs($this->admin)->tools());
@@ -74,7 +77,23 @@ class ToolSearchMcpTest extends TestCase
         $this->assertNotContains('RetryEmailCampaign', $names);
 
         // Eager + two gateways is what the client sees, not all 89.
-        $this->assertLessThanOrEqual(15, count($names));
+        $this->assertLessThanOrEqual(16, count($names));
+    }
+
+    public function test_local_debug_lists_catalogued_tools_for_cursor_pagination(): void
+    {
+        app()['env'] = 'local';
+        config(['app.debug' => true]);
+
+        auth()->setUser($this->admin);
+        $server = app()->make(SchoolDashboardServer::class, ['transport' => new FakeTransporter]);
+        $contextTools = $server->createContext()->tools();
+        $names = $contextTools->map(fn ($tool): string => $tool->name())->all();
+
+        $this->assertContains('ListBooks', $names);
+        $this->assertContains('CreateEvent', $names);
+        $this->assertNotContains('search_tools', $names);
+        $this->assertNotContains('execute_tools', $names);
     }
 
     public function test_search_tools_discovers_catalogued_tools_with_schemas(): void
@@ -91,6 +110,16 @@ class ToolSearchMcpTest extends TestCase
             ->assertOk()
             ->assertSee('ListBooks')
             ->assertSee('UpdateBookCategory');
+
+        // Content tools are intentionally discoverable through the catalog,
+        // rather than appearing in the paginated tools/list response.
+        SchoolDashboardServer::actingAs($this->admin)
+            ->tool($this->searchTools(), ['query' => 'article'])
+            ->assertOk()
+            ->assertSee('ListArticles')
+            ->assertSee('ShowArticle')
+            ->assertSee('CreateArticle')
+            ->assertSee('UpdateArticle');
 
         // Returned matches carry their input schema for direct use.
         SchoolDashboardServer::actingAs($this->admin)

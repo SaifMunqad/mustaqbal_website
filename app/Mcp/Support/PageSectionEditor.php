@@ -86,6 +86,60 @@ class PageSectionEditor
         return $this->commit($page, $sections, $read);
     }
 
+    /** Patch a section by its current zero-based position and displayed label. */
+    public function updateAtPosition(string $page, int $position, string $sectionName, array $patch): McpResponse|ResponseFactory
+    {
+        $read = $this->read($page);
+
+        if (! is_array($read)) {
+            return $read;
+        }
+
+        $sections = array_values($read['sections'] ?? []);
+
+        if (! isset($sections[$position])) {
+            return McpResponse::error("No section exists at position {$position} on page [{$page}]. Use GetPageLayout to list the current positions and names.");
+        }
+
+        $section = $sections[$position];
+        $actualName = (string) ($section['type_label'] ?? $section['section_type'] ?? '');
+
+        if (! hash_equals($actualName, $sectionName)) {
+            return McpResponse::error("Section at position {$position} is [{$actualName}], not [{$sectionName}]. Use GetPageLayout and retry with the current position and name.");
+        }
+
+        return $this->update($page, (int) $section['id'], $patch);
+    }
+
+    /** Return one section by its current zero-based position and machine type. */
+    public function getAtPosition(string $page, int $position, string $sectionName): McpResponse|ResponseFactory
+    {
+        $read = $this->read($page);
+
+        if (! is_array($read)) {
+            return $read;
+        }
+
+        $sections = array_values($read['sections'] ?? []);
+
+        if (! isset($sections[$position])) {
+            return McpResponse::error("No section exists at position {$position} on page [{$page}]. Use GetPageLayout to list the current positions and names.");
+        }
+
+        $section = $sections[$position];
+        $actualName = (string) ($section['section_type'] ?? '');
+
+        if (! hash_equals($actualName, $sectionName)) {
+            return McpResponse::error("Section at position {$position} has type [{$actualName}], not [{$sectionName}]. Use GetPageLayout and retry with the current position and section_type.");
+        }
+
+        return McpResponse::structured([
+            'page' => $page,
+            'position' => $position,
+            'section' => $section,
+        ]);
+    }
+
     /** Remove one block and everything authored on it. */
     public function remove(string $page, int $id): McpResponse|ResponseFactory
     {

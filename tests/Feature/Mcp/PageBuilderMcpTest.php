@@ -8,8 +8,13 @@ use App\Mcp\Servers\SchoolDashboardServer;
 use App\Mcp\Tools\AddPageSectionTool;
 use App\Mcp\Tools\AssignLanguageFontTool;
 use App\Mcp\Tools\DeleteFontTool;
+use App\Mcp\Tools\EditPageSectionTool;
+use App\Mcp\Tools\EditSiteSettingsTool;
 use App\Mcp\Tools\GetAboutPageTool;
 use App\Mcp\Tools\GetPageLayoutTool;
+use App\Mcp\Tools\GetPageSectionTool;
+use App\Mcp\Tools\GetSiteSettingsTool;
+use App\Mcp\Tools\GetSiteSettingsSectionTool;
 use App\Mcp\Tools\ListBuilderPagesTool;
 use App\Mcp\Tools\RemovePageSectionTool;
 use App\Mcp\Tools\ReorderPageSectionsTool;
@@ -66,6 +71,127 @@ class PageBuilderMcpTest extends TestCase
             });
     }
 
+    public function test_add_page_section_exposes_and_uses_a_section_type_choice(): void
+    {
+        $schema = new \Illuminate\JsonSchema\JsonSchemaTypeFactory;
+        $toolSchema = app(AddPageSectionTool::class)->schema($schema);
+
+        $this->assertSame(\App\Enums\SectionType::values(), $toolSchema['section_type']->toArray()['enum']);
+
+        SchoolDashboardServer::actingAs($this->admin)
+            ->tool(AddPageSectionTool::class, [
+                'page' => 'home',
+                'section_type' => 'banner',
+                'section' => ['section_type' => 'hero'],
+            ])
+            ->assertOk();
+
+        $this->assertDatabaseHas('page_sections', ['section_type' => 'banner']);
+        $this->assertDatabaseMissing('page_sections', ['section_type' => 'hero']);
+    }
+
+    public function test_edit_page_section_updates_by_position_and_section_name(): void
+    {
+        $server = SchoolDashboardServer::actingAs($this->admin);
+
+        $server->tool(AddPageSectionTool::class, [
+            'page' => 'home',
+            'section' => ['section_type' => 'hero', 'translations' => ['en' => ['heading' => 'Before']]],
+        ])->assertOk();
+
+        $section = PageSection::query()->firstOrFail();
+
+        $server->tool(EditPageSectionTool::class, [
+            'page' => 'home',
+            'position' => 0,
+            'section_name' => 'Hero',
+            'field' => 'heading',
+            'language' => 'en',
+            'value' => 'After',
+        ])->assertOk();
+
+        $this->assertDatabaseHas('page_section_translations', [
+            'page_section_id' => $section->id,
+            'heading' => 'After',
+        ]);
+
+        $server->tool(EditPageSectionTool::class, [
+            'page' => 'home',
+            'position' => 0,
+            'section_name' => 'Banner',
+            'field' => 'tone',
+            'value' => 'blue',
+        ])->assertHasErrors();
+    }
+
+    public function test_edit_page_section_updates_multiple_languages_at_once(): void
+    {
+        $server = SchoolDashboardServer::actingAs($this->admin);
+
+        Language::query()->create([
+            'code' => 'ar',
+            'name' => 'Arabic',
+            'dir' => 'rtl',
+            'is_active' => true,
+            'is_default' => false,
+            'sort_order' => 1,
+        ]);
+
+        $server->tool(AddPageSectionTool::class, [
+            'page' => 'home',
+            'section' => ['section_type' => 'hero'],
+        ])->assertOk();
+
+        $section = PageSection::query()->firstOrFail();
+
+        $server->tool(EditPageSectionTool::class, [
+            'page' => 'home',
+            'position' => 0,
+            'section_name' => 'Hero',
+            'translations' => [
+                'en' => ['heading' => 'Welcome'],
+                'ar' => ['heading' => 'أهلاً وسهلاً'],
+            ],
+        ])->assertOk();
+
+        $this->assertDatabaseHas('page_section_translations', [
+            'page_section_id' => $section->id,
+            'heading' => 'Welcome',
+        ]);
+        $this->assertDatabaseHas('page_section_translations', [
+            'page_section_id' => $section->id,
+            'heading' => 'أهلاً وسهلاً',
+        ]);
+    }
+
+    public function test_get_page_section_returns_selected_section_and_rejects_stale_name(): void
+    {
+        $server = SchoolDashboardServer::actingAs($this->admin);
+
+        $server->tool(AddPageSectionTool::class, [
+            'page' => 'home',
+            'section' => ['section_type' => 'hero', 'translations' => ['en' => ['heading' => 'Welcome']]],
+        ])->assertOk();
+
+        $server->tool(GetPageSectionTool::class, [
+            'page' => 'home',
+            'position' => 0,
+            'section_type' => 'hero',
+        ])->assertOk()->assertStructuredContent(function ($content): void {
+            $content->has('page')
+                ->has('position')
+                ->has('section')
+                ->where('section', fn ($section): bool => $section['section_type'] === 'hero'
+                    && $section['translations']['en']['heading'] === 'Welcome');
+        });
+
+        $server->tool(GetPageSectionTool::class, [
+            'page' => 'home',
+            'position' => 0,
+            'section_type' => 'banner',
+        ])->assertHasErrors();
+    }
+
     /**
      * Every registered tool must resolve through the container and build its
      * input schema, so a broken constructor or malformed schema fails here —
@@ -109,14 +235,55 @@ class PageBuilderMcpTest extends TestCase
                 ->tool(GetPageLayoutTool::class, ['page' => $page])
                 ->assertOk()
                 ->assertStructuredContent(function ($content) use ($page): void {
-                    $content->has('sections')
-                        ->has('palette')
-                        ->has('categories')
-                        ->has('availableItems')
-                        ->has('defaultLanguage')
-                        ->where('page', fn ($value): bool => $value['key'] === $page);
+                    $content->has('page')
+                        ->has('sections')
+                        ->where('page.key', $page)
+                        ->missing('palette')
+                        ->missing('categories')
+                        ->missing('availableItems');
                 });
         }
+    }
+
+    public function test_page_layout_returns_structure_without_section_values(): void
+    {
+        SchoolDashboardServer::actingAs($this->admin)
+            ->tool(AddPageSectionTool::class, [
+                'page' => 'home',
+                'section' => ['section_type' => 'hero', 'translations' => ['en' => ['heading' => 'Private section text']]],
+            ])->assertOk();
+
+        SchoolDashboardServer::actingAs($this->admin)
+            ->tool(GetPageLayoutTool::class, ['page' => 'home'])
+            ->assertOk()
+            ->assertStructuredContent(function ($content): void {
+                $content->has('page')
+                    ->where('sections.0.position', 0)
+                    ->where('sections.0.section_type', 'hero')
+                    ->missing('sections.0.translations')
+                    ->missing('palette');
+            });
+    }
+
+    public function test_site_settings_can_be_read_and_edited_by_group(): void
+    {
+        $server = SchoolDashboardServer::actingAs($this->admin);
+
+        $server->tool(GetSiteSettingsTool::class, [])
+            ->assertOk()
+            ->assertStructuredContent(fn ($content) => $content->has('groups'));
+
+        $server->tool(GetSiteSettingsSectionTool::class, ['section' => 'appearance'])
+            ->assertOk()
+            ->assertStructuredContent(fn ($content) => $content->where('section', 'appearance')->has('fields')->has('translations'));
+
+        $server->tool(EditSiteSettingsTool::class, ['section' => 'contact', 'contact_email' => 'hello@example.com'])
+            ->assertOk();
+
+        $this->assertDatabaseHas('site_settings', ['contact_email' => 'hello@example.com']);
+
+        $schema = new \Illuminate\JsonSchema\JsonSchemaTypeFactory;
+        $this->assertArrayHasKey('section', app(EditSiteSettingsTool::class)->schema($schema));
     }
 
     public function test_section_tools_run_a_full_add_update_reorder_remove_cycle(): void

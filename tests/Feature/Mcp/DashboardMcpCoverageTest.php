@@ -23,9 +23,13 @@ use App\Mcp\Tools\ListPostsTool;
 use App\Mcp\Tools\ListProgramsTool;
 use App\Mcp\Tools\ListUsersTool;
 use App\Mcp\Tools\ListWhatsAppCampaignsTool;
+use App\Mcp\Tools\ShowAwardTool;
 use App\Mcp\Tools\ShowArticleTool;
+use App\Mcp\Tools\ShowPostTool;
 use App\Mcp\Tools\UpdateArticleTool;
 use App\Models\Article;
+use App\Models\Award;
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -90,6 +94,70 @@ class DashboardMcpCoverageTest extends TestCase
         $this->callCatalog($this->admin, ShowArticleTool::class, ['article' => $article->id])
             ->assertOk()
             ->assertSee('"article"');
+    }
+
+    public function test_list_articles_returns_only_compact_article_fields(): void
+    {
+        Article::factory()->create([
+            'title' => 'Compact article',
+            'slug' => 'compact-article',
+            'body' => '<p>Full article body</p>',
+        ]);
+
+        $this->callCatalog($this->admin, ListArticlesTool::class)
+            ->assertOk()
+            ->assertSee('"title":"Compact article"')
+            ->assertSee('"slug":"compact-article"')
+            ->assertDontSee('Full article body')
+            ->assertDontSee('"body"');
+    }
+
+    public function test_list_posts_returns_only_compact_post_fields_and_show_returns_details(): void
+    {
+        $post = Post::query()->create([
+            'user_id' => $this->admin->id,
+            'type' => 'news',
+            'visibility' => 'public',
+            'images' => ['https://example.test/post-image.jpg'],
+            'featured' => true,
+        ]);
+
+        $this->callCatalog($this->admin, ListPostsTool::class)
+            ->assertOk()
+            ->assertSee('"id":'.$post->id)
+            ->assertSee('"type":"news"')
+            ->assertSee('"visibility":"public"')
+            ->assertDontSee('post-image.jpg')
+            ->assertDontSee('"featured"');
+
+        $this->callCatalog($this->admin, ShowPostTool::class, ['post' => $post->id])
+            ->assertOk()
+            ->assertSee('post-image.jpg');
+    }
+
+    public function test_list_awards_returns_only_compact_award_fields_and_show_returns_details(): void
+    {
+        $award = Award::query()->create([
+            'person_id' => 'STU-2026-001',
+            'award_id' => 'DIP-2026-001',
+            'full_name' => 'Award Holder',
+            'father_name' => 'Parent Name',
+            'awarded_at' => '2026-06-15',
+        ]);
+
+        $this->callCatalog($this->admin, ListAwardsTool::class)
+            ->assertOk()
+            ->assertSee('"id":'.$award->id)
+            ->assertSee('"person_id":"STU-2026-001"')
+            ->assertSee('"award_id":"DIP-2026-001"')
+            ->assertDontSee('Award Holder')
+            ->assertDontSee('Parent Name')
+            ->assertDontSee('awarded_at');
+
+        $this->callCatalog($this->admin, ShowAwardTool::class, ['award' => $award->id])
+            ->assertOk()
+            ->assertSee('Award Holder')
+            ->assertSee('Parent Name');
     }
 
     public function test_model_bound_write_updates_the_record(): void

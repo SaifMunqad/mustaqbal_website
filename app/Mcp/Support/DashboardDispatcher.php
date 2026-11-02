@@ -129,8 +129,8 @@ class DashboardDispatcher
         // end instead of leaking.
         //
         // NOTE: the auth Manager proxies user()/setUser()/forgetUser() to
-        // whatever guard is currently default — a sanctum-driven request would
-        // hit RequestGuard, which has none of those. So we capture the web
+        // whatever guard is currently default — an API-guard request (Passport)
+        // uses TokenGuard, which has none of those. So we capture the web
         // guard's in-memory user explicitly instead of playing guard roulette.
         $webGuard = Auth::guard('web');
 
