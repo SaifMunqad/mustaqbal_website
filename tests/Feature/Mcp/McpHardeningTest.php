@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Laravel\Passport\ClientRepository;
+use Laravel\Passport\PassportServiceProvider;
 use Tests\TestCase;
 
 /**
@@ -40,6 +41,11 @@ class McpHardeningTest extends TestCase
         app(ClientRepository::class)->createPersonalAccessGrantClient('Dashboard MCP', 'users');
 
         $this->admin = User::factory()->create(['role' => 'admin', 'email_verified_at' => now()]);
+    }
+
+    public function test_passport_service_provider_is_loaded_for_api_guard(): void
+    {
+        $this->assertArrayHasKey(PassportServiceProvider::class, app()->getLoadedProviders());
     }
 
     public function test_url_transfer_refuses_private_and_non_http_targets(): void
