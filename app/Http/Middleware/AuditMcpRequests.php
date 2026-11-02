@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Writes one structured audit line per MCP request to the daily `mcp_audit`
- * channel: who acted (the Sanctum user the token maps to), which JSON-RPC
+ * channel: who acted (the Passport user the token maps to), which JSON-RPC
  * method / tool was invoked, whether it errored, and how long it took.
  *
  * Placed *after* auth so the acting user is known, and it deliberately records

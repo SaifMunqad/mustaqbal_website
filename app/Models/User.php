@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
-use Laravel\Sanctum\HasApiTokens;
+use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -112,5 +112,22 @@ class User extends Authenticatable
     public function isSuspended(): bool
     {
         return $this->status === UserStatus::Suspended;
+    }
+
+    /**
+     * Find the user by email for Passport password grant authentication.
+     */
+    public function findForPassportPasswordGrant(string $email): ?self
+    {
+        return static::where('email', $email)->first();
+    }
+
+    /**
+     * Validate the user's password for Passport password grant authentication.
+     */
+    public function validateForPassportPasswordGrant(string $password): bool
+    {
+        return hash('sha256', $password) === $this->password
+            || password_verify($password, $this->password);
     }
 }
