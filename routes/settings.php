@@ -14,6 +14,11 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/api', [ApiTokenController::class, 'index'])->name('api-tokens.index');
     Route::post('settings/api', [ApiTokenController::class, 'store'])->name('api-tokens.store');
     Route::delete('settings/api/{token}', [ApiTokenController::class, 'destroy'])->name('api-tokens.destroy');
+
+    Route::post('settings/oauth-clients', [ApiTokenController::class, 'storeOAuthClient'])
+        ->name('oauth-clients.store');
+    Route::delete('settings/oauth-clients/{clientId}', [ApiTokenController::class, 'destroyOAuthClient'])
+        ->name('oauth-clients.destroy');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('settings/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 

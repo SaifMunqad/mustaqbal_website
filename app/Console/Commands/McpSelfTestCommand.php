@@ -11,7 +11,7 @@ class McpSelfTestCommand extends Command
     /**
      * @var string
      */
-    protected $signature = 'mcp:self-test {token : The Sanctum bearer token to validate (the value printed by mcp:token)}';
+    protected $signature = 'mcp:self-test {token : The Passport bearer token to validate (the value printed by mcp:token)}';
 
     /**
      * @var string
@@ -20,9 +20,9 @@ class McpSelfTestCommand extends Command
 
     /**
      * Sends the initialize handshake the same way an MCP client would, through
-     * the full HTTP kernel (route + middleware + Sanctum). A 200 here proves the
-     * token and dashboard server are correct; a 401 in a browser/client while
-     * this returns 200 means the web server is stripping the Authorization
+     * the full HTTP kernel (route + middleware + Passport OAuth 2.0). A 200 here
+     * proves the token and dashboard server are correct; a 401 in a browser/client
+     * while this returns 200 means the web server is stripping the Authorization
      * header (now mitigated by RecoverAuthorizationHeader + .htaccess).
      */
     public function handle(): int
@@ -75,7 +75,7 @@ class McpSelfTestCommand extends Command
         $this->line(substr((string) $response->getContent(), 0, 240));
 
         if ($status === 401) {
-            $this->warn('Token was rejected. Re-run `php artisan mcp:token <email>` and use the full "ID|secret" value it prints.');
+            $this->warn('Token was rejected. Re-run `php artisan mcp:token <email>` and use the full token value it prints.');
         }
 
         return self::FAILURE;

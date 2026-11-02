@@ -17,6 +17,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Laravel\Passport\ClientRepository;
 use Tests\TestCase;
 
 /**
@@ -34,6 +35,9 @@ class McpHardeningTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Passport personal access client is required for $user->createToken().
+        app(ClientRepository::class)->createPersonalAccessGrantClient('Dashboard MCP', 'users');
 
         $this->admin = User::factory()->create(['role' => 'admin', 'email_verified_at' => now()]);
     }
@@ -149,14 +153,14 @@ class McpHardeningTest extends TestCase
         $this->assertDatabaseHas('page_sections', ['section_type' => 'rich_text']);
     }
 
-    public function test_eager_tool_over_http_with_a_sanctum_token_succeeds(): void
+    public function test_eager_tool_over_http_with_a_passport_token_succeeds(): void
     {
         // Regression: the dispatcher's state snapshot proxied user accessors
-        // through the *current default guard* — under auth:sanctum that is a
-        // RequestGuard, which has none of getUser/setUser/forgetUser. The
-        // actingAs harness always used the session guard, so only a real
-        // bearer-token HTTP call surfaced the failure (found via live curl).
-        $token = $this->admin->createToken('http-e2e')->plainTextToken;
+        // through the *current default guard* — under auth:api (Passport) the
+        // guard is a TokenGuard. The actingAs harness always used the session
+        // guard, so only a real bearer-token HTTP call surfaced the failure
+        // (found via live curl).
+        $token = $this->admin->createToken('http-e2e')->accessToken;
 
         $this->postJson('/mcp', [
             'jsonrpc' => '2.0',
@@ -168,9 +172,41 @@ class McpHardeningTest extends TestCase
             ->assertJsonPath('result.isError', false);
     }
 
+    public function test_mcp_allows_requests_without_oauth_in_local_debug_mode(): void
+    {
+        config(['app.env' => 'local', 'app.debug' => true]);
+
+        $this->postJson('/mcp', [
+            'jsonrpc' => '2.0',
+            'id' => 1,
+            'method' => 'initialize',
+            'params' => [
+                'protocolVersion' => '2025-06-18',
+                'capabilities' => new \stdClass,
+                'clientInfo' => ['name' => 'local-dev-test', 'version' => '1.0'],
+            ],
+        ])->assertOk();
+    }
+
+    public function test_mcp_requires_oauth_when_not_in_local_debug_mode(): void
+    {
+        config(['app.env' => 'local', 'app.debug' => false]);
+
+        $this->postJson('/mcp', [
+            'jsonrpc' => '2.0',
+            'id' => 1,
+            'method' => 'initialize',
+            'params' => [
+                'protocolVersion' => '2025-06-18',
+                'capabilities' => new \stdClass,
+                'clientInfo' => ['name' => 'local-no-debug-test', 'version' => '1.0'],
+            ],
+        ])->assertUnauthorized();
+    }
+
     public function test_catalogued_tools_run_over_http_through_the_execute_gateway(): void
     {
-        $token = $this->admin->createToken('http-e2e')->plainTextToken;
+        $token = $this->admin->createToken('http-e2e')->accessToken;
 
         // Multi-response tool results (execute_tools batches) are delivered
         // over the Streamable HTTP transport as SSE frames, so the assertions
@@ -227,7 +263,7 @@ class McpHardeningTest extends TestCase
                 };
             });
 
-        $token = $this->admin->createToken('test')->plainTextToken;
+        $token = $this->admin->createToken('test')->accessToken;
 
         // A full initialize handshake over the real route with a real bearer
         // token: exercises throttle + auth + audit wiring in one pass.
@@ -269,7 +305,7 @@ class McpHardeningTest extends TestCase
         // Unauthenticated: the audit middleware runs innermost, so a rejected
         // request never logs — exactly one line for a call that passed auth and
         // errored inside a tool.
-        $token = $this->admin->createToken('test')->plainTextToken;
+        $token = $this->admin->createToken('test')->accessToken;
 
         $this->postJson('/mcp', [
             'jsonrpc' => '2.0',

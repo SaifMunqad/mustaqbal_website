@@ -4,6 +4,8 @@ namespace Tests\Feature\Settings;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
@@ -26,6 +28,32 @@ class ApiTokenManagementTest extends TestCase
                 ->has('tokens', 1)
                 ->where('tokens.0.name', 'Own key')
                 ->missing('tokens.0.token'));
+    }
+
+    public function test_api_settings_handles_a_non_array_oauth_grant_type(): void
+    {
+        $user = User::factory()->create();
+
+        DB::table('oauth_clients')->insert([
+            'id' => (string) Str::uuid(),
+            'owner_id' => $user->id,
+            'owner_type' => $user::class,
+            'name' => 'Malformed client',
+            'secret' => null,
+            'provider' => null,
+            'redirect_uris' => '[]',
+            'grant_types' => json_encode('password'),
+            'revoked' => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('api-tokens.index'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->has('oauthClients', 1)
+                ->where('oauthClients.0.grant_types', []));
     }
 
     public function test_user_can_create_a_key_and_secret_is_shown_once(): void
