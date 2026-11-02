@@ -25,14 +25,16 @@ class ApiTokenController
                 ->where('revoked', false)
                 ->where('grant_types', '!=', '[]')
                 ->latest('created_at')
-                ->get(['id', 'name', 'grant_types', 'created_at'])
+                ->get(['id', 'name', 'grant_types', 'redirect_uris', 'created_at'])
                 ->map(function ($client) {
                     $grantTypes = json_decode($client->getRawOriginal('grant_types'), true);
+                    $redirectUris = json_decode($client->getRawOriginal('redirect_uris'), true);
 
                     return [
                         'id' => $client->id,
                         'name' => $client->name,
                         'grant_types' => is_array($grantTypes) ? $grantTypes : [],
+                        'redirect_uris' => is_array($redirectUris) ? $redirectUris : [],
                         'created_at' => $client->created_at,
                     ];
                 }),
@@ -59,15 +61,24 @@ class ApiTokenController
     }
 
     /**
-     * Create a new OAuth Password Grant client for the authenticated user.
+     * Create a new OAuth client for the authenticated user supporting both
+     * authorization_code (Google/Gemini Spark web handshake) and password grants.
      */
     public function storeOAuthClient(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'redirect_uri' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $secret = Str::random(40);
+
+        // Normalize redirect URIs. Include Google's OAuth relay by default or any custom redirect specified.
+        $redirectUris = ['https://oauth-redirect.googleusercontent.com'];
+        if (! empty($validated['redirect_uri'])) {
+            $parsedUris = array_filter(array_map('trim', explode(',', $validated['redirect_uri'])));
+            $redirectUris = array_values(array_unique([...$redirectUris, ...$parsedUris]));
+        }
 
         // Use the Client model directly so the `secret` attribute setter
         // hashes the value via Hash::make() and captures the plain secret.
@@ -75,8 +86,8 @@ class ApiTokenController
             'name' => $validated['name'],
             'secret' => $secret,
             'provider' => null,
-            'redirect_uris' => [],
-            'grant_types' => ['password', 'refresh_token'],
+            'redirect_uris' => $redirectUris,
+            'grant_types' => ['authorization_code', 'password', 'refresh_token'],
             'revoked' => false,
         ]);
 
@@ -86,6 +97,7 @@ class ApiTokenController
             'id' => $client->id,
             'secret' => $client->plainSecret,
             'name' => $client->name,
+            'redirect_uris' => $redirectUris,
         ]);
     }
 

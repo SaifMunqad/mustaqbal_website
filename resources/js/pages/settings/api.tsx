@@ -19,6 +19,7 @@ type OAuthClient = {
     id: string;
     name: string;
     grant_types: string[];
+    redirect_uris?: string[];
     created_at: string;
 };
 
@@ -26,6 +27,7 @@ type NewOAuthClient = {
     id: string;
     secret: string;
     name: string;
+    redirect_uris?: string[];
 };
 
 export default function ApiSettings({
@@ -44,7 +46,10 @@ export default function ApiSettings({
     useEffect(() => setVisibleToken(newToken), [newToken]);
     useEffect(() => setVisibleOAuthClient(newOAuthClient), [newOAuthClient]);
     const form = useForm({ name: '' });
-    const oauthForm = useForm({ name: '' });
+    const oauthForm = useForm({
+        name: '',
+        redirect_uri: 'https://oauth-redirect.googleusercontent.com',
+    });
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'API keys', href: '/settings/api' },
     ];
@@ -109,18 +114,19 @@ export default function ApiSettings({
                     </form>
 
                     <div className="space-y-3">
-                        <h3 className="font-medium">Existing keys</h3>
+                        <h3 className="font-medium">Existing API keys</h3>
                         {tokens.length === 0 ? (
-                            <p className="text-sm text-muted-foreground">No API keys yet.</p>
+                            <p className="text-sm text-muted-foreground">No personal API keys yet.</p>
                         ) : (
                             <ul className="divide-y rounded-md border">
                                 {tokens.map((token) => (
-                                    <li key={token.id} className="flex items-center justify-between gap-4 p-4">
+                                    <li key={token.id} className="flex items-center justify-between p-4">
                                         <div>
                                             <p className="font-medium">{token.name}</p>
-                                            <p className="text-sm text-muted-foreground">
-                                                Created {new Date(token.created_at).toLocaleString()} · Last used{' '}
-                                                {token.last_used_at ? new Date(token.last_used_at).toLocaleString() : 'Never'}
+                                            <p className="text-xs text-muted-foreground">
+                                                Created {new Date(token.created_at).toLocaleString()}
+                                                {token.last_used_at &&
+                                                    ` · Last used ${new Date(token.last_used_at).toLocaleString()}`}
                                             </p>
                                         </div>
                                         <Button
@@ -140,11 +146,11 @@ export default function ApiSettings({
                         )}
                     </div>
 
-                    {/* OAuth Password Grant Clients */}
+                    {/* OAuth Clients */}
                     <div className="rounded-md border p-6 space-y-4">
                         <HeadingSmall
                             title="OAuth Credentials"
-                            description="Create OAuth Password Grant credentials for clients like Gemini that require standard OAuth 2.0. You will get a Client ID and Client Secret."
+                            description="Create OAuth credentials for clients like Gemini Spark that connect to your MCP server. Supports both Authorization Code and Password grants."
                         />
 
                         {visibleOAuthClient && (
@@ -204,13 +210,31 @@ export default function ApiSettings({
                                     value={oauthForm.data.name}
                                     onChange={(event) => oauthForm.setData('name', event.target.value)}
                                     maxLength={255}
-                                    placeholder="e.g. Gemini MCP Client"
+                                    placeholder="e.g. Gemini Spark"
                                     required
                                 />
                                 {oauthForm.errors.name && (
                                     <p className="text-sm text-destructive">{oauthForm.errors.name}</p>
                                 )}
                             </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="oauth-redirect-uri">Redirect URI</Label>
+                                <Input
+                                    id="oauth-redirect-uri"
+                                    value={oauthForm.data.redirect_uri}
+                                    onChange={(event) => oauthForm.setData('redirect_uri', event.target.value)}
+                                    maxLength={1000}
+                                    placeholder="https://oauth-redirect.googleusercontent.com"
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                    Defaults to Google's OAuth relay for Gemini Spark (comma-separated for multiples).
+                                </p>
+                                {oauthForm.errors.redirect_uri && (
+                                    <p className="text-sm text-destructive">{oauthForm.errors.redirect_uri}</p>
+                                )}
+                            </div>
+
                             <Button type="submit" disabled={oauthForm.processing}>
                                 Create OAuth client
                             </Button>
