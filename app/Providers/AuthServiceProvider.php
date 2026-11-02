@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Support\OAuth\FlexibleBridgeClientRepository;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Passport\Bridge\ClientRepository as PassportBridgeClientRepository;
 use Laravel\Passport\Passport;
 
 class AuthServiceProvider extends ServiceProvider
@@ -12,7 +14,10 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Bind our flexible client repository so dynamic subpaths (e.g. Gemini Spark's
+        // dynamic relay path under oauth-redirect.googleusercontent.com) validate cleanly
+        // against registered Google OAuth URIs.
+        $this->app->bind(PassportBridgeClientRepository::class, FlexibleBridgeClientRepository::class);
     }
 
     /**
