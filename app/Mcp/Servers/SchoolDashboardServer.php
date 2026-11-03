@@ -105,16 +105,22 @@ use Laravel\Mcp\Server\Attributes\Version;
 
 #[Name('Mustaqbal School Dashboard')]
 #[Version('1.2.0')]
-#[Instructions('Operate the school admin dashboard over MCP. Every tool delegates to the existing dashboard controllers, so the caller permissions are exactly those of the authenticated Sanctum user: reads list/inspect records, writes create/update them, and destructive tools delete them, all gated by the same role, verified and active middleware and policies as the web dashboard. Prefer the read tools to discover record ids before calling a write tool, and pass the same payload fields the web forms expect. Tool discovery: the tools list is paginated via standard MCP cursor pagination (tools/list with nextCursor) to expose the full dashboard surface across modules. Clients can paginate through the list to discover all available tools and call each tool directly by name. The core tools cover stats and the visual page builder. Visual pages: ListBuilderPages lists the editable pages (home, about, contact); GetPageLayout reads the structure of a page and GetPageSection reads values for one section; AddPageSection/EditPageSection/RemovePageSection/ReorderPageSections edit one block at a time (safest); UpdatePageLayout upserts the sections you send and KEEPS any existing section you do not mention (partial saves cannot delete); only an explicit remove_missing=true replaces the whole layout. Concurrency: page.revision from GetPageLayout is an optimistic lock — send it as expected_revision when replacing a layout, and re-read if the save reports the layout changed. Errors: structured status validation_failed carries field errors; error results are JSON with a reason code (unauthenticated|forbidden|not_found|throttled|failed). Files: UploadMedia (and UploadBookPdf/UploadFont) accept a url (public http(s) only, no redirects) or base64+filename, and the returned /storage URL can be referenced by posts, books, settings and builder sections. Campaigns: retry tools re-dispatch only failed recipients.')]
+#[Instructions('Operate the school admin dashboard over MCP. Every tool delegates to the existing dashboard controllers, so the caller permissions are exactly those of the authenticated Sanctum user: reads list/inspect records, writes create/update them, and destructive tools delete them, all gated by the same role, verified and active middleware and policies as the web dashboard. Prefer the read tools to discover record ids before calling a write tool, and pass the same payload fields the web forms expect. Tool discovery: all tools across dashboard modules are available in tools/list. Clients can discover and call each tool directly by name. The core tools cover stats and the visual page builder. Visual pages: ListBuilderPages lists the editable pages (home, about, contact); GetPageLayout reads the structure of a page and GetPageSection reads values for one section; AddPageSection/EditPageSection/RemovePageSection/ReorderPageSections edit one block at a time (safest); UpdatePageLayout upserts the sections you send and KEEPS any existing section you do not mention (partial saves cannot delete); only an explicit remove_missing=true replaces the whole layout. Concurrency: page.revision from GetPageLayout is an optimistic lock — send it as expected_revision when replacing a layout, and re-read if the save reports the layout changed. Errors: structured status validation_failed carries field errors; error results are JSON with a reason code (unauthenticated|forbidden|not_found|throttled|failed). Files: UploadMedia (and UploadBookPdf/UploadFont) accept a url (public http(s) only, no redirects) or base64+filename, and the returned /storage URL can be referenced by posts, books, settings and builder sections. Campaigns: retry tools re-dispatch only failed recipients.')]
 class SchoolDashboardServer extends Server
 {
+    /**
+     * Default page length set to cover the full tool catalogue so AI clients
+     * (such as Gemini) that inspect tools/list without pagination get complete
+     * knowledge of all available tools in a single response.
+     */
+    public int $maxPaginationLength = 200;
+
+    public int $defaultPaginationLength = 150;
+
     /**
      * The tools registered with this MCP server. Each one forwards to a real
      * dashboard controller action through App\Mcp\Support\DashboardDispatcher,
      * so no business logic is duplicated.
-     *
-     * Tools are served via standard MCP cursor pagination (tools/list with nextCursor),
-     * allowing clients to discover and paginate across the full dashboard surface.
      *
      * @var array<int, class-string<\Laravel\Mcp\Server\Tool>>
      */

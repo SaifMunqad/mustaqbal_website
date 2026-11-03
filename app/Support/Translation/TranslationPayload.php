@@ -32,7 +32,7 @@ class TranslationPayload
     {
         $default = Language::defaultCode();
         $codes = collect(Language::activeList())->pluck('code')->all();
-        $requiredDefault ??= $fields;
+        $requiredDefault = $requiredForDefault ?? $fields;
 
         $out = [];
 

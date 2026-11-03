@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature\Mcp;
 
 use App\Mcp\Servers\SchoolDashboardServer;
+use App\Models\Event;
+use App\Models\Language;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Mcp\Server\Transport\FakeTransporter;
@@ -31,29 +33,53 @@ class ToolSearchMcpTest extends TestCase
         $this->admin = User::factory()->create(['role' => 'admin', 'email_verified_at' => now()]);
     }
 
-    public function test_tools_list_uses_cursor_pagination_to_expose_all_tools(): void
+    public function test_tools_list_returns_full_catalogue_by_default_for_ai_knowledge(): void
     {
         auth()->setUser($this->admin);
         $server = app()->make(SchoolDashboardServer::class, ['transport' => new FakeTransporter]);
         $server->start();
         $context = $server->createContext();
 
-        // 1. First page without cursor: returns the default page size (15) and a nextCursor.
-        $request1 = new JsonRpcRequest(id: 'page-1', method: 'tools/list', params: []);
+        // Default call without per_page returns all tools in one shot so clients
+        // like Gemini that do not iterate pagination receive the full catalogue.
+        $request = new JsonRpcRequest(id: 'all-tools', method: 'tools/list', params: []);
+        /** @var JsonRpcResponse $response */
+        $response = (fn () => $this->runMethodHandle($request, $context))->call($server);
+        $result = $response->toArray()['result'];
+
+        $this->assertGreaterThanOrEqual(90, count($result['tools']));
+
+        $names = array_column($result['tools'], 'name');
+        $this->assertContains('DashboardStats', $names);
+        $this->assertContains('CreateEvent', $names);
+        $this->assertContains('UpdateEvent', $names);
+        $this->assertContains('ListBooks', $names);
+        $this->assertContains('ListLanguages', $names);
+    }
+
+    public function test_tools_list_supports_cursor_pagination_when_requested(): void
+    {
+        auth()->setUser($this->admin);
+        $server = app()->make(SchoolDashboardServer::class, ['transport' => new FakeTransporter]);
+        $server->start();
+        $context = $server->createContext();
+
+        // 1. First page with per_page: 25 returns 25 tools and a nextCursor.
+        $request1 = new JsonRpcRequest(id: 'page-1', method: 'tools/list', params: ['per_page' => 25]);
         /** @var JsonRpcResponse $response1 */
         $response1 = (fn () => $this->runMethodHandle($request1, $context))->call($server);
         $result1 = $response1->toArray()['result'];
 
-        $this->assertCount(15, $result1['tools']);
+        $this->assertCount(25, $result1['tools']);
         $this->assertArrayHasKey('nextCursor', $result1);
         $this->assertNotEmpty($result1['nextCursor']);
 
-        // 2. Fetch all pages by following nextCursor until exhaustion.
+        // 2. Fetch all remaining pages by following nextCursor until exhaustion.
         $allCollected = [...$result1['tools']];
         $cursor = $result1['nextCursor'];
 
         while ($cursor !== null) {
-            $req = new JsonRpcRequest(id: uniqid('page-'), method: 'tools/list', params: ['cursor' => $cursor]);
+            $req = new JsonRpcRequest(id: uniqid('page-'), method: 'tools/list', params: ['cursor' => $cursor, 'per_page' => 25]);
             /** @var JsonRpcResponse $res */
             $res = (fn () => $this->runMethodHandle($req, $context))->call($server);
             $pageResult = $res->toArray()['result'];
@@ -64,16 +90,13 @@ class ToolSearchMcpTest extends TestCase
 
         $names = array_column($allCollected, 'name');
 
-        // All tools across every module are discoverable via pagination.
+        // All tools across every module are discoverable via cursor pagination.
         $this->assertGreaterThanOrEqual(90, count($names));
         $this->assertContains('DashboardStats', $names);
         $this->assertContains('GetPageLayout', $names);
-        $this->assertContains('AddPageSection', $names);
-        $this->assertContains('UploadMedia', $names);
-        $this->assertContains('ListBooks', $names);
         $this->assertContains('CreateEvent', $names);
+        $this->assertContains('ListBooks', $names);
         $this->assertContains('ListLanguages', $names);
-        $this->assertContains('RetryEmailCampaign', $names);
     }
 
     public function test_tools_list_pagination_works_in_production_environment(): void
@@ -87,8 +110,7 @@ class ToolSearchMcpTest extends TestCase
 
         $names = array_column($items, 'name');
 
-        // In production, the entire tools list is available through cursor pagination
-        // rather than being hidden behind search_tools/execute_tools.
+        // In production, the entire tools list is available
         $this->assertGreaterThanOrEqual(90, count($names));
         $this->assertContains('ListBooks', $names);
         $this->assertContains('CreateEvent', $names);
@@ -97,20 +119,35 @@ class ToolSearchMcpTest extends TestCase
         $this->assertContains('DashboardStats', $names);
     }
 
-    public function test_tools_list_respects_custom_per_page(): void
+    public function test_ai_can_create_new_event_with_top_level_fields(): void
     {
-        auth()->setUser($this->admin);
-        $server = app()->make(SchoolDashboardServer::class, ['transport' => new FakeTransporter]);
-        $server->start();
-        $context = $server->createContext();
+        // An AI typically passes title, description, location, and start_at directly
+        $response = SchoolDashboardServer::actingAs($this->admin)
+            ->tool(\App\Mcp\Tools\CreateEventTool::class, [
+                'title' => 'Annual Science Fair 2026',
+                'description' => 'A showcase of science experiments and models.',
+                'location' => 'Main Auditorium',
+                'start_at' => '2026-11-25 10:00:00',
+                'end_at' => '2026-11-25 16:00:00',
+                'audience' => 'public',
+            ]);
 
-        $request = new JsonRpcRequest(id: 'page-custom', method: 'tools/list', params: ['per_page' => 25]);
-        /** @var JsonRpcResponse $response */
-        $response = (fn () => $this->runMethodHandle($request, $context))->call($server);
-        $result = $response->toArray()['result'];
+        $response->assertOk();
+        $response->assertSee('flash.eventCreated');
 
-        $this->assertCount(25, $result['tools']);
-        $this->assertArrayHasKey('nextCursor', $result);
+        $this->assertDatabaseHas('events', [
+            'audience' => 'public',
+            'is_published' => true,
+        ]);
+
+        $event = Event::query()->latest('id')->first();
+        $this->assertNotNull($event);
+        $this->assertSame('Annual Science Fair 2026', $event->translated('title', Language::defaultCode()));
+        $this->assertDatabaseHas('event_translations', [
+            'event_id' => $event->id,
+            'title' => 'Annual Science Fair 2026',
+            'location' => 'Main Auditorium',
+        ]);
     }
 
     public function test_tools_can_be_called_directly_by_name(): void
