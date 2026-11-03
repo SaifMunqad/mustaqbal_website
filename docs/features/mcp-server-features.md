@@ -7,8 +7,8 @@
 > without removing/replacing its pinning test in the same change.
 >
 > Server: `Mustaqbal School Dashboard` v1.2.0 — route `POST /mcp` (also GET/DELETE for the streamable transport).
-> Verified: 2026-10-31 — **80 tests (400 assertions)** pin the behaviors below
-> (`php artisan test tests/Feature/Mcp tests/Feature/PageBuilderTest.php`); full suite: 341 passed.
+> Verified: 2026-11-03 — **76 tests (372 assertions)** pin the behaviors below
+> (`php artisan test tests/Feature/Mcp tests/Feature/PageBuilderTest.php`); full suite: 362 passed.
 
 ---
 
@@ -32,29 +32,37 @@
 | T1 | **`MCP_AUTH_TOKEN` in `.env` is read by nothing.** Real auth is a Laravel Passport OAuth 2.0 bearer token in `Authorization: Bearer <token>`, issued via `php artisan mcp:token <email>`. OAuth discovery is exposed at `/.well-known/oauth-protected-resource/mcp` and `/.well-known/oauth-authorization-server`; browser authorization uses the Authorization Code grant. | A stale env var named "MCP_AUTH_TOKEN" begs to be (mis)used; sending it always 401s. | Do **not** "wire it up". Do not delete the var silently either — leave it; it is documented here as a decoy. Verified by `mcp:self-test`. |
 | T2 | **`mcp.auth` middleware (`RecoverAuthorizationHeader`) runs before `auth:api`.** On Apache/LiteSpeed + PHP-FPM shared hosting the `Authorization` header is stripped from `$_SERVER`; this middleware recovers it from `REDIRECT_HTTP_AUTHORIZATION` et al. | "Why a custom auth middleware? Passport should just work." — It doesn't, on our production hosting; 401-only-over-HTTP was the symptom. | Paired with `SetEnvIf` + rewrite rules in `public/.htaccess`. Redeploy both together. |
 | T3 | **`/mcp` is throttled 120 req/min per IP** (`throttle:mcp`, defined in `AppServiceProvider::boot`). | Agents may hit 429 during bursts; looks like flaky infra. | Deliberate budget for a write-capable endpoint. Raise the limit in config only by decision, not accident. |
-| T4 | **Every MCP request writes one audit line** to `storage/logs/mcp-audit-<date>.log` (daily, 90 days, `mcp_audit` channel): user, method, tool, **`args_hash`**, inner `calls[]` for `execute_tools`, error flag, duration, IP. | Raw arguments are absent — "logs are useless / data was lost". | **Privacy by design**: payloads carry personal enrolment/contact data. The hash (12-char md5 prefix) is enough to correlate. Do not log raw args. |
-| T5 | **Batch results stream as SSE**, single-call results return buffered JSON. The transport decides by response count. | A client expecting JSON sees `data:` frames and concludes the endpoint is broken. | Spec-conformant streamable HTTP. Parse `data:` lines, or call one tool per request for JSON. Pinned by `McpHardeningTest::test_catalogued_tools_run_over_http_through_the_execute_gateway`. |
+| T4 | **Every MCP request writes one audit line** to `storage/logs/mcp-audit-<date>.log` (daily, 90 days, `mcp_audit` channel): user, method, tool, **`args_hash`**, error flag, duration, IP. | Raw arguments are absent — "logs are useless / data was lost". | **Privacy by design**: payloads carry personal enrolment/contact data. The hash (12-char md5 prefix) is enough to correlate. Do not log raw args. |
+| T5 | **Single-call results return buffered JSON**; streaming transport handles multi-message flows. | A client expecting JSON sees standard JSON-RPC responses. | Spec-conformant streamable HTTP. Pinned by `McpHardeningTest::test_tools_run_over_http_with_a_passport_token`. |
 | T6 | **The server is stateless-friendly:** `initialize` is optional per request in our deployment; no session-id headers are emitted. | "Missing Mcp-Session-Id must be a bug." | Working live pattern: token → `initialize` → `tools/call`. Don't invent session handling; the package's transport owns it. |
 
 ---
 
-## 3. Dynamic tool loading (v1.2.0)
+## 3. Tools list pagination (v1.2.0)
 
-The 89 tools split into two registration tiers (see `SchoolDashboardServer::$tools`):
+All 94 tools across the dashboard modules are registered directly in `SchoolDashboardServer::$tools`:
+- **Core / Stats / Page builder:** `DashboardStats`, `ListBuilderPages`, `GetPageLayout`, `GetPageSection`, `UpdatePageLayout`, `AddPageSection`, `EditPageSection`, `UpdatePageSection`, `RemovePageSection`, `ReorderPageSections`, `UploadMedia`, `GetSiteSettings`, `GetSiteSettingsSection`, `EditSiteSettings`
+- **Legacy aliases:** `GetHomePageLayout`, `UpdateHomePageLayout`
+- **Media & typography:** `UploadBookPdf`, `UploadFont`, `DeleteFont`, `AssignLanguageFont`, `PreviewPalette`
+- **Articles & posts:** `ListArticles`, `ShowArticle`, `CreateArticle`, `UpdateArticle`, `ListPosts`, `ShowPost`, `CreatePost`, `UpdatePost`
+- **Events:** `ListEvents`, `ShowEvent`, `CreateEvent`, `UpdateEvent`, `DeleteEvent`
+- **Enrollments:** `ListEnrollments`, `ShowEnrollment`, `UpdateEnrollmentStatus`, `ReplyEnrollment`
+- **Users:** `ListUsers`, `CreateUser`, `UpdateUser`, `DeleteUser`
+- **Programs:** `ListPrograms`, `ShowProgram`, `CreateProgram`, `UpdateProgram`
+- **Jobs & applications:** `ListJobs`, `CreateJob`, `UpdateJob`, `DeleteJob`, `ListJobApplications`, `ShowJobApplication`, `UpdateJobApplicationStatus`
+- **Bookstore:** `ListBooks`, `ShowBook`, `CreateBook`, `UpdateBook`, `DeleteBook`, `ListBookCategories`, `CreateBookCategory`, `UpdateBookCategory`, `DeleteBookCategory`
+- **Contacts & messages:** `ListContacts`, `CreateContact`, `UpdateContact`, `ListMessages`, `ShowMessage`, `UpdateMessage`, `AnswerMessage`
+- **Awards:** `ListAwards`, `ShowAward`, `CreateAward`, `UpdateAward`, `DeleteAward`
+- **Languages:** `ListLanguages`, `CreateLanguage`, `UpdateLanguage`, `DeleteLanguage`, `ReorderLanguages`
+- **Site & about:** `UpdateSiteSettings`, `GetAboutPage`, `UpdateAboutPage`
+- **Campaigns & mails:** `ListEmailCampaigns`, `ShowEmailCampaign`, `CreateEmailCampaign`, `RetryEmailCampaign`, `ListWhatsAppCampaigns`, `ShowWhatsAppCampaign`, `CreateWhatsAppCampaign`, `RetryWhatsAppCampaign`, `GetWhatsAppSettings`, `UpdateWhatsAppSettings`, `TestWhatsAppSettings`, `ListMails`
 
-**Eager — always in `tools/list` (10):**
-`DashboardStats`, `ListBuilderPages`, `GetPageLayout`, `UpdatePageLayout`, `AddPageSection`, `UpdatePageSection`, `RemovePageSection`, `ReorderPageSections`, `UploadMedia`, `GetSiteSettings`
-
-**Catalogued — reachable only via the gateway pair `search_tools` + `execute_tools` (79):**
-legacy `GetHomePageLayout`/`UpdateHomePageLayout`; media/typography (`UploadBookPdf`, `UploadFont`, `DeleteFont`, `AssignLanguageFont`, `PreviewPalette`); articles; posts; events; enrollments; users; programs; jobs & applications; books & categories; contacts; messages; awards; languages; site settings update; about publication; email campaigns; WhatsApp campaigns/settings; mails.
-
-| # | Feature | Why it is NOT a bug |
-|---|---------|---------------------|
-| D1 | **Catalogued tools return "Tool [X] not found" when called directly by name via `tools/call`.** | Dynamic loading design: discovery goes through `search_tools`, execution through `execute_tools`. Making them directly callable again would re-bloat every client's context with 79 schemas. Tests must call catalog tools through the gateway (`tests/Feature/Mcp/CallsCatalogTools` trait mirrors production). |
-| D2 | **`search_tools` returns full `inputSchema` per hit; `execute_tools` runs up to `config('mcp.tool_search.max_tool_calls')` (10) calls, 64KB output cap.** | Limits are the package defaults, deliberate. Tune in `config/mcp.php` only by decision. Pinned by `ToolSearchMcpTest::test_execute_tools_respects_the_batch_cap`. |
-| D3 | **`execute_tools` stops on the first failed call; earlier calls have already committed. Batches are NOT atomic.** | "partial application looks broken" — it is the documented contract ("Execution stops on the first error"). Agents must inspect each `results[]` entry, not just overall success. Do not add rollback without a plan; dashboard side effects (mail, WhatsApp jobs) can't roll back anyway. |
-| D4 | **Guard replay also applies inside `execute_tools`** — a management user batching an admin-only tool gets the same `forbidden` error. | The gateway is not a permission bypass; `invokeTool` dispatches the real registered tool through the same invoker. Pinned by `ToolSearchMcpTest::test_execute_tools_enforces_the_same_role_guards`. |
-| D5 | Eager tools must **not** be put in the catalog (and vice versa) casually: `PageSectionEditor` and tests depend on the split. | Server refuses duplicate names once `ToolSearch` is present; keep the 10 eager = daily-driver core. |
+| # | Feature | Details |
+|---|---------|---------|
+| D1 | **Full tools list is served via MCP cursor pagination (`tools/list` with `nextCursor`).** | Clients (e.g. Gemini) can traverse the entire tools catalog across pages (15 tools default per page, or up to `maxPaginationLength = 50`) and discover every tool without tools being hidden. Pinned by `ToolSearchMcpTest::test_tools_list_uses_cursor_pagination_to_expose_all_tools`. |
+| D2 | **Tools are called directly by name via `tools/call`.** | Every tool is directly addressable and executable, with identical route guard checks and permissions applied. Pinned by `ToolSearchMcpTest::test_tools_can_be_called_directly_by_name`. |
+| D3 | **Pagination works consistently across all environments (including production).** | No environment-dependent tool omissions. Pinned by `ToolSearchMcpTest::test_tools_list_pagination_works_in_production_environment`. |
+| D4 | **Role guards are strictly enforced on direct calls.** | A management caller attempting an admin-only tool gets the same structured `forbidden` response. Pinned by `ToolSearchMcpTest::test_direct_tool_calls_enforce_role_guards`. |
 
 ---
 
@@ -91,14 +99,14 @@ The highest-value surface — and the one whose semantics are easiest to "fix" w
 
 | # | Convention | Why |
 |---|-----------|-----|
-| E1 | **Two error channels.** Validation/failed-business checks return **structured success-shaped payloads** (`status: validation_failed`, `errors: {field: […]}`) — these are *data*, not transport errors. Only auth/permission/infra failures produce `isError: true` whose text is JSON `{"status":"error","reason":…}` with reason ∈ `unauthenticated|forbidden|not_found|throttled|failed`. | Agents can branch on `reason` / `status` instead of parsing prose. Note the asymmetry: a validation failure through `execute_tools` does **not** abort the batch with `isError` — it appears as a `validation_failed` result entry. Pinned by `DashboardMcpTest`, `McpHardeningTest`. |
-| E2 | **Inertia props are the read shape.** Read tools return the *dashboard page props* (`McpResponse::structured($props)`), including display-only fields. | Deliberate: one source for what the human sees = what the agent reads. Do not invent separate API resources (no-duplication rule). Clients that want less data use `search_tools`/field filtering per call, not new transformers. |
+| E1 | **Two error channels.** Validation/failed-business checks return **structured success-shaped payloads** (`status: validation_failed`, `errors: {field: […]}`) — these are *data*, not transport errors. Only auth/permission/infra failures produce `isError: true` whose text is JSON `{"status":"error","reason":…}` with reason ∈ `unauthenticated|forbidden|not_found|throttled|failed`. | Agents can branch on `reason` / `status` instead of parsing prose. Pinned by `DashboardMcpTest`, `McpHardeningTest`. |
+| E2 | **Inertia props are the read shape.** Read tools return the *dashboard page props* (`McpResponse::structured($props)`), including display-only fields. | Deliberate: one source for what the human sees = what the agent reads. Do not invent separate API resources (no-duplication rule). Clients that want less data use field filtering per call, not new transformers. |
 | E3 | **Flash messages come back as i18n keys** (`messages.success = "flash.pageSaved"`). | They are frontend-translation keys, not prose. Stable contract — the web UI translates them. Don't translate server-side. |
-| E4 | `laravel/mcp` package quirks that are **expected**: `Response::structured()` returns a `ResponseFactory` (not `Response`) — handle both in return types; `actingAs()->tool()` resolves registered tools by *name*, so catalog tools must go through `execute_tools`; test `assertStructuredContent` closures must touch **every** root key (`interacted()` strictness). | Pinned patterns in `tests/Feature/Mcp/*`. |
+| E4 | `laravel/mcp` package quirks that are **expected**: `Response::structured()` returns a `ResponseFactory` (not `Response`) — handle both in return types; `actingAs()->tool()` resolves registered tools by *name*; test `assertStructuredContent` closures must touch **every** root key (`interacted()` strictness). | Pinned patterns in `tests/Feature/Mcp/*`. |
 
 ---
 
-## 7. Feature matrix by dashboard module (catalog tier)
+## 7. Feature matrix by dashboard module
 
 Read = `List*/Show*`; write = `Create*/Update*`; ⚠ = destructive (needs explicit intent + guards):
 
@@ -141,5 +149,5 @@ Read = `List*/Show*`; write = `Create*/Update*`; ⚠ = destructive (needs explic
 
 1. **Read this file before "fixing" anything** in `app/Mcp/**`, `app/Support/Home/**`, `routes/ai.php`, `public/.htaccess`, or the builder frontend.
 2. Every behavior above has a pinning test under `tests/Feature/Mcp/` or `tests/Feature/PageBuilderTest.php`. **Removing a feature means removing/updating its test in the same commit** — if you can't point at the test, you don't understand the feature; ask.
-3. New dashboard module → new MCP tools follow the declarative pattern (subclass `DashboardTool`, forward to a controller action, add schema, register in `SchoolDashboardServer`, eager vs catalog decision documented here). Never re-implement logic in the tool.
+3. New dashboard module → new MCP tools follow the declarative pattern (subclass `DashboardTool`, forward to a controller action, add schema, register in `SchoolDashboardServer`). Never re-implement logic in the tool.
 4. Deploy pairing: builder-frontend (`remove_missing` payload) ⇄ backend controller ⇄ MCP tools are one contract; ship together and run `php artisan optimize:clear` on shared hosting (no sudo).

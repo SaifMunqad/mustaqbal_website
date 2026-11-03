@@ -7,17 +7,16 @@ namespace Tests\Feature\Mcp;
 use App\Mcp\Servers\SchoolDashboardServer;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Mcp\Server\Tools\ExecuteTools;
-use Laravel\Mcp\Server\Tools\SearchTools;
-use Laravel\Mcp\Server\Tools\ToolSearch;
 use Laravel\Mcp\Server\Transport\FakeTransporter;
+use Laravel\Mcp\Transport\JsonRpcRequest;
+use Laravel\Mcp\Transport\JsonRpcResponse;
 use ReflectionClass;
 use Tests\TestCase;
 
 /**
- * Covers environment-dependent catalog loading: local debug exposes module
- * tools in the paginated list, while other environments use the search
- * gateway and keep the core builder/stats tools eagerly registered.
+ * Covers the MCP tools pagination system: the complete dashboard tools list
+ * is exposed across modules and paginated via standard cursor pagination,
+ * allowing AI clients (like Gemini) to discover and call all tools directly.
  */
 class ToolSearchMcpTest extends TestCase
 {
@@ -32,27 +31,52 @@ class ToolSearchMcpTest extends TestCase
         $this->admin = User::factory()->create(['role' => 'admin', 'email_verified_at' => now()]);
     }
 
-    /**
-     * @return array<int, class-string>
-     */
-    private static function catalog(): array
+    public function test_tools_list_uses_cursor_pagination_to_expose_all_tools(): void
     {
-        $entries = (new ReflectionClass(SchoolDashboardServer::class))->getDefaultProperties()['tools'];
+        auth()->setUser($this->admin);
+        $server = app()->make(SchoolDashboardServer::class, ['transport' => new FakeTransporter]);
+        $server->start();
+        $context = $server->createContext();
 
-        return $entries[ToolSearch::class];
+        // 1. First page without cursor: returns the default page size (15) and a nextCursor.
+        $request1 = new JsonRpcRequest(id: 'page-1', method: 'tools/list', params: []);
+        /** @var JsonRpcResponse $response1 */
+        $response1 = (fn () => $this->runMethodHandle($request1, $context))->call($server);
+        $result1 = $response1->toArray()['result'];
+
+        $this->assertCount(15, $result1['tools']);
+        $this->assertArrayHasKey('nextCursor', $result1);
+        $this->assertNotEmpty($result1['nextCursor']);
+
+        // 2. Fetch all pages by following nextCursor until exhaustion.
+        $allCollected = [...$result1['tools']];
+        $cursor = $result1['nextCursor'];
+
+        while ($cursor !== null) {
+            $req = new JsonRpcRequest(id: uniqid('page-'), method: 'tools/list', params: ['cursor' => $cursor]);
+            /** @var JsonRpcResponse $res */
+            $res = (fn () => $this->runMethodHandle($req, $context))->call($server);
+            $pageResult = $res->toArray()['result'];
+
+            $allCollected = [...$allCollected, ...$pageResult['tools']];
+            $cursor = $pageResult['nextCursor'] ?? null;
+        }
+
+        $names = array_column($allCollected, 'name');
+
+        // All tools across every module are discoverable via pagination.
+        $this->assertGreaterThanOrEqual(90, count($names));
+        $this->assertContains('DashboardStats', $names);
+        $this->assertContains('GetPageLayout', $names);
+        $this->assertContains('AddPageSection', $names);
+        $this->assertContains('UploadMedia', $names);
+        $this->assertContains('ListBooks', $names);
+        $this->assertContains('CreateEvent', $names);
+        $this->assertContains('ListLanguages', $names);
+        $this->assertContains('RetryEmailCampaign', $names);
     }
 
-    private function searchTools(): SearchTools
-    {
-        return new SearchTools(new ToolSearch(self::catalog()));
-    }
-
-    private function executeTools(): ExecuteTools
-    {
-        return new ExecuteTools(new ToolSearch(self::catalog()), (int) config('mcp.tool_search.max_tool_calls', 10));
-    }
-
-    public function test_list_exposes_meta_tools_and_core_but_not_catalogued_modules(): void
+    public function test_tools_list_pagination_works_in_production_environment(): void
     {
         app()['env'] = 'production';
         config(['app.debug' => false]);
@@ -63,123 +87,54 @@ class ToolSearchMcpTest extends TestCase
 
         $names = array_column($items, 'name');
 
-        // The two gateway tools plus the always-listed core surface.
-        $this->assertContains('search_tools', $names);
-        $this->assertContains('execute_tools', $names);
-        $this->assertContains('DashboardStats', $names);
-        $this->assertContains('GetPageLayout', $names);
-        $this->assertContains('AddPageSection', $names);
-        $this->assertContains('UploadMedia', $names);
-
-        // Catalogued module tools are discovered, not listed.
-        $this->assertNotContains('ListBooks', $names);
-        $this->assertNotContains('CreateEvent', $names);
-        $this->assertNotContains('RetryEmailCampaign', $names);
-
-        // Eager + two gateways is what the client sees, not all 89.
-        $this->assertLessThanOrEqual(16, count($names));
-    }
-
-    public function test_local_debug_lists_catalogued_tools_for_cursor_pagination(): void
-    {
-        app()['env'] = 'local';
-        config(['app.debug' => true]);
-
-        auth()->setUser($this->admin);
-        $server = app()->make(SchoolDashboardServer::class, ['transport' => new FakeTransporter]);
-        $contextTools = $server->createContext()->tools();
-        $names = $contextTools->map(fn ($tool): string => $tool->name())->all();
-
+        // In production, the entire tools list is available through cursor pagination
+        // rather than being hidden behind search_tools/execute_tools.
+        $this->assertGreaterThanOrEqual(90, count($names));
         $this->assertContains('ListBooks', $names);
         $this->assertContains('CreateEvent', $names);
-        $this->assertNotContains('search_tools', $names);
-        $this->assertNotContains('execute_tools', $names);
+        $this->assertContains('RetryEmailCampaign', $names);
+        $this->assertContains('ListLanguages', $names);
+        $this->assertContains('DashboardStats', $names);
     }
 
-    public function test_search_tools_discovers_catalogued_tools_with_schemas(): void
+    public function test_tools_list_respects_custom_per_page(): void
+    {
+        auth()->setUser($this->admin);
+        $server = app()->make(SchoolDashboardServer::class, ['transport' => new FakeTransporter]);
+        $server->start();
+        $context = $server->createContext();
+
+        $request = new JsonRpcRequest(id: 'page-custom', method: 'tools/list', params: ['per_page' => 25]);
+        /** @var JsonRpcResponse $response */
+        $response = (fn () => $this->runMethodHandle($request, $context))->call($server);
+        $result = $response->toArray()['result'];
+
+        $this->assertCount(25, $result['tools']);
+        $this->assertArrayHasKey('nextCursor', $result);
+    }
+
+    public function test_tools_can_be_called_directly_by_name(): void
     {
         SchoolDashboardServer::actingAs($this->admin)
-            ->tool($this->searchTools(), ['query' => 'whatsapp campaign'])
+            ->tool(\App\Mcp\Tools\ListLanguagesTool::class, [])
             ->assertOk()
-            ->assertSee('CreateWhatsAppCampaign')
-            ->assertSee('RetryWhatsAppCampaign');
+            ->assertSee('languages');
 
-        // Keyword browsing finds the bookstore cluster by name and description.
         SchoolDashboardServer::actingAs($this->admin)
-            ->tool($this->searchTools(), ['query' => 'book'])
+            ->tool(\App\Mcp\Tools\ListBooksTool::class, [])
             ->assertOk()
-            ->assertSee('ListBooks')
-            ->assertSee('UpdateBookCategory');
-
-        // Content tools are intentionally discoverable through the catalog,
-        // rather than appearing in the paginated tools/list response.
-        SchoolDashboardServer::actingAs($this->admin)
-            ->tool($this->searchTools(), ['query' => 'article'])
-            ->assertOk()
-            ->assertSee('ListArticles')
-            ->assertSee('ShowArticle')
-            ->assertSee('CreateArticle')
-            ->assertSee('UpdateArticle');
-
-        // Returned matches carry their input schema for direct use.
-        SchoolDashboardServer::actingAs($this->admin)
-            ->tool($this->searchTools(), ['query' => 'GetHomePageLayout'])
-            ->assertOk()
-            ->assertSee('inputSchema');
+            ->assertSee('books');
     }
 
-    public function test_execute_tools_runs_catalogued_tools_in_order(): void
-    {
-        SchoolDashboardServer::actingAs($this->admin)
-            ->tool($this->executeTools(), [
-                'calls' => [
-                    ['name' => 'ListLanguages', 'arguments' => []],
-                    ['name' => 'ListPosts', 'arguments' => []],
-                ],
-            ])
-            ->assertOk()
-            ->assertSee('ListLanguages')
-            ->assertSee('ListPosts');
-    }
-
-    public function test_execute_tools_enforces_the_same_role_guards(): void
+    public function test_direct_tool_calls_enforce_role_guards(): void
     {
         $management = User::factory()->create(['role' => 'management', 'email_verified_at' => now()]);
 
-        // Email campaigns are admin-only; the wrapped call must fail closed
-        // with the same reason-coded error a direct call produces (the inner
-        // JSON arrives escaped inside the batch result).
+        // Email campaigns are admin-only; direct call by a management user must
+        // fail closed with forbidden reason.
         SchoolDashboardServer::actingAs($management)
-            ->tool($this->executeTools(), [
-                'calls' => [['name' => 'ListEmailCampaigns', 'arguments' => []]],
-            ])
+            ->tool(\App\Mcp\Tools\ListEmailCampaignsTool::class, [])
+            ->assertHasErrors()
             ->assertSee('forbidden');
-    }
-
-    public function test_execute_tools_refuses_unknown_and_uncatalogued_names(): void
-    {
-        // Not in the catalog at all.
-        SchoolDashboardServer::actingAs($this->admin)
-            ->tool($this->executeTools(), [
-                'calls' => [['name' => 'TotallyMadeUpTool', 'arguments' => []]],
-            ])
-            ->assertSee('not found in the catalog');
-
-        // Eager tools are called directly, not through the gateway.
-        SchoolDashboardServer::actingAs($this->admin)
-            ->tool($this->executeTools(), [
-                'calls' => [['name' => 'DashboardStats', 'arguments' => []]],
-            ])
-            ->assertSee('not found in the catalog');
-    }
-
-    public function test_execute_tools_respects_the_batch_cap(): void
-    {
-        $max = (int) config('mcp.tool_search.max_tool_calls', 10);
-        $calls = array_fill(0, $max + 1, ['name' => 'ListLanguages', 'arguments' => []]);
-
-        SchoolDashboardServer::actingAs($this->admin)
-            ->tool($this->executeTools(), ['calls' => $calls])
-            ->assertHasErrors();
     }
 }
