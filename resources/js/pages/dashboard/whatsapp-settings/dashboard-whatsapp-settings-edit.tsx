@@ -6,11 +6,11 @@
  * (`configured`) before any campaign is attempted.
  */
 import DashboardPage from '@/components/dashboard/dashboard-page';
+import { useFormToast } from '@/components/feedback/use-form-toast';
 import { SelectField, TextField } from '@/components/form/form-fields';
 import { Button } from '@/components/ui/button';
-import { useFormToast } from '@/components/feedback/use-form-toast';
-import settings from '@/routes/dashboard/whatsapp-settings';
 import campaigns from '@/routes/dashboard/whatsapp-campaigns';
+import settings from '@/routes/dashboard/whatsapp-settings';
 import { Form, Link, usePage } from '@inertiajs/react';
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -70,12 +70,19 @@ export default function DashboardWhatsAppSettingsEdit() {
                               )}
                     </span>
                 </div>
-                <Link href={campaigns.index.url()} className="text-sm text-blue-600 underline">
+                <Link
+                    href={campaigns.index.url()}
+                    className="text-sm text-blue-600 underline"
+                >
                     {t('dashboard.whatsappSettings.form.backToCampaigns')}
                 </Link>
             </div>
 
-            <Form {...settings.update.form()} onError={onError} className="grid max-w-2xl gap-4 rounded-xl border p-4">
+            <Form
+                {...settings.update.form()}
+                onError={onError}
+                className="grid max-w-2xl gap-4 rounded-xl border p-4"
+            >
                 <TextField
                     label={t('dashboard.whatsappSettings.form.accessToken')}
                     name="access_token"
@@ -111,7 +118,8 @@ export default function DashboardWhatsAppSettingsEdit() {
                 />
                 <TextField
                     label={t(
-                        'dashboard.whatsappSettings.form.businessAccountId',
+                        'dashboard.whatsappSettings.form.businessAccountIdId',
+                        t('dashboard.whatsappSettings.form.businessAccountId'),
                     )}
                     name="business_account_id"
                     defaultValue={setting.business_account_id ?? ''}
@@ -135,9 +143,7 @@ export default function DashboardWhatsAppSettingsEdit() {
                     options={[
                         {
                             value: '1',
-                            label: t(
-                                'dashboard.whatsappSettings.form.enabled',
-                            ),
+                            label: t('dashboard.whatsappSettings.form.enabled'),
                         },
                         {
                             value: '0',
@@ -156,7 +162,7 @@ export default function DashboardWhatsAppSettingsEdit() {
             <Form
                 {...settings.test.form()}
                 className="w-fit"
-                preserveScroll
+                options={{ preserveScroll: true }}
                 onSuccess={() => undefined}
             >
                 <Button type="submit" variant="outline">

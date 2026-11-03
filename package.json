@@ -8,6 +8,7 @@
         "format": "prettier --write resources/",
         "format:check": "prettier --check resources/",
         "lint": "eslint . --fix",
+        "test": "php artisan test",
         "types": "tsc --noEmit"
     },
     "devDependencies": {

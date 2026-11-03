@@ -6,7 +6,6 @@ import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, useForm } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
 
 type ApiToken = {
     id: number;
@@ -41,10 +40,8 @@ export default function ApiSettings({
     oauthClients: OAuthClient[];
     newOAuthClient?: NewOAuthClient | null;
 }) {
-    const [visibleToken, setVisibleToken] = useState(newToken);
-    const [visibleOAuthClient, setVisibleOAuthClient] = useState(newOAuthClient);
-    useEffect(() => setVisibleToken(newToken), [newToken]);
-    useEffect(() => setVisibleOAuthClient(newOAuthClient), [newOAuthClient]);
+    const visibleToken = newToken;
+    const visibleOAuthClient = newOAuthClient;
     const form = useForm({ name: '' });
     const oauthForm = useForm({
         name: '',
@@ -68,14 +65,23 @@ export default function ApiSettings({
                         <div className="space-y-2 rounded-md border border-green-600 p-4">
                             <p className="font-medium">Copy this key now</p>
                             <p className="text-sm text-muted-foreground">
-                                This secret is shown only once. Store it securely.
+                                This secret is shown only once. Store it
+                                securely.
                             </p>
-                            <Input readOnly value={visibleToken} onFocus={(event) => event.currentTarget.select()} />
+                            <Input
+                                readOnly
+                                value={visibleToken}
+                                onFocus={(event) =>
+                                    event.currentTarget.select()
+                                }
+                            />
                             <Button
                                 type="button"
                                 variant="outline"
                                 onClick={() => {
-                                    void navigator.clipboard?.writeText(visibleToken);
+                                    void navigator.clipboard?.writeText(
+                                        visibleToken,
+                                    );
                                 }}
                             >
                                 Copy key
@@ -99,13 +105,17 @@ export default function ApiSettings({
                             <Input
                                 id="token-name"
                                 value={form.data.name}
-                                onChange={(event) => form.setData('name', event.target.value)}
+                                onChange={(event) =>
+                                    form.setData('name', event.target.value)
+                                }
                                 maxLength={255}
                                 placeholder="e.g. MCP integration"
                                 required
                             />
                             {form.errors.name && (
-                                <p className="text-sm text-destructive">{form.errors.name}</p>
+                                <p className="text-sm text-destructive">
+                                    {form.errors.name}
+                                </p>
                             )}
                         </div>
                         <Button type="submit" disabled={form.processing}>
@@ -116,15 +126,25 @@ export default function ApiSettings({
                     <div className="space-y-3">
                         <h3 className="font-medium">Existing API keys</h3>
                         {tokens.length === 0 ? (
-                            <p className="text-sm text-muted-foreground">No personal API keys yet.</p>
+                            <p className="text-sm text-muted-foreground">
+                                No personal API keys yet.
+                            </p>
                         ) : (
                             <ul className="divide-y rounded-md border">
                                 {tokens.map((token) => (
-                                    <li key={token.id} className="flex items-center justify-between p-4">
+                                    <li
+                                        key={token.id}
+                                        className="flex items-center justify-between p-4"
+                                    >
                                         <div>
-                                            <p className="font-medium">{token.name}</p>
+                                            <p className="font-medium">
+                                                {token.name}
+                                            </p>
                                             <p className="text-xs text-muted-foreground">
-                                                Created {new Date(token.created_at).toLocaleString()}
+                                                Created{' '}
+                                                {new Date(
+                                                    token.created_at,
+                                                ).toLocaleString()}
                                                 {token.last_used_at &&
                                                     ` · Last used ${new Date(token.last_used_at).toLocaleString()}`}
                                             </p>
@@ -133,8 +153,14 @@ export default function ApiSettings({
                                             type="button"
                                             variant="destructive"
                                             onClick={() => {
-                                                if (window.confirm(`Revoke “${token.name}”? This cannot be undone.`)) {
-                                                    router.delete(`/settings/api/${token.id}`);
+                                                if (
+                                                    window.confirm(
+                                                        `Revoke “${token.name}”? This cannot be undone.`,
+                                                    )
+                                                ) {
+                                                    router.delete(
+                                                        `/settings/api/${token.id}`,
+                                                    );
                                                 }
                                             }}
                                         >
@@ -147,7 +173,7 @@ export default function ApiSettings({
                     </div>
 
                     {/* OAuth Clients */}
-                    <div className="rounded-md border p-6 space-y-4">
+                    <div className="space-y-4 rounded-md border p-6">
                         <HeadingSmall
                             title="OAuth Credentials"
                             description="Create OAuth credentials for clients like Gemini Spark that connect to your MCP server. Supports both Authorization Code and Password grants."
@@ -155,9 +181,12 @@ export default function ApiSettings({
 
                         {visibleOAuthClient && (
                             <div className="space-y-3 rounded-md border border-green-600 p-4">
-                                <p className="font-medium">Copy these credentials now</p>
+                                <p className="font-medium">
+                                    Copy these credentials now
+                                </p>
                                 <p className="text-sm text-muted-foreground">
-                                    The client secret is shown only once. Store it securely.
+                                    The client secret is shown only once. Store
+                                    it securely.
                                 </p>
 
                                 <div className="space-y-2">
@@ -165,7 +194,9 @@ export default function ApiSettings({
                                     <Input
                                         readOnly
                                         value={visibleOAuthClient.id}
-                                        onFocus={(event) => event.currentTarget.select()}
+                                        onFocus={(event) =>
+                                            event.currentTarget.select()
+                                        }
                                     />
                                 </div>
 
@@ -174,7 +205,9 @@ export default function ApiSettings({
                                     <Input
                                         readOnly
                                         value={visibleOAuthClient.secret}
-                                        onFocus={(event) => event.currentTarget.select()}
+                                        onFocus={(event) =>
+                                            event.currentTarget.select()
+                                        }
                                     />
                                 </div>
 
@@ -204,66 +237,109 @@ export default function ApiSettings({
                             }}
                         >
                             <div className="grid gap-2">
-                                <Label htmlFor="oauth-client-name">Client name</Label>
+                                <Label htmlFor="oauth-client-name">
+                                    Client name
+                                </Label>
                                 <Input
                                     id="oauth-client-name"
                                     value={oauthForm.data.name}
-                                    onChange={(event) => oauthForm.setData('name', event.target.value)}
+                                    onChange={(event) =>
+                                        oauthForm.setData(
+                                            'name',
+                                            event.target.value,
+                                        )
+                                    }
                                     maxLength={255}
                                     placeholder="e.g. Gemini Spark"
                                     required
                                 />
                                 {oauthForm.errors.name && (
-                                    <p className="text-sm text-destructive">{oauthForm.errors.name}</p>
+                                    <p className="text-sm text-destructive">
+                                        {oauthForm.errors.name}
+                                    </p>
                                 )}
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="oauth-redirect-uri">Redirect URI</Label>
+                                <Label htmlFor="oauth-redirect-uri">
+                                    Redirect URI
+                                </Label>
                                 <Input
                                     id="oauth-redirect-uri"
                                     value={oauthForm.data.redirect_uri}
-                                    onChange={(event) => oauthForm.setData('redirect_uri', event.target.value)}
+                                    onChange={(event) =>
+                                        oauthForm.setData(
+                                            'redirect_uri',
+                                            event.target.value,
+                                        )
+                                    }
                                     maxLength={1000}
                                     placeholder="https://oauth-redirect.googleusercontent.com"
                                 />
                                 <p className="text-xs text-muted-foreground">
-                                    Defaults to Google's OAuth relay for Gemini Spark (comma-separated for multiples).
+                                    Defaults to Google's OAuth relay for Gemini
+                                    Spark (comma-separated for multiples).
                                 </p>
                                 {oauthForm.errors.redirect_uri && (
-                                    <p className="text-sm text-destructive">{oauthForm.errors.redirect_uri}</p>
+                                    <p className="text-sm text-destructive">
+                                        {oauthForm.errors.redirect_uri}
+                                    </p>
                                 )}
                             </div>
 
-                            <Button type="submit" disabled={oauthForm.processing}>
+                            <Button
+                                type="submit"
+                                disabled={oauthForm.processing}
+                            >
                                 Create OAuth client
                             </Button>
                         </form>
 
                         <div className="space-y-3">
-                            <h3 className="font-medium">Existing OAuth clients</h3>
+                            <h3 className="font-medium">
+                                Existing OAuth clients
+                            </h3>
                             {oauthClients.length === 0 ? (
-                                <p className="text-sm text-muted-foreground">No OAuth clients yet.</p>
+                                <p className="text-sm text-muted-foreground">
+                                    No OAuth clients yet.
+                                </p>
                             ) : (
                                 <ul className="divide-y rounded-md border">
                                     {oauthClients.map((client) => (
-                                        <li key={client.id} className="flex items-center justify-between gap-4 p-4">
+                                        <li
+                                            key={client.id}
+                                            className="flex items-center justify-between gap-4 p-4"
+                                        >
                                             <div>
-                                                <p className="font-medium">{client.name}</p>
-                                                <p className="text-sm text-muted-foreground font-mono">
+                                                <p className="font-medium">
+                                                    {client.name}
+                                                </p>
+                                                <p className="font-mono text-sm text-muted-foreground">
                                                     {client.id}
                                                 </p>
                                                 <p className="text-xs text-muted-foreground">
-                                                    Grants: {client.grant_types.join(', ')} · Created{' '}
-                                                    {new Date(client.created_at).toLocaleString()}
+                                                    Grants:{' '}
+                                                    {client.grant_types.join(
+                                                        ', ',
+                                                    )}{' '}
+                                                    · Created{' '}
+                                                    {new Date(
+                                                        client.created_at,
+                                                    ).toLocaleString()}
                                                 </p>
                                             </div>
                                             <Button
                                                 type="button"
                                                 variant="destructive"
                                                 onClick={() => {
-                                                    if (window.confirm(`Revoke "${client.name}"? This cannot be undone.`)) {
-                                                        router.delete(`/settings/oauth-clients/${client.id}`);
+                                                    if (
+                                                        window.confirm(
+                                                            `Revoke "${client.name}"? This cannot be undone.`,
+                                                        )
+                                                    ) {
+                                                        router.delete(
+                                                            `/settings/oauth-clients/${client.id}`,
+                                                        );
                                                     }
                                                 }}
                                             >

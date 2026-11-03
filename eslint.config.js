@@ -7,6 +7,19 @@ import typescript from 'typescript-eslint';
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
+    {
+        ignores: [
+            'vendor/**',
+            'node_modules/**',
+            'public/**',
+            'bootstrap/**',
+            'resources/js/actions/**',
+            'resources/js/routes/**',
+            'resources/js/wayfinder/**',
+            '*.cjs',
+            'tailwind.config.js',
+        ],
+    },
     js.configs.recommended,
     reactHooks.configs.flat.recommended,
     ...typescript.configs.recommended,
@@ -28,9 +41,6 @@ export default [
                 version: 'detect',
             },
         },
-    },
-    {
-        ignores: ['vendor', 'node_modules', 'public', 'tailwind.config.js'],
     },
     prettier, // Turn off all rules that might conflict with Prettier
 ];
